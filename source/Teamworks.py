@@ -1615,7 +1615,7 @@ class MyApp(wx.App):
         wx.Locale(wx.LANGUAGE_FRENCH)
 
         # Vérifie l'existence des répertoires
-        for rep in ("Aide", "Temp", "Updates", "Lang") :
+        for rep in ("Aide", "Temp", "Updates", "Data", "Lang", "Documents/Editions") :
             if os.path.isdir(rep) == False :
                 os.makedirs(rep)
                 print "Creation du repertoire : ", rep
