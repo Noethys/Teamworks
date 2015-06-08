@@ -1,0 +1,190 @@
+Version 2.1.0.0 :
+
+- Ajout du calcul automatique des jours fériés variables
+- Ajout de l'importation des périodes de vacances depuis Internet
+- Mise à jour de la librairie graphique (2.9.4.0.)
+- Amélioration de la fenêtre d'ouverture des fichiers
+
+Version 2.0.0.4 :
+
+- Correction d'un bug sur windows XP
+
+Version 2.0.0.3 :
+
+- Correction d'un bug sur la restauration de fichiers réseau
+- Correction d'un bug sur la conversion tw1>tw2
+- [TECHN] Migration vers Python 2.7
+- [TECHN] Mise à jour de toutes les bibliothèques
+
+Version 2.0.0.2 :
+
+- Ajout de la restauration des anciennes sauvegardes twz
+- Prise en compte de la rupture des contrats dans l'état des dossiers
+
+Version 2.0.0.1 :
+
+ATTENTION : UN BUG PEUT APPARAITRE LORS DE L'INSTALLATION. 
+DANS CE CAS, FERMEZ TOUT SIMPLEMENT TEAMWORKS EN 
+ARRIERE-PLAN ET CLIQUEZ SUR 'RECOMMENCER'.
+
+- Ajout du questionnaire dans les fiches individuelles
+- Ajout du rattachement de documents aux pièces
+- Correction d'un bug sur l'ouverture des fichiers réseau
+- Correction d'un bug sur les conversions local<>réseau
+
+Version 2.0.0.0 :
+
+IL EST CONSEILLE DE SAUVEGARDER VOS DONNEES
+AVANT L'INSTALLATION DE CETTE MISE A JOUR !!!
+
+- Nouveaux systèmes de sauvegarde et de restauration
+- Ajout du cryptage des fichiers sauvegarde
+- Ajout de l'envoi des sauvegardes par email
+- Ajout de la conversion de fichiers réseau en local
+- Optimisation du système de gestion de la base de données
+- Intégration des photos dans la base de données
+- Ajout de la capture vidéo des photos individuelles
+- Upgrade de la librairie graphique 2.8.11.0.
+- Ajout de la base Documents
+- Amélioration du paramétrage des utilisateurs réseau
+- Ajout d'une nouvelle fenêtre de démarrage
+- Système de conversion de fichiers tw1 -> tw2
+
+Version 1.0.5.1 :
+
+- Ajout de l'état 'Planning mensuel' dans le panneau des présences
+- Mise à jour de l'aide intégrée
+- Modification de la fenêtre d'accueil
+- Ajout du lien des dons de soutien
+- Ajout du lien vers le PDF 'Le guide de l'utilisateur'
+- Correction du bug civilité de la fiche candidat
+- Correction du bug de focus du panneau présences
+
+Version 1.0.5.0 :
+
+- Ajout de Teamword, l'éditeur de texte et de mail intégré
+- Ajout d'une option 'Inclure les jours fériés' dans les modèles de planning
+- Ajout d'une fonction de conversion d'un fichier local en fichier réseau
+- Correction d'un bug dans la liste des utilisateurs réseau
+- Optimisation du système de mise à jour de la structure de la base de données
+
+Version 1.0.4.0 :
+
+- Ajout du module Publiposteur
+- Modification de l'arborescence du répertoire Documents
+- Ajout de l'option d'affichage 'Définir l'amplitude horaire affichée par défaut' dans le planning
+- Ajout de la persistence des options d'affichage de la liste des personnes du panneau Présences
+- Mise à jour de la librairie graphique wxPython (version 2.8.10.1.)
+
+Version 1.0.3.4 :
+
+- Ajout de l'option d'affichage 'la barre quantitative' dans le planning
+
+Version 1.0.3.3 :
+
+- Ajout du total mensuel dans l'état Planning Annuel
+
+Version 1.0.3.2 :
+
+- Ajout de l'état Planning Annuel
+
+Version 1.0.3.1 :
+
+- Ajout d'une option d'affichage des temps sur le planning
+- Correction d'un bug sur la fermeture de fenêtres du module Recrutement
+- Correction d'un bug sur la persistence des options d'affichages du planning
+
+Version 1.0.3.0 :
+
+- Ajout du module Recrutement
+- Ajout d'une colonne Qualifications dans la liste des personnes
+- Ajout de la DLL msvcp71 pour une meilleure compatibilité avec tous les systèmes
+
+Version 1.0.2.6 :
+
+- Ajout d'une commande de duplication de modèle de planning
+- Correction d'un bug (fetchall>tuple) sur la version Réseau
+- Correction d'un bug de formatage des heures sur la liste des présences de la fiche individuelle
+
+Version 1.0.2.5 :
+
+- Correction d'un bug sur l'ouverture des fichiers dont le nom comporte un accent
+
+Version 1.0.2.4 :
+
+- Correction d'un bug sur l'outil de mise à jour automatique sous Windows Vista
+
+Version 1.0.2.3 :
+
+- Intégration du mode multi-postes avec gestion des réseaux locaux ou distants (internet)
+- Ajout de l'impression des statistiques en modes tableau et graphe
+- Ajout de l'impression des scénarios
+- Correction d'un bug du gestionnaire de base de données Sqlite
+- Correction d'un bug d'impression des PDF sous windows Vista
+
+Version 1.0.2.2 :
+
+- Correction d'un bug sur les codes postaux à 4 chiffres
+- Intégration de la compatibilité Linux
+
+Version 1.0.2.1 :
+
+- Ajout des graphes dans le module statistiques
+
+Version 1.0.2.0 :
+
+- Ajout du module Statistiques
+- Ajout du module Scénarios
+- Correction d'un bug sur la suppression d'une tâche dans le planning des présences
+- Ré-écriture de la séquence d'ouverture des fichiers (correction de plusieurs bugs)
+- Optimisation du temps de démarrage du logiciel
+- Correction d'un bug d'affichage dans la configuration des pays et nationalités
+- Correction d'un bug d'unicode lors de l'impression des frais
+- Optimisation de la sauvegarde automatique des données
+- Ajout d'un label pour le filtre d'affichage de la liste des personnes du panneau Personnes
+
+Version 1.0.1.9 :
+
+- Correctif du bug unicode du mois d'aout
+
+Version 1.0.1.8 :
+
+- Correctif sur fonction sauvegarde automatique
+
+Version 1.0.1.7 :
+
+- Intégration du système d'aide
+
+Version 1.0.1.6 :
+
+- Ajout d'une commande d'impression de la liste des mots-clés dans l'assistants d'édition de contrats.
+- Ajout d'un label info dans l'éditeur de D.U.E..
+- Ajout de commandes aide pour chaque page du panneau configuration.
+- Correction d'un bug d'affichage dans la gestion des modèles de contrats.
+- Correction d'un bug d'affichage dans la gestion des catégories de présences.
+
+Version 1.0.1.5 :
+
+- Correction bug sur ajout legende à partir du menu contextuel du planning
+
+Version 1.0.1.4 :
+
+- Ajout sélection personne sélectionnée dans présences
+- Correction de plusieurs bugs
+
+Version 1.0.1.3 :
+
+- Correction d'un bug sur la mise à jour par internet
+
+Version 1.0.1.2 :
+
+- Correction d'un bug sur l'ouverture
+
+Version 1.0.1.1 :
+
+- Amélioration du système de mise à jour
+- Intégration des bases départements et régions dans la fiche individuelle.
+
+Version 1.0.1.0 :
+
+- Version alpha
