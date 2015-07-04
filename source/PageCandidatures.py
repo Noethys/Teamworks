@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
@@ -22,7 +24,7 @@ class Panel(wx.Panel):
         self.IDpersonne = IDpersonne
 
         # Widgets
-        self.staticBox_candidatures = wx.StaticBox(self, -1, u"Candidatures")
+        self.staticBox_candidatures = wx.StaticBox(self, -1, _(u"Candidatures"))
         self.ctrl_candidatures = OL_candidatures.ListView(self, id=-1,  name="OL_candidatures", IDpersonne=IDpersonne, colorerSalaries=False, modeAffichage = "sans_nom", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
         self.ctrl_candidatures.SetMinSize((20, 20))
         self.ctrl_candidatures.MAJ()
@@ -30,7 +32,7 @@ class Panel(wx.Panel):
         self.bouton_candidatures_modifier = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG))
         self.bouton_candidatures_supprimer = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG))
         
-        self.staticBox_entretiens = wx.StaticBox(self, -1, u"Entretiens")
+        self.staticBox_entretiens = wx.StaticBox(self, -1, _(u"Entretiens"))
         self.ctrl_entretiens = OL_entretiens.ListView(self, id=-1,  name="OL_entretiens", IDpersonne=IDpersonne, colorerSalaries=False, modeAffichage="sans_nom", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
         self.ctrl_entretiens.SetMinSize((20, 20))
         self.ctrl_entretiens.MAJ()
@@ -51,12 +53,12 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonSupprEntretien, self.bouton_entretiens_supprimer)
 
     def __set_properties(self):
-        self.bouton_candidatures_ajouter.SetToolTipString(u"Cliquez ici pour saisir uune nouvelle candidature")
-        self.bouton_candidatures_modifier.SetToolTipString(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste")
-        self.bouton_candidatures_supprimer.SetToolTipString(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste")
-        self.bouton_entretiens_ajouter.SetToolTipString(u"Cliquez ici pour saisir un nouvel entretien")
-        self.bouton_entretiens_modifier.SetToolTipString(u"Cliquez ici pour modifier l'entretien sélectionné dans la liste")
-        self.bouton_entretiens_supprimer.SetToolTipString(u"Cliquez ici pour supprimer l'entretien sélectionné dans la liste")
+        self.bouton_candidatures_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir uune nouvelle candidature"))
+        self.bouton_candidatures_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste"))
+        self.bouton_candidatures_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste"))
+        self.bouton_entretiens_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir un nouvel entretien"))
+        self.bouton_entretiens_modifier.SetToolTipString(_(u"Cliquez ici pour modifier l'entretien sélectionné dans la liste"))
+        self.bouton_entretiens_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer l'entretien sélectionné dans la liste"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=2, cols=1, vgap=10, hgap=10)

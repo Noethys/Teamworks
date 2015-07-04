@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import sqlite3
 import Phonex
@@ -28,28 +30,28 @@ class FrameGestionVilles(wx.Frame):
         self.parent = parent
         self.sizer_SaisieManuelle_staticbox = wx.StaticBox(self.panel_base, -1, "Saisie manuelle")
         self.sizer_Recherche_staticbox = wx.StaticBox(self.panel_base, -1, "Recherche")
-        self.label_Intro = wx.StaticText(self.panel_base, -1, u"Ce logiciel possède une base de données de villes et de codes de la France.")
+        self.label_Intro = wx.StaticText(self.panel_base, -1, _(u"Ce logiciel possède une base de données de villes et de codes de la France."))
         self.exportCP = exportCP
         self.exportVille = exportVille
         
         # Création du ListCtrl
-        listeChamps = [("cp", u"Code postal", 80, True), ("ville", u"Nom de la ville", 200, True), ]
+        listeChamps = [("cp", _(u"Code postal"), 80, True), ("ville", _(u"Nom de la ville"), 200, True), ]
         self.list_ctrl_1 = VirtualList(self.panel_base, "villes", listeChamps)
         self.list_ctrl_1.SetMinSize((20, 20)) 
         
         self.label_Recherche1 = wx.StaticText(self.panel_base, -1, "Saisissez ici un nom de ville \nou un code postal :")
         self.text_recherche_ville = wx.TextCtrl(self.panel_base, -1, "")
         self.bouton_Rechercher = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Rechercher.png", wx.BITMAP_TYPE_PNG))
-        self.radio_box_recherche = wx.RadioBox(self.panel_base, -1, "Type de recherche", choices=[u"Une partie du nom", u"Recherche phonétique"], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
+        self.radio_box_recherche = wx.RadioBox(self.panel_base, -1, "Type de recherche", choices=[_(u"Une partie du nom"), _(u"Recherche phonétique")], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
         self.bouton_AfficherTout = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Reafficher_Liste.png", wx.BITMAP_TYPE_PNG))
-        self.label_SaisieManuelle = wx.StaticText(self.panel_base, -1, u"Vous pouvez ici saisir manuellement un nom de ville et son code postal. \n\nCeux-ci seront automatiquement insérés dans la fiche individuelle :")
+        self.label_SaisieManuelle = wx.StaticText(self.panel_base, -1, _(u"Vous pouvez ici saisir manuellement un nom de ville et son code postal. \n\nCeux-ci seront automatiquement insérés dans la fiche individuelle :"))
         self.label_SaisieCode = wx.StaticText(self.panel_base, -1, "Code postal :", style=wx.ALIGN_RIGHT)
         self.text_SaisieCode = masked.TextCtrl(self.panel_base, -1, "", style=wx.TE_CENTRE, mask = "#####")
         self.label_SaisieVille = wx.StaticText(self.panel_base, -1, "Nom de la ville :", style=wx.ALIGN_RIGHT)
         self.text_SaisieVille = wx.TextCtrl(self.panel_base, -1, "")
-        self.bouton_Aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide.png", wx.BITMAP_TYPE_PNG))
-        self.bouton_Ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok.png", wx.BITMAP_TYPE_PNG))
-        self.bouton_Annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler.png", wx.BITMAP_TYPE_PNG))
+        self.bouton_Aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_Ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_Annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -68,18 +70,18 @@ class FrameGestionVilles(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_recherche_ville.SetToolTipString(u"Saisissez ici un nom de ville")
-        self.bouton_Rechercher.SetToolTipString(u"Cliquez ici pour lancer la recherche")
-        self.bouton_AfficherTout.SetToolTipString(u"Cliquez ici pour ré-afficher la liste complète")
+        self.text_recherche_ville.SetToolTipString(_(u"Saisissez ici un nom de ville"))
+        self.bouton_Rechercher.SetToolTipString(_(u"Cliquez ici pour lancer la recherche"))
+        self.bouton_AfficherTout.SetToolTipString(_(u"Cliquez ici pour ré-afficher la liste complète"))
         self.bouton_AfficherTout.Hide()
-        self.radio_box_recherche.SetToolTipString(u"Sélectionnez ici un type de recherche")
+        self.radio_box_recherche.SetToolTipString(_(u"Sélectionnez ici un type de recherche"))
         self.radio_box_recherche.SetSelection(0)
         self.text_SaisieCode.SetMinSize((70, -1))
-        self.text_SaisieCode.SetToolTipString(u"Saisissez ici un code postal")
-        self.text_SaisieVille.SetToolTipString(u"Saisissez ici un nom de ville")
-        self.bouton_Aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_Ok.SetToolTipString(u"Cliquez ici pou valider et fermer cette fenêtre")
-        self.bouton_Annuler.SetToolTipString(u"Cliquez ici pour annuler et fermer cette fenêtre")
+        self.text_SaisieCode.SetToolTipString(_(u"Saisissez ici un code postal"))
+        self.text_SaisieVille.SetToolTipString(_(u"Saisissez ici un nom de ville"))
+        self.bouton_Aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_Ok.SetToolTipString(_(u"Cliquez ici pou valider et fermer cette fenêtre"))
+        self.bouton_Annuler.SetToolTipString(_(u"Cliquez ici pour annuler et fermer cette fenêtre"))
         self.list_ctrl_1.SetMinSize((300, -1))
         # end wxGlade
 
@@ -169,11 +171,11 @@ class FrameGestionVilles(wx.Frame):
         elif resultats == False and textRecherche != "":
             self.bouton_AfficherTout.Show()
             self.grid_sizer_3.Layout()
-            dlg = wx.MessageDialog(self, u"Aucun résultat n'a été trouvé pour votre recherche", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Aucun résultat n'a été trouvé pour votre recherche"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
         else:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord saisir un nom de ville ou un code postal dans le champ de recherche.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord saisir un nom de ville ou un code postal dans le champ de recherche."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
        
@@ -217,12 +219,12 @@ class FrameGestionVilles(wx.Frame):
 
         # Validation des champs de saisie manuelle
         if code.strip() == "" :
-            dlg = wx.MessageDialog(self, u"Vous avez saisi un nom de ville. Vous devez également saisir un code postal pour exporter cette ville", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous avez saisi un nom de ville. Vous devez également saisir un code postal pour exporter cette ville"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return False
         if ville.strip() == "":
-            dlg = wx.MessageDialog(self, u"Vous avez saisi un code postal. Vous devez également saisir un un nom de ville pour exporter cette ville", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous avez saisi un code postal. Vous devez également saisir un un nom de ville pour exporter cette ville"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return False
@@ -250,7 +252,7 @@ class FrameGestionVilles(wx.Frame):
             self.parent.text_ville.SetValue(ville.upper())
         self.parent.autoComplete = True
 
-        dlg = wx.MessageDialog(self, u"La ville " + ville + u" a bien été importée dans la fiche individuelle.", "Information", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"La ville ") + ville + _(u" a bien été importée dans la fiche individuelle."), "Information", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -497,7 +499,7 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
         menuPop = wx.Menu()
 
         # Item avec image
-        item = wx.MenuItem(menuPop, 10, u"Insérer cette ville dans la fiche individuelle")
+        item = wx.MenuItem(menuPop, 10, _(u"Insérer cette ville dans la fiche individuelle"))
         bmp = wx.Bitmap("Images/16x16/Fleche_bas.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)

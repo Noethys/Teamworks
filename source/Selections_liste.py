@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import os
 import wx.lib.hyperlink as hl
@@ -18,13 +20,13 @@ import datetime
 
 class MyFrame(wx.Dialog):
     def __init__(self, parent, liste_labelsColonnes=[], listeValeurs=[], type=None):
-        wx.Dialog.__init__(self, parent, -1, title=u"Sélection d'éléments", size=(800, 460))
+        wx.Dialog.__init__(self, parent, -1, title=_(u"Sélection d'éléments"), size=(800, 460))
         self.parent = parent
         self.type = type
         self.liste_labelsColonnes = liste_labelsColonnes
         self.listeValeurs = listeValeurs
         
-        self.label_intro = wx.StaticText(self, -1, u"Veuillez sélectionner les éléments de votre choix :")
+        self.label_intro = wx.StaticText(self, -1, _(u"Veuillez sélectionner les éléments de votre choix :"))
         
         # ListCtrl
         self.listCtrl = ListCtrl(self, self.liste_labelsColonnes, self.listeValeurs)
@@ -34,9 +36,9 @@ class MyFrame(wx.Dialog):
         self.label_separation = wx.StaticText(self, -1, u"|")
         self.hyperlink_deselect = self.Build_Hyperlink_deselect()
 
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -47,7 +49,7 @@ class MyFrame(wx.Dialog):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-##        self.SetTitle(u"Sélection d'éléments")
+##        self.SetTitle(_(u"Sélection d'éléments"))
 ##        _icon = wx.EmptyIcon()
 ##        _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
 ##        self.SetIcon(_icon)
@@ -94,14 +96,14 @@ class MyFrame(wx.Dialog):
     def Build_Hyperlink_select(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(8, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self, -1, u"Tout sélectionner", URL="")
+        hyper = hl.HyperLinkCtrl(self, -1, _(u"Tout sélectionner"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink_select)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLACK", "BLACK", "BLUE")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Tout sélectionner"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Tout sélectionner")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -113,14 +115,14 @@ class MyFrame(wx.Dialog):
     def Build_Hyperlink_deselect(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(8, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self, -1, u"Tout dé-sélectionner", URL="")
+        hyper = hl.HyperLinkCtrl(self, -1, _(u"Tout dé-sélectionner"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink_deselect)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLACK", "BLACK", "BLUE")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Tout dé-sélectionner"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Tout dé-sélectionner")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -151,7 +153,7 @@ class MyFrame(wx.Dialog):
         
         # Validation de la sélection
         if len(selections) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez fait aucune sélection", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez fait aucune sélection"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -230,8 +232,8 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    liste_labelsColonnes=[(u"COL1", "left", 50, "col1"), (u"COL2", "left", 200, "col2"),]
-    listeValeurs=[ (1, u"ligne1-col2"), (2, u"ligne2-col2"),]
+    liste_labelsColonnes=[(_(u"COL1"), "left", 50, "col1"), (_(u"COL2"), "left", 200, "col2"),]
+    listeValeurs=[ (1, _(u"ligne1-col2")), (2, _(u"ligne2-col2")),]
     frm = MyFrame(None, liste_labelsColonnes, listeValeurs)
     frm.ShowModal()
     app.MainLoop()

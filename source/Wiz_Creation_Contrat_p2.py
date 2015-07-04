@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import Config_Modeles_Contrats as ConfigModeles
 import GestionDB
@@ -16,9 +18,9 @@ class Page(wx.Panel):
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
-        self.sizer_choix_modele_staticbox = wx.StaticBox(self, -1, u"Choix du modèle")
-        self.label_titre = wx.StaticText(self, -1, u"1. Importation d'un modèle de contrat")
-        self.label_intro = wx.StaticText(self, -1, u"Souhaitez-vous utiliser un modèle de contrat pour faciliter votre saisie ?")
+        self.sizer_choix_modele_staticbox = wx.StaticBox(self, -1, _(u"Choix du modèle"))
+        self.label_titre = wx.StaticText(self, -1, _(u"1. Importation d'un modèle de contrat"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Souhaitez-vous utiliser un modèle de contrat pour faciliter votre saisie ?"))
         self.radio_non = wx.RadioButton(self, -1, "Non", style=wx.RB_GROUP)
         self.radio_oui = wx.RadioButton(self, -1, "Oui")
         self.listCtrl_modeles = ListCtrl(self)
@@ -37,7 +39,7 @@ class Page(wx.Panel):
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.bouton_modeles.SetMinSize((20, 20))
-        self.bouton_modeles.SetToolTipString(u"Cliquez ici pour ajouter, modifier ou supprimer des modèles de contrat")
+        self.bouton_modeles.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des modèles de contrat"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
@@ -101,7 +103,7 @@ class Page(wx.Panel):
         index = self.listCtrl_modeles.GetFirstSelected()
         # Vérifie qu'un item a bien été sélectionné dans la liste
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un modèle dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un modèle dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return False
@@ -181,11 +183,11 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         
         # Création des colonnes
         self.nbreColonnes =2
-        self.InsertColumn(0, u"     ID")
+        self.InsertColumn(0, _(u"     ID"))
         self.SetColumnWidth(0, 0)
-        self.InsertColumn(1, u"Nom")
+        self.InsertColumn(1, _(u"Nom"))
         self.SetColumnWidth(1, 200)  
-        self.InsertColumn(2, u"Description")
+        self.InsertColumn(2, _(u"Description"))
         self.SetColumnWidth(2, 100)  
         
         #These two should probably be passed to init more cleanly
@@ -298,7 +300,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -307,14 +309,14 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)

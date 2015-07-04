@@ -7,11 +7,13 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 
 DICT_PROCEDURES = {
-    "A2000" : u"Conversion de la version 1 à la version 2 de Teamworks",
+    "A2000" : _(u"Conversion de la version 1 à la version 2 de Teamworks"),
     }
 
 # -------------------------------------------------------------------------------------------------------------------------
@@ -19,13 +21,13 @@ DICT_PROCEDURES = {
 def Procedure(code=""):
     # Recherche si procédure existe
     if DICT_PROCEDURES.has_key(code) == False :
-        dlg = wx.MessageDialog(None, u"Désolé, cette procédure n'existe pas...", u"Erreur", wx.OK | wx.ICON_ERROR)
+        dlg = wx.MessageDialog(None, _(u"Désolé, cette procédure n'existe pas..."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
         dlg.ShowModal()
         dlg.Destroy()
         return
     titre = DICT_PROCEDURES[code]
     # Demande de confirmation de lancement
-    dlg = wx.MessageDialog(None, u"Souhaitez-vous vraiment lancer la procédure suivante ?\n\n   -> %s   " % titre, u"Lancement de la procédure", wx.YES_NO|wx.YES_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
+    dlg = wx.MessageDialog(None, _(u"Souhaitez-vous vraiment lancer la procédure suivante ?\n\n   -> %s   ") % titre, _(u"Lancement de la procédure"), wx.YES_NO|wx.YES_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
     reponse = dlg.ShowModal() 
     dlg.Destroy()
     if reponse != wx.ID_YES :
@@ -35,12 +37,12 @@ def Procedure(code=""):
     try :
         exec("%s()" % code)
     except Exception, err :
-        dlg = wx.MessageDialog(None, u"Désolé, une erreur a été rencontrée :\n\n-> %s  " % err, u"Erreur", wx.OK | wx.ICON_ERROR)
+        dlg = wx.MessageDialog(None, _(u"Désolé, une erreur a été rencontrée :\n\n-> %s  ") % err, _(u"Erreur"), wx.OK | wx.ICON_ERROR)
         dlg.ShowModal()
         dlg.Destroy()
         return
     # Fin
-    dlg = wx.MessageDialog(None, u"La procédure s'est terminée avec succès.", u"Procédure terminée", wx.OK | wx.ICON_INFORMATION)
+    dlg = wx.MessageDialog(None, _(u"La procédure s'est terminée avec succès."), _(u"Procédure terminée"), wx.OK | wx.ICON_INFORMATION)
     dlg.ShowModal()
     dlg.Destroy()
     print "Fin de la procedure '%s'." % code
@@ -77,7 +79,7 @@ def Procedure(code=""):
 ##    listeTables = []
 ##    for donnees in listeTablesTemp :
 ##        listeTables.append(donnees[0])
-##    dlg = wx.MultiChoiceDialog(None, u"Cochez les tables à exporter :", u"Exportation vers la table DEFAUT", listeTables)
+##    dlg = wx.MultiChoiceDialog(None, _(u"Cochez les tables à exporter :"), _(u"Exportation vers la table DEFAUT"), listeTables)
 ##    if dlg.ShowModal() == wx.ID_OK :
 ##        selections = dlg.GetSelections()
 ##        nomsTable = [listeTables[x] for x in selections]
@@ -207,7 +209,7 @@ def D1051(nomFichier):
 
 
 
-if __name__ == u"__main__":
+if __name__ == _(u"__main__"):
     app = wx.App(0)
     #wx.InitAllImageHandlers()
     # TEST D'UNE PROCEDURE :

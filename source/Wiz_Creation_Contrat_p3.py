@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import Config_Classifications
 import Config_ValPoint
@@ -23,10 +25,10 @@ class Page(wx.Panel):
         self.dictTypes = {}
         
         self.sizer_dates_staticbox = wx.StaticBox(self, -1, "Dates du contrat")
-        self.sizer_caract_staticbox = wx.StaticBox(self, -1, u"Caractéristiques générales")
-        self.sizer_essai_staticbox = wx.StaticBox(self, -1, u"Période d'essai")
-        self.label_titre = wx.StaticText(self, -1, u"2. Caractéristiques générales du contrat")
-        self.label_intro = wx.StaticText(self, -1, u"Saisissez les caractéristiques générales du contrat :")
+        self.sizer_caract_staticbox = wx.StaticBox(self, -1, _(u"Caractéristiques générales"))
+        self.sizer_essai_staticbox = wx.StaticBox(self, -1, _(u"Période d'essai"))
+        self.label_titre = wx.StaticText(self, -1, _(u"2. Caractéristiques générales du contrat"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Saisissez les caractéristiques générales du contrat :"))
         
         self.label_type = wx.StaticText(self, -1, "Type de contrat :")
         self.choice_type = wx.Choice(self, -1, choices=[])
@@ -50,15 +52,15 @@ class Page(wx.Panel):
         self.datepicker_date_debut.Enable(False)
         self.datepicker_date_fin.Enable(False)
         
-        self.check_rupture = wx.CheckBox(self, -1, u" Rupture anticipée du contrat au :")
+        self.check_rupture = wx.CheckBox(self, -1, _(u" Rupture anticipée du contrat au :"))
         self.datepicker_rupture = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         self.datepicker_rupture.Enable(False)
         
-        self.label_essai = wx.StaticText(self, -1, u"    Nbre de jours :")
+        self.label_essai = wx.StaticText(self, -1, _(u"    Nbre de jours :"))
         self.periode_essai = wx.SpinCtrl(self, -1, "", size=(60, -1))
         self.periode_essai.SetRange(0,99)
         self.periode_essai.SetValue(0)
-        self.aide_essai = wx.StaticText(self, -1, u"  (1 jour par semaine travaillée)")
+        self.aide_essai = wx.StaticText(self, -1, _(u"  (1 jour par semaine travaillée)"))
         self.aide_essai.SetForegroundColour('Grey')
 
         self.__set_properties()
@@ -77,12 +79,12 @@ class Page(wx.Panel):
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.bouton_type.SetMinSize((20, 20))
-        self.bouton_type.SetToolTipString(u"Cliquez ici pour ajouter, modifier ou supprimer des types de contrat")
+        self.bouton_type.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des types de contrat"))
         self.bouton_class.SetMinSize((20, 20))
-        self.bouton_class.SetToolTipString(u"Cliquez ici pour ajouter, modifier ou supprimer des classifications")
+        self.bouton_class.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des classifications"))
         self.bouton_valpoint.SetMinSize((20, 20))
-        self.bouton_valpoint.SetToolTipString(u"Cliquez ici pour ajouter, modifier ou supprimer des valeurs de points")
-        self.check_rupture.SetToolTipString(u"Cliquez ici pour saisir une date de fin de contrat si l'employeur ou le salarié ont mis fin prématurément au contrat.")
+        self.bouton_valpoint.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des valeurs de points"))
+        self.check_rupture.SetToolTipString(_(u"Cliquez ici pour saisir une date de fin de contrat si l'employeur ou le salarié ont mis fin prématurément au contrat."))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -299,7 +301,7 @@ class Page(wx.Panel):
         controle.Clear()
         x = 0
         for ID, valeur, dateDebut in liste :
-            txt = str(valeur) + u" ¤  (à partir du " + FonctionsPerso.DateEngFr(dateDebut) + ")"
+            txt = str(valeur) + _(u" ¤  (à partir du ") + FonctionsPerso.DateEngFr(dateDebut) + ")"
             controle.Append(txt, ID) 
             # Sélection de l'ancienne valeur sélectionnée
             if IDselection == ID : controle.SetSelection(x)
@@ -370,21 +372,21 @@ class Page(wx.Panel):
         
         # Vérifie que des valeurs ont été saisies
         if type == None :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un type de contrat dans la liste proposée.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un type de contrat dans la liste proposée."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.choice_type.SetFocus()
             return False
 
         if classification == None :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner une classification dans la liste proposée.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner une classification dans la liste proposée."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.choice_class.SetFocus()
             return False
         
         if valPoint == None :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner une valeur de point dans la liste proposée.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner une valeur de point dans la liste proposée."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.choice_valpoint.SetFocus()
@@ -392,7 +394,7 @@ class Page(wx.Panel):
         
         # Vérifie que la date de fin est supérieure à la date de début de contrat
         if date_debut > date_fin and self.datepicker_date_fin.IsShown() :
-            dlg = wx.MessageDialog(self, u"La date de fin de contrat que vous avez saisie est inférieure à la date de début !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"La date de fin de contrat que vous avez saisie est inférieure à la date de début !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.datepicker_date_fin.SetFocus()
@@ -400,7 +402,7 @@ class Page(wx.Panel):
 
         # Vérifie que la date de rupture est supérieure à la date de début de contrat
         if date_debut > date_rupture and rupture == True :
-            dlg = wx.MessageDialog(self, u"La date de rupture de contrat que vous avez saisie est inférieure à la date de début !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"La date de rupture de contrat que vous avez saisie est inférieure à la date de début !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.datepicker_date_fin.SetFocus()
@@ -408,7 +410,7 @@ class Page(wx.Panel):
 
         # Vérifie que la date de rupture est supérieure à la date de début de contrat et inférieure à la date de fin si contrat à durée déterminée :
         if self.datepicker_date_fin.IsShown() and date_rupture >= date_fin and rupture == True :
-            dlg = wx.MessageDialog(self, u"La date de rupture de contrat que vous avez saisie est égale ou supérieure à la date de fin de contrat !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"La date de rupture de contrat que vous avez saisie est égale ou supérieure à la date de fin de contrat !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.datepicker_date_fin.SetFocus()
@@ -421,7 +423,7 @@ class Page(wx.Panel):
                 valeurNecessaire = ID
         
         if valeurNecessaire == None :
-            dlg = wx.MessageDialog(self, u"La valeur du point n'est pas correcte. Il n'existe pas dans la liste proposée de valeur correspondante à la date de début de contrat. \n\nVous devez donc créer une nouvelle valeur. \n\nSouhaitez-vous le faire maintenant ?", "Erreur", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            dlg = wx.MessageDialog(self, _(u"La valeur du point n'est pas correcte. Il n'existe pas dans la liste proposée de valeur correspondante à la date de début de contrat. \n\nVous devez donc créer une nouvelle valeur. \n\nSouhaitez-vous le faire maintenant ?"), "Erreur", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_NO :
                 dlg.Destroy() 
                 return False
@@ -431,7 +433,7 @@ class Page(wx.Panel):
                 return False
          
         if valeurNecessaire != valPoint :
-            dlg = wx.MessageDialog(self, u"La valeur du point ne correspond pas à la date de début du contrat. Vous devez sélectionner une autre valeur de points dans la liste proposée.\n\nVoulez-vous que je le fasse à votre place ?", "Erreur", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            dlg = wx.MessageDialog(self, _(u"La valeur du point ne correspond pas à la date de début du contrat. Vous devez sélectionner une autre valeur de points dans la liste proposée.\n\nVoulez-vous que je le fasse à votre place ?"), "Erreur", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_NO :
                 dlg.Destroy() 
                 return False
@@ -445,13 +447,13 @@ class Page(wx.Panel):
         
         # Période d'essai
         if essai == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir un nombre de jours pour période d'essai.", "Erreur", wx.OK)
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nombre de jours pour période d'essai."), "Erreur", wx.OK)
             dlg.ShowModal()
             dlg.Destroy()
             return False
         
         if essai == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez pas défini de période d'essai. \n\nSouhaitez-vous quand même continuer ? \n(Sinon cliquez 'non' ou 'annuler')", "Erreur de saisie", wx.ICON_QUESTION | wx.YES_NO | wx.CANCEL | wx.NO_DEFAULT)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez pas défini de période d'essai. \n\nSouhaitez-vous quand même continuer ? \n(Sinon cliquez 'non' ou 'annuler')"), "Erreur de saisie", wx.ICON_QUESTION | wx.YES_NO | wx.CANCEL | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_YES :
                 dlg.Destroy() 
             else:

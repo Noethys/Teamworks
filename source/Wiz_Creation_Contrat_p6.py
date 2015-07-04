@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 
@@ -23,7 +25,7 @@ class Page(wx.Panel):
         wx.Panel.__init__(self, *args, **kwds)
         self.parent = self.GetGrandParent()
         
-        self.label_titre = wx.StaticText(self, -1, u"Fin de l'assistant de création de contrat")
+        self.label_titre = wx.StaticText(self, -1, _(u"Fin de l'assistant de création de contrat"))
         
         # Label Html
         txtIntro = u"""

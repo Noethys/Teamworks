@@ -7,8 +7,10 @@
 # Licence:         Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 
 import wx
+import CTRL_Bouton_image
 from wx.lib.agw import ultimatelistctrl as ULC
 
 import sys
@@ -133,7 +135,7 @@ class SecondColumnRenderer(object):
         dc.SetFont(self.smallerFont)
         
         if self.date != None :
-            dummy1, dummy2= dc.GetTextExtent(u"Date modif.: ")
+            dummy1, dummy2= dc.GetTextExtent(_(u"Date modif.: "))
             textWidth, textHeight = dc.GetTextExtent(self.date)
             dc.SetTextForeground(self.greyColour)
             dc.DrawText("Date modif.: ", rect.x+5, rect.y+(rect.height - textHeight)/4)
@@ -163,7 +165,7 @@ class SecondColumnRenderer(object):
         dc.SelectObject(wx.EmptyBitmap(100, 20))
         
         if self.date != None :
-            texte = u"Date modif.:" + self.date
+            texte = _(u"Date modif.:") + self.date
         else :
             texte = "Taille : 888.88 MB"
         textWidth, textHeight, d1, d2 = dc.GetFullTextExtent(texte, self.smallerFont)
@@ -340,20 +342,20 @@ class CTRL(ULC.UltimateListCtrl):
     def ModifierFichier(self, titre=""):
         """ Modifier un fichier """
         if self.mode == "reseau" :
-            dlg = wx.MessageDialog(self, u"Il est impossible de modifier le nom d'un fichier réseau !", u"Désolé", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Il est impossible de modifier le nom d'un fichier réseau !"), _(u"Désolé"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
 
         # Demande de confirmation 1
-        dlg = wx.MessageDialog(None, u"Souhaitez-vous vraiment modifier le nom du fichier '%s' ?" % titre, u"Modifier un fichier", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(None, _(u"Souhaitez-vous vraiment modifier le nom du fichier '%s' ?") % titre, _(u"Modifier un fichier"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_QUESTION)
         reponse = dlg.ShowModal()
         dlg.Destroy()
         if reponse != wx.ID_YES :
             return 
         
         # Demande le nouveau nom du fichier
-        dlg = wx.TextEntryDialog(self, u"Saisissez un nouveau nom pour le fichier '%s' :" % titre, u"Modifier le nom", titre)
+        dlg = wx.TextEntryDialog(self, _(u"Saisissez un nouveau nom pour le fichier '%s' :") % titre, _(u"Modifier le nom"), titre)
         if dlg.ShowModal() == wx.ID_OK:
             nouveauTitre = dlg.GetValue()
             dlg.Destroy()
@@ -362,13 +364,13 @@ class CTRL(ULC.UltimateListCtrl):
             return
 
         if nouveauTitre == "" :
-            dlg = wx.MessageDialog(self, u"Le nom que vous avez saisi ne semble pas valide !", u"Erreur de saisie", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Le nom que vous avez saisi ne semble pas valide !"), _(u"Erreur de saisie"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
 
         # Demande de confirmation 2
-        dlg = wx.MessageDialog(None, u"Vous êtes vraiment sûr de vouloir changer le nom du fichier '%s' en '%s' ?" % (titre, nouveauTitre), u"Modifier un fichier", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
+        dlg = wx.MessageDialog(None, _(u"Vous êtes vraiment sûr de vouloir changer le nom du fichier '%s' en '%s' ?") % (titre, nouveauTitre), _(u"Modifier un fichier"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
         reponse = dlg.ShowModal()
         dlg.Destroy()
         if reponse != wx.ID_YES :
@@ -377,8 +379,8 @@ class CTRL(ULC.UltimateListCtrl):
         # Modifier un fichier local
         for suffixe in ("TDATA", "TDOCUMENTS", "TPHOTOS") :
             try :
-                source = u"Data/%s_%s.dat" % (titre, suffixe)
-                destination = u"Data/%s_%s.dat" % (nouveauTitre, suffixe)
+                source = _(u"Data/%s_%s.dat") % (titre, suffixe)
+                destination = _(u"Data/%s_%s.dat") % (nouveauTitre, suffixe)
                 os.rename(source, destination)
             except Exception, err :
                 print "Erreur dans le renommage de fichier : " + err
@@ -388,13 +390,13 @@ class CTRL(ULC.UltimateListCtrl):
     def SupprimerFichier(self, titre=""):
         """ Supprimer un fichier """
         # Demande de confirmation
-        dlg = wx.MessageDialog(None, u"Souhaitez-vous vraiment supprimer le fichier '%s' ?" % titre, u"Supprimer un fichier", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(None, _(u"Souhaitez-vous vraiment supprimer le fichier '%s' ?") % titre, _(u"Supprimer un fichier"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_QUESTION)
         reponse = dlg.ShowModal()
         dlg.Destroy()
         if reponse != wx.ID_YES :
             return 
         
-        dlg = wx.MessageDialog(None, u"Attention, la suppression est irreversible !!! \n\n Vous êtes vraiment sûr de vouloir supprimer le fichier '%s' ?" % titre, u"Supprimer un fichier", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
+        dlg = wx.MessageDialog(None, _(u"Attention, la suppression est irreversible !!! \n\n Vous êtes vraiment sûr de vouloir supprimer le fichier '%s' ?") % titre, _(u"Supprimer un fichier"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
         reponse = dlg.ShowModal()
         dlg.Destroy()
         if reponse != wx.ID_YES :
@@ -404,7 +406,7 @@ class CTRL(ULC.UltimateListCtrl):
         if self.mode == "local" :
             for suffixe in ("TDATA", "TDOCUMENTS", "TPHOTOS") :
                 try :
-                    os.remove(u"Data/%s_%s.dat" % (titre, suffixe))
+                    os.remove(_(u"Data/%s_%s.dat") % (titre, suffixe))
                 except Exception, err :
                     pass
         
@@ -420,7 +422,7 @@ class CTRL(ULC.UltimateListCtrl):
                 connexion.set_character_set('utf8')
                 cursor = connexion.cursor()
             except Exception, err :
-                dlg = wx.MessageDialog(self, u"Erreur de connexion MySQL !\n\n%s" % err, u"Erreur de connexion", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Erreur de connexion MySQL !\n\n%s") % err, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return

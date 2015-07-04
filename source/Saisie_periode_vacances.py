@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
@@ -19,22 +21,22 @@ class MyFrame(wx.Frame):
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         
-        self.sizer_periode_staticbox = wx.StaticBox(self.panel_base, -1, u"Nom de la période")
-        choices = [u"Février", u"Pâques", u"Eté", u"Toussaint", u"Noël"]
-        self.label_nom = wx.StaticText(self.panel_base, -1, u"Nom :")
+        self.sizer_periode_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Nom de la période"))
+        choices = [_(u"Février"), _(u"Pâques"), _(u"Eté"), _(u"Toussaint"), _(u"Noël")]
+        self.label_nom = wx.StaticText(self.panel_base, -1, _(u"Nom :"))
         self.choice_nom = wx.Choice(self.panel_base, -1, choices=choices, size=(100, -1))
-        self.label_annee = wx.StaticText(self.panel_base, -1, u"Année :")
+        self.label_annee = wx.StaticText(self.panel_base, -1, _(u"Année :"))
         self.text_annee = wx.TextCtrl(self.panel_base, -1, "", style=wx.TE_CENTRE, size=(50, -1))
         
-        self.sizer_dates_staticbox = wx.StaticBox(self.panel_base, -1, u"Dates de la période")
+        self.sizer_dates_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Dates de la période"))
         self.label_dateDebut = wx.StaticText(self.panel_base, -1, u"Du")
         self.datepicker_dateDebut = wx.DatePickerCtrl(self.panel_base, -1, style=wx.DP_DROPDOWN)
-        self.label_dateFin = wx.StaticText(self.panel_base, -1, u"au")
+        self.label_dateFin = wx.StaticText(self.panel_base, -1, _(u"au"))
         self.datepicker_dateFin = wx.DatePickerCtrl(self.panel_base, -1, style=wx.DP_DROPDOWN)
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         self.IDperiode = IDperiode
         if IDperiode != 0 : 
@@ -49,19 +51,19 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Gestion des périodes de vacances")
+        self.SetTitle(_(u"Gestion des périodes de vacances"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.choice_nom.SetToolTipString(u"Choisissez ici le nom de la période")
-        self.text_annee.SetToolTipString(u"Saisissez ici l'année de la période. Ex. : '2008'")
-        self.datepicker_dateDebut.SetToolTipString(u"Saisissez ici la date de début de la période")
-        self.datepicker_dateFin.SetToolTipString(u"Saisissez ici la date de fin de la période")
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.choice_nom.SetToolTipString(_(u"Choisissez ici le nom de la période"))
+        self.text_annee.SetToolTipString(_(u"Saisissez ici l'année de la période. Ex. : '2008'"))
+        self.datepicker_dateDebut.SetToolTipString(_(u"Saisissez ici la date de début de la période"))
+        self.datepicker_dateFin.SetToolTipString(_(u"Saisissez ici la date de fin de la période"))
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -193,7 +195,7 @@ class MyFrame(wx.Frame):
         # Vérifie que des valeurs ont été saisies
         valeur = self.GetChoiceValue(self.choice_nom)
         if valeur == None :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un nom de période dans la liste proposée !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un nom de période dans la liste proposée !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.choice_nom.SetFocus()
@@ -201,7 +203,7 @@ class MyFrame(wx.Frame):
 
         valeur = self.text_annee.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir une année valide.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir une année valide."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_annee.SetFocus()
@@ -211,14 +213,14 @@ class MyFrame(wx.Frame):
         for lettre in valeur :
             if lettre not in "0123456789." : incoherences += "'"+ lettre + "', "
         if len(incoherences) != 0 :
-            dlg = wx.MessageDialog(self, u"L'année que vous avez saisie n'est pas correcte.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"L'année que vous avez saisie n'est pas correcte."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_annee.SetFocus()
             return
         valeur = int(valeur)
         if valeur < 1000 or valeur > 3000 :
-            dlg = wx.MessageDialog(self, u"L'année que vous avez saisie n'est pas correcte.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"L'année que vous avez saisie n'est pas correcte."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_annee.SetFocus()
@@ -228,7 +230,7 @@ class MyFrame(wx.Frame):
         date_fin = self.datepicker_dateFin.GetValue() # self.GetDatePickerValue(self.datepicker_date_fin)
         # Vérifie que la date de fin est supérieure à la date de début de contrat
         if date_debut > date_fin :
-            dlg = wx.MessageDialog(self, u"La date de fin de vacances doit être supérieure à la date de début !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"La date de fin de vacances doit être supérieure à la date de début !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.datepicker_dateFin.SetFocus()

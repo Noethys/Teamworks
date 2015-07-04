@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
@@ -23,16 +25,16 @@ class MyFrame(wx.Frame):
         self.text_nom = wx.TextCtrl(self.panel_base, -1, "")
         self.label_description = wx.StaticText(self.panel_base, -1, "Description :")
         self.text_description = wx.TextCtrl(self.panel_base, -1, "", style=wx.TE_MULTILINE)
-        self.label_defaut = wx.StaticText(self.panel_base, -1, u"Valeur par défaut :")
+        self.label_defaut = wx.StaticText(self.panel_base, -1, _(u"Valeur par défaut :"))
         self.text_defaut = wx.TextCtrl(self.panel_base, -1, "")
-        self.label_exemple = wx.StaticText(self.panel_base, -1, u"Exemples de valeur :")
+        self.label_exemple = wx.StaticText(self.panel_base, -1, _(u"Exemples de valeur :"))
         self.text_exemple = wx.TextCtrl(self.panel_base, -1, "")
-        self.label_motCle = wx.StaticText(self.panel_base, -1, u"Mot-clé :")
+        self.label_motCle = wx.StaticText(self.panel_base, -1, _(u"Mot-clé :"))
         self.text_motCle = wx.TextCtrl(self.panel_base, -1, "")
         self.label_motCle_aide = wx.StaticText(self.panel_base, -1, "(En majuscules et sans espaces)")
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         self.label_description.Show(False)
         self.text_description.Show(False)
@@ -55,14 +57,14 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Saisie d'un champ personnalisé")
+        self.SetTitle(_(u"Saisie d'un champ personnalisé"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_nom.SetToolTipString(u"Saisissez ici le nom complet du champ. Il doit être explicite.")
-        self.text_description.SetToolTipString(u"[Optionnel] Vous pouvez saisir une description détaillée du champ qui facilitera la saisie.")
-        self.text_defaut.SetToolTipString(u"[Optionnel] Saisissez ici la valeur qui apparaîtra par défaut lors d'un saisie")
-        self.text_motCle.SetToolTipString(u"Saisissez ici un mot-clé qui sera utilisé pour le publipostage lors de l'impression des documents \nCe mot-clé doit être unique, en majuscule et sans caractères spéciaux (accents ou symboles...)")
+        self.text_nom.SetToolTipString(_(u"Saisissez ici le nom complet du champ. Il doit être explicite."))
+        self.text_description.SetToolTipString(_(u"[Optionnel] Vous pouvez saisir une description détaillée du champ qui facilitera la saisie."))
+        self.text_defaut.SetToolTipString(_(u"[Optionnel] Saisissez ici la valeur qui apparaîtra par défaut lors d'un saisie"))
+        self.text_motCle.SetToolTipString(_(u"Saisissez ici un mot-clé qui sera utilisé pour le publipostage lors de l'impression des documents \nCe mot-clé doit être unique, en majuscule et sans caractères spéciaux (accents ou symboles...)"))
         self.label_motCle_aide.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
@@ -124,7 +126,7 @@ class MyFrame(wx.Frame):
         # Signale une erreur
         if incoherences != "" :
             incoherences = incoherences[:-2]
-            txt = u"Le mot-clé que vous avez saisi n'est pas valide. Les caractères suivants ne sont pas valides : " + incoherences + u"\n\nRappel : Ce mot-clé doit être en majuscules, ne peut comporter que des lettres ou des chiffres. Les espaces, accents ou autres caractères spéciaux ne sont pas acceptés."
+            txt = _(u"Le mot-clé que vous avez saisi n'est pas valide. Les caractères suivants ne sont pas valides : ") + incoherences + _(u"\n\nRappel : Ce mot-clé doit être en majuscules, ne peut comporter que des lettres ou des chiffres. Les espaces, accents ou autres caractères spéciaux ne sont pas acceptés.")
             dlg = wx.MessageDialog(self, txt, "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
@@ -203,15 +205,15 @@ class MyFrame(wx.Frame):
         
         # Vérifie que les valeurs ont été saisies
         if nom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir un nom pour le champ.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nom pour le champ."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_nom.SetFocus()
             return
         
 ##        if description == "" :
-##            txt = u"Vous n'avez pas saisi de description. Ce n'est pas obligatoire mais fortement conseillé pour faciliter ensuite la saisie du champ.\n\nVoulez-vous saisir une description ?"
-##            dlgConfirm = wx.MessageDialog(self, txt, u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+##            txt = _(u"Vous n'avez pas saisi de description. Ce n'est pas obligatoire mais fortement conseillé pour faciliter ensuite la saisie du champ.\n\nVoulez-vous saisir une description ?")
+##            dlgConfirm = wx.MessageDialog(self, txt, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
 ##            reponse = dlgConfirm.ShowModal()
 ##            dlgConfirm.Destroy()
 ##            if reponse == wx.ID_YES:
@@ -219,8 +221,8 @@ class MyFrame(wx.Frame):
 ##                return
 
 ##        if exemple == "" :
-##            txt = u"Vous n'avez pas saisi de valeurs d'exemple. Ce n'est pas obligatoire mais fortement conseillé pour faciliter ensuite la saisie du champ.\n\nVoulez-vous saisir une ou plusieurs valeurs d'exemple ?"
-##            dlgConfirm = wx.MessageDialog(self, txt, u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+##            txt = _(u"Vous n'avez pas saisi de valeurs d'exemple. Ce n'est pas obligatoire mais fortement conseillé pour faciliter ensuite la saisie du champ.\n\nVoulez-vous saisir une ou plusieurs valeurs d'exemple ?")
+##            dlgConfirm = wx.MessageDialog(self, txt, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
 ##            reponse = dlgConfirm.ShowModal()
 ##            dlgConfirm.Destroy()
 ##            if reponse == wx.ID_YES:
@@ -228,7 +230,7 @@ class MyFrame(wx.Frame):
 ##                return
                     
         if motCle == "" :
-            txt = u"Vous devez saisir un mot-clé.\n\nCe mot-clé sera nécessaire lors de l'impression des documents lors de la procédure de publipostage."
+            txt = _(u"Vous devez saisir un mot-clé.\n\nCe mot-clé sera nécessaire lors de l'impression des documents lors de la procédure de publipostage.")
             dlg = wx.MessageDialog(self, txt, "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
@@ -242,7 +244,7 @@ class MyFrame(wx.Frame):
                 incoherences += "'" + lettre + "', "
         if incoherences != "" :
             incoherences = incoherences[:-2]
-            txt = u"Le mot-clé que vous avez saisi n'est pas valide. Les caractères suivants ne sont pas valides : " + incoherences + u"\n\nRappel : Ce mot-clé doit être en majuscules, ne peut comporter que des lettres ou des chiffres. Les espaces, accents ou autres caractères spéciaux ne sont pas acceptés."
+            txt = _(u"Le mot-clé que vous avez saisi n'est pas valide. Les caractères suivants ne sont pas valides : ") + incoherences + _(u"\n\nRappel : Ce mot-clé doit être en majuscules, ne peut comporter que des lettres ou des chiffres. Les espaces, accents ou autres caractères spéciaux ne sont pas acceptés.")
             dlg = wx.MessageDialog(self, txt, "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
@@ -255,7 +257,7 @@ class MyFrame(wx.Frame):
         donnees = DB.ResultatReq()
         DB.Close()
         if len(donnees) > 0 :
-            dlg = wx.MessageDialog(self, u"Ce mot-clé est déjà utilisé", "Erreur", wx.OK| wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Ce mot-clé est déjà utilisé"), "Erreur", wx.OK| wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -263,7 +265,7 @@ class MyFrame(wx.Frame):
         # Vérifie que le mot-clé n'existe pas déjà dans les mots-clés de base
         for motcleTemp, type in self.listeMotsCles :
             if motcleTemp == motCle and type != self.IDchamp :
-                dlg = wx.MessageDialog(self, u"Ce mot-clé est déjà utilisé dans les mots-clés de base. Veuillez saisir un autre mot-clé", "Erreur", wx.OK| wx.ICON_EXCLAMATION)  
+                dlg = wx.MessageDialog(self, _(u"Ce mot-clé est déjà utilisé dans les mots-clés de base. Veuillez saisir un autre mot-clé"), "Erreur", wx.OK| wx.ICON_EXCLAMATION)  
                 dlg.ShowModal()
                 dlg.Destroy()
                 return

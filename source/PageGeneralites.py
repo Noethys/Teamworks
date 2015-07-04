@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.masked as masked
 import sqlite3
 import datetime
@@ -37,38 +39,38 @@ class Panel_general(wx.Panel):
             self.IDpays_nation = IDfrance
 
         # Sizers avec titre
-        self.sizer_situation_sociale_staticbox = wx.StaticBox(self, -1, u"Situation sociale")
-        self.sizer_coords_staticbox = wx.StaticBox(self, -1, u"Coordonnées")
+        self.sizer_situation_sociale_staticbox = wx.StaticBox(self, -1, _(u"Situation sociale"))
+        self.sizer_coords_staticbox = wx.StaticBox(self, -1, _(u"Coordonnées"))
         self.sizer_adresse_staticbox = wx.StaticBox(self, -1, "Adresse")
-        self.sizer_memo_staticbox = wx.StaticBox(self, -1, u"Mémo")
-        self.sizer_identite_staticbox = wx.StaticBox(self, -1, u"Identité")
+        self.sizer_memo_staticbox = wx.StaticBox(self, -1, _(u"Mémo"))
+        self.sizer_identite_staticbox = wx.StaticBox(self, -1, _(u"Identité"))
 
         # Controles
-        self.label_civilite = wx.StaticText(self, -1, u"Civilité :")
+        self.label_civilite = wx.StaticText(self, -1, _(u"Civilité :"))
         self.combo_box_civilite = wx.Choice(self, -1, choices=["Mr", "Melle", "Mme"])
         self.label_nomjf = wx.StaticText(self, -1, "Nom de jeune fille :")
         self.text_ctrl_nomjf = wx.TextCtrl(self, -1, "")
         self.label_nom = wx.StaticText(self, -1, "Nom :")
         self.text_nom = wx.TextCtrl(self, -1, "")
-        self.label_prenom = wx.StaticText(self, -1, u"Prénom :")
+        self.label_prenom = wx.StaticText(self, -1, _(u"Prénom :"))
         self.text_prenom = wx.TextCtrl(self, -1, "")
-        self.label_date_naiss = wx.StaticText(self, -1, u"Né(e) le :")
+        self.label_date_naiss = wx.StaticText(self, -1, _(u"Né(e) le :"))
         self.text_date_naiss = masked.TextCtrl(self, -1, "", style=wx.TE_CENTRE, mask = "##/##/####") 
         self.text_age = wx.TextCtrl(self, -1, "", style=wx.TE_CENTRE, size=(46,-1))
-        self.label_pays = wx.StaticText(self, -1, u"Pays de naissance :")
+        self.label_pays = wx.StaticText(self, -1, _(u"Pays de naissance :"))
         self.bouton_pays = wx.Button(self, -1, "...", size=(20, 20))
         self.image_pays = wx.StaticBitmap(self, -1, wx.Bitmap("Images/Drapeaux/france.png", wx.BITMAP_TYPE_PNG), size=(22, 10))
         
-        self.label_cp_naiss = wx.StaticText(self, -1, u"à | C.P. :")
+        self.label_cp_naiss = wx.StaticText(self, -1, _(u"à | C.P. :"))
         self.text_cp_naiss = masked.TextCtrl(self, 100, "", style=wx.TE_CENTRE, mask = "#####") 
-        self.label_ville_naiss = wx.StaticText(self, -1, u"Ville :")
+        self.label_ville_naiss = wx.StaticText(self, -1, _(u"Ville :"))
         self.text_ville_naiss = wx.TextCtrl(self, 200)
         self.bouton_options_ville_naiss = wx.Button(self, -1, "...", size=(20, 20))
-        self.label_numsecu = wx.StaticText(self, -1, u"Num Sécu :")
+        self.label_numsecu = wx.StaticText(self, -1, _(u"Num Sécu :"))
         self.text_numsecu = masked.TextCtrl(self, -1, "", style=wx.TE_CENTRE, mask = "# ## ## ## ### ### ##") 
         self.image_numsecu = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Interdit.png", wx.BITMAP_TYPE_PNG), size=(16, 16))
         
-        self.label_nation = wx.StaticText(self, -1, u"Nationalité :")
+        self.label_nation = wx.StaticText(self, -1, _(u"Nationalité :"))
         self.bouton_nation = wx.Button(self, -1, "...", size=(20, 20))
         self.image_nation = wx.StaticBitmap(self, -1, wx.Bitmap("Images/Drapeaux/france.png", wx.BITMAP_TYPE_PNG), size=(22, 10))
 
@@ -200,12 +202,12 @@ class Panel_general(wx.Panel):
         
     def __set_properties(self):
         self.SetSize((962, 660))
-        self.combo_box_civilite.SetToolTipString(u"Choisissez la civilité")
+        self.combo_box_civilite.SetToolTipString(_(u"Choisissez la civilité"))
         self.label_nomjf.Enable(False)
         self.text_ctrl_nomjf.SetToolTipString("Saisissez un nom de jeune fille")
         self.text_ctrl_nomjf.Enable(False)
         self.text_nom.SetToolTipString("Saisissez le nom de famille")
-        self.text_prenom.SetToolTipString(u"Saisissez le prénom")
+        self.text_prenom.SetToolTipString(_(u"Saisissez le prénom"))
         self.text_date_naiss.SetMinSize((95, -1))
         self.text_date_naiss.SetToolTipString("Saissez la date de naissance")       
         self.text_numsecu.SetMinSize((170, -1))
@@ -216,24 +218,24 @@ class Panel_general(wx.Panel):
         self.text_cp_naiss.SetToolTipString("Saisissez le code postal")
         self.text_cp.SetMinSize((50, -1))
         self.text_cp.SetToolTipString("Saisissez le code postal")
-        self.text_ville_naiss.SetToolTipString(u"Choisissez une ville dans la liste proposée")
-        self.text_ville.SetToolTipString(u"Choisissez une ville dans la liste proposée")
+        self.text_ville_naiss.SetToolTipString(_(u"Choisissez une ville dans la liste proposée"))
+        self.text_ville.SetToolTipString(_(u"Choisissez une ville dans la liste proposée"))
         self.bouton_options_ville_naiss.SetToolTipString("Cliquez ici pour configurer la liste des villes")
         self.bouton_options_ville.SetToolTipString("Cliquez ici pour configurer la liste des villes")
-        self.button_coords_ajout.SetToolTipString(u"Cliquez ici pour créer un numéro de téléphone")
+        self.button_coords_ajout.SetToolTipString(_(u"Cliquez ici pour créer un numéro de téléphone"))
         self.button_coords_ajout.SetSize(self.button_coords_ajout.GetBestSize())
-        self.button_coords_modif.SetToolTipString(u"Cliquez ici pour modifier un numéro de téléphone")
+        self.button_coords_modif.SetToolTipString(_(u"Cliquez ici pour modifier un numéro de téléphone"))
         self.button_coords_modif.SetSize(self.button_coords_modif.GetBestSize())
-        self.button_coords_suppr.SetToolTipString(u"Cliquez ici pour supprimer le numéro de téléphone sélectionné")
+        self.button_coords_suppr.SetToolTipString(_(u"Cliquez ici pour supprimer le numéro de téléphone sélectionné"))
         self.button_coords_suppr.SetSize(self.button_coords_suppr.GetBestSize())
-        self.bouton_situations.SetToolTipString(u"Cliquez ici pour créer, modifier ou supprimer une situation sociale")
+        self.bouton_situations.SetToolTipString(_(u"Cliquez ici pour créer, modifier ou supprimer une situation sociale"))
         self.bouton_pays.SetSize(self.bouton_pays.GetBestSize())
-        self.bouton_pays.SetToolTipString(u"Cliquez ici sélectionner un autre pays de naissance")
+        self.bouton_pays.SetToolTipString(_(u"Cliquez ici sélectionner un autre pays de naissance"))
         self.bouton_nation.SetSize(self.bouton_nation.GetBestSize())
-        self.bouton_nation.SetToolTipString(u"Cliquez ici sélectionner une autre nationalité")
-        self.image_pays.SetToolTipString(u"Pays de naissance : France")
-        self.image_nation.SetToolTipString(u"Nationalité : Française")
-        self.image_numsecu.SetToolTipString(u"Etat du numéro de sécurité sociale\n\nCliquez sur cette image pour obtenir des informations \nsur la constitution d'un numéro de sécurité sociale")
+        self.bouton_nation.SetToolTipString(_(u"Cliquez ici sélectionner une autre nationalité"))
+        self.image_pays.SetToolTipString(_(u"Pays de naissance : France"))
+        self.image_nation.SetToolTipString(_(u"Nationalité : Française"))
+        self.image_numsecu.SetToolTipString(_(u"Etat du numéro de sécurité sociale\n\nCliquez sur cette image pour obtenir des informations \nsur la constitution d'un numéro de sécurité sociale"))
         
         texteNumSecu = u"""
         Numéro de sécurité sociale : A BB CC DD EEE FFF GG
@@ -398,7 +400,7 @@ class Panel_general(wx.Panel):
         FFF : Numéro d'ordre INSEE
         GG : Clé
         """
-        dlg = wx.MessageDialog(self, message, u"Constitution d'un numéro de sécurité sociale", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, message, _(u"Constitution d'un numéro de sécurité sociale"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         
@@ -423,7 +425,7 @@ class Panel_general(wx.Panel):
         event.Skip()
 
     def OnOptionsVille(self, event): 
-        self.AppelGestionVilles("text_cp", "text_ville", u"Lieu de résidence")
+        self.AppelGestionVilles("text_cp", "text_ville", _(u"Lieu de résidence"))
         event.Skip()
 
     def AppelGestionVilles(self, controleCP, controleVille, nomChamp):
@@ -437,7 +439,7 @@ class Panel_general(wx.Panel):
         event.Skip()
 
     def AjouterCoord(self):
-        frameCoords = SaisieCoords.FrameCoords(self, -1, u"Coordonnées", size=(280, 290), IDcoord=0, IDpersonne=self.IDpersonne)
+        frameCoords = SaisieCoords.FrameCoords(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=0, IDpersonne=self.IDpersonne)
         frameCoords.Show()
 
     def OnModifTel(self, event):
@@ -448,12 +450,12 @@ class Panel_general(wx.Panel):
         """ Modification de coordonnées """
         index = self.list_ctrl_coords.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un item à modifier dans la liste des coordonnées", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un item à modifier dans la liste des coordonnées"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         varIDcoord = self.list_ctrl_coords.GetItemData(index)
-        frameCoords = SaisieCoords.FrameCoords(self, -1, u"Coordonnées", size=(280, 290), IDcoord=varIDcoord, IDpersonne=self.IDpersonne)
+        frameCoords = SaisieCoords.FrameCoords(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=varIDcoord, IDpersonne=self.IDpersonne)
         frameCoords.Show()
         
     def OnSupprTel(self, event): # wxGlade: Panel_general.<event_handler>
@@ -466,15 +468,15 @@ class Panel_general(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un item à supprimer dans la liste des coordonnées", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un item à supprimer dans la liste des coordonnées"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
 
         # Demande de confirmation
         texteCoord = self.list_ctrl_coords.GetItemText(index)
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer cette coordonnée ? \n\n> " + texteCoord))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette coordonnée ? \n\n> ") + texteCoord))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -646,7 +648,7 @@ class Panel_general(wx.Panel):
     def OnKillFocusCivilite(self, event):
         valeur = self.combo_box_civilite.GetStringSelection()
         if valeur != "Mr" and valeur != "Mme" and valeur != "Melle" and valeur != "" :
-            dlg = wx.MessageDialog(self, u"Vous ne pouvez saisir ici que les valeur 'Mr', 'Melle' ou 'Mme'.", "Erreur de saisie", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous ne pouvez saisir ici que les valeur 'Mr', 'Melle' ou 'Mme'."), "Erreur de saisie", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.combo_box_civilite.SetFocus()
@@ -699,7 +701,7 @@ class Panel_general(wx.Panel):
         if validation == False :
             self.image_numsecu.SetBitmap(wx.Bitmap("Images/16x16/Interdit.png", wx.BITMAP_TYPE_PNG))
             if self.remplissageEnCours == False :
-                wx.MessageBox(message, u"Numéro de sécurité sociale erroné")
+                wx.MessageBox(message, _(u"Numéro de sécurité sociale erroné"))
             
         # Pas de num sécu saisi
         if validation == None : 
@@ -736,21 +738,21 @@ class Panel_general(wx.Panel):
         
         if cp == "" or cp == "     " :
             if nomControle == "cp" or nomControle == "cp_naiss" :
-                controle.SetToolTipString(u"Saisissez un code postal")
+                controle.SetToolTipString(_(u"Saisissez un code postal"))
             else :
-                controle.SetToolTipString(u"Saisissez un nom de ville")
+                controle.SetToolTipString(_(u"Saisissez un nom de ville"))
         else:
             try :
                 num_dep = cp[:2]
                 nomDepartement, num_region = self.dictDepartements[num_dep]
                 nomRegion = self.dictRegions[num_region]
-                texte = u"Département : %s (%s)\nRégion : %s" % (nomDepartement, num_dep, nomRegion)
+                texte = _(u"Département : %s (%s)\nRégion : %s") % (nomDepartement, num_dep, nomRegion)
                 controle.SetToolTipString(texte)
             except :
                 if nomControle == "cp" or nomControle == "cp_naiss" :
-                    controle.SetToolTipString(u"Le code postal saisi ne figure pas dans la base de données de TeamWorks")
+                    controle.SetToolTipString(_(u"Le code postal saisi ne figure pas dans la base de données de TeamWorks"))
                 else :
-                    controle.SetToolTipString(u"Le nom de ville saisi ne figure pas dans la base de données de TeamWorks")
+                    controle.SetToolTipString(_(u"Le nom de ville saisi ne figure pas dans la base de données de TeamWorks"))
         
         
 # Fonctions pour l'autocomplete des cp et villes NAISS---------------------------------------------------------------
@@ -781,7 +783,7 @@ class Panel_general(wx.Panel):
         # Code postal introuvable
         if nbreReponses == 0:
             if textCode.strip() != '':
-                dlg = wx.MessageDialog(self, u"Ce code postal n'est pas répertorié dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie.", "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Ce code postal n'est pas répertorié dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie."), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
             self.SetInfobulleVille(self.text_cp_naiss, "cp_naiss")
@@ -834,7 +836,7 @@ class Panel_general(wx.Panel):
 
         # Si la ville saisie n'existe pas
         if nbreCodes == 0:
-            dlg = wx.MessageDialog(self, u"Cette ville n'est pas répertoriée dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Cette ville n'est pas répertoriée dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
         
@@ -912,7 +914,7 @@ class Panel_general(wx.Panel):
         # Code postal introuvable
         if nbreReponses == 0:
             if textCode.strip() != '':
-                dlg = wx.MessageDialog(self, u"Ce code postal n'est pas répertorié dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie.", "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Ce code postal n'est pas répertorié dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie."), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
             self.SetInfobulleVille(self.text_cp, "cp")
@@ -965,7 +967,7 @@ class Panel_general(wx.Panel):
 
         # Si la ville saisie n'existe pas
         if nbreCodes == 0:
-            dlg = wx.MessageDialog(self, u"Cette ville n'est pas répertoriée dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Cette ville n'est pas répertoriée dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
         
@@ -1018,10 +1020,10 @@ class Panel_general(wx.Panel):
     def ChoixVilles(self, cp, listeReponses):
         """ Boîte de dialogue pour donner le choix entre plusieurs villes possédant un code postal identique """
         resultat = ""
-        titre = u"Sélection d'une ville"
+        titre = _(u"Sélection d'une ville")
         nbreReponses = len(listeReponses)
         listeReponses.sort()
-        message = str(nbreReponses) + u" villes possèdent le code postal " + str(cp) + u". Double-cliquez sur\nle nom d'une ville pour la sélectionner :"
+        message = str(nbreReponses) + _(u" villes possèdent le code postal ") + str(cp) + _(u". Double-cliquez sur\nle nom d'une ville pour la sélectionner :")
         dlg = wx.SingleChoiceDialog(self, message, titre, listeReponses, wx.CHOICEDLG_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             resultat = dlg.GetStringSelection()
@@ -1031,10 +1033,10 @@ class Panel_general(wx.Panel):
     def ChoixCodes(self, ville, listeReponses):
         """ Boîte de dialogue pour donner le choix entre plusieurs villes possédant le même nom """
         resultat = ""
-        titre = u"Sélection d'une ville"
+        titre = _(u"Sélection d'une ville")
         nbreReponses = len(listeReponses)
         listeReponses.sort()
-        message = str(nbreReponses) + u" villes portent le nom " + str(ville) + u". Double-cliquez sur\nle code postal d'une ville pour la sélectionner :"
+        message = str(nbreReponses) + _(u" villes portent le nom ") + str(ville) + _(u". Double-cliquez sur\nle code postal d'une ville pour la sélectionner :")
         dlg = wx.SingleChoiceDialog(self, message, titre, listeReponses, wx.CHOICEDLG_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             resultat = dlg.GetStringSelection()
@@ -1134,7 +1136,7 @@ class Panel_general(wx.Panel):
         if nom == "":
             nom = "NOM"
         if prenom == "":
-            prenom = u"Prénom"
+            prenom = _(u"Prénom")
         texte = nom + ", " + prenom
         self.GetParent().GetGrandParent().label_hd_nomPrenom.SetLabel(texte)
 
@@ -1144,9 +1146,9 @@ class Panel_general(wx.Panel):
         cp = self.text_cp.GetValue()
         ville = self.text_ville.GetValue()
         if adresse == "" and cp == "     " and ville == "" : 
-            texte = u"Adresse inconnue"
+            texte = _(u"Adresse inconnue")
         else :
-            texte = u"Résidant " + adresse + " " + cp + " " + ville
+            texte = _(u"Résidant ") + adresse + " " + cp + " " + ville
         self.GetParent().GetGrandParent().label_hd_adresse.SetLabel(texte)
 
     def MaJ_DateNaiss_Fiche(self):
@@ -1158,15 +1160,15 @@ class Panel_general(wx.Panel):
         if civilite == "Mr" : 
             txtCivilite = u"Né"
         elif civilite == "Mme" or civilite == "Melle" :
-            txtCivilite = u"Née"
+            txtCivilite = _(u"Née")
         else:
             return
         if dateNaiss == "  /  /    " and villeNaiss == "" : 
-            texte = u"Date et lieu de naissance inconnus."
+            texte = _(u"Date et lieu de naissance inconnus.")
         elif dateNaiss != "  /  /    " and villeNaiss == "" : 
             texte = txtCivilite + " le " + dateNaiss + ", " + age
         elif dateNaiss == "  /  /    " and villeNaiss != "" : 
-            texte = txtCivilite + u" à " + villeNaiss + u" (date inconnue)"
+            texte = txtCivilite + u" à " + villeNaiss + _(u" (date inconnue)")
         elif dateNaiss != "  /  /    " and villeNaiss != "" : 
             texte = txtCivilite + " le " + dateNaiss + u" à " + villeNaiss + ", " + age
         self.GetParent().GetGrandParent().label_hd_naiss.SetLabel(texte)        
@@ -1219,7 +1221,7 @@ class Panel_general(wx.Panel):
                 if type(cp_naiss) == unicode : cp_naiss = int(cp_naiss)
                 self.text_cp_naiss.SetValue("%05d" % cp_naiss)
         except :
-            dlg = wx.MessageDialog(self, u"Erreur dans l'importation des codes postaux.", "Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Erreur dans l'importation des codes postaux."), "Erreur", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
 
@@ -1260,13 +1262,13 @@ class Panel_general(wx.Panel):
     def SetPaysNaiss(self, IDpays) :
         pays = self.Recherche_Pays(IDpays=IDpays) 
         self.image_pays.SetBitmap(wx.Bitmap("Images/Drapeaux/" + pays[1] + ".png", wx.BITMAP_TYPE_PNG))
-        self.image_pays.SetToolTipString(u"Pays de naissance : " + pays[2])
+        self.image_pays.SetToolTipString(_(u"Pays de naissance : ") + pays[2])
         self.IDpays_naiss = IDpays
         
     def SetNationalite(self, IDpays) :
         pays = self.Recherche_Pays(IDpays=IDpays)
         self.image_nation.SetBitmap(wx.Bitmap("Images/Drapeaux/" + pays[1] + ".png", wx.BITMAP_TYPE_PNG))
-        self.image_nation.SetToolTipString(u"Nationalité : " + pays[3])
+        self.image_nation.SetToolTipString(_(u"Nationalité : ") + pays[3])
         self.IDpays_nation = IDpays
 
     def ImportListeSituations(self):
@@ -1334,7 +1336,7 @@ def ValideNumSecu(texte, civilite, date_naiss, dep_naiss):
         return None, ""
 
     if nbreChiffres < 15 :
-        message = u"Il manque " + str(15 - nbreChiffres) + u" chiffre(s) au numéro de sécurité sociale que vous venez de saisir. Veuillez le vérifier."
+        message = _(u"Il manque ") + str(15 - nbreChiffres) + _(u" chiffre(s) au numéro de sécurité sociale que vous venez de saisir. Veuillez le vérifier.")
         return False, message
 
     if nbreChiffres == 15:
@@ -1342,13 +1344,13 @@ def ValideNumSecu(texte, civilite, date_naiss, dep_naiss):
         # Vérification avec la civilite
         if civilite == "Mr":
             if int(texteSansEsp[0]) != 1:
-                message = u"Le numéro de sécurité sociale ne correspond pas à la civilité de la personne (le premier chiffre devrait être 1)."
+                message = _(u"Le numéro de sécurité sociale ne correspond pas à la civilité de la personne (le premier chiffre devrait être 1).")
                 return False, message
 
         if civilite == "Melle" or civilite == "Mme":
             if int(texteSansEsp[0]) != 2:
-                message = u"Le numéro de sécurité sociale ne correspond pas à la civilité de la personne (le premier chiffre devrait être 2)."
-                wx.MessageBox(message, u"Erreur de numéro de sécurité")
+                message = _(u"Le numéro de sécurité sociale ne correspond pas à la civilité de la personne (le premier chiffre devrait être 2).")
+                wx.MessageBox(message, _(u"Erreur de numéro de sécurité"))
                 return False, message
                 
         # Vérification avec la date de naissance
@@ -1357,24 +1359,24 @@ def ValideNumSecu(texte, civilite, date_naiss, dep_naiss):
             annee = str(date_naiss[8:10])
 
             if annee != str(texteSansEsp[1:3]):
-                message = u"Le numéro de sécurité sociale ne correspond pas à la date de naissance de la personne."
+                message = _(u"Le numéro de sécurité sociale ne correspond pas à la date de naissance de la personne.")
                 return False, message
             elif mois != str(texteSansEsp[3:5]):
-                message = u"Le numéro de sécurité sociale ne correspond pas à la date de naissance de la personne."
+                message = _(u"Le numéro de sécurité sociale ne correspond pas à la date de naissance de la personne.")
                 return False, message
                     
         # Vérification avec le département de naissance
         if dep_naiss != "":
             dep = dep_naiss[0:2]
             if str(dep) != str(texteSansEsp[5:7]):
-                message = u"Le numéro de sécurité sociale ne correspond pas au lieu de naissance de la personne."
+                message = _(u"Le numéro de sécurité sociale ne correspond pas au lieu de naissance de la personne.")
                 return False, message
         
         # Vérification de la clé
         cle = int((texteSansEsp[13:15]))
         cle_calculee = 97 - (int(texteSansEsp[:13]) % 97)
         if cle != cle_calculee :
-            message = u"La clé du numéro de sécurité sociale ne semble pas cohérente. \nD'après mes calculs, la bonne clé devrait être %02d. \n\nVeuillez vérifier votre saisie..." % cle_calculee
+            message = _(u"La clé du numéro de sécurité sociale ne semble pas cohérente. \nD'après mes calculs, la bonne clé devrait être %02d. \n\nVeuillez vérifier votre saisie...") % cle_calculee
             return False, message
         
         # Le num de sécu est ok
@@ -1386,41 +1388,41 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090"):
     listeErreurs = []
     # On vérifie si les cases ne sont pas vides
     if texte[0] == " " or texte[1] == " ":
-        listeErreurs.append(u"le jour")
+        listeErreurs.append(_(u"le jour"))
     if texte[3] == " " or texte[4] == " ":
-        listeErreurs.append(u"le mois")
+        listeErreurs.append(_(u"le mois"))
     if texte[6] == " " or texte[7] == " " or texte[8] == " " or texte[9] == " ":
-        listeErreurs.append(u"l'année")
+        listeErreurs.append(_(u"l'année"))
     
     if texte != "  /  /    ":
 
         # On vérifie que les chiffres existent
-        if u"le jour" not in listeErreurs:
+        if _(u"le jour") not in listeErreurs:
             jour = int(texte[:2])
             if jour == 0 or jour > 31:
-                listeErreurs.append(u"le jour")
+                listeErreurs.append(_(u"le jour"))
 
-        if u"le mois" not in listeErreurs:
+        if _(u"le mois") not in listeErreurs:
             mois = int(texte[3:5])
             if mois == 0 or mois > 12:
-                listeErreurs.append(u"le mois")
+                listeErreurs.append(_(u"le mois"))
                 
-        if u"l'année" not in listeErreurs:
+        if _(u"l'année") not in listeErreurs:
             annee = int(texte[6:10])
             if annee < 1900 or annee > 2999:
-                listeErreurs.append(u"l'année")
+                listeErreurs.append(_(u"l'année"))
               
         # Affichage du message d'erreur
         
         if len(listeErreurs) != 0:
             # Message en cas de date incomplète
             if len(listeErreurs) == 1:
-                message = u"Une incohérence a été détectée dans " + listeErreurs[0]
+                message = _(u"Une incohérence a été détectée dans ") + listeErreurs[0]
             if len(listeErreurs) == 2:
-                message = u"Des incohérences ont été détectées dans " + listeErreurs[0] + " et " + listeErreurs[1]
+                message = _(u"Des incohérences ont été détectées dans ") + listeErreurs[0] + " et " + listeErreurs[1]
             if len(listeErreurs) == 3:
-                message = u"Des incohérences ont été détectées dans " + listeErreurs[0]  + ", " + listeErreurs[1]  + " et " + listeErreurs[2]
-            message = message + u" de la date que vous venez de saisir. Veuillez la vérifier."
+                message = _(u"Des incohérences ont été détectées dans ") + listeErreurs[0]  + ", " + listeErreurs[1]  + " et " + listeErreurs[2]
+            message = message + _(u" de la date que vous venez de saisir. Veuillez la vérifier.")
 
             wx.MessageBox(message, "Erreur de date")
             return False
@@ -1431,11 +1433,11 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090"):
             date_sel = int(str(texte[6:10]) + str(texte[3:5]) + str(texte[:2]))
 
             if date_sel < date_min:
-                message = u"La date que vous venez de saisir semble trop ancienne. Veuillez la vérifier."
+                message = _(u"La date que vous venez de saisir semble trop ancienne. Veuillez la vérifier.")
                 wx.MessageBox(message, "Erreur de date")
                 return False
             if date_sel > date_max:
-                message = u"La date que vous venez de saisir semble trop élevée. Veuillez la vérifier."
+                message = _(u"La date que vous venez de saisir semble trop élevée. Veuillez la vérifier.")
                 wx.MessageBox(message, "Erreur de date")
                 return False
             
@@ -1604,7 +1606,7 @@ class ListCtrlCoords(wx.ListCtrl):
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -1613,14 +1615,14 @@ class ListCtrlCoords(wx.ListCtrl):
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -1629,7 +1631,7 @@ class ListCtrlCoords(wx.ListCtrl):
         # Si c'est un item Email, on ajoute "Envoyer Email"
         if self.DictCoords[key][2] == "Email" :
             menuPop.AppendSeparator()
-            item = wx.MenuItem(menuPop, 40, u"Envoyer un E-mail")
+            item = wx.MenuItem(menuPop, 40, _(u"Envoyer un E-mail"))
             bmp = wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)

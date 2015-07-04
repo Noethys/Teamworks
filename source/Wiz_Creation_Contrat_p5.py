@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import  wx.lib.scrolledpanel as scrolled
 
 class PanelDefilant(scrolled.ScrolledPanel):
@@ -26,9 +28,9 @@ class PanelDefilant(scrolled.ScrolledPanel):
                 
         # Modification du texte d'intro du panel
         if len(self.dicoChamps) == 0 :
-            self.GetParent().label_intro.SetLabel(u"Vous n'avez aucun champ à remplir. Cliquez sur 'Suite'...")
+            self.GetParent().label_intro.SetLabel(_(u"Vous n'avez aucun champ à remplir. Cliquez sur 'Suite'..."))
         else:
-            self.GetParent().label_intro.SetLabel(u"Vous pouvez maintenant remplir vos champs personnalisés :")
+            self.GetParent().label_intro.SetLabel(_(u"Vous pouvez maintenant remplir vos champs personnalisés :"))
         
         # Création des champs dans l'interface
         grid_sizer = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
@@ -73,8 +75,8 @@ class Page(wx.Panel):
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
-        self.label_titre = wx.StaticText(self, -1, u"4. Remplissage des champs personnalisés")
-        self.label_intro = wx.StaticText(self, -1, u"Vous pouvez maintenant remplir vos champs personnalisés :")
+        self.label_titre = wx.StaticText(self, -1, _(u"4. Remplissage des champs personnalisés"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Vous pouvez maintenant remplir vos champs personnalisés :"))
         self.panelDefilant = wx.Panel(self, -1)
 
         self.__set_properties()
@@ -123,19 +125,19 @@ class Page(wx.Panel):
                 dictChamps[ID] = texte
 
         if len(listeInvalides) == 1 :
-            txtMessage = u"Vous n'avez pas rempli le champ suivant : '" + listeInvalides[0]
-            txtMessage += u"'\n\nSouhaitez-vous continuer quand même ?"
-            dlg = wx.MessageDialog(self, txtMessage, u"Demande de confirmation", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            txtMessage = _(u"Vous n'avez pas rempli le champ suivant : '") + listeInvalides[0]
+            txtMessage += _(u"'\n\nSouhaitez-vous continuer quand même ?")
+            dlg = wx.MessageDialog(self, txtMessage, _(u"Demande de confirmation"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_NO :
                 dlg.Destroy() 
                 return False
                     
         if len(listeInvalides) > 1 :
-            txtMessage = u"Vous n'avez pas rempli les champs suivants : \n\n"
+            txtMessage = _(u"Vous n'avez pas rempli les champs suivants : \n\n")
             for item in listeInvalides :
                 txtMessage += "      - " + item + "\n"
-            txtMessage += u"\nSouhaitez-vous continuer quand même ?"
-            dlg = wx.MessageDialog(self, txtMessage, u"Demande de confirmation", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            txtMessage += _(u"\nSouhaitez-vous continuer quand même ?")
+            dlg = wx.MessageDialog(self, txtMessage, _(u"Demande de confirmation"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_NO :
                 dlg.Destroy() 
                 return False

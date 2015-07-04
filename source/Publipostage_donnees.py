@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import datetime
@@ -248,13 +250,13 @@ def Importation_candidature(IDcandidature=None):
     dictDonnees["DATEDEPOT"] = FonctionsPerso.DateEngFr(date_depot)
     
     # Type dépôt
-    listeTypes = [u"De vive voix", u"Courrier", u"Téléphone", u"Main à main", u"Email", u"Pôle Emploi", u"Organisateur" u"Fédération", u"Autre"] 
+    listeTypes = [_(u"De vive voix"), _(u"Courrier"), _(u"Téléphone"), _(u"Main à main"), _(u"Email"), _(u"Pôle Emploi"), _(u"Organisateur") _(u"Fédération"), _(u"Autre")] 
     dictDonnees["TYPEDEPOT"] = listeTypes[IDtype]
     
     # Offre d'emploi
     dictDonnees["OFFREDEMPLOI"] = ""
     if IDemploi == 0 :
-        dictDonnees["OFFREDEMPLOI"] = u"Candidature spontanée"
+        dictDonnees["OFFREDEMPLOI"] = _(u"Candidature spontanée")
     else:
         listeMotsclesEmmplois, dictDonneesEmplois = Importation_offre_emploi(IDemploi=IDemploi)
         dictDonnees["OFFREDEMPLOI"] = dictDonneesEmplois["OFFRE_INTITULE"]
@@ -270,7 +272,7 @@ def Importation_candidature(IDcandidature=None):
     if len(listeDonnees) > 0 :
         texteTemp = ""
         for IDdisponibilite, date_debut, date_fin in listeDonnees :
-            texteTemp += u"du %s au %s" % (FonctionsPerso.DateEngFr(date_debut), FonctionsPerso.DateEngFr(date_fin)) + "; "
+            texteTemp += _(u"du %s au %s") % (FonctionsPerso.DateEngFr(date_debut), FonctionsPerso.DateEngFr(date_fin)) + "; "
         dictDonnees["DISPONIBILITES"] = texteTemp[:-2]
         
     # Fonctions
@@ -308,11 +310,11 @@ def Importation_candidature(IDcandidature=None):
         dictDonnees["AFFECTATIONS"] = texteTemp[:-2]
     
     # Décision
-    typesDecision = [u"Décision non prise", u"Oui", u"Non"]
+    typesDecision = [_(u"Décision non prise"), _(u"Oui"), _(u"Non")]
     dictDonnees["DECISION"] = typesDecision[IDdecision]
     
     # Réponse
-    listeTypesReponses = [u"De vive voix", u"Courrier", u"Téléphone", u"Main à main", u"Email", u"Autre"] 
+    listeTypesReponses = [_(u"De vive voix"), _(u"Courrier"), _(u"Téléphone"), _(u"Main à main"), _(u"Email"), _(u"Autre")] 
     if reponse == 1 :
         dictDonnees["DATEREPONSE"] = FonctionsPerso.DateEngFr(date_reponse)
         dictDonnees["TYPEREPONSE"] = listeTypesReponses(IDtype_reponse)

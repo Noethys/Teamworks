@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import datetime
@@ -17,7 +19,7 @@ import sys
 class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, name="panel_gadget_candidatures", style=wx.TAB_TRAVERSAL)
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Infos recrutement", u"")
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Infos recrutement"), u"")
         self.treeCtrl = TreeCtrl(self)
         self.treeCtrl.MAJ() 
 
@@ -93,7 +95,7 @@ class TreeCtrl(CT.CustomTreeCtrl):
 ##            self.expandPersonnes = False
 ##            self.expandTypes = False
         
-        self.ctrl_vide = wx.StaticText(self, -1, u"Aucune information", size=(200, 30), style=wx.ALIGN_CENTER |wx.FULL_REPAINT_ON_RESIZE)
+        self.ctrl_vide = wx.StaticText(self, -1, _(u"Aucune information"), size=(200, 30), style=wx.ALIGN_CENTER |wx.FULL_REPAINT_ON_RESIZE)
         self.ctrl_vide.SetForegroundColour(wx.LIGHT_GREY)
         self.ctrl_vide.SetBackgroundColour(self.GetBackgroundColour())
         self.ctrl_vide.SetFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
@@ -204,9 +206,9 @@ class TreeCtrl(CT.CustomTreeCtrl):
         DB.Close()
         if len(listeDonnees) > 0 :
             if len(listeDonnees) == 1 :
-                groupe = (0, u"1 entretien sans avis")
+                groupe = (0, _(u"1 entretien sans avis"))
             else:
-                groupe = (0, u"%d entretiens sans avis" % len(listeDonnees))
+                groupe = (0, _(u"%d entretiens sans avis") % len(listeDonnees))
             listeItems = []
             for IDentretien, IDcandidat, date, heure, avis, remarques, IDpersonne in listeDonnees :
                 nom = self.GetNom(IDcandidat, IDpersonne)
@@ -226,9 +228,9 @@ class TreeCtrl(CT.CustomTreeCtrl):
         if len(listeDonnees) > 0 :
             listeItems = []
             if len(listeDonnees) == 1 :
-                groupe = (0, u"1 candidature sans réponse")
+                groupe = (0, _(u"1 candidature sans réponse"))
             else:
-                groupe = (0, u"%d candidatures sans réponse" % len(listeDonnees))
+                groupe = (0, _(u"%d candidatures sans réponse") % len(listeDonnees))
             for IDcandidature, IDcandidat, IDpersonne, date_depot in listeDonnees :
                 nom = self.GetNom(IDcandidat, IDpersonne)
                 dateStr = self.FormateDate(date_depot)

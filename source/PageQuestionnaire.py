@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import CTRL_Questionnaire
 import GestionDB
 
@@ -22,7 +24,7 @@ class Panel(wx.Panel):
         self.majEffectuee = False
         
         # Widgets
-        self.staticBox_staticbox = wx.StaticBox(self, -1, u"Questionnaire")
+        self.staticBox_staticbox = wx.StaticBox(self, -1, _(u"Questionnaire"))
         self.ctrl_questionnaire = CTRL_Questionnaire.CTRL(self, type="individu", IDindividu=self.IDpersonne, 
                                                                                         largeurReponse=335)
         

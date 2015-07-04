@@ -6,6 +6,7 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import datetime
 import time
 import FonctionsPerso
@@ -118,7 +119,7 @@ class Impression():
                 total_heures += nbreHeures
         if nbre_legendes > 1 :
             # Ajoute un total d'heures
-            legende = Legende(0, 15, u"Total", None, total_heures)
+            legende = Legende(0, 15, _(u"Total"), None, total_heures)
             story.append(legende)
         
         # Enregistrement du PDF

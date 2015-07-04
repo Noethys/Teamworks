@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import time
@@ -38,14 +40,14 @@ def DateEngEnDateDD(dateEng):
 def DatetimeDateEnStr(date):
     """ Transforme un datetime.date en date complète : Ex : lundi 15 janvier 2008 """
     listeJours = ("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
-    listeMois = (u"janvier", u"février", u"mars", u"avril", u"mai", "juin", u"juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre")
+    listeMois = (_(u"janvier"), _(u"février"), _(u"mars"), _(u"avril"), _(u"mai"), "juin", _(u"juillet"), _(u"août"), _(u"septembre"), _(u"octobre"), _(u"novembre"), _(u"décembre"))
     dateStr = listeJours[date.weekday()] + " " + str(date.day) + " " + listeMois[date.month-1] + " " + str(date.year)
     return dateStr
 
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, IDscenario=None, IDpersonne=None):
-        wx.Frame.__init__(self, parent, -1, title=u"Scénario", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, -1, title=_(u"Scénario"), style=wx.DEFAULT_FRAME_STYLE)
         self.MakeModal(True)
         
         self.parent = parent
@@ -53,16 +55,16 @@ class MyFrame(wx.Frame):
         self.panel = wx.Panel(self, -1)
         
         # StaticBox
-        self.staticbox_param = wx.StaticBox(self.panel, -1, u"Paramètres du scénario")
-        self.staticbox_legende = wx.StaticBox(self.panel, -1, u"Légende")
-        self.staticbox_detail = wx.StaticBox(self.panel, -1, u"Détail du scénario")
+        self.staticbox_param = wx.StaticBox(self.panel, -1, _(u"Paramètres du scénario"))
+        self.staticbox_legende = wx.StaticBox(self.panel, -1, _(u"Légende"))
+        self.staticbox_detail = wx.StaticBox(self.panel, -1, _(u"Détail du scénario"))
         
         # Nom
-        self.label_nom = wx.StaticText(self.panel, -1, u"Nom :")
+        self.label_nom = wx.StaticText(self.panel, -1, _(u"Nom :"))
         self.ctrl_nom = wx.TextCtrl(self.panel, -1, u"")
         
         # Description
-        self.label_description = wx.StaticText(self.panel, -1, u"Description :")
+        self.label_description = wx.StaticText(self.panel, -1, _(u"Description :"))
         self.ctrl_description = wx.TextCtrl(self.panel, -1, u"", style=wx.TE_MULTILINE)
         
         # Personne
@@ -74,13 +76,13 @@ class MyFrame(wx.Frame):
             self.ctrl_personne.Enable(False)
             
         # Période
-        self.label_date_debut = wx.StaticText(self.panel, -1, u"Période du :")
+        self.label_date_debut = wx.StaticText(self.panel, -1, _(u"Période du :"))
         self.ctrl_date_debut = wx.DatePickerCtrl(self.panel, -1, style=wx.DP_DROPDOWN)
         self.label_date_fin = wx.StaticText(self.panel, -1, "au")
         self.ctrl_date_fin = wx.DatePickerCtrl(self.panel, -1, style=wx.DP_DROPDOWN)
         
         # Coche toutes catégories
-        self.ctrl_toutes_categories = wx.CheckBox(self.panel, -1, u"Inclure toutes les catégories utilisées")
+        self.ctrl_toutes_categories = wx.CheckBox(self.panel, -1, _(u"Inclure toutes les catégories utilisées"))
         self.ctrl_toutes_categories.SetValue(True)
         
         # Hyperlink Sélection des catégories
@@ -90,13 +92,13 @@ class MyFrame(wx.Frame):
         self.panelLegende = PanelLegende(self.panel)
         
         # Choix affichage détail
-        self.label_detail = wx.StaticText(self.panel, -1, u"Détail :")
-        self.ctrl_detail = wx.Choice(self.panel, -1, choices = [u"Aucun", u"Jour", u"Mois", u"Année"])
+        self.label_detail = wx.StaticText(self.panel, -1, _(u"Détail :"))
+        self.ctrl_detail = wx.Choice(self.panel, -1, choices = [_(u"Aucun"), _(u"Jour"), _(u"Mois"), _(u"Année")])
         self.ctrl_detail.SetSelection(0)
         
         # Choix affichage heure/décimal
-        self.label_modeHeure = wx.StaticText(self.panel, -1, u"Mode minutes :")
-        self.ctrl_modeHeure = wx.Choice(self.panel, -1, choices = [u"Normal", u"Décimal"])
+        self.label_modeHeure = wx.StaticText(self.panel, -1, _(u"Mode minutes :"))
+        self.ctrl_modeHeure = wx.Choice(self.panel, -1, choices = [_(u"Normal"), _(u"Décimal")])
         self.ctrl_modeHeure.SetSelection(0)
         
         if IDscenario != None : 
@@ -110,11 +112,11 @@ class MyFrame(wx.Frame):
         self.ctrl_tableau = Tableau(self.panel)
         
         # Boutons
-        self.bouton_aide = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
         self.bouton_excel= wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Export_excel.png", wx.BITMAP_TYPE_ANY))
         self.bouton_imprimer_tableau = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Imprimer_tableau.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -140,29 +142,29 @@ class MyFrame(wx.Frame):
     def __set_properties(self):
         self.MakeModal(True)
         if self.IDscenario == 0 :
-            self.SetTitle(u"Création d'un scénario")
+            self.SetTitle(_(u"Création d'un scénario"))
         else:
-            self.SetTitle(u"Modification d'un scénario")
+            self.SetTitle(_(u"Modification d'un scénario"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.ctrl_nom.SetToolTipString(u"Saisissez ici un nom pour le scénario")
-        self.ctrl_description.SetToolTipString(u"Saisissez ici une description claire du scénario (optionnel)")
-        self.ctrl_personne.SetToolTipString(u"Sélectionnez une personne dans la liste proposée")
-        self.ctrl_date_debut.SetToolTipString(u"Saisissez la date de début de période")
-        self.ctrl_date_fin.SetToolTipString(u"Saisissez la date de fin de période")
-        self.ctrl_toutes_categories.SetToolTipString(u"Cochez cette option pour inclure dans le scénario \ntoutes les catégories pour lesquelles des présences \nont été enregistrées sur la période du scénario.")
-        self.ctrl_detail.SetToolTipString(u"Cette option vous permet de sélectionner le niveau de détail souhaité dans l'affichage des heure réalisées")
-        self.ctrl_modeHeure.SetToolTipString(u"Sélectionnez le mode d'affichage des minutes : normal ou décimal")
+        self.ctrl_nom.SetToolTipString(_(u"Saisissez ici un nom pour le scénario"))
+        self.ctrl_description.SetToolTipString(_(u"Saisissez ici une description claire du scénario (optionnel)"))
+        self.ctrl_personne.SetToolTipString(_(u"Sélectionnez une personne dans la liste proposée"))
+        self.ctrl_date_debut.SetToolTipString(_(u"Saisissez la date de début de période"))
+        self.ctrl_date_fin.SetToolTipString(_(u"Saisissez la date de fin de période"))
+        self.ctrl_toutes_categories.SetToolTipString(_(u"Cochez cette option pour inclure dans le scénario \ntoutes les catégories pour lesquelles des présences \nont été enregistrées sur la période du scénario."))
+        self.ctrl_detail.SetToolTipString(_(u"Cette option vous permet de sélectionner le niveau de détail souhaité dans l'affichage des heure réalisées"))
+        self.ctrl_modeHeure.SetToolTipString(_(u"Sélectionnez le mode d'affichage des minutes : normal ou décimal"))
         
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.bouton_excel.SetToolTipString(u"Cliquez ici pour exporter les données des scénarios au format Excel")
-        self.bouton_imprimer_tableau.SetToolTipString(u"Cliquez ici pour publier le tableau au format PDF")
+        self.bouton_excel.SetToolTipString(_(u"Cliquez ici pour exporter les données des scénarios au format Excel"))
+        self.bouton_imprimer_tableau.SetToolTipString(_(u"Cliquez ici pour publier le tableau au format PDF"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -266,14 +268,14 @@ class MyFrame(wx.Frame):
     def Build_Hyperlink(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self.panel, -1, u"Ajouter ou supprimer des catégories", URL="")
+        hyper = hl.HyperLinkCtrl(self.panel, -1, _(u"Ajouter ou supprimer des catégories"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLUE", "BLUE", "RED")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(True, True, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour sélectionner les catégories à inclure dans votre scénario"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner les catégories à inclure dans votre scénario")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -399,8 +401,8 @@ class MyFrame(wx.Frame):
         FonctionsPerso.Aide(58)
 
     def OnBoutonAnnuler(self, event):
-        txtMessage = unicode((u"Voulez-vous vraiment annuler ? \n\nSi vous avez effectué des modifications dans ce scénario, elles seront annulées."))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation d'annulation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment annuler ? \n\nSi vous avez effectué des modifications dans ce scénario, elles seront annulées.")))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation d'annulation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -413,7 +415,7 @@ class MyFrame(wx.Frame):
         # Vérifie que des valeurs ont été saisies
         valeur = self.ctrl_nom.GetValue()
         if valeur == None or valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom pour ce scénario !", "Erreur", wx.OK|wx.ICON_ERROR)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom pour ce scénario !"), "Erreur", wx.OK|wx.ICON_ERROR)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_nom.SetFocus()
@@ -421,7 +423,7 @@ class MyFrame(wx.Frame):
         
         valeur = self.GetIDpersonne()
         if valeur == None :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner une personne dans la liste proposée !", "Erreur", wx.OK|wx.ICON_ERROR)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner une personne dans la liste proposée !"), "Erreur", wx.OK|wx.ICON_ERROR)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_personne.SetFocus()
@@ -430,9 +432,9 @@ class MyFrame(wx.Frame):
         # Vérifie qu'il n'y a aucune erreur de report
         if self.ctrl_tableau.nbreErreursReport > 0 :
             if self.ctrl_tableau.nbreErreursReport == 1 :
-                texte = u"Une erreur de report a été trouvée. \n\nVeuillez modifier le report en question avant de sauvegarder ce scénario."
+                texte = _(u"Une erreur de report a été trouvée. \n\nVeuillez modifier le report en question avant de sauvegarder ce scénario.")
             else:
-                texte = u"%d erreurs de report ont été trouvées. \n\nVeuillez modifier les reports en question avant de sauvegarder ce scénario." % nbreErreursReport
+                texte = _(u"%d erreurs de report ont été trouvées. \n\nVeuillez modifier les reports en question avant de sauvegarder ce scénario.") % nbreErreursReport
             dlg = wx.MessageDialog(self, texte, "Erreur de report", wx.OK|wx.ICON_ERROR)  
             dlg.ShowModal()
             dlg.Destroy()
@@ -527,7 +529,7 @@ class MyFrame(wx.Frame):
 
     def OnBoutonExcel(self, event):
         if "linux" in sys.platform :
-            dlg = wx.MessageDialog(self, u"Désolé, cette fonction n'est pas disponible sous Linux.", u"Fonction indisponible", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Désolé, cette fonction n'est pas disponible sous Linux."), _(u"Fonction indisponible"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -618,7 +620,7 @@ class MyFrame(wx.Frame):
         sp = wx.StandardPaths.Get()
         cheminDefaut = sp.GetDocumentsDir()
         dlg = wx.FileDialog(
-            self, message = u"Veuillez sélectionner le répertoire de destination et le nom du fichier", defaultDir=cheminDefaut, 
+            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
             defaultFile = nomFichier, 
             wildcard = wildcard, 
             style = wx.SAVE
@@ -633,7 +635,7 @@ class MyFrame(wx.Frame):
         
         # Le fichier de destination existe déjà :
         if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?", "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
             if dlg.ShowModal() == wx.ID_NO :
                 return False
                 dlg.Destroy()
@@ -646,7 +648,7 @@ class MyFrame(wx.Frame):
         wb = pyExcelerator.Workbook()
         # Création d'une feuille
         nomScenario = self.ctrl_nom.GetValue()
-        if nomScenario == None or nomScenario == "" : nomScenario = u"Scénario"
+        if nomScenario == None or nomScenario == "" : nomScenario = _(u"Scénario")
         ws1 = wb.add_sheet(nomScenario)
         
         # Remplissage de la feuille
@@ -664,8 +666,8 @@ class MyFrame(wx.Frame):
         wb.save(cheminFichier)
         
         # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?"
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = _(u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -737,7 +739,7 @@ class Tableau(gridlib.Grid):
             self.listeCategoriesUtilisees = []
         
         if len(self.listeCategoriesUtilisees) > 0 and self.inclure_toutes_categories == True :
-            self.listeLegendes.append( ( ("texte", "*"), ("texte", u"Catégories utilisées mais non scénarisées"), u"Ces catégories ne sont pas scénarisées mais apparaissent puisque des présences correspondantes ont été enregistrées sur la période du scénario en cours") )
+            self.listeLegendes.append( ( ("texte", "*"), ("texte", _(u"Catégories utilisées mais non scénarisées")), _(u"Ces catégories ne sont pas scénarisées mais apparaissent puisque des présences correspondantes ont été enregistrées sur la période du scénario en cours")) )
                     
         self.listeCategoriesNonPrevues = []
         if self.inclure_toutes_categories == True :
@@ -809,7 +811,7 @@ class Tableau(gridlib.Grid):
         index_col = 1
         for IDcategorie in self.listeCategories :
             if IDcategorie == 999 :
-                nom_colonne = u"Sans catégorie"
+                nom_colonne = _(u"Sans catégorie")
                 self.SetCellBackgroundColour(0, index_col, "#FFFFFF")
             else:
                 nom_colonne = self.dictCategories[IDcategorie][0]
@@ -827,7 +829,7 @@ class Tableau(gridlib.Grid):
             self.SetCellRenderer(0, index_col, renderer)
             index_col += 1
         # Ajout de la colonne TOTAL
-        self.SetCellValue(0, index_col, u"Total")
+        self.SetCellValue(0, index_col, _(u"Total"))
         self.SetReadOnly(0, index_col, True)
         self.SetCellAlignment(0, index_col, wx.ALIGN_CENTRE, wx.ALIGN_CENTRE)
         self.SetRowSize(0, 50)
@@ -904,10 +906,10 @@ class Tableau(gridlib.Grid):
                                     a, b, c, label, d = report.split(";")
                                     if label.startswith("ERREUR") :
                                         self.SetCellBackgroundColour(index_ligne, index_col, (255, 0, 0))
-                                        if label[6:] == "1" : texteErreur = u"Un report ne peut pas provenir du scénario d'une autre personne !"
-                                        elif label[6:] == "2" : texteErreur = u"Le report fait référence à un scénario supprimé !"
-                                        else : texteErreur = u"Erreur inconnue !"
-                                        self.listeLegendes.append( ( ("couleur", (255, 0, 0)), ("texte", u"Erreur de report : %s" % texteErreur), u"") )
+                                        if label[6:] == "1" : texteErreur = _(u"Un report ne peut pas provenir du scénario d'une autre personne !")
+                                        elif label[6:] == "2" : texteErreur = _(u"Le report fait référence à un scénario supprimé !")
+                                        else : texteErreur = _(u"Erreur inconnue !")
+                                        self.listeLegendes.append( ( ("couleur", (255, 0, 0)), ("texte", _(u"Erreur de report : %s") % texteErreur), u"") )
                                         self.nbreErreursReport += 1
                                         
                         if code == "periode_realise" :
@@ -948,10 +950,10 @@ class Tableau(gridlib.Grid):
         # Légende
         for lettre, report_IDscenario, IDcategorie, report_heures, nomScenario, descriptionScenario in self.listeReports :
             IDcategorie = int(IDcategorie)
-            if IDcategorie == 999 : nomCategorie = u"Sans catégorie"
-            elif IDcategorie == 1000 : nomCategorie = u"Total"
+            if IDcategorie == 999 : nomCategorie = _(u"Sans catégorie")
+            elif IDcategorie == 1000 : nomCategorie = _(u"Total")
             else : nomCategorie = self.dictCategories[int(IDcategorie)][0]
-            self.listeLegendes.append( ( ("texte", "(%s)" % lettre), ("lien", u"Report depuis '%s' (%s)" % (nomScenario, nomCategorie), report_IDscenario, IDcategorie), u"Description de ce scénario : %s" % descriptionScenario) )
+            self.listeLegendes.append( ( ("texte", "(%s)" % lettre), ("lien", _(u"Report depuis '%s' (%s)") % (nomScenario, nomCategorie), report_IDscenario, IDcategorie), _(u"Description de ce scénario : %s") % descriptionScenario) )
         self.parent.panelLegende.MAJ(self.listeLegendes)
         
         self.moveTo = (self.GetNumberRows()-1, self.GetNumberCols()-1)
@@ -962,15 +964,15 @@ class Tableau(gridlib.Grid):
             # Formate les cases périodes
             date_debut, date_fin = label.split(";")
             if date_debut == "None" and date_fin == "None" : 
-                return u"Tout"
+                return _(u"Tout")
             if date_debut == "3000-01-01" and date_fin == "3000-01-01" : 
-                return u"Rien"
+                return _(u"Rien")
             if date_debut == "None" and date_fin != "None" : 
-                return u"Jusqu'au\n%s" % DateEngFr(date_fin)
+                return _(u"Jusqu'au\n%s") % DateEngFr(date_fin)
             if date_debut != "None" and date_fin == "None" : 
-                return u"A partir du\n%s" % DateEngFr(date_debut)
+                return _(u"A partir du\n%s") % DateEngFr(date_debut)
             if date_debut != "None" and date_fin != "None" : 
-                return u"Du %s\nau %s" % (DateEngFr(date_debut), DateEngFr(date_fin))
+                return _(u"Du %s\nau %s") % (DateEngFr(date_debut), DateEngFr(date_fin))
         elif code == "report" :
             # Formate les cases Report
             if label == None or label == "" : return ""
@@ -1001,7 +1003,7 @@ class Tableau(gridlib.Grid):
             signe = "- "
         if self.mode_heure == 0 :
             # Mode Heure
-            texte = u"%s%sh%s" % (signe, hr, mn)
+            texte = _(u"%s%sh%s") % (signe, hr, mn)
         else:
             # Mode décimal
             minDecimal = int(mn)*100/60
@@ -1012,7 +1014,7 @@ class Tableau(gridlib.Grid):
         # Formate noms de mois :
         if len(label) == 6 or len(label) == 7 :
             numAnnee, numMois = label.split("-")
-            listeMois = ("Janvier", u"Février", "Mars", "Avril", "Mai", "Juin", "Juillet", u"Août", "Septembre", "Octobre", "Novembre", u"Décembre")
+            listeMois = ("Janvier", _(u"Février"), "Mars", "Avril", "Mai", "Juin", "Juillet", _(u"Août"), "Septembre", "Octobre", "Novembre", _(u"Décembre"))
             texte = u"%s %s" % (listeMois[int(numMois)-1], numAnnee)
             return texte
         
@@ -1174,7 +1176,7 @@ class Tableau(gridlib.Grid):
 ##    def GetListeMoisPeriode(self, date_debut, date_fin) :
 ##        """ Liste les mois d'une période """
 ##        listeMois = [] # [num_mois, num_annee, nom_mois, date_debut_mois, date_fin_mois]
-##        listeNomsMois = (u"Janvier", u"Février", u"Mars", u"Avril", u"Mai", u"Juin", u"Juillet", u"Août", u"Septembre", u"Octobre", u"Novembre", u"Décembre")
+##        listeNomsMois = (_(u"Janvier"), _(u"Février"), _(u"Mars"), _(u"Avril"), _(u"Mai"), _(u"Juin"), _(u"Juillet"), _(u"Août"), _(u"Septembre"), _(u"Octobre"), _(u"Novembre"), _(u"Décembre"))
 ##        
 ##        nbreJoursPeriode = (date_fin - date_debut).days
 ##        listeMois.append( (date_debut.month, date_debut.year,listeNomsMois[date_debut.month-1], datetime.date(date_debut.year, date_debut.month, 1), datetime.date(date_debut.year, date_debut.month, calendar.monthrange(year=date_debut.year, month=date_debut.month)[1]) ) )
@@ -1192,17 +1194,17 @@ class Tableau(gridlib.Grid):
         # Labels de lignes de base :
         listeLignes = [
             
-            { "type" : "groupe", "label" : u"Heures prévues", "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
-            { "type" : "ligne", "label" : u"Prévisions", "code" : "prevision", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#F0F0EE"},
-            { "type" : "ligne", "label" : u"Report", "code" : "report", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#F0F0EE"},
-            { "type" : "ligne", "label" : u"Total", "code" : "total_heures_prevues", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
+            { "type" : "groupe", "label" : _(u"Heures prévues"), "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
+            { "type" : "ligne", "label" : _(u"Prévisions"), "code" : "prevision", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#F0F0EE"},
+            { "type" : "ligne", "label" : _(u"Report"), "code" : "report", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#F0F0EE"},
+            { "type" : "ligne", "label" : _(u"Total"), "code" : "total_heures_prevues", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
             
-            { "type" : "groupe", "label" : u"Heures réalisées", "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
-            { "type" : "ligne", "label" : u"Périodes de référence", "code" : "periode_realise", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#F0F0EE"},
-            { "type" : "ligne", "label" : u"Total", "code" : "total_heures_realisees", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
+            { "type" : "groupe", "label" : _(u"Heures réalisées"), "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
+            { "type" : "ligne", "label" : _(u"Périodes de référence"), "code" : "periode_realise", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#F0F0EE"},
+            { "type" : "ligne", "label" : _(u"Total"), "code" : "total_heures_realisees", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
             
-            { "type" : "groupe", "label" : u"Reste heures à réaliser", "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
-            { "type" : "ligne", "label" : u"Total", "code" : "total_reste_heures", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
+            { "type" : "groupe", "label" : _(u"Reste heures à réaliser"), "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
+            { "type" : "ligne", "label" : _(u"Total"), "code" : "total_reste_heures", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
         
         ]
         return listeLignes
@@ -1566,17 +1568,17 @@ class GetDictColonnes():
     def GetListeLabelsLignes(self):
         listeLignes = [
             
-            { "type" : "groupe", "label" : u"Heures prévues", "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
-            { "type" : "ligne", "label" : u"Prévisions", "code" : "prevision", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#ECE9D8"},
-            { "type" : "ligne", "label" : u"Report", "code" : "report", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#ECE9D8"},
-            { "type" : "ligne", "label" : u"Total", "code" : "total_heures_prevues", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
+            { "type" : "groupe", "label" : _(u"Heures prévues"), "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
+            { "type" : "ligne", "label" : _(u"Prévisions"), "code" : "prevision", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#ECE9D8"},
+            { "type" : "ligne", "label" : _(u"Report"), "code" : "report", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#ECE9D8"},
+            { "type" : "ligne", "label" : _(u"Total"), "code" : "total_heures_prevues", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
             
-            { "type" : "groupe", "label" : u"Heures réalisées", "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
-            { "type" : "ligne", "label" : u"Périodes de référence", "code" : "periode_realise", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#ECE9D8"},
-            { "type" : "ligne", "label" : u"Total", "code" : "total_heures_realisees", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
+            { "type" : "groupe", "label" : _(u"Heures réalisées"), "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
+            { "type" : "ligne", "label" : _(u"Périodes de référence"), "code" : "periode_realise", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#ECE9D8"},
+            { "type" : "ligne", "label" : _(u"Total"), "code" : "total_heures_realisees", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
             
-            { "type" : "groupe", "label" : u"Reste heures à réaliser", "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
-            { "type" : "ligne", "label" : u"Total", "code" : "total_reste_heures", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
+            { "type" : "groupe", "label" : _(u"Reste heures à réaliser"), "code" : "", "couleur_fond_label" : "#C0C0C0", "couleur_police_label" : "#FFFFFF", "couleur_fond_case" : "#C0C0C0"},
+            { "type" : "ligne", "label" : _(u"Total"), "code" : "total_reste_heures", "couleur_fond_label" : "#FFFFFF", "couleur_police_label" : "#000000", "couleur_fond_case" : "#FFFFFF"},
         
         ]
         return listeLignes
@@ -1741,7 +1743,7 @@ class GetDictColonnes():
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
         if len(listeDonnees) == 0 :
-            return "+00:00", u"Report supprimé", u""
+            return "+00:00", _(u"Report supprimé"), u""
         listePresences = listeDonnees[0]
         nomScenario = listePresences[1]
         descriptionScenario = listePresences[2]
@@ -1824,7 +1826,7 @@ class PanelLegende(scrolled.ScrolledPanel):
         scrolled.ScrolledPanel.__init__(self, parent, -1)
         self.listeControles = []
         self.listeControlesDefaut = [
-            ( ("couleur", (240, 240, 238)), ("texte", u"Cases modifiables avec un double-clic de la souris"), u""),
+            ( ("couleur", (240, 240, 238)), ("texte", _(u"Cases modifiables avec un double-clic de la souris")), u""),
             ] # symbole, legende, infobulle
         
         self.MAJ()

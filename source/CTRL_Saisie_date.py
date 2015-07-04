@@ -8,7 +8,9 @@
 # Licence:         Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.masked as masked
 import datetime
 
@@ -23,7 +25,7 @@ class Date(masked.TextCtrl):
         self.dateDD = None
         self.lienCtrlAge = False
         self.SetMinSize((95, -1))
-        self.SetToolTipString(u"Saissez la date de naissance")   
+        self.SetToolTipString(_(u"Saissez la date de naissance"))   
         self.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
     
     def SetDate(self, date):
@@ -103,41 +105,41 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090", avecMessages
     listeErreurs = []
     # On vérifie si les cases ne sont pas vides
     if texte[0] == " " or texte[1] == " ":
-        listeErreurs.append(u"le jour")
+        listeErreurs.append(_(u"le jour"))
     if texte[3] == " " or texte[4] == " ":
-        listeErreurs.append(u"le mois")
+        listeErreurs.append(_(u"le mois"))
     if texte[6] == " " or texte[7] == " " or texte[8] == " " or texte[9] == " ":
-        listeErreurs.append(u"l'année")
+        listeErreurs.append(_(u"l'année"))
     
     if texte != "  /  /    ":
 
         # On vérifie que les chiffres existent
-        if u"le jour" not in listeErreurs:
+        if _(u"le jour") not in listeErreurs:
             jour = int(texte[:2])
             if jour == 0 or jour > 31:
-                listeErreurs.append(u"le jour")
+                listeErreurs.append(_(u"le jour"))
 
-        if u"le mois" not in listeErreurs:
+        if _(u"le mois") not in listeErreurs:
             mois = int(texte[3:5])
             if mois == 0 or mois > 12:
-                listeErreurs.append(u"le mois")
+                listeErreurs.append(_(u"le mois"))
                 
-        if u"l'année" not in listeErreurs:
+        if _(u"l'année") not in listeErreurs:
             annee = int(texte[6:10])
             if annee < 1900 or annee > 2999:
-                listeErreurs.append(u"l'année")
+                listeErreurs.append(_(u"l'année"))
               
         # Affichage du message d'erreur
         
         if len(listeErreurs) != 0:
             # Message en cas de date incomplète
             if len(listeErreurs) == 1:
-                message = u"Une incohérence a été détectée dans " + listeErreurs[0]
+                message = _(u"Une incohérence a été détectée dans ") + listeErreurs[0]
             if len(listeErreurs) == 2:
-                message = u"Des incohérences ont été détectées dans " + listeErreurs[0] + " et " + listeErreurs[1]
+                message = _(u"Des incohérences ont été détectées dans ") + listeErreurs[0] + " et " + listeErreurs[1]
             if len(listeErreurs) == 3:
-                message = u"Des incohérences ont été détectées dans " + listeErreurs[0]  + ", " + listeErreurs[1]  + " et " + listeErreurs[2]
-            message = message + u" de la date que vous venez de saisir. Veuillez la vérifier."
+                message = _(u"Des incohérences ont été détectées dans ") + listeErreurs[0]  + ", " + listeErreurs[1]  + " et " + listeErreurs[2]
+            message = message + _(u" de la date que vous venez de saisir. Veuillez la vérifier.")
             
             if avecMessages == True :
                 wx.MessageBox(message, "Erreur de date")
@@ -149,12 +151,12 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090", avecMessages
             date_sel = int(str(texte[6:10]) + str(texte[3:5]) + str(texte[:2]))
 
             if date_sel < date_min:
-                message = u"La date que vous venez de saisir semble trop ancienne. Veuillez la vérifier."
+                message = _(u"La date que vous venez de saisir semble trop ancienne. Veuillez la vérifier.")
                 if avecMessages == True :
                     wx.MessageBox(message, "Erreur de date")
                 return False
             if date_sel > date_max:
-                message = u"La date que vous venez de saisir semble trop élevée. Veuillez la vérifier."
+                message = _(u"La date que vous venez de saisir semble trop élevée. Veuillez la vérifier.")
                 if avecMessages == True :
                     wx.MessageBox(message, "Erreur de date")
                 return False
@@ -163,7 +165,7 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090", avecMessages
             try :
                 dateDD = datetime.date(year=int(texte[6:10]), month=int(texte[3:5]), day=int(texte[:2]))
             except :
-                message = u"La date que vous venez de saisir ne semble pas valide !"
+                message = _(u"La date que vous venez de saisir ne semble pas valide !")
                 if avecMessages == True :
                     wx.MessageBox(message, "Erreur de date")
                 return False
@@ -183,7 +185,7 @@ class Date2(wx.Panel):
         self.bouton_calendrier = wx.BitmapButton(self, -1, wx.Bitmap(u"Images/16x16/Calendrier.png", wx.BITMAP_TYPE_ANY))
         
         self.Bind(wx.EVT_BUTTON, self.OnBoutonCalendrier, self.bouton_calendrier)
-        self.bouton_calendrier.SetToolTipString(u"Cliquez ici pour sélectionner la date dans le calendrier")
+        self.bouton_calendrier.SetToolTipString(_(u"Cliquez ici pour sélectionner la date dans le calendrier"))
 
         grid_sizer_base = wx.FlexGridSizer(rows=1, cols=2, vgap=5, hgap=5)
         grid_sizer_base.Add(self.ctrl_date, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 0)

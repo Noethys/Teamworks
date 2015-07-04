@@ -6,6 +6,8 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
+import UTILS_Traduction
 
 from time import strftime
 import time
@@ -13,6 +15,7 @@ HEUREDEBUT = time.time()
 
 
 import wx
+import CTRL_Bouton_image
 
 import UTILS_Config
 import UTILS_Parametres
@@ -70,11 +73,11 @@ class Toolbook(wx.Toolbook):
         self.AssignImageList(il)
         
         # Création des pages
-        self.AddPage(Accueil.Panel(self), u"Accueil", imageId=self.img_accueil)
-        self.AddPage(Personnes.PanelPersonnes(self), u"Personnes", imageId=self.img_personnes)
-        self.AddPage(Presences.PanelPresences(self), u"Présences", imageId=self.img_presences)
-        self.AddPage(Recrutement.Panel(self), u"Recrutement", imageId=self.img_recrutement)
-        self.AddPage(Configuration.Panel(self), u"Configuration", imageId=self.img_configuration)
+        self.AddPage(Accueil.Panel(self), _(u"Accueil"), imageId=self.img_accueil)
+        self.AddPage(Personnes.PanelPersonnes(self), _(u"Personnes"), imageId=self.img_personnes)
+        self.AddPage(Presences.PanelPresences(self), _(u"Présences"), imageId=self.img_presences)
+        self.AddPage(Recrutement.Panel(self), _(u"Recrutement"), imageId=self.img_recrutement)
+        self.AddPage(Configuration.Panel(self), _(u"Configuration"), imageId=self.img_configuration)
         
         # Met le texte à droite dans la toolbar
         tb = self.GetToolBar()        
@@ -249,7 +252,7 @@ class MyFrame(wx.Frame):
                 if pwd == password :
                     valide = True
                 else:
-                    dlg2 = wx.MessageDialog(self, u"Votre mot de passe est erroné.", u"Mot de passe erroné", wx.OK | wx.ICON_ERROR)
+                    dlg2 = wx.MessageDialog(self, _(u"Votre mot de passe est erroné."), _(u"Mot de passe erroné"), wx.OK | wx.ICON_ERROR)
                     dlg2.ShowModal()
                     dlg2.Destroy()
                 dlg.Destroy()
@@ -262,7 +265,7 @@ class MyFrame(wx.Frame):
         if "[RESEAU]" in nomFichier :
             port, hote, user, mdp = nomFichier.split(";")
             nomFichier = nomFichier[nomFichier.index("[RESEAU]") + 8:]
-            nomFichier = u"Fichier réseau : %s | Utilisateur : %s" % (nomFichier, user)
+            nomFichier = _(u"Fichier réseau : %s | Utilisateur : %s") % (nomFichier, user)
         if nomFichier != "" :
             nomFichier = " - [" + nomFichier + "]"
         titreFrame = "Teamworks" + " v" + VERSION_APPLICATION + nomFichier
@@ -275,45 +278,45 @@ class MyFrame(wx.Frame):
         # Menu Fichier
         menu1 = wx.Menu()
         
-        item = wx.MenuItem(menu1, 100, u"Assistant Démarrage", u"Ouvrir l'assistant démarrage")
+        item = wx.MenuItem(menu1, 100, _(u"Assistant Démarrage"), _(u"Ouvrir l'assistant démarrage"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Assistant.png", wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         
         menu1.AppendSeparator()
         
-        item = wx.MenuItem(menu1, 101, u"Créer un nouveau fichier\tCtrl+N", u"Créer un nouveau fichier")
+        item = wx.MenuItem(menu1, 101, _(u"Créer un nouveau fichier\tCtrl+N"), _(u"Créer un nouveau fichier"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
-        item = wx.MenuItem(menu1, 102, u"Ouvrir un fichier\tCtrl+O", u"Ouvrir un fichier existant")
+        item = wx.MenuItem(menu1, 102, _(u"Ouvrir un fichier\tCtrl+O"), _(u"Ouvrir un fichier existant"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)) 
         menu1.AppendItem(item)
-        item = wx.MenuItem(menu1, 103, u"Fermer le fichier\tCtrl+F", u"Fermer le fichier ouvert")
+        item = wx.MenuItem(menu1, 103, _(u"Fermer le fichier\tCtrl+F"), _(u"Fermer le fichier ouvert"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)) 
         menu1.AppendItem(item)
         
         menu1.AppendSeparator()
         
-        item = wx.MenuItem(menu1, 104, u"Créer une sauvegarde\tCtrl+S", u"Créer une sauvegarde globale des données")
+        item = wx.MenuItem(menu1, 104, _(u"Créer une sauvegarde\tCtrl+S"), _(u"Créer une sauvegarde globale des données"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Sauvegarder.png", wx.BITMAP_TYPE_PNG)) 
         menu1.AppendItem(item)
-        item = wx.MenuItem(menu1, 105, u"Restaurer une sauvegarde\tCtrl+R", u"Restaurer une sauvegarde")
+        item = wx.MenuItem(menu1, 105, _(u"Restaurer une sauvegarde\tCtrl+R"), _(u"Restaurer une sauvegarde"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Restaurer.png", wx.BITMAP_TYPE_PNG)) 
         menu1.AppendItem(item)
 
         menu1.AppendSeparator()
 
-        item = wx.MenuItem(menu1, 107, u"Convertir en fichier réseau", u"Convertir le fichier ouvert en fichier réseau")
+        item = wx.MenuItem(menu1, 107, _(u"Convertir en fichier réseau"), _(u"Convertir le fichier ouvert en fichier réseau"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Conversion_reseau.png", wx.BITMAP_TYPE_PNG)) 
         menu1.AppendItem(item)
         item.Enable(False)
-        item = wx.MenuItem(menu1, 108, u"Convertir en fichier local", u"Convertir le fichier ouvert en fichier local")
+        item = wx.MenuItem(menu1, 108, _(u"Convertir en fichier local"), _(u"Convertir le fichier ouvert en fichier local"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Conversion_local.png", wx.BITMAP_TYPE_PNG)) 
         menu1.AppendItem(item)
         item.Enable(False)
         
         menu1.AppendSeparator()
         
-        item = wx.MenuItem(menu1, 106, u"Quitter\tCtrl+Q", u"Quitter l'application")
+        item = wx.MenuItem(menu1, 106, _(u"Quitter\tCtrl+Q"), _(u"Quitter l'application"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Quitter.png", wx.BITMAP_TYPE_PNG)) 
         menu1.AppendItem(item)
         
@@ -342,7 +345,7 @@ class MyFrame(wx.Frame):
             for nomFichier in listeDerniersFichiers :
                 if "[RESEAU]" in nomFichier :
                     nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-                item = wx.MenuItem(menu1, 150 + index, str(index+1) + ". " + nomFichier, u"Ouvrir le fichier : " + nomFichier)
+                item = wx.MenuItem(menu1, 150 + index, str(index+1) + ". " + nomFichier, _(u"Ouvrir le fichier : ") + nomFichier)
                 menu1.AppendItem(item)
                 index += 1
             self.Bind(wx.EVT_MENU_RANGE, self.MenuDerniersFichiers, id=150, id2=150 + index)
@@ -362,7 +365,7 @@ class MyFrame(wx.Frame):
         # Menu Affichage
         menu2 = wx.Menu()
         
-        item = wx.MenuItem(menu2, 201, u"Gestion des Gadgets de la page d'accueil", u"Gestion des Gadgets de la page d'accueil")
+        item = wx.MenuItem(menu2, 201, _(u"Gestion des Gadgets de la page d'accueil"), _(u"Gestion des Gadgets de la page d'accueil"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Calendrier_ajout.png", wx.BITMAP_TYPE_PNG))
         menu2.AppendItem(item)
         
@@ -373,27 +376,27 @@ class MyFrame(wx.Frame):
         # Menu Outils
         menu3 = wx.Menu()
         
-        item = wx.MenuItem(menu3, 305, u"Imprimer des photos de personnes", u"Imprimer des photos de personnes")
+        item = wx.MenuItem(menu3, 305, _(u"Imprimer des photos de personnes"), _(u"Imprimer des photos de personnes"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Personnes.png", wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
-        item = wx.MenuItem(menu3, 304, u"Gestion des frais de déplacements", u"Gestion des frais de déplacements")
+        item = wx.MenuItem(menu3, 304, _(u"Gestion des frais de déplacements"), _(u"Gestion des frais de déplacements"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Calculatrice.png", wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         menu3.AppendSeparator()
-        item = wx.MenuItem(menu3, 301, u"Exporter les personnes dans MS Outlook", u"Exporter les personnes dans MS Outlook")
+        item = wx.MenuItem(menu3, 301, _(u"Exporter les personnes dans MS Outlook"), _(u"Exporter les personnes dans MS Outlook"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Outlook.png", wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         if "linux" in sys.platform :
             item.Enable(False)
         menu3.AppendSeparator()
-        item = wx.MenuItem(menu3, 303, u"Envoyer un mail groupé avec votre client de messagerie", u"Envoyer un mail groupé à un panel de personnes")
+        item = wx.MenuItem(menu3, 303, _(u"Envoyer un mail groupé avec votre client de messagerie"), _(u"Envoyer un mail groupé à un panel de personnes"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
-        item = wx.MenuItem(menu3, 306, u"Créer des courriers ou des emails par publipostage", u"Créer des courriers ou des emails par publipostage")
+        item = wx.MenuItem(menu3, 306, _(u"Créer des courriers ou des emails par publipostage"), _(u"Créer des courriers ou des emails par publipostage"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         menu3.AppendSeparator()
-        item = wx.MenuItem(menu3, 307, u"Lancer Teamword, l'éditeur de texte", u"Lancer Teamword, l'éditeur de texte")
+        item = wx.MenuItem(menu3, 307, _(u"Lancer Teamword, l'éditeur de texte"), _(u"Lancer Teamword, l'éditeur de texte"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
                 
@@ -409,32 +412,32 @@ class MyFrame(wx.Frame):
         # Menu Internet
         menu6 = wx.Menu()
         
-        item = wx.MenuItem(menu6, 601, u"Rechercher des mises à jour du logiciel", u"Rechercher des mises à jour du logiciel")
+        item = wx.MenuItem(menu6, 601, _(u"Rechercher des mises à jour du logiciel"), _(u"Rechercher des mises à jour du logiciel"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Updater.png", wx.BITMAP_TYPE_PNG))
         menu6.AppendItem(item)
         
-        menubar.Append(menu6, u"Internet")
+        menubar.Append(menu6, _(u"Internet"))
         
         self.Bind(wx.EVT_MENU, self.MenuUpdater, id=601)
         
         # Menu Aide
         menu4 = wx.Menu()
         
-        item = wx.MenuItem(menu4, 401, u"Consulter l'aide intégrée\tCtrl+A", u"Consulter l'aide de TeamWorks")
+        item = wx.MenuItem(menu4, 401, _(u"Consulter l'aide intégrée\tCtrl+A"), _(u"Consulter l'aide de TeamWorks"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_PNG))
         menu4.AppendItem(item)
         
-        item = wx.MenuItem(menu4, 404, u"Télécharger le guide de l'utilisateur (248 pages - PDF)", u"Télécharger le guide de l'utilisateur (248 pages - PDF)")
+        item = wx.MenuItem(menu4, 404, _(u"Télécharger le guide de l'utilisateur (248 pages - PDF)"), _(u"Télécharger le guide de l'utilisateur (248 pages - PDF)"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Guide.png", wx.BITMAP_TYPE_PNG))
         menu4.AppendItem(item)
         
-        item = wx.MenuItem(menu4, 403, u"Accéder au forum TeamWorks", u"Accéder au forum TeamWorks")
+        item = wx.MenuItem(menu4, 403, _(u"Accéder au forum TeamWorks"), _(u"Accéder au forum TeamWorks"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Planete.png", wx.BITMAP_TYPE_PNG))
         menu4.AppendItem(item)
         
         menu4.AppendSeparator()
         
-        item = wx.MenuItem(menu4, 402, u"Envoyer un mail à l'auteur", u"Envoyer un mail à l'auteur de Teamworks")
+        item = wx.MenuItem(menu4, 402, _(u"Envoyer un mail à l'auteur"), _(u"Envoyer un mail à l'auteur de Teamworks"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG))
         menu4.AppendItem(item)
         
@@ -448,25 +451,25 @@ class MyFrame(wx.Frame):
         # Menu A Propos
         menu7 = wx.Menu()
         
-        item = wx.MenuItem(menu7, 701, u"Pourquoi et comment faire un don de soutien ?", u"Pourquoi et comment faire un don de soutien ?")
+        item = wx.MenuItem(menu7, 701, _(u"Pourquoi et comment faire un don de soutien ?"), _(u"Pourquoi et comment faire un don de soutien ?"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Smile.png", wx.BITMAP_TYPE_PNG))
         menu7.AppendItem(item)
         
         self.Bind(wx.EVT_MENU, self.MenuDons, id=701)
         
-        menubar.Append(menu7, u"Soutenir Teamworks")
+        menubar.Append(menu7, _(u"Soutenir Teamworks"))
         
         # Menu A Propos
         menu5 = wx.Menu()
         
-        item = wx.MenuItem(menu5, 501, u"Notes de versions", u"Notes de versions")
+        item = wx.MenuItem(menu5, 501, _(u"Notes de versions"), _(u"Notes de versions"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG))
         menu5.AppendItem(item)
-        item = wx.MenuItem(menu5, 502, u"Licence", u"Licence du logiciel")
+        item = wx.MenuItem(menu5, 502, _(u"Licence"), _(u"Licence du logiciel"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG))
         menu5.AppendItem(item)
         menu5.AppendSeparator()
-        item = wx.MenuItem(menu5, 503, u"A propos", u"A propos")
+        item = wx.MenuItem(menu5, 503, _(u"A propos"), _(u"A propos"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG))
         menu5.AppendItem(item)
         
@@ -488,7 +491,7 @@ class MyFrame(wx.Frame):
         self.statusbar.SetStatusWidths( [400, -1] )
         
     def OnSize(self, event):
-        #self.SetTitle(u"Taille de la fenêtre : %s" % event.GetSize())
+        #self.SetTitle(_(u"Taille de la fenêtre : %s") % event.GetSize())
         event.Skip()      
        
     def GetFichierConfig(self, nomFichier=""):
@@ -517,7 +520,7 @@ class MyFrame(wx.Frame):
 ##            DB.Close()
 ##            if save_active[0][0] == 1 :
 ##                # Sauvegarde automatique
-##                self.SetStatusText(u"Veuillez patienter pendant la sauvegarde automatique des données...")
+##                self.SetStatusText(_(u"Veuillez patienter pendant la sauvegarde automatique des données..."))
 ##                saveAuto = Config_Sauvegarde.Sauvegarde_auto()
 ##                saveAuto.Save()
 ##                self.SetStatusText("")
@@ -547,7 +550,7 @@ class MyFrame(wx.Frame):
 
     def On_fichier_Convertir_reseau(self, event):
 ##        if self.dictUtilisateur["profil"] != "administrateur" :
-##            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement avoir un profil Administrateur\npour accéder aux fonctions de conversion de fichier !", u"Accès non autorisé", wx.OK | wx.ICON_ERROR)
+##            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement avoir un profil Administrateur\npour accéder aux fonctions de conversion de fichier !"), _(u"Accès non autorisé"), wx.OK | wx.ICON_ERROR)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            return
@@ -558,7 +561,7 @@ class MyFrame(wx.Frame):
 
     def On_fichier_Convertir_local(self, event):
 ##        if self.dictUtilisateur["profil"] != "administrateur" :
-##            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement avoir un profil Administrateur\npour accéder aux fonctions de conversion de fichier !", u"Accès non autorisé", wx.OK | wx.ICON_ERROR)
+##            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement avoir un profil Administrateur\npour accéder aux fonctions de conversion de fichier !"), _(u"Accès non autorisé"), wx.OK | wx.ICON_ERROR)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            return
@@ -584,24 +587,24 @@ class MyFrame(wx.Frame):
             return False
         
         # Affiche d'une fenêtre d'attente
-        message = u"Création du nouveau fichier en cours... Veuillez patientez..."
-        dlgAttente = PBI.PyBusyInfo(message, parent=None, title=u"Création d'un fichier", icon=wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
+        message = _(u"Création du nouveau fichier en cours... Veuillez patientez...")
+        dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Création d'un fichier"), icon=wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         wx.Yield() 
             
         if "[RESEAU]" in nomFichier :
-            self.SetStatusText(u"Création du fichier '%s' en cours..." % nomFichier[nomFichier.index("[RESEAU]"):])
+            self.SetStatusText(_(u"Création du fichier '%s' en cours...") % nomFichier[nomFichier.index("[RESEAU]"):])
         else:
-            self.SetStatusText(u"Création du fichier '%s' en cours..." % nomFichier)
+            self.SetStatusText(_(u"Création du fichier '%s' en cours...") % nomFichier)
         
         # Vérification de validité du fichier
         if nomFichier == "" :
             del dlgAttente
-            dlg = wx.MessageDialog(self, u"Le nom que vous avez saisi n'est pas valide !", "Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Le nom que vous avez saisi n'est pas valide !"), "Erreur", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             if "[RESEAU]" in nomFichier :
                 nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-            self.SetStatusText(u"Echec de la création du fichier '%s' : nom du fichier non valide." % nomFichier)
+            self.SetStatusText(_(u"Echec de la création du fichier '%s' : nom du fichier non valide.") % nomFichier)
             return False
 
         if "[RESEAU]" not in nomFichier :
@@ -612,20 +615,20 @@ class MyFrame(wx.Frame):
             test = os.path.isfile(fichier) 
             if test == True :
                 del dlgAttente
-                dlg = wx.MessageDialog(self, u"Vous possédez déjà un fichier qui porte le nom '" + nomFichier + u"'.\n\nVeuillez saisir un autre nom.", "Erreur", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous possédez déjà un fichier qui porte le nom '") + nomFichier + _(u"'.\n\nVeuillez saisir un autre nom."), "Erreur", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
-                self.SetStatusText(u"Echec de la création du fichier '%s' : Le nom existe déjà." % nomFichier)
+                self.SetStatusText(_(u"Echec de la création du fichier '%s' : Le nom existe déjà.") % nomFichier)
                 return False
         
         else:
             # Version RESEAU
-            dictResultats = GestionDB.TestConnexionMySQL(typeTest="fichier", nomFichier=u"%s_TDATA" % nomFichier)
+            dictResultats = GestionDB.TestConnexionMySQL(typeTest="fichier", nomFichier=_(u"%s_TDATA") % nomFichier)
             
             # Vérifie la connexion au réseau
             if dictResultats["connexion"][0] == False :
                 erreur = dictResultats["connexion"][1]
-                dlg = wx.MessageDialog(self, u"La connexion au réseau MySQL est impossible. \n\nErreur : %s" % erreur, u"Erreur de connexion", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"La connexion au réseau MySQL est impossible. \n\nErreur : %s") % erreur, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 del dlgAttente
@@ -633,7 +636,7 @@ class MyFrame(wx.Frame):
             
             # Vérifie que le fichier n'est pas déjà utilisé
             if dictResultats["fichier"][0] == True :
-                dlg = wx.MessageDialog(self, u"Le fichier existe déjà.", u"Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Le fichier existe déjà."), _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 del dlgAttente
@@ -647,14 +650,14 @@ class MyFrame(wx.Frame):
         if DB.echec == 1 :
             del dlgAttente
             erreur = DB.erreur
-            dlg = wx.MessageDialog(self, u"Erreur dans la création du fichier de données.\n\nErreur : %s" % erreur, u"Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Erreur dans la création du fichier de données.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.userConfig["nomFichier"] = ancienFichier 
             return False
-        self.SetStatusText(u"Création des tables de données...")
+        self.SetStatusText(_(u"Création des tables de données..."))
         DB.CreationTables(Tables.DB_DATA, fenetreParente=self)
-        self.SetStatusText(u"Importation des données par défaut...")
+        self.SetStatusText(_(u"Importation des données par défaut..."))
         DB.Importation_valeurs_defaut(listeTables)
         DB.Close()
         
@@ -663,12 +666,12 @@ class MyFrame(wx.Frame):
         if DB.echec == 1 :
             del dlgAttente
             erreur = DB.erreur
-            dlg = wx.MessageDialog(self, u"Erreur dans la création du fichier de photos.\n\nErreur : %s" % erreur, u"Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Erreur dans la création du fichier de photos.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.userConfig["nomFichier"] = ancienFichier 
             return False
-        self.SetStatusText(u"Création de la table de données des photos...")
+        self.SetStatusText(_(u"Création de la table de données des photos..."))
         DB.CreationTables(Tables.DB_PHOTOS)
         DB.Close()
         
@@ -677,23 +680,23 @@ class MyFrame(wx.Frame):
         if DB.echec == 1 :
             del dlgAttente
             erreur = DB.erreur
-            dlg = wx.MessageDialog(self, u"Erreur dans la création du fichier de documents.\n\nErreur : %s" % erreur, u"Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Erreur dans la création du fichier de documents.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.userConfig["nomFichier"] = ancienFichier 
             return False
-        self.SetStatusText(u"Création de la table de données des documents...")
+        self.SetStatusText(_(u"Création de la table de données des documents..."))
         DB.CreationTables(Tables.DB_DOCUMENTS)
         DB.Close()
         
 ##        # Vérification de validité du fichier
 ##        if nomFichier == "" :
-##            dlg = wx.MessageDialog(self, u"Le nom que vous avez saisi n'est pas valide !", "Erreur", wx.OK | wx.ICON_ERROR)
+##            dlg = wx.MessageDialog(self, _(u"Le nom que vous avez saisi n'est pas valide !"), "Erreur", wx.OK | wx.ICON_ERROR)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            if "[RESEAU]" in nomFichier :
 ##                nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-##            self.SetStatusText(u"Echec de la création du fichier '%s' : nom du fichier non valide." % nomFichier)
+##            self.SetStatusText(_(u"Echec de la création du fichier '%s' : nom du fichier non valide.") % nomFichier)
 ##            return False
 ##        
 ##        if "[RESEAU]" not in nomFichier :
@@ -703,10 +706,10 @@ class MyFrame(wx.Frame):
 ##            fichier = "Data/" + nomFichier + "_DATA.dat"
 ##            test = os.path.isfile(fichier) 
 ##            if test == True :
-##                dlg = wx.MessageDialog(self, u"Vous possédez déjà un fichier qui porte le nom '" + nomFichier + u"'.\n\nVeuillez saisir un autre nom.", "Erreur", wx.OK | wx.ICON_ERROR)
+##                dlg = wx.MessageDialog(self, _(u"Vous possédez déjà un fichier qui porte le nom '") + nomFichier + _(u"'.\n\nVeuillez saisir un autre nom."), "Erreur", wx.OK | wx.ICON_ERROR)
 ##                dlg.ShowModal()
 ##                dlg.Destroy()
-##                self.SetStatusText(u"Echec de la création du fichier '%s' : Le nom existe déjà." % nomFichier)
+##                self.SetStatusText(_(u"Echec de la création du fichier '%s' : Le nom existe déjà.") % nomFichier)
 ##                return False
 ##        
 ##        else:
@@ -716,14 +719,14 @@ class MyFrame(wx.Frame):
 ##            # Vérifie la connexion au réseau
 ##            if dictResultats["connexion"][0] == False :
 ##                erreur = dictResultats["connexion"][1]
-##                dlg = wx.MessageDialog(self, u"La connexion au réseau MySQL est impossible. \n\nErreur : %s" % erreur, u"Erreur de connexion", wx.OK | wx.ICON_ERROR)
+##                dlg = wx.MessageDialog(self, _(u"La connexion au réseau MySQL est impossible. \n\nErreur : %s") % erreur, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
 ##                dlg.ShowModal()
 ##                dlg.Destroy()
 ##                return False
 ##            
 ##            # Vérifie que le fichier n'est pas déjà utilisé
 ##            if dictResultats["fichier"][0] == True :
-##                dlg = wx.MessageDialog(self, u"Le fichier existe déjà.", u"Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+##                dlg = wx.MessageDialog(self, _(u"Le fichier existe déjà."), _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
 ##                dlg.ShowModal()
 ##                dlg.Destroy()
 ##                return False
@@ -734,7 +737,7 @@ class MyFrame(wx.Frame):
 ##        db = GestionDB.DB(modeCreation=True)
 ##        if db.echec == 1 :
 ##            erreur = db.erreur
-##            dlg = wx.MessageDialog(self, u"Erreur dans la création du fichier.\n\nErreur : %s" % erreur, u"Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+##            dlg = wx.MessageDialog(self, _(u"Erreur dans la création du fichier.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            self.userConfig["nomFichier"] = ancienFichier 
@@ -821,15 +824,15 @@ class MyFrame(wx.Frame):
         
         del dlgAttente
         
-        dlg = wx.MessageDialog(self, u"Le fichier '" + nomFichier + u"' a été créé avec succès.", u"Création d'un fichier", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"Le fichier '") + nomFichier + _(u"' a été créé avec succès."), _(u"Création d'un fichier"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         
-        self.SetStatusText(u"Le fichier '%s' a été créé avec succès." % nomFichier)
+        self.SetStatusText(_(u"Le fichier '%s' a été créé avec succès.") % nomFichier)
         
         # Rappel de la nécessité de créer des utilisateurs réseau
         if "[RESEAU]" in nomFichier :
-            dlg = wx.MessageDialog(self, u"Pour l'instant, vous êtes le seul, en tant qu'administrateur, à pouvoir accéder à ce fichier. Vous devez donc créer des utilisateurs réseau ou accorder des autorisations d'accès aux utilisateurs déjà enregistrés.\n\nPour gérer les comptes utilisateurs réseau, rendez-vous sur le panneau 'Configuration' puis sur la page 'Utilisateurs réseau'.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Pour l'instant, vous êtes le seul, en tant qu'administrateur, à pouvoir accéder à ce fichier. Vous devez donc créer des utilisateurs réseau ou accorder des autorisations d'accès aux utilisateurs déjà enregistrés.\n\nPour gérer les comptes utilisateurs réseau, rendez-vous sur le panneau 'Configuration' puis sur la page 'Utilisateurs réseau'."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
 
@@ -858,7 +861,7 @@ class MyFrame(wx.Frame):
     
     def OuvrirFichier(self, nomFichier):
         """ Suite de la commande menu Ouvrir """
-        self.SetStatusText(u"Ouverture d'un fichier en cours...")
+        self.SetStatusText(_(u"Ouverture d'un fichier en cours..."))
         
 ##        if "[RESEAU]" in nomFichier :
 ##            pos = nomFichier.index("[RESEAU]")
@@ -873,17 +876,17 @@ class MyFrame(wx.Frame):
         if self.userConfig["nomFichier"] == nomFichier :
             if "[RESEAU]" in nomFichier :
                 nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-            dlg = wx.MessageDialog(self, u"Le fichier '" + nomFichier + u"' est déjà ouvert !", u"Ouverture de fichier", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Le fichier '") + nomFichier + _(u"' est déjà ouvert !"), _(u"Ouverture de fichier"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
-            self.SetStatusText(u"Le fichier '%s' est déjà ouvert." % nomFichier)
+            self.SetStatusText(_(u"Le fichier '%s' est déjà ouvert.") % nomFichier)
             return False
 
         # Teste l'existence du fichier :
         if self.TesterUnFichier(nomFichier) == False :
             if "[RESEAU]" in nomFichier :
                 nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-            self.SetStatusText(u"Impossible d'ouvrir le fichier '%s'." % nomFichier)
+            self.SetStatusText(_(u"Impossible d'ouvrir le fichier '%s'.") % nomFichier)
             return False
         
                 
@@ -892,7 +895,7 @@ class MyFrame(wx.Frame):
             if self.Verif_Password(nomFichier) == False :
                 if "[RESEAU]" in nomFichier :
                     nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-                self.SetStatusText(u"Echec de l'ouverture du fichier '%s' : Mot de passe incorrect." % nomFichier)
+                self.SetStatusText(_(u"Echec de l'ouverture du fichier '%s' : Mot de passe incorrect.") % nomFichier)
                 return False
         
         # Vérifie si la version du fichier est à jour
@@ -900,7 +903,7 @@ class MyFrame(wx.Frame):
             if self.ValidationVersionFichier(nomFichier) == False :
                 if "[RESEAU]" in nomFichier :
                     nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-                self.SetStatusText(u"Echec de l'ouverture du fichier '%s'." % nomFichier)
+                self.SetStatusText(_(u"Echec de l'ouverture du fichier '%s'.") % nomFichier)
                 return False
 
         # Applique le changement de fichier en cours
@@ -948,7 +951,7 @@ class MyFrame(wx.Frame):
         # Confirmation de succès
         if "[RESEAU]" in nomFichier :
                 nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-        self.SetStatusText(u"Le fichier '%s' a été ouvert avec succès." % nomFichier)       
+        self.SetStatusText(_(u"Le fichier '%s' a été ouvert avec succès.") % nomFichier)       
         
         
     def VerifDestinationSaveAuto(self):
@@ -975,7 +978,7 @@ class MyFrame(wx.Frame):
         """ Fermer le fichier ouvert """
         # Vérifie qu'un fichier est chargé
         if self.userConfig["nomFichier"] == "" :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucun fichier à fermer !", u"Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucun fichier à fermer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -1023,7 +1026,7 @@ class MyFrame(wx.Frame):
         # Version TW1 :
 ##        # Demande l'emplacement du fichier
 ##        wildcard = "Sauvegarde TWorks (*.twz)|*.twz"
-##        dlg = wx.FileDialog(self, message=u"Veuillez sélectionner le fichier de sauvegarde à restaurer", defaultDir=os.getcwd(), defaultFile="", wildcard=wildcard, style=wx.OPEN)
+##        dlg = wx.FileDialog(self, message=_(u"Veuillez sélectionner le fichier de sauvegarde à restaurer"), defaultDir=os.getcwd(), defaultFile="", wildcard=wildcard, style=wx.OPEN)
 ##        if dlg.ShowModal() == wx.ID_OK:
 ##            fichier = dlg.GetPath()
 ##        else:
@@ -1032,7 +1035,7 @@ class MyFrame(wx.Frame):
 ##        
 ##        # Vérifie la validité du fichier sélectionné
 ##        if fichier.endswith(".twz") == False :
-##            dlg = wx.MessageDialog(self, u"Le fichier n'est pas valide.", "Erreur", wx.OK| wx.ICON_ERROR)  
+##            dlg = wx.MessageDialog(self, _(u"Le fichier n'est pas valide."), "Erreur", wx.OK| wx.ICON_ERROR)  
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            return
@@ -1070,7 +1073,7 @@ class MyFrame(wx.Frame):
                 # Version Reseau
                 if "[RESEAU]" in nomFichier :
                     nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-                item = wx.MenuItem(menu, 150 + index, str(index+1) + ". " + nomFichier, u"Ouvrir le fichier : " + nomFichier)
+                item = wx.MenuItem(menu, 150 + index, str(index+1) + ". " + nomFichier, _(u"Ouvrir le fichier : ") + nomFichier)
                 menu.AppendItem(item)
                 index += 1
             self.Bind(wx.EVT_MENU_RANGE, self.MenuDerniersFichiers, id=150, id2=150 + index)
@@ -1107,7 +1110,7 @@ class MyFrame(wx.Frame):
             # Si c'est une nouvelle version de fichier
             serveurValide = True
             fichierValide = True
-            dictResultats = GestionDB.TestConnexionMySQL(typeTest='fichier', nomFichier=u"%s_tdata" % nomFichier)
+            dictResultats = GestionDB.TestConnexionMySQL(typeTest='fichier', nomFichier=_(u"%s_tdata") % nomFichier)
             
             if dictResultats["connexion"][0] == False :
                 serveurValide = False
@@ -1122,7 +1125,7 @@ class MyFrame(wx.Frame):
             dictResultats = GestionDB.TestConnexionMySQL(typeTest='fichier', nomFichier=nomFichier)
             if dictResultats["connexion"][0] == True and dictResultats["fichier"][0] == True :
                 # Création de la nouvelle base
-                self.SetStatusText(u"Conversion pour Teamworks 2 : Création de la nouvelle base...")
+                self.SetStatusText(_(u"Conversion pour Teamworks 2 : Création de la nouvelle base..."))
                 DB = GestionDB.DB(nomFichier=nomFichier, modeCreation=True)
                 DB.Close() 
                 
@@ -1130,14 +1133,14 @@ class MyFrame(wx.Frame):
                 DB = GestionDB.DB(suffixe="", nomFichier=nomFichier)
                 listeTables = DB.GetListeTables()
                 for (nomTable,) in listeTables :
-                    self.SetStatusText(u"Conversion pour Teamworks 2 : Transfert de la table %s...." % nomTable)
+                    self.SetStatusText(_(u"Conversion pour Teamworks 2 : Transfert de la table %s....") % nomTable)
                     req = "RENAME TABLE %s.%s TO %s_tdata.%s;" % (nomFichierCourt, nomTable, nomFichierCourt, nomTable)
                     DB.ExecuterReq(req)
                 DB.Commit()
                 DB.Close() 
 
                 # Suppression de l'ancienne table
-                self.SetStatusText(u"Conversion pour Teamworks 2 : Suppression de l'ancienne base...")
+                self.SetStatusText(_(u"Conversion pour Teamworks 2 : Suppression de l'ancienne base..."))
                 DB = GestionDB.DB(nomFichier=nomFichier)
                 req = "DROP DATABASE %s;" % nomFichierCourt
                 DB.ExecuterReq(req)
@@ -1148,7 +1151,7 @@ class MyFrame(wx.Frame):
             if serveurValide == False :
                 # Connexion impossible au serveur MySQL
                 erreur = dictResultats["connexion"][1]
-                dlg = wx.MessageDialog(self, u"Il est impossible de se connecter au serveur MySQL.\n\nErreur : %s" % erreur, "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Il est impossible de se connecter au serveur MySQL.\n\nErreur : %s") % erreur, "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
@@ -1156,7 +1159,7 @@ class MyFrame(wx.Frame):
             if fichierValide == False :
                 # Ouverture impossible du fichier MySQL demandé
                 erreur = dictResultats["fichier"][1]
-                dlg = wx.MessageDialog(self, u"La connexion avec le serveur MySQL fonctionne mais il est impossible d'ouvrir le fichier MySQL demandé.\n\nErreur : %s" % erreur, "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"La connexion avec le serveur MySQL fonctionne mais il est impossible d'ouvrir le fichier MySQL demandé.\n\nErreur : %s") % erreur, "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
@@ -1167,17 +1170,17 @@ class MyFrame(wx.Frame):
         else:
             # Test de validité du fichier SQLITE :
             valide = False
-            if os.path.isfile(u"Data/%s_TDATA.dat" % nomFichier)  :
+            if os.path.isfile(_(u"Data/%s_TDATA.dat") % nomFichier)  :
                 valide = True
             else :
-                cheminFichier = u"Data/%s.twk" % nomFichier
+                cheminFichier = _(u"Data/%s.twk") % nomFichier
                 if os.path.isfile(cheminFichier) :
                     valide = True
                     # Si c'est une version TW1 : Renommage du fichier DATA pour TW2
-                    os.rename(cheminFichier, u"Data/%s_TDATA.dat" % nomFichier)
+                    os.rename(cheminFichier, _(u"Data/%s_TDATA.dat") % nomFichier)
             
             if valide == False :
-                dlg = wx.MessageDialog(self, u"Il est impossible d'ouvrir le fichier demandé !", "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Il est impossible d'ouvrir le fichier demandé !"), "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
@@ -1219,7 +1222,7 @@ class MyFrame(wx.Frame):
 ##            DB.Close()
 ##            print "nouvelleVersionDB=", nouvelleVersionDB
 ##            if type(nouvelleVersionDB) == str :
-##                dlg = wx.MessageDialog(self, u"Le logiciel n'arrive pas à convertir le fichier '" + nomFichier + u":\n\nErreur : " + nouvelleVersionDB + u"\n\nVeuillez contacter le développeur du logiciel...", u"Erreur de conversion de fichier", wx.OK | wx.ICON_ERROR)
+##                dlg = wx.MessageDialog(self, _(u"Le logiciel n'arrive pas à convertir le fichier '") + nomFichier + _(u":\n\nErreur : ") + nouvelleVersionDB + _(u"\n\nVeuillez contacter le développeur du logiciel..."), _(u"Erreur de conversion de fichier"), wx.OK | wx.ICON_ERROR)
 ##                dlg.ShowModal()
 ##                dlg.Destroy()
 ##                return False
@@ -1247,8 +1250,8 @@ class MyFrame(wx.Frame):
             print info
             
             # Affiche d'une fenêtre d'attente
-            message = u"Mise à jour de la base de données en cours... Veuillez patientez..."
-            dlgAttente = PBI.PyBusyInfo(message, parent=None, title=u"Mise à jour", icon=wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
+            message = _(u"Mise à jour de la base de données en cours... Veuillez patientez...")
+            dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Mise à jour"), icon=wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
             wx.Yield() 
             
             DB = GestionDB.DB(nomFichier = nomFichier)        
@@ -1260,7 +1263,7 @@ class MyFrame(wx.Frame):
             
             if resultat != True :
                 print resultat
-                dlg = wx.MessageDialog(self, u"Le logiciel n'arrive pas à convertir le fichier '" + nomFichier + u":\n\nErreur : " + resultat + u"\n\nVeuillez contacter le développeur du logiciel...", u"Erreur de conversion de fichier", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Le logiciel n'arrive pas à convertir le fichier '") + nomFichier + _(u":\n\nErreur : ") + resultat + _(u"\n\nVeuillez contacter le développeur du logiciel..."), _(u"Erreur de conversion de fichier"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
@@ -1295,7 +1298,7 @@ class MyFrame(wx.Frame):
         
         # Vérifie qu'un fichier est chargé
         if self.userConfig["nomFichier"] == "" :
-            dlg = wx.MessageDialog(self, u"Vous n'avez chargé aucun fichier.", u"Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez chargé aucun fichier."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -1303,20 +1306,20 @@ class MyFrame(wx.Frame):
         import Export_outlook
         outlook = Export_outlook.LibOutlook()
         # Recherche si Outlook peut être ouvert
-        dlg = wx.MessageDialog(self, u"Un test va être effectué pour vérifier que Outlook est bien accessible sur votre ordinateur.\n\nSi c'est bien le cas, Outlook va vous demander si vous acceptez que cet accès ait bien lieu.\n\nCochez la case 'Autoriser l'accès' et sélectionnez un temps de 10 minutes...", u"Information", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"Un test va être effectué pour vérifier que Outlook est bien accessible sur votre ordinateur.\n\nSi c'est bien le cas, Outlook va vous demander si vous acceptez que cet accès ait bien lieu.\n\nCochez la case 'Autoriser l'accès' et sélectionnez un temps de 10 minutes..."), _(u"Information"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
             
         if outlook.echec == True :
             # Pas de outlook accessible :
-            dlg = wx.MessageDialog(self, u"Microsoft Outlook ne peut pas être ouvert...", u"Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Microsoft Outlook ne peut pas être ouvert..."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         if outlook.Test() == False :
             # Outlook est verrouillé:
-            dlg = wx.MessageDialog(self, u"Microsoft Outlook ne peut pas être ouvert.\nIl semble verrouillé...", u"Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Microsoft Outlook ne peut pas être ouvert.\nIl semble verrouillé..."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -1330,7 +1333,7 @@ class MyFrame(wx.Frame):
         
         # Vérifie qu'un fichier est chargé
         if self.userConfig["nomFichier"] == "" :
-            dlg = wx.MessageDialog(self, u"Vous n'avez chargé aucun fichier.", u"Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez chargé aucun fichier."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -1399,7 +1402,7 @@ class MyFrame(wx.Frame):
         txtLicence = open("Versions.txt", "r")
         msg = txtLicence.read()
         txtLicence.close()
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg.decode("iso-8859-15"), u"Notes de versions", size=(420, 400))
+        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg.decode("iso-8859-15"), _(u"Notes de versions"), size=(420, 400))
         dlg.ShowModal()
         
     def MenuLicence(self, event):
@@ -1408,7 +1411,7 @@ class MyFrame(wx.Frame):
         txtLicence = open("Licence.txt", "r")
         msg = txtLicence.read()
         txtLicence.close()
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg.decode("iso-8859-15"), u"A propos", size=(420, 400))
+        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg.decode("iso-8859-15"), _(u"A propos"), size=(420, 400))
         dlg.ShowModal()
 
     def MenuApropos(self, event):
@@ -1437,10 +1440,10 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
         dlg.Destroy()
     
     def MenuDons(self, event):
-        FonctionsPerso.LanceFichierExterne(u"http://teamworks.forumactif.com/faire-un-don-de-soutien-f2/pourquoi-et-comment-faire-un-don-de-soutien-t129.htm")
+        FonctionsPerso.LanceFichierExterne(_(u"http://teamworks.forumactif.com/faire-un-don-de-soutien-f2/pourquoi-et-comment-faire-un-don-de-soutien-t129.htm"))
     
     def MenuTelechargerGuide(self, event):
-        FonctionsPerso.LanceFichierExterne(u"http://www.clsh-lannilis.com/teamworks/aide/guide-utilisateur-tw.pdf")
+        FonctionsPerso.LanceFichierExterne(_(u"http://www.clsh-lannilis.com/teamworks/aide/guide-utilisateur-tw.pdf"))
         
     def MenuAssistantDemarrage(self, event):
         self.Assistant_demarrage(mode="menu")
@@ -1532,7 +1535,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
         self.userConfig["assistant_demarrage"] = checkAffichage
         # Charge la commande demandée
         if choix != None :
-            if choix == 1 : FonctionsPerso.LanceFichierExterne(u"http://teamworks.forumactif.com/caracteristiques-f1/a-la-video-de-presentation-t121.htm")
+            if choix == 1 : FonctionsPerso.LanceFichierExterne(_(u"http://teamworks.forumactif.com/caracteristiques-f1/a-la-video-de-presentation-t121.htm"))
             if choix == 2 : self.MenuNouveau(None)
             if choix == 3 : FonctionsPerso.LanceFichierExterne("http://teamworks.forumactif.com")
             if choix == 4 : self.MenuOuvrir(None)
@@ -1551,7 +1554,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
 
 
 class SaisiePassword(wx.Dialog):
-    def __init__(self, parent, id=-1, title=u"Saisie du mot de passe", nomFichier=""):
+    def __init__(self, parent, id=-1, title=_(u"Saisie du mot de passe"), nomFichier=""):
         wx.Dialog.__init__(self, parent, id, title)
 
         self.sizer_3_staticbox = wx.StaticBox(self, -1, "")
@@ -1559,11 +1562,11 @@ class SaisiePassword(wx.Dialog):
             nomFichierTmp = nomFichier[nomFichier.index("[RESEAU]"):]
         else:
             nomFichierTmp = nomFichier
-        self.label_2 = wx.StaticText(self, -1, u"Le fichier '" + self.FormateNomFichier(nomFichierTmp) + u"' est protégé.")
+        self.label_2 = wx.StaticText(self, -1, _(u"Le fichier '") + self.FormateNomFichier(nomFichierTmp) + _(u"' est protégé."))
         self.label_password = wx.StaticText(self, -1, "Mot de passe :")
         self.text_password = wx.TextCtrl(self, -1, "", size=(200, -1), style=wx.TE_PASSWORD)
-        self.bouton_ok = wx.BitmapButton(self, wx.ID_OK, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, id=wx.ID_OK, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -1576,7 +1579,7 @@ class SaisiePassword(wx.Dialog):
         return nomFichier
 
     def __set_properties(self):
-        self.text_password.SetToolTipString(u"Saisissez votre mot de passe ici")
+        self.text_password.SetToolTipString(_(u"Saisissez votre mot de passe ici"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 

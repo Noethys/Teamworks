@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
@@ -68,13 +70,13 @@ class Panel_secondaire(wx.Panel):
 
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un nouveau jour férié")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau jour férié"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier le jour férié sélectionné dans la liste")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le jour férié sélectionné dans la liste"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le jour férié sélectionné dans la liste")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le jour férié sélectionné dans la liste"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -104,7 +106,7 @@ class Panel_secondaire(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        frmSaisie = Saisie_jour_ferie.MyFrame(self, u"Saisie d'un jour férié", IDferie=0, type=self.typeJour)
+        frmSaisie = Saisie_jour_ferie.MyFrame(self, _(u"Saisie d'un jour férié"), IDferie=0, type=self.typeJour)
         frmSaisie.Show()
 
     def OnBoutonModifier(self, event):
@@ -113,13 +115,13 @@ class Panel_secondaire(wx.Panel):
     def Modifier(self):
         index = self.listCtrl.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un jour férié à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un jour férié à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         ID = int(self.listCtrl.GetItem(index, 0).GetText())
-        frmSaisie = Saisie_jour_ferie.MyFrame(self, u"Modification d'un jour férié", IDferie=ID, type=self.typeJour)
+        frmSaisie = Saisie_jour_ferie.MyFrame(self, _(u"Modification d'un jour férié"), IDferie=ID, type=self.typeJour)
         frmSaisie.Show()
         
     def OnBoutonSupprimer(self, event):
@@ -130,7 +132,7 @@ class Panel_secondaire(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un jour férié à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un jour férié à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -138,8 +140,8 @@ class Panel_secondaire(wx.Panel):
         # Demande de confirmation
         ID = int(self.listCtrl.GetItem(index, 0).GetText())
         Nom = self.listCtrl.GetItem(index, 2).GetText() + " (" + self.listCtrl.GetItem(index, 1).GetText() + ")"
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce jour férié ? \n\n> " + Nom))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce jour férié ? \n\n> ") + Nom))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -201,11 +203,11 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         
         # Création des colonnes
         self.nbreColonnes = 3
-        self.InsertColumn(0, u"     ID")
+        self.InsertColumn(0, _(u"     ID"))
         self.SetColumnWidth(0, 0)
-        self.InsertColumn(1, u"Nom")
+        self.InsertColumn(1, _(u"Nom"))
         self.SetColumnWidth(1, 200)  
-        self.InsertColumn(2, u"Date")
+        self.InsertColumn(2, _(u"Date"))
         self.SetColumnWidth(2, 100)  
 
         
@@ -257,8 +259,8 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         
     def dateEnDateComplet(self, jour, mois, annee):
         """ Transforme le format "aaaa-mm-jj" en "mercredi 12 septembre 2008" """
-        listeMois = (u"janvier", u"février", u"mars", u"avril", u"mai", u"juin", u"juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre")
-        listeJours = (u"lundi", u"mardi", u"mercredi", u"jeudi", u"vendredi", u"samedi", u"dimanche")
+        listeMois = (_(u"janvier"), _(u"février"), _(u"mars"), _(u"avril"), _(u"mai"), _(u"juin"), _(u"juillet"), _(u"août"), _(u"septembre"), _(u"octobre"), _(u"novembre"), _(u"décembre"))
+        listeJours = (_(u"lundi"), _(u"mardi"), _(u"mercredi"), _(u"jeudi"), _(u"vendredi"), _(u"samedi"), _(u"dimanche"))
         jourSemaine = int(datetime.date(annee, mois, jour).strftime("%w"))
         texte = listeJours[jourSemaine-1] + " " + str(jour) + " " + listeMois[mois-1] + " " + str(annee)
         return texte
@@ -296,7 +298,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         valeur = unicode(self.itemDataMap[index][col]) 
         if col == 2 :
             # Formate les dates pour l'affichage :
-            listeMois = (u"janvier", u"février", u"mars", u"avril", u"mai", u"juin", u"juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre")
+            listeMois = (_(u"janvier"), _(u"février"), _(u"mars"), _(u"avril"), _(u"mai"), _(u"juin"), _(u"juillet"), _(u"août"), _(u"septembre"), _(u"octobre"), _(u"novembre"), _(u"décembre"))
             if self.parent.typeJour == "fixe" :
                 mois, jour = valeur.split("-")
                 valeur = "Le " + str(jour) +  " " + listeMois[int(mois)-1]
@@ -307,8 +309,8 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
 
     def dateEnStr(self, texteDate):
         """ Transforme le format "aaaa-mm-jj" en "mercredi 12 septembre 2008" """
-        listeMois = (u"janvier", u"février", u"mars", u"avril", u"mai", u"juin", u"juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre")
-        listeJours = (u"Lundi", u"Mardi", u"Mercredi", u"Jeudi", u"Vendredi", u"Samedi", u"Dimanche")
+        listeMois = (_(u"janvier"), _(u"février"), _(u"mars"), _(u"avril"), _(u"mai"), _(u"juin"), _(u"juillet"), _(u"août"), _(u"septembre"), _(u"octobre"), _(u"novembre"), _(u"décembre"))
+        listeJours = (_(u"Lundi"), _(u"Mardi"), _(u"Mercredi"), _(u"Jeudi"), _(u"Vendredi"), _(u"Samedi"), _(u"Dimanche"))
         jour = int(texteDate[8:10])
         mois = int(texteDate[5:7])
         annee = int(texteDate[:4])
@@ -366,7 +368,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -375,14 +377,14 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -414,17 +416,17 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, name="panel_config_jours_feries", style=wx.TAB_TRAVERSAL)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Les jours fériés", u"")
-        texteIntro = u"Vous pouvez ici créer, modifier ou supprimer les jours fériés qui s'affichent dans les calendriers."
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Les jours fériés"), u"")
+        texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer les jours fériés qui s'affichent dans les calendriers.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
-        self.staticbox_fixes_staticbox = wx.StaticBox(self, -1, u"Les jours fériés fixes")
-        self.staticbox_variables_staticbox = wx.StaticBox(self, -1, u"Les jours fériés variables")
+        self.staticbox_fixes_staticbox = wx.StaticBox(self, -1, _(u"Les jours fériés fixes"))
+        self.staticbox_variables_staticbox = wx.StaticBox(self, -1, _(u"Les jours fériés variables"))
         
         self.panel_variables = Panel_secondaire(self, -1, type="variable", nomPanel="Config_jours_feries_variable")
         self.panel_fixes = Panel_secondaire(self, -1, type="fixe", nomPanel="Config_jours_feries_fixe") 
 
-        self.hyper_importation = Hyperlien(self, label=u"Calcul automatique des jours variables", infobulle=u"Cliquez ici pour laisser Teamworks calculer les jours fériés variables", URL="importation")
+        self.hyper_importation = Hyperlien(self, label=_(u"Calcul automatique des jours variables"), infobulle=_(u"Cliquez ici pour laisser Teamworks calculer les jours fériés variables"), URL="importation")
 
         # Layout
         grid_sizer_principal = wx.FlexGridSizer(rows=4, cols=1, vgap=0, hgap=0)
@@ -469,9 +471,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -484,15 +486,15 @@ class MyFrame(wx.Frame):
         self.SetSize((550, 500))
 
     def __set_properties(self):
-        self.SetTitle(u"Gestion des jours fériés")
+        self.SetTitle(_(u"Gestion des jours fériés"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 

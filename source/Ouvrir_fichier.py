@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import os
 
@@ -14,19 +16,19 @@ class PanelReseau(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL)
         
-        self.label_port = wx.StaticText(self, -1, u"Port :", size=(-1, -1), style=wx.ALIGN_RIGHT)
+        self.label_port = wx.StaticText(self, -1, _(u"Port :"), size=(-1, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_port = wx.TextCtrl(self, -1, "3306", size=(45, -1))
         
-        self.label_hote = wx.StaticText(self, -1, u"Hôte :", size=(-1, -1), style=wx.ALIGN_RIGHT)
+        self.label_hote = wx.StaticText(self, -1, _(u"Hôte :"), size=(-1, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_hote = wx.TextCtrl(self, -1, "", size=(-1, -1))
         
-        self.label_user = wx.StaticText(self, -1, u"Utilisateur :", size=(-1, -1), style=wx.ALIGN_RIGHT)
+        self.label_user = wx.StaticText(self, -1, _(u"Utilisateur :"), size=(-1, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_user = wx.TextCtrl(self, -1, "", size=(-1, -1))
         
-        self.label_mdp = wx.StaticText(self, -1, u"Mot de passe :", size=(-1, -1), style=wx.ALIGN_RIGHT)
+        self.label_mdp = wx.StaticText(self, -1, _(u"Mot de passe :"), size=(-1, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_mdp = wx.TextCtrl(self, -1, "", size=(-1, -1), style=wx.TE_PASSWORD)
         
-        self.label_fichier = wx.StaticText(self, -1, u"Fichier :", size=(-1, -1), style=wx.ALIGN_RIGHT)
+        self.label_fichier = wx.StaticText(self, -1, _(u"Fichier :"), size=(-1, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_fichier = wx.TextCtrl(self, -1, "", size=(-1, -1))
         
         self.__do_layout()
@@ -59,25 +61,25 @@ class PanelReseau(wx.Panel):
         grid_sizer_base.Fit(self)
         self.Layout()
         
-        self.ctrl_port.SetToolTipString(u"Le numéro de port est 3306 par défaut.")
-        self.ctrl_hote.SetToolTipString(u"Indiquez ici le nom du serveur hôte.")
-        self.ctrl_user.SetToolTipString(u"Indiquez ici le nom de l'utilisateur. Ce nom doit avoir été validé par le créateur du fichier.")
-        self.ctrl_mdp.SetToolTipString(u"Indiquez ici le mot de passe nécessaire à la connexion à MySQL")
-        self.ctrl_fichier.SetToolTipString(u"Indiquez ici le nom du fichier (base de données) à laquelle vous souhaitez vous connectez.")
+        self.ctrl_port.SetToolTipString(_(u"Le numéro de port est 3306 par défaut."))
+        self.ctrl_hote.SetToolTipString(_(u"Indiquez ici le nom du serveur hôte."))
+        self.ctrl_user.SetToolTipString(_(u"Indiquez ici le nom de l'utilisateur. Ce nom doit avoir été validé par le créateur du fichier."))
+        self.ctrl_mdp.SetToolTipString(_(u"Indiquez ici le mot de passe nécessaire à la connexion à MySQL"))
+        self.ctrl_fichier.SetToolTipString(_(u"Indiquez ici le nom du fichier (base de données) à laquelle vous souhaitez vous connectez."))
         
         
 class MyDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, title=u"Ouverture d'un fichier")
+        wx.Dialog.__init__(self, parent, -1, title=_(u"Ouverture d'un fichier"))
         self.parent = parent
         
-        self.label_intro = wx.StaticText(self, -1, u"Veuillez sélectionner le fichier à ouvrir :")
-        self.sizer_type_staticbox = wx.StaticBox(self, -1, u"Type de fichier")
+        self.label_intro = wx.StaticText(self, -1, _(u"Veuillez sélectionner le fichier à ouvrir :"))
+        self.sizer_type_staticbox = wx.StaticBox(self, -1, _(u"Type de fichier"))
         self.sizer_contenu_staticbox = wx.StaticBox(self, -1, "Nom du fichier")
         
         # Radio Local/Réseau
-        self.radio_local = wx.RadioButton(self, -1, u"Local", style = wx.RB_GROUP )
-        self.radio_reseau = wx.RadioButton(self, -1, u"Réseau" )
+        self.radio_local = wx.RadioButton(self, -1, _(u"Local"), style = wx.RB_GROUP )
+        self.radio_reseau = wx.RadioButton(self, -1, _(u"Réseau") )
         
         # ListBox Fichier LOCAL
         self.listeFichiers = self.CreateListeFichiers()
@@ -88,9 +90,9 @@ class MyDialog(wx.Dialog):
         self.panelReseau = PanelReseau(self)
         
         # Boutons de commande
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         self.panelReseau.Show(False)
         
@@ -107,14 +109,14 @@ class MyDialog(wx.Dialog):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.radio_local.SetToolTipString(u"Le mode local est utilisé pour une utilisation mono-poste")
-        self.radio_reseau.SetToolTipString(u"Le mode réseau est utilisateur pour une utilisation multipostes. \nMySQL doit être obligatoirement installé et configuré avant utilisation.")
+        self.radio_local.SetToolTipString(_(u"Le mode local est utilisé pour une utilisation mono-poste"))
+        self.radio_reseau.SetToolTipString(_(u"Le mode réseau est utilisateur pour une utilisation multipostes. \nMySQL doit être obligatoirement installé et configuré avant utilisation."))
         self.SetMinSize((350, 300))
 
     def __do_layout(self):
@@ -191,7 +193,7 @@ class MyDialog(wx.Dialog):
         if self.radio_local.GetValue() == True :
             selections = self.listbox.GetSelections()
             if len(selections) == 0 :
-                dlg = wx.MessageDialog(self, u"Vous n'avez fait aucune sélection", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous n'avez fait aucune sélection"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
@@ -207,35 +209,35 @@ class MyDialog(wx.Dialog):
             try :
                 port = int(port)
             except Exception, err:
-                dlg = wx.MessageDialog(self, u"Le numéro de port n'est pas valide. \n\nErreur : %s" % err, u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Le numéro de port n'est pas valide. \n\nErreur : %s") % err, _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.panelReseau.ctrl_port.SetFocus()
                 return
             
             if hote == "" :
-                dlg = wx.MessageDialog(self, u"Vous devez saisir un nom pour le serveur hôte.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nom pour le serveur hôte."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.panelReseau.ctrl_hote.SetFocus()
                 return
             
             if user == "" :
-                dlg = wx.MessageDialog(self, u"Vous devez saisir un nom d'utilisateur.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nom d'utilisateur."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.panelReseau.ctrl_user.SetFocus()
                 return
             
             if mdp == "" :
-                dlg = wx.MessageDialog(self, u"Vous devez saisir un mot de passe.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez saisir un mot de passe."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.panelReseau.ctrl_mdp.SetFocus()
                 return
             
             if fichier == "" :
-                dlg = wx.MessageDialog(self, u"Vous devez saisir un nom de fichier.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nom de fichier."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.panelReseau.ctrl_fichier.SetFocus()
@@ -259,7 +261,7 @@ class MyDialog(wx.Dialog):
             user = self.panelReseau.ctrl_user.GetValue()
             mdp = self.panelReseau.ctrl_mdp.GetValue()
             fichier = self.panelReseau.ctrl_fichier.GetValue()
-            nomFichier = u"%s;%s;%s;%s[RESEAU]%s" % (port, hote, user, mdp, fichier)
+            nomFichier = _(u"%s;%s;%s;%s[RESEAU]%s") % (port, hote, user, mdp, fichier)
             return nomFichier
             
     

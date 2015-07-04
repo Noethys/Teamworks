@@ -8,8 +8,10 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+from UTILS_Traduction import _
 
 import wx
+import CTRL_Bouton_image
 import threading
 from PIL import Image
 from VideoCapture import Device
@@ -109,8 +111,8 @@ class Dialog(wx.Dialog):
         self.parent = parent
 
         # Bandeau
-        intro = u"Vous pouvez ici capturer une photo à partir d'une webcam connectée à votre ordinateur. Cliquez sur le bouton 'Prendre une photo' pour capturer l'image puis sur 'Ok' pour valider et ouvrir l'éditeur photo qui vous permettra d'effectuer un recadrage avant l'insertion dans la fiche individuelle."
-        titre = u"Capture d'une photo"
+        intro = _(u"Vous pouvez ici capturer une photo à partir d'une webcam connectée à votre ordinateur. Cliquez sur le bouton 'Prendre une photo' pour capturer l'image puis sur 'Ok' pour valider et ouvrir l'éditeur photo qui vous permettra d'effectuer un recadrage avant l'insertion dans la fiche individuelle.")
+        titre = _(u"Capture d'une photo")
         self.SetTitle(titre)
         self.ctrl_bandeau = CTRL_Bandeau.Bandeau(self, titre=titre, texte=intro, hauteurHtml=30, nomImage="Images/32x32/Webcam.png")
         
@@ -120,10 +122,10 @@ class Dialog(wx.Dialog):
         
         # Boutons
         self.ctrl_ligne = wx.StaticLine(self, -1)
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_options = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Options.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_options = CTRL_Bouton_image.CTRL(self, texte=_(u"Options"), cheminImage="Images/32x32/Configuration2.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         self.bouton_ok.Enable(False)
         
@@ -146,16 +148,16 @@ class Dialog(wx.Dialog):
         else:
             self.bouton_capture.Enable(False)
             self.bouton_options.Enable(False)
-            dlg = wx.MessageDialog(self, u"Noethys n'a pas réussi à se connecter à la caméra.\nVeuillez vérifier que celle-ci est bien installée...", u"Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Noethys n'a pas réussi à se connecter à la caméra.\nVeuillez vérifier que celle-ci est bien installée..."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
 
     def __set_properties(self):
-        self.bouton_capture.SetToolTipString(u"Cliquez ici pour prendre la photo")
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_options.SetToolTipString(u"Cliquez ici pour définir les propriétés de la capture vidéo")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler")
+        self.bouton_capture.SetToolTipString(_(u"Cliquez ici pour prendre la photo"))
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_options.SetToolTipString(_(u"Cliquez ici pour définir les propriétés de la capture vidéo"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
         self.SetMinSize((700, 720))
 
     def __do_layout(self):
@@ -198,10 +200,10 @@ class Dialog(wx.Dialog):
         # Création du menu contextuel
         menuPop = wx.Menu()
         
-        menuPop.AppendItem(wx.MenuItem(menuPop, 10, u"Propriétés du flux vidéo"))
+        menuPop.AppendItem(wx.MenuItem(menuPop, 10, _(u"Propriétés du flux vidéo")))
         self.Bind(wx.EVT_MENU, self.Menu_proprietes_pin, id=10)
         
-        menuPop.AppendItem(wx.MenuItem(menuPop, 20, u"Propriétés de la capture vidéo"))
+        menuPop.AppendItem(wx.MenuItem(menuPop, 20, _(u"Propriétés de la capture vidéo")))
         self.Bind(wx.EVT_MENU, self.Menu_proprietes_filter, id=20)
         
         self.PopupMenu(menuPop)

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.html as html
 import FonctionsPerso
 
@@ -43,7 +45,7 @@ class MyHtml(html.HtmlWindow):
         self.SetBackgroundColour(couleurFond)
     
     def OnLinkClicked(self, link):
-        FonctionsPerso.LanceFichierExterne(u"http://teamworks.forumactif.com/faire-un-don-de-soutien-f2/pourquoi-et-comment-faire-un-don-de-soutien-t129.htm")
+        FonctionsPerso.LanceFichierExterne(_(u"http://teamworks.forumactif.com/faire-un-don-de-soutien-f2/pourquoi-et-comment-faire-un-don-de-soutien-t129.htm"))
         
 class Dialog(wx.Dialog):
     def __init__(self, parent):
@@ -64,8 +66,8 @@ class Dialog(wx.Dialog):
 
 
     def __set_properties(self):
-        self.SetTitle(u"Bienvenue")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour fermer cette fenêtre et utiliser Teamworks")
+        self.SetTitle(_(u"Bienvenue"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour fermer cette fenêtre et utiliser Teamworks"))
         self.SetMinSize((300, 370))
 
     def __do_layout(self):

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
@@ -18,8 +20,8 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL, name="panel_config_pays")
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Les pays et nationalités", u"")
-        texteIntro = u"Vous pouvez ici ajouter, modifier ou supprimer des pays et les nationalités correspondantes :"
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Les pays et nationalités"), u"")
+        texteIntro = _(u"Vous pouvez ici ajouter, modifier ou supprimer des pays et les nationalités correspondantes :")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
         self.listCtrl = ListCtrl(self)
@@ -49,13 +51,13 @@ class Panel(wx.Panel):
         self.bouton_supprimer.Enable(False)
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un nouveau pays")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau pays"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier un pays sélectionné dans la liste")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier un pays sélectionné dans la liste"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le pays sélectionné dans la liste")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le pays sélectionné dans la liste"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -95,7 +97,7 @@ class Panel(wx.Panel):
     def Modifier(self):
         index = self.listCtrl.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un pays à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un pays à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -103,7 +105,7 @@ class Panel(wx.Panel):
 ##        # Avertissement si cet item a déjà été attribué à une personne
 ##        nbreTitulaires = int(self.listCtrl_Situations.GetItem(index, 2).GetText())
 ##        if nbreTitulaires != 0:
-##            message =u"Avertissement : Ce type de situation sociale a déjà été attribué a " + str(nbreTitulaires) + u" personne(s). Toute modification sera donc répercutée en cascade sur toutes les fiches des personnes à qui cette situation sociale a été attribuée. \n\nSouhaitez-vous quand même modifier ce type de situation ?"
+##            message =_(u"Avertissement : Ce type de situation sociale a déjà été attribué a ") + str(nbreTitulaires) + _(u" personne(s). Toute modification sera donc répercutée en cascade sur toutes les fiches des personnes à qui cette situation sociale a été attribuée. \n\nSouhaitez-vous quand même modifier ce type de situation ?")
 ##            dlg = wx.MessageDialog(self, message, "Information", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_INFORMATION)
 ##            reponse = dlg.ShowModal()
 ##            if reponse == wx.ID_NO:
@@ -124,7 +126,7 @@ class Panel(wx.Panel):
         
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un pays à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un pays à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -132,7 +134,7 @@ class Panel(wx.Panel):
         # Vérifie que cet item n'est attribuée à aucune personne
         nbreTitulaires = int(self.listCtrl.GetItem(index, 4).GetText())
         if nbreTitulaires != 0:
-            dlg = wx.MessageDialog(self, u"Pour des raisons de sécurité des données, vous ne pouvez pas supprimer un pays qui a déjà été attribué à des personnes.\n\nSi vous voulez vraiment le supprimer, vous devez d'abord supprimer ce pays sur chaque fiche individuelle concernée.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Pour des raisons de sécurité des données, vous ne pouvez pas supprimer un pays qui a déjà été attribué à des personnes.\n\nSi vous voulez vraiment le supprimer, vous devez d'abord supprimer ce pays sur chaque fiche individuelle concernée."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -142,15 +144,15 @@ class Panel(wx.Panel):
 
         # Vérifie que ce n'est pas un pays prédéfini
         if ID <= 230 :
-            dlg = wx.MessageDialog(self, u"Vous ne pouvez pas supprimer un pays pré-enregistré.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous ne pouvez pas supprimer un pays pré-enregistré."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return      
         
         # Demande de confirmation
         Nom = self.listCtrl.GetItem(index, 2).GetText()
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce pays ? \n\n> " + Nom))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce pays ? \n\n> ") + Nom))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -208,7 +210,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         self.imgDrapeauAutre = self.il.Add(wx.Bitmap('Images/Drapeaux/autre.png', wx.BITMAP_TYPE_PNG))
         listeDrapeaux = self.Importation_drapeaux()
         for ID, code_drapeau in listeDrapeaux :
-            exec("self.imgDrapeau" + str(ID) + " = self.il.Add(wx.Bitmap('Images/Drapeaux/" + code_drapeau + ".png', wx.BITMAP_TYPE_PNG))")
+            exec("self.imgDrapea_(u" + str(ID) + ") = self.il.Add(wx.Bitmap('Images/Drapeaux/" + code_drapeau + ".png', wx.BITMAP_TYPE_PNG))")
         self.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
 
     def OnSize(self, event):
@@ -228,13 +230,13 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         self.nbreColonnes = 4
         self.InsertColumn(0, u"")
         self.SetColumnWidth(0, 29)
-        self.InsertColumn(1, u"Code drapeau")
+        self.InsertColumn(1, _(u"Code drapeau"))
         self.SetColumnWidth(1, 0)
-        self.InsertColumn(2, u"Nom")
+        self.InsertColumn(2, _(u"Nom"))
         self.SetColumnWidth(2, 180)
-        self.InsertColumn(3, u"Nationalité")
+        self.InsertColumn(3, _(u"Nationalité"))
         self.SetColumnWidth(3, 120)
-        self.InsertColumn(4, u"Nb titulaires")
+        self.InsertColumn(4, _(u"Nb titulaires"))
         self.SetColumnWidth(4, 80)   
 
 
@@ -403,7 +405,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -412,14 +414,14 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -449,9 +451,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -466,20 +468,20 @@ class MyFrame(wx.Frame):
         if IDpays != 0 : 
             self.panel_contenu.listCtrl.SetSelection(IDpays=IDpays)
         if self.saisie == "FicheIndiv_pays_naiss" : 
-            self.panel_contenu.label_introduction.SetLabel(u"Sélectionnez un pays de naissance dans la liste :")
+            self.panel_contenu.label_introduction.SetLabel(_(u"Sélectionnez un pays de naissance dans la liste :"))
         if self.saisie == "FicheIndiv_nationalite" : 
-            self.panel_contenu.label_introduction.SetLabel(u"Sélectionnez une nationalité dans la liste :")
+            self.panel_contenu.label_introduction.SetLabel(_(u"Sélectionnez une nationalité dans la liste :"))
 
     def __set_properties(self):
-        self.SetTitle(u"Gestion des pays")
+        self.SetTitle(_(u"Gestion des pays"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 
@@ -522,7 +524,7 @@ class MyFrame(wx.Frame):
         # On vérifie qu'un pays a été sélectionné
         if self.saisie == "FicheIndiv_nationalite" or self.saisie == "FicheIndiv_nationalite" :
             if self.panel_contenu.listCtrl.selection == None :
-                dlg = wx.MessageDialog(self, u"Vous devez sélectionner un pays dans la liste.", "Erreur", wx.OK)  
+                dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un pays dans la liste."), "Erreur", wx.OK)  
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
@@ -532,7 +534,7 @@ class MyFrame(wx.Frame):
             index = listCtrl.GetFirstSelected()
             nationalite = listCtrl.getColumnText(index, 3)
             if nationalite == "" :
-                dlg = wx.MessageDialog(self, u"Vous avez sélectionné un pays dont la nationalité n'a pas encore été précisée. \nCliquez sur le bouton 'Modifier' pour saisir le nom de la nationalité.", "Erreur", wx.OK)  
+                dlg = wx.MessageDialog(self, _(u"Vous avez sélectionné un pays dont la nationalité n'a pas encore été précisée. \nCliquez sur le bouton 'Modifier' pour saisir le nom de la nationalité."), "Erreur", wx.OK)  
                 dlg.ShowModal()
                 dlg.Destroy()
                 return

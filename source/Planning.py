@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import datetime
 import time
 import GestionDB
@@ -146,7 +148,7 @@ def StrEnDatetimeDate(texteDate):
 def DatetimeDateEnStr(date):
     """ Transforme un datetime.date en date complète : Ex : lundi 15 janvier 2008 """
     listeJours = ("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
-    listeMois = (u"janvier", u"février", u"mars", u"avril", u"mai", u"juin", u"juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre")
+    listeMois = (_(u"janvier"), _(u"février"), _(u"mars"), _(u"avril"), _(u"mai"), _(u"juin"), _(u"juillet"), _(u"août"), _(u"septembre"), _(u"octobre"), _(u"novembre"), _(u"décembre"))
     dateStr = listeJours[date.weekday()] + " " + str(date.day) + " " + listeMois[date.month-1] + " " + str(date.year)
     return dateStr
 
@@ -529,7 +531,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         print "lancement de l'impression..."
         
         if len(self.listePresences) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez sélectionné aucune présence à imprimer !", u"Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucune présence à imprimer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -540,9 +542,9 @@ class WidgetPlanning(wx.ScrolledWindow):
         # Demande le type d'impression à l'utilisateur
         import Selection_type_document
         listeBoutons = [
-            ("Images/BoutonsImages/Imprimer_presences_texteB.png", u"Cliquez ici pour imprimer au format texte"),
-            ("Images/BoutonsImages/Imprimer_presences_graph1B.png", u"Cliquez ici pour imprimer sous forme graphique au format portrait"),
-            ("Images/BoutonsImages/Imprimer_presences_graph2B.png", u"Cliquez ici pour imprimer sous forme graphique au format paysage"),
+            ("Images/BoutonsImages/Imprimer_presences_texteB.png", _(u"Cliquez ici pour imprimer au format texte")),
+            ("Images/BoutonsImages/Imprimer_presences_graph1B.png", _(u"Cliquez ici pour imprimer sous forme graphique au format portrait")),
+            ("Images/BoutonsImages/Imprimer_presences_graph2B.png", _(u"Cliquez ici pour imprimer sous forme graphique au format paysage")),
             ]
         dlg = Selection_type_document.MyFrame(self, size=(650, 335), listeBoutons=listeBoutons, type="presences")
         if dlg.ShowModal() == wx.ID_OK:
@@ -1158,7 +1160,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             texteStatusBar = ""
         try : 
             wx.GetApp().GetTopWindow().SetStatusText(texteStatusBar, 0)
-            txtAide = u"Accédez aux fonctions de gestion des tâches en cliquant sur le bouton droit de votre souris"
+            txtAide = _(u"Accédez aux fonctions de gestion des tâches en cliquant sur le bouton droit de votre souris")
             wx.GetApp().GetTopWindow().SetStatusText(txtAide, 1)
         except : pass
         
@@ -1447,7 +1449,7 @@ class WidgetPlanning(wx.ScrolledWindow):
 
     def Supprimer(self, IDpresence, txt):
         """ Supprimer une tâche """
-        dlg = wx.MessageDialog(self, txt,  u"Suppression d'une tâche", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+        dlg = wx.MessageDialog(self, txt,  _(u"Suppression d'une tâche"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
         if dlg.ShowModal() == wx.ID_NO :
             print "suppression annulee"
             dlg.Destroy() 
@@ -1494,7 +1496,7 @@ class WidgetPlanning(wx.ScrolledWindow):
                 # Menu Ajouter
                 self.popupID1 = wx.NewId()
                 self.Bind(wx.EVT_MENU, self.OnMenuAjouter, id=self.popupID1)
-                menu.Append(self.popupID1, u"Enregistrer une tâche unique ici")
+                menu.Append(self.popupID1, _(u"Enregistrer une tâche unique ici"))
                 #menu.Enable(self.popupID1, False)
             
             else:
@@ -1502,24 +1504,24 @@ class WidgetPlanning(wx.ScrolledWindow):
                 # Menu Modifier
                 self.popupID1 = wx.NewId()
                 self.Bind(wx.EVT_MENU, self.OnMenuModifier, id=self.popupID1)
-                menu.Append(self.popupID1, u"Modifier")
+                menu.Append(self.popupID1, _(u"Modifier"))
 
                 # Menu Supprimer
                 self.popupID2 = wx.NewId()
                 self.Bind(wx.EVT_MENU, self.OnMenuSupprimer, id=self.popupID2)
-                menu.Append(self.popupID2, u"Supprimer")
+                menu.Append(self.popupID2, _(u"Supprimer"))
 
                 # Menu Modifier la légende
                 if self.dictPresences[IDpresence][6] == "" :
-                    texte3 = u"Ajouter une légende"
+                    texte3 = _(u"Ajouter une légende")
                 else:
-                    texte3 = u"Modifier la légende"
+                    texte3 = _(u"Modifier la légende")
                 self.popupID3 = wx.NewId()
                 self.Bind(wx.EVT_MENU, self.OnMenuModifLegende, id=self.popupID3)
                 menu.Append(self.popupID3, texte3)
            
                 # Création du sous-menu Catégories
-                self.SousMenuCategories(0, menu, u"Changer de catégorie", None)
+                self.SousMenuCategories(0, menu, _(u"Changer de catégorie"), None)
                 
             menu.AppendSeparator()
             
@@ -1530,18 +1532,18 @@ class WidgetPlanning(wx.ScrolledWindow):
             self.popupIDSaisie = wx.NewId()
             self.Bind(wx.EVT_MENU, self.OnMenuSaisie, id=self.popupIDSaisie)
             if len(selectionsLignes) == 1:
-                txt = u"Enregistrer une tâche pour la ligne sélectionnée"
+                txt = _(u"Enregistrer une tâche pour la ligne sélectionnée")
             else:
-                txt = u"Enregistrer une tâche pour les " + str(len(selectionsLignes)) + u" lignes sélectionnées"
+                txt = _(u"Enregistrer une tâche pour les ") + str(len(selectionsLignes)) + _(u" lignes sélectionnées")
             menu.Append(self.popupIDSaisie, txt)
             
             # Menu Supprimer toutes les tâches des des lignes sélectionnées
             self.popupIDSupprimerAll = wx.NewId()
             self.Bind(wx.EVT_MENU, self.OnMenuSupprimerLignes, id=self.popupIDSupprimerAll)
             if len(selectionsLignes) == 1:
-                txt = u"Supprimer toutes les tâches de la ligne sélectionnée"
+                txt = _(u"Supprimer toutes les tâches de la ligne sélectionnée")
             else:
-                txt = u"Supprimer toutes les tâches des " + str(len(selectionsLignes)) + u" lignes sélectionnées"
+                txt = _(u"Supprimer toutes les tâches des ") + str(len(selectionsLignes)) + _(u" lignes sélectionnées")
             menu.Append(self.popupIDSupprimerAll, txt)
             
             menu.AppendSeparator()
@@ -1550,9 +1552,9 @@ class WidgetPlanning(wx.ScrolledWindow):
             self.popupIDAppliquerModele = wx.NewId()
             self.Bind(wx.EVT_MENU, self.OnMenuAppliquerModele, id=self.popupIDAppliquerModele)
             if len(selectionsLignes) == 1:
-                txt = u"Appliquer un modèle à la ligne sélectionnée"
+                txt = _(u"Appliquer un modèle à la ligne sélectionnée")
             else:
-                txt = u"Appliquer un modèle aux " + str(len(selectionsLignes)) + u" lignes sélectionnées"
+                txt = _(u"Appliquer un modèle aux ") + str(len(selectionsLignes)) + _(u" lignes sélectionnées")
             menu.Append(self.popupIDAppliquerModele, txt)
             
             menu.AppendSeparator()
@@ -1560,12 +1562,12 @@ class WidgetPlanning(wx.ScrolledWindow):
         # Menu Tout sélectionner
         self.popupIDSelectAll = wx.NewId()
         self.Bind(wx.EVT_MENU, self.OnMenuSelectAll, id=self.popupIDSelectAll)
-        menu.Append(self.popupIDSelectAll, u"Sélectionner toutes les lignes")
+        menu.Append(self.popupIDSelectAll, _(u"Sélectionner toutes les lignes"))
             
         # Menu Tout désélectionner
         self.popupIDDeselectAll = wx.NewId()
         self.Bind(wx.EVT_MENU, self.OnMenuDeselectAll, id=self.popupIDDeselectAll)
-        menu.Append(self.popupIDDeselectAll, u"Désélectionner toutes les lignes")
+        menu.Append(self.popupIDDeselectAll, _(u"Désélectionner toutes les lignes"))
         
        
         # Finalisation du menu
@@ -1602,7 +1604,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         heureDebut = str(self.dictPresences[IDpresence][3])[:5]
         heureFin = str(self.dictPresences[IDpresence][4])[:5]
         date = DatetimeDateEnStr(self.dictPresences[IDpresence][2])
-        txt = u"Souhaitez-vous vraiment supprimer la tâche du %s de %s à %s ?" % (date, heureDebut, heureFin)
+        txt = _(u"Souhaitez-vous vraiment supprimer la tâche du %s de %s à %s ?") % (date, heureDebut, heureFin)
         self.Supprimer(IDpresence, txt)
         #event.Skip()
 
@@ -1613,9 +1615,9 @@ class WidgetPlanning(wx.ScrolledWindow):
         heureDebut = str(self.dictPresences[IDpresence][3])[:5]
         heureFin = str(self.dictPresences[IDpresence][4])[:5]
         date = DatetimeDateEnStr(self.dictPresences[IDpresence][2])
-        intro = u"Saisissez une légende pour la tâche du %s de %s à %s :" % (date, heureDebut, heureFin)
+        intro = _(u"Saisissez une légende pour la tâche du %s de %s à %s :") % (date, heureDebut, heureFin)
 
-        dlg = wx.TextEntryDialog(self, intro, u"Saisie d'une légende", legendeDefaut)
+        dlg = wx.TextEntryDialog(self, intro, _(u"Saisie d'une légende"), legendeDefaut)
         if dlg.ShowModal() == wx.ID_OK:
             varLegende = dlg.GetValue()
             dlg.Destroy()
@@ -1759,16 +1761,16 @@ class WidgetPlanning(wx.ScrolledWindow):
                             listeIDpresences.append(IDpresence)
         
         if len(listeIDpresences) == 0 : 
-            dlg = wx.MessageDialog(self, u"Il n'existe aucune tâche à supprimer sur la ou les lignes sélectionnées !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Il n'existe aucune tâche à supprimer sur la ou les lignes sélectionnées !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
         
         if nbreLignes == 1 :
-            txt = u"Souhaitez-vous vraiment supprimer toutes les tâches de la ligne sélectionnée ?"
+            txt = _(u"Souhaitez-vous vraiment supprimer toutes les tâches de la ligne sélectionnée ?")
         else:
-            txt = u"Souhaitez-vous vraiment supprimer toutes les tâches des " + str(nbreLignes) + u" lignes sélectionnées ?"
-        dlg = wx.MessageDialog(self, txt ,  u"Suppression de toutes les tâches", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            txt = _(u"Souhaitez-vous vraiment supprimer toutes les tâches des ") + str(nbreLignes) + _(u" lignes sélectionnées ?")
+        dlg = wx.MessageDialog(self, txt ,  _(u"Suppression de toutes les tâches"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
         if dlg.ShowModal() == wx.ID_NO :
             print "suppression annulle"
             dlg.Destroy() 
@@ -1873,19 +1875,19 @@ class BarreOptions(wx.Panel):
         self.radio2 = wx.RadioButton( self, -1, "Personnes" )
         
         self.boutonOutils = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Outils.png", wx.BITMAP_TYPE_PNG) )
-        self.txtOutils = wx.StaticText( self, -1, u"Outils" )
-        self.boutonOutils.SetToolTipString(u"Cliquez ici pour afficher le menu des outils du planning")
-        self.txtOutils.SetToolTipString(u"Cliquez ici pour afficher le menu des outils du planning")
+        self.txtOutils = wx.StaticText( self, -1, _(u"Outils") )
+        self.boutonOutils.SetToolTipString(_(u"Cliquez ici pour afficher le menu des outils du planning"))
+        self.txtOutils.SetToolTipString(_(u"Cliquez ici pour afficher le menu des outils du planning"))
         
         self.boutonOptions = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Options.png", wx.BITMAP_TYPE_PNG) )
-        self.txtOptions = wx.StaticText( self, -1, u"Options d'affichage" )
-        self.boutonOptions.SetToolTipString(u"Cliquez ici pour afficher le menu des options d'affichage du planning")
-        self.txtOptions.SetToolTipString(u"Cliquez ici pour afficher le menu des options d'affichage du planning")
+        self.txtOptions = wx.StaticText( self, -1, _(u"Options d'affichage") )
+        self.boutonOptions.SetToolTipString(_(u"Cliquez ici pour afficher le menu des options d'affichage du planning"))
+        self.txtOptions.SetToolTipString(_(u"Cliquez ici pour afficher le menu des options d'affichage du planning"))
         
         self.boutonAide = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_PNG) )
         self.txtAide = wx.StaticText( self, -1, "Aide " )
-        self.boutonAide.SetToolTipString(u"Cliquez ici pour afficher l'aide")
-        self.txtAide.SetToolTipString(u"Cliquez ici pour afficher l'aide")
+        self.boutonAide.SetToolTipString(_(u"Cliquez ici pour afficher l'aide"))
+        self.txtAide.SetToolTipString(_(u"Cliquez ici pour afficher l'aide"))
 
         # Bind
         self.Bind(wx.EVT_RADIOBUTTON, self.OnRadio1, self.radio1 )
@@ -2008,14 +2010,14 @@ class BarreOptions(wx.Panel):
         
         # Commande Imprimer
         IDitem = 10
-        item = wx.MenuItem(menu, IDitem, u"Imprimer le planning affiché", u"Imprimer le planning affiché")
+        item = wx.MenuItem(menu, IDitem, _(u"Imprimer le planning affiché"), _(u"Imprimer le planning affiché"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_10, id=IDitem)
         
         # Commande Autres impressions
         IDitem = 40
-        item = wx.MenuItem(menu, IDitem, u"Imprimer d'autres types de plannings", u"Imprimer d'autres types de plannings")
+        item = wx.MenuItem(menu, IDitem, _(u"Imprimer d'autres types de plannings"), _(u"Imprimer d'autres types de plannings"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_40, id=IDitem)
@@ -2024,14 +2026,14 @@ class BarreOptions(wx.Panel):
         
         # Commande Stats simples
         IDitem = 20
-        item = wx.MenuItem(menu, IDitem, u"Statistiques", u"Afficher les statistiques des présences")
+        item = wx.MenuItem(menu, IDitem, _(u"Statistiques"), _(u"Afficher les statistiques des présences"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Stats.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_20, id=IDitem)
         
         # Commande Scénarios
         IDitem = 30
-        item = wx.MenuItem(menu, IDitem, u"Gestion des scénarios", u"Gestion des scénarios")
+        item = wx.MenuItem(menu, IDitem, _(u"Gestion des scénarios"), _(u"Gestion des scénarios"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Scenario.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_30, id=IDitem)
@@ -2048,35 +2050,35 @@ class BarreOptions(wx.Panel):
         
         # Affichage des légendes
         IDitem = 210
-        menu.Append(IDitem, u"Afficher les légendes", u"Affiche ou non les légendes des présences", wx.ITEM_CHECK)
+        menu.Append(IDitem, _(u"Afficher les légendes"), _(u"Affiche ou non les légendes des présences"), wx.ITEM_CHECK)
         if hauteurBarre == 26 :
             menu.Check(IDitem, True)
         self.Bind(wx.EVT_MENU, self.Menu_210, id=IDitem)
         
         # Affichage des périodes de contrats
         IDitem = 220
-        menu.Append(IDitem, u"Afficher les périodes de contrats", u"Affiche ou non les périodes des contrats des personnes sélectionnées", wx.ITEM_CHECK)
+        menu.Append(IDitem, _(u"Afficher les périodes de contrats"), _(u"Affiche ou non les périodes des contrats des personnes sélectionnées"), wx.ITEM_CHECK)
         if afficher_contrats == True :
             menu.Check(IDitem, True)
         self.Bind(wx.EVT_MENU, self.Menu_220, id=IDitem)
         
         # Affichage des temps de fin de ligne
         IDitem = 230
-        menu.Append(IDitem, u"Afficher les temps de fin de ligne", u"Affiche ou non les temps de fin de ligne", wx.ITEM_CHECK)
+        menu.Append(IDitem, _(u"Afficher les temps de fin de ligne"), _(u"Affiche ou non les temps de fin de ligne"), wx.ITEM_CHECK)
         if afficher_temps_ligne == True :
             menu.Check(IDitem, True)
         self.Bind(wx.EVT_MENU, self.Menu_230, id=IDitem)
         
         # Affichage des temps en tete de groupe
         IDitem = 240
-        menu.Append(IDitem, u"Afficher les temps en tête de groupe", u"Affiche ou non les temps en tête de groupe", wx.ITEM_CHECK)
+        menu.Append(IDitem, _(u"Afficher les temps en tête de groupe"), _(u"Affiche ou non les temps en tête de groupe"), wx.ITEM_CHECK)
         if afficher_temps_groupe == True :
             menu.Check(IDitem, True)
         self.Bind(wx.EVT_MENU, self.Menu_240, id=IDitem)
         
         # Affichage du nbre de présents
         IDitem = 250
-        menu.Append(IDitem, u"Afficher la barre quantitative", u"Affiche ou non la barre quantitative", wx.ITEM_CHECK)
+        menu.Append(IDitem, _(u"Afficher la barre quantitative"), _(u"Affiche ou non la barre quantitative"), wx.ITEM_CHECK)
         if afficher_nbre_presents == True :
             menu.Check(IDitem, True)
         self.Bind(wx.EVT_MENU, self.Menu_250, id=IDitem)
@@ -2085,7 +2087,7 @@ class BarreOptions(wx.Panel):
         
         # Commande Imprimer
         IDitem = 260
-        item = wx.MenuItem(menu, IDitem, u"Définir l'amplitude horaire affichée par défaut", u"Définir l'amplitude horaire affichée par défaut")
+        item = wx.MenuItem(menu, IDitem, _(u"Définir l'amplitude horaire affichée par défaut"), _(u"Définir l'amplitude horaire affichée par défaut"))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_260, id=IDitem)
         
@@ -2102,8 +2104,8 @@ class BarreOptions(wx.Panel):
         # Demande le type d'impression à l'utilisateur
         import Selection_type_document
         listeBoutons = [
-            ("Images/BoutonsImages/Imprimer_planning_mensuel.png", u"Cliquez ici pour imprimer un planning mensuel"),
-            ("Images/BoutonsImages/Imprimer_planning_annuel.png", u"Cliquez ici pour imprimer un planning annuel pour une personne"),
+            ("Images/BoutonsImages/Imprimer_planning_mensuel.png", _(u"Cliquez ici pour imprimer un planning mensuel")),
+            ("Images/BoutonsImages/Imprimer_planning_annuel.png", _(u"Cliquez ici pour imprimer un planning annuel pour une personne")),
             ]
         dlg = Selection_type_document.MyFrame(self, size=(650, 335), listeBoutons=listeBoutons, type="presences")
         if dlg.ShowModal() == wx.ID_OK:
@@ -2127,7 +2129,7 @@ class BarreOptions(wx.Panel):
     def Menu_20(self, event):
         """ Afficher les stats """
         topWindow = wx.GetApp().GetTopWindow() 
-        try : topWindow.SetStatusText(u"Chargement du module des statistiques en cours. Veuillez patientez...")
+        try : topWindow.SetStatusText(_(u"Chargement du module des statistiques en cours. Veuillez patientez..."))
         except : pass
         panelPresences = self.GetGrandParent().GetParent()
         # Récupération des dates du calendrier
@@ -2266,7 +2268,7 @@ class PanelPlanning(wx.Panel):
         
         self.barreOptions = BarreOptions(self)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self, u"Le planning", u"Le planning")
+        self.barreTitre = FonctionsPerso.BarreTitre(self, _(u"Le planning"), _(u"Le planning"))
 
         # Layout
         sizer =  wx.BoxSizer(wx.VERTICAL)
@@ -2703,7 +2705,7 @@ class ImpressionPDFvTexte():
 
         
         if len(dictGroupes) == 0 : 
-            dlg = wx.MessageDialog(None, u"Vous devez sélectionner au moins une date dans le calendrier !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(None, _(u"Vous devez sélectionner au moins une date dans le calendrier !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
@@ -2788,7 +2790,7 @@ class ImpressionPDFvTexte():
             story.append(Spacer(0,12))
         
         # Création des totaux de catégories
-        dataTableau = [("", u"Total par catégorie", ""),]
+        dataTableau = [("", _(u"Total par catégorie"), ""),]
         totalTemps = 0
         for IDcategorie, valeurs in dictCategories.iteritems() :
             nomCategorie = valeurs[0]
@@ -2796,7 +2798,7 @@ class ImpressionPDFvTexte():
             if temps != 0 :
                 totalTemps += temps
                 dataTableau.append( ("", nomCategorie, self.minutesEnHeures(temps)) )
-        dataTableau.append( ("", u"Total des heures :", self.minutesEnHeures(totalTemps)) )
+        dataTableau.append( ("", _(u"Total des heures :"), self.minutesEnHeures(totalTemps)) )
         
         style = TableStyle([('GRID', (1,0), (2,-2), 0.25, colors.black),
                             ('VALIGN', (0,0), (-1,-1), 'TOP'), # Centre verticalement toutes les cases

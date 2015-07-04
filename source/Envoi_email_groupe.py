@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import os
 import wx.lib.hyperlink as hl
@@ -20,11 +22,11 @@ class MyDialog(wx.Dialog):
         self.parent = parent
         self.listeAdresses = []
         
-        self.label_intro = wx.StaticText(self, -1, u"Veuillez sélectionner les destinataires :")
+        self.label_intro = wx.StaticText(self, -1, _(u"Veuillez sélectionner les destinataires :"))
         
-        self.staticbox = wx.StaticBox(self, -1, u"Catégorie de destinataires")
-        self.radio_salaries = wx.RadioButton(self, -1, u"Salariés")
-        self.radio_candidats = wx.RadioButton(self, -1, u"Candidats")
+        self.staticbox = wx.StaticBox(self, -1, _(u"Catégorie de destinataires"))
+        self.radio_salaries = wx.RadioButton(self, -1, _(u"Salariés"))
+        self.radio_candidats = wx.RadioButton(self, -1, _(u"Candidats"))
         
         # CheckListBox
         self.checkListBox = wx.CheckListBox(self,  choices=[], size=(50, 50))
@@ -32,9 +34,9 @@ class MyDialog(wx.Dialog):
         # Hyperlink cocher les présents
         self.hyperlink_presents = self.Build_Hyperlink()
         
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -47,7 +49,7 @@ class MyDialog(wx.Dialog):
         self.MAJ_liste()
         
     def __set_properties(self):
-        self.SetTitle(u"Envoi d'un mail groupé")
+        self.SetTitle(_(u"Envoi d'un mail groupé"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -156,14 +158,14 @@ class MyDialog(wx.Dialog):
     def Build_Hyperlink(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(8, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self, -1, u"Sélectionner les présents sur une période donnée", URL="")
+        hyper = hl.HyperLinkCtrl(self, -1, _(u"Sélectionner les présents sur une période donnée"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLACK", "BLACK", "BLUE")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour sélectionner les personnes présentes sur une période donnée"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner les personnes présentes sur une période donnée")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -186,7 +188,7 @@ class MyDialog(wx.Dialog):
                 self.checkListBox.Check(index, False)
         # S'il n'y a aucune personne présente sur la période sélectionnée
         if len(listePersonnesPresentes) == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune personne présente sur la période que vous avez sélectionné.", u"Erreur de saisie", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune personne présente sur la période que vous avez sélectionné."), _(u"Erreur de saisie"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -200,7 +202,7 @@ class MyDialog(wx.Dialog):
         
         # Validation de la sélection
         if len(selections) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez fait aucune sélection", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez fait aucune sélection"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -218,7 +220,7 @@ class MyDialog(wx.Dialog):
         
         # Si aucune des personnes sélectionnées n'a d'adresse
         if len(selections) == len(listeSansAdresses) :
-            dlg = wx.MessageDialog(self, u"Aucune des personnes sélectionnées ne possède d'adresse internet !", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Aucune des personnes sélectionnées ne possède d'adresse internet !"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -226,12 +228,12 @@ class MyDialog(wx.Dialog):
         # Avertit qu'il y a des personnes sans adresse
         if len(listeSansAdresses) != 0 :
             # Création du texte du messageBox
-            message = u"Parmi les " + str(len(selections)) + u" personnes sélectionnées, " + str(len(listeSansAdresses)) + u" ne possèdent pas d'adresse internet : \n"
+            message = _(u"Parmi les ") + str(len(selections)) + _(u" personnes sélectionnées, ") + str(len(listeSansAdresses)) + _(u" ne possèdent pas d'adresse internet : \n")
             for texteNom in listeSansAdresses :
                 message += "\n    - " + texteNom
-            message += u"\n\nSouhaitez-vous quand même continuer pour les " + str(len(listeAdresses)) + u" personne(s) possédant une adresse ?"
+            message += _(u"\n\nSouhaitez-vous quand même continuer pour les ") + str(len(listeAdresses)) + _(u" personne(s) possédant une adresse ?")
             # Affiche de la messageBox
-            dlg = wx.MessageDialog(self, message, u"Adresses internet manquantes", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, message, _(u"Adresses internet manquantes"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_INFORMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_NO or reponse == wx.ID_CANCEL:
                 dlg.Destroy()

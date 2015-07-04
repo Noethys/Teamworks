@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import datetime
@@ -23,7 +25,7 @@ except: pass
 
 class SaisieDeplacement(wx.Dialog):
     """ Saisie d'un déplacement pour les frais de déplacement """
-    def __init__(self, parent, id=-1, title=u"Saisie d'un déplacement", IDdeplacement=None, IDpersonne=None):
+    def __init__(self, parent, id=-1, title=_(u"Saisie d'un déplacement"), IDdeplacement=None, IDpersonne=None):
         wx.Dialog.__init__(self, parent, id, title)
         self.IDdeplacement = IDdeplacement
         self.IDpersonne = IDpersonne
@@ -46,39 +48,39 @@ class SaisieDeplacement(wx.Dialog):
         self.ImportationDistances()
         
         # Généralités
-        self.staticbox_generalites = wx.StaticBox(self, -1, u"Généralités")
+        self.staticbox_generalites = wx.StaticBox(self, -1, _(u"Généralités"))
         
-        self.label_date = wx.StaticText(self, -1, u"Date :", size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.label_date = wx.StaticText(self, -1, _(u"Date :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_date = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         
-        self.label_utilisateur = wx.StaticText(self, -1, u"Utilisateur :", size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.label_utilisateur = wx.StaticText(self, -1, _(u"Utilisateur :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ImportationPersonnes()
         self.ctrl_utilisateur = AdvancedComboBox( self, "", size=(100, -1), choices = self.listePersonnes)
         
-        self.label_objet = wx.StaticText(self, -1, u"Objet :", size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.label_objet = wx.StaticText(self, -1, _(u"Objet :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_objet = wx.TextCtrl(self, -1, "", size=(-1, -1), style=wx.TE_MULTILINE)
         
         # Trajet
-        self.staticbox_trajet = wx.StaticBox(self, -1, u"Trajet")
+        self.staticbox_trajet = wx.StaticBox(self, -1, _(u"Trajet"))
         
-        self.label_depart = wx.StaticText(self, -1, u"Ville de départ :", size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.label_depart = wx.StaticText(self, -1, _(u"Ville de départ :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_cp_depart = TextCtrlCp(self, value="", listeVilles=self.listeVilles, size=(55, -1), style=wx.TE_CENTRE, mask = "#####") 
         self.ctrl_ville_depart = TextCtrlVille(self, value="", ctrlCp=self.ctrl_cp_depart, listeVilles=self.listeVilles, listeNomsVilles=self.listeNomsVilles)
         self.ctrl_cp_depart.ctrlVille = self.ctrl_ville_depart
         self.bouton_options_depart = wx.Button(self, -1, "...", size=(20, 20))
         
-        self.label_arrivee = wx.StaticText(self, -1, u"Ville d'arrivée :", size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.label_arrivee = wx.StaticText(self, -1, _(u"Ville d'arrivée :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_cp_arrivee = TextCtrlCp(self, value="", listeVilles=self.listeVilles, size=(55, -1), style=wx.TE_CENTRE, mask = "#####") 
         self.ctrl_ville_arrivee = TextCtrlVille(self, value="", ctrlCp=self.ctrl_cp_arrivee, listeVilles=self.listeVilles, listeNomsVilles=self.listeNomsVilles)
         self.ctrl_cp_arrivee.ctrlVille = self.ctrl_ville_arrivee
         self.bouton_options_arrivee = wx.Button(self, -1, "...", size=(20, 20))
         
-        self.label_distance = wx.StaticText(self, -1, u"Distance :", size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.label_distance = wx.StaticText(self, -1, _(u"Distance :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_distance = wx.TextCtrl(self, -1, "0", size=(55, -1))
-        self.label_km = wx.StaticText(self, -1, u"Km  (Aller simple)")
+        self.label_km = wx.StaticText(self, -1, _(u"Km  (Aller simple)"))
         
         
-        self.label_aller_retour = wx.StaticText(self, -1, u"Aller/retour :", size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.label_aller_retour = wx.StaticText(self, -1, _(u"Aller/retour :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_aller_retour = wx.CheckBox(self, -1, u"")
         
         ##############################################################
@@ -90,32 +92,32 @@ class SaisieDeplacement(wx.Dialog):
         ##############################################################
         
         # Remboursement
-        self.staticbox_remboursement = wx.StaticBox(self, -1, u"Remboursement")
+        self.staticbox_remboursement = wx.StaticBox(self, -1, _(u"Remboursement"))
         
-        self.label_tarif = wx.StaticText(self, -1, u"Tarif du Km :", size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.label_tarif = wx.StaticText(self, -1, _(u"Tarif du Km :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_tarif = wx.TextCtrl(self, -1, "0.00", size=(55, -1))
         self.label_euro_tarif = wx.StaticText(self, -1, u"¤")
         
-        self.label_montant = wx.StaticText(self, -1, u"Montant du rmbst :", size=(110, -1), style=wx.ALIGN_RIGHT)
+        self.label_montant = wx.StaticText(self, -1, _(u"Montant du rmbst :"), size=(110, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_montant = wx.StaticText(self, -1, u"0.00 ¤")
         font = wx.Font(9, wx.SWISS, wx.NORMAL, wx.BOLD)
         self.ctrl_montant.SetFont(font)
         
-        self.label_remboursement = wx.StaticText(self, -1, u"Remboursement :", size=(95, -1), style=wx.ALIGN_RIGHT)
-        self.ctrl_remboursement = wx.StaticText(self, -1, u"Aucun remboursement.")
+        self.label_remboursement = wx.StaticText(self, -1, _(u"Remboursement :"), size=(95, -1), style=wx.ALIGN_RIGHT)
+        self.ctrl_remboursement = wx.StaticText(self, -1, _(u"Aucun remboursement."))
 
         
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
         
          # IDpersonne :
         if self.IDpersonne != None :
             self.SetPersonne(self.IDpersonne)
         # Si c'est une modification :
         if self.IDdeplacement != None :
-            self.SetTitle(u"Modification d'un déplacement")
+            self.SetTitle(_(u"Modification d'un déplacement"))
             self.Importation()
         else:
             self.ImportDernierTarif()
@@ -142,21 +144,21 @@ class SaisieDeplacement(wx.Dialog):
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
-        self.ctrl_date.SetToolTipString(u"Sélectionnez ici la date du déplacement")
-        self.ctrl_utilisateur.SetToolTipString(u"Sélectionnez ici l'utilisateur pour ce déplacement")
-        self.ctrl_objet.SetToolTipString(u"Saisissez ici l'objet du déplacement. Ex : réunion, formation, etc...")
-        self.ctrl_cp_depart.SetToolTipString(u"Saisissez ici le code postal de la ville de départ")
-        self.ctrl_ville_depart.SetToolTipString(u"Saisissez ici le nom de la ville de départ")
-        self.ctrl_cp_arrivee.SetToolTipString(u"Saisissez ici le code postal de la ville d'arrivée")
-        self.ctrl_ville_arrivee.SetToolTipString(u"Saisissez ici le nom de la ville d'arrivée")
-        self.ctrl_distance.SetToolTipString(u"Saisissez ici la distance en Km entre les 2 villes sélectionnées.\nSi Teamworks la connait, il l'indiquera automatiquement.")
-        self.ctrl_aller_retour.SetToolTipString(u"Cochez cette case si le déplacement a fait l'objet d'un aller/retour.\nLa distance sera ainsi doublée.")
-        self.ctrl_tarif.SetToolTipString(u"Saisissez ici le montant du tarif du Km pour permettre calculer le montant du remboursement pour ce déplacement.")
-        self.bouton_options_depart.SetToolTipString(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel")
-        self.bouton_options_arrivee.SetToolTipString(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.ctrl_date.SetToolTipString(_(u"Sélectionnez ici la date du déplacement"))
+        self.ctrl_utilisateur.SetToolTipString(_(u"Sélectionnez ici l'utilisateur pour ce déplacement"))
+        self.ctrl_objet.SetToolTipString(_(u"Saisissez ici l'objet du déplacement. Ex : réunion, formation, etc..."))
+        self.ctrl_cp_depart.SetToolTipString(_(u"Saisissez ici le code postal de la ville de départ"))
+        self.ctrl_ville_depart.SetToolTipString(_(u"Saisissez ici le nom de la ville de départ"))
+        self.ctrl_cp_arrivee.SetToolTipString(_(u"Saisissez ici le code postal de la ville d'arrivée"))
+        self.ctrl_ville_arrivee.SetToolTipString(_(u"Saisissez ici le nom de la ville d'arrivée"))
+        self.ctrl_distance.SetToolTipString(_(u"Saisissez ici la distance en Km entre les 2 villes sélectionnées.\nSi Teamworks la connait, il l'indiquera automatiquement."))
+        self.ctrl_aller_retour.SetToolTipString(_(u"Cochez cette case si le déplacement a fait l'objet d'un aller/retour.\nLa distance sera ainsi doublée."))
+        self.ctrl_tarif.SetToolTipString(_(u"Saisissez ici le montant du tarif du Km pour permettre calculer le montant du remboursement pour ce déplacement."))
+        self.bouton_options_depart.SetToolTipString(_(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel"))
+        self.bouton_options_arrivee.SetToolTipString(_(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
@@ -374,7 +376,7 @@ class SaisieDeplacement(wx.Dialog):
     def distance_EvtKillFocus(self, event):
         # Vérifie la validité de la valeur
         if self.ValideControleFloat(self.ctrl_distance) == False : 
-            dlg = wx.MessageDialog(self, u"La distance saisie n'est pas correcte. \nElle doit être sous la forme '32.50' ou '54' par exemple...", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"La distance saisie n'est pas correcte. \nElle doit être sous la forme '32.50' ou '54' par exemple..."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_distance.SetFocus()
@@ -385,7 +387,7 @@ class SaisieDeplacement(wx.Dialog):
     def tarif_EvtKillFocus(self, event):
         # Vérifie la validité de la valeur
         if self.ValideControleFloat(self.ctrl_tarif) == False : 
-            dlg = wx.MessageDialog(self, u"Le tarif n'est pas valide. \nIl doit être sous la forme '0.32' ou '1.53' par exemple...", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Le tarif n'est pas valide. \nIl doit être sous la forme '0.32' ou '1.53' par exemple..."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_tarif.SetFocus()
@@ -487,7 +489,7 @@ class SaisieDeplacement(wx.Dialog):
         # Vérifie contrôle Utilisateur
         valeur = self.ctrl_utilisateur.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner un utilisateur.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner un utilisateur."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_utilisateur.SetFocus()
@@ -496,7 +498,7 @@ class SaisieDeplacement(wx.Dialog):
         # Vérifie contrôle Objet
         valeur = self.ctrl_objet.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous n'avez pas saisi d'objet pour ce déplacement. \n\nVoulez-vous quand même valider ce déplacement ?\n(Cliquez sur 'Non' ou 'Annuler' pour modifier maintenant l'objet)", u"Erreur de saisie", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez pas saisi d'objet pour ce déplacement. \n\nVoulez-vous quand même valider ce déplacement ?\n(Cliquez sur 'Non' ou 'Annuler' pour modifier maintenant l'objet)"), _(u"Erreur de saisie"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_NO or reponse == wx.ID_CANCEL:
                 dlg.Destroy()
@@ -507,7 +509,7 @@ class SaisieDeplacement(wx.Dialog):
         # Vérifie contrôle cp départ
         valeur = self.ctrl_cp_depart.GetValue()
         if valeur == "" or valeur == "     " :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un code postal pour la ville de départ.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un code postal pour la ville de départ."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_cp_depart.SetFocus()
@@ -516,7 +518,7 @@ class SaisieDeplacement(wx.Dialog):
         # Vérifie contrôle ville départ
         valeur = self.ctrl_ville_depart.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom de ville de départ.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom de ville de départ."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_ville_depart.SetFocus()
@@ -525,7 +527,7 @@ class SaisieDeplacement(wx.Dialog):
         # Vérifie contrôle cp arrivée
         valeur = self.ctrl_cp_arrivee.GetValue()
         if valeur == "" or valeur == "     " :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un code postal pour la ville d'arrivée.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un code postal pour la ville d'arrivée."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_cp_arrivee.SetFocus()
@@ -534,7 +536,7 @@ class SaisieDeplacement(wx.Dialog):
         # Vérifie contrôle ville arrivée
         valeur = self.ctrl_ville_arrivee.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom de ville d'arrivée", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom de ville d'arrivée"), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_ville_arrivee.SetFocus()
@@ -543,21 +545,21 @@ class SaisieDeplacement(wx.Dialog):
         # Vérifie contrôle distance
         valeur = self.ctrl_distance.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir une distance en Km pour le trajet.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir une distance en Km pour le trajet."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_distance.SetFocus()
             return
         
         if self.ValideControleFloat(self.ctrl_distance) == False : 
-            dlg = wx.MessageDialog(self, u"La distance saisie n'est pas correcte. \nElle doit être sous la forme '32.50' ou '54' par exemple...", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"La distance saisie n'est pas correcte. \nElle doit être sous la forme '32.50' ou '54' par exemple..."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_distance.SetFocus()
             return
         
         if float(valeur) == 0 :
-            dlg = wx.MessageDialog(self, u"La distance est de 0 Km. \n\nVoulez-vous quand même valider ce déplacement ?\n(Cliquez sur 'Non' ou 'Annuler' pour modifier maintenant la distance)", u"Erreur de saisie", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"La distance est de 0 Km. \n\nVoulez-vous quand même valider ce déplacement ?\n(Cliquez sur 'Non' ou 'Annuler' pour modifier maintenant la distance)"), _(u"Erreur de saisie"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_NO or reponse == wx.ID_CANCEL:
                 dlg.Destroy()
@@ -568,21 +570,21 @@ class SaisieDeplacement(wx.Dialog):
         # Vérifie contrôle tarif
         valeur = self.ctrl_tarif.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir la valeur du tarif du Km en euros.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir la valeur du tarif du Km en euros."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_tarif.SetFocus()
             return
         
         if self.ValideControleFloat(self.ctrl_tarif) == False : 
-            dlg = wx.MessageDialog(self, u"Le tarif n'est pas valide. \nIl doit être sous la forme '0.32' ou '1.53' par exemple...", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Le tarif n'est pas valide. \nIl doit être sous la forme '0.32' ou '1.53' par exemple..."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_tarif.SetFocus()
             return
         
         if float(valeur) == 0 :
-            dlg = wx.MessageDialog(self, u"Le tarif du Km est de 0 ¤. \n\nVoulez-vous quand même valider ce déplacement ?\n(Cliquez sur 'Non' ou 'Annuler' pour modifier maintenant ce tarif)", u"Erreur de saisie", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Le tarif du Km est de 0 ¤. \n\nVoulez-vous quand même valider ce déplacement ?\n(Cliquez sur 'Non' ou 'Annuler' pour modifier maintenant ce tarif)"), _(u"Erreur de saisie"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_NO or reponse == wx.ID_CANCEL:
                 dlg.Destroy()
@@ -788,7 +790,7 @@ class TextCtrlCp(masked.TextCtrl):
         # Code postal introuvable
         if nbreReponses == 0:
             if textCode.strip() != '':
-                dlg = wx.MessageDialog(self, u"Ce code postal n'est pas répertorié dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie.", "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Ce code postal n'est pas répertorié dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie."), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
             return
@@ -814,10 +816,10 @@ class TextCtrlCp(masked.TextCtrl):
     def ChoixVilles(self, cp, listeReponses):
         """ Boîte de dialogue pour donner le choix entre plusieurs villes possédant un code postal identique """
         resultat = ""
-        titre = u"Sélection d'une ville"
+        titre = _(u"Sélection d'une ville")
         nbreReponses = len(listeReponses)
         listeReponses.sort()
-        message = str(nbreReponses) + u" villes possèdent le code postal " + str(cp) + u". Double-cliquez sur\nle nom d'une ville pour la sélectionner :"
+        message = str(nbreReponses) + _(u" villes possèdent le code postal ") + str(cp) + _(u". Double-cliquez sur\nle nom d'une ville pour la sélectionner :")
         dlg = wx.SingleChoiceDialog(self, message, titre, listeReponses, wx.CHOICEDLG_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             resultat = dlg.GetStringSelection()
@@ -865,7 +867,7 @@ class TextCtrlVille(wx.TextCtrl):
 
         # Si la ville saisie n'existe pas
         if nbreCodes == 0:
-            dlg = wx.MessageDialog(self, u"Cette ville n'est pas répertoriée dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Cette ville n'est pas répertoriée dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
         
@@ -909,10 +911,10 @@ class TextCtrlVille(wx.TextCtrl):
     def ChoixCodes(self, ville, listeReponses):
         """ Boîte de dialogue pour donner le choix entre plusieurs villes possédant le même nom """
         resultat = ""
-        titre = u"Sélection d'une ville"
+        titre = _(u"Sélection d'une ville")
         nbreReponses = len(listeReponses)
         listeReponses.sort()
-        message = str(nbreReponses) + u" villes portent le nom " + str(ville) + u". Double-cliquez sur\nle code postal d'une ville pour la sélectionner :"
+        message = str(nbreReponses) + _(u" villes portent le nom ") + str(ville) + _(u". Double-cliquez sur\nle code postal d'une ville pour la sélectionner :")
         dlg = wx.SingleChoiceDialog(self, message, titre, listeReponses, wx.CHOICEDLG_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             resultat = dlg.GetStringSelection()

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import os
 import wx.lib.hyperlink as hl
@@ -33,7 +35,7 @@ class MyFrame(wx.Frame):
         self.IDpersonne = IDpersonne
         
         self.panel_base = wx.Panel(self, -1)
-        self.label_intro = wx.StaticText(self.panel_base, -1, u"Veuillez cocher les déplacements que vous souhaitez inclure dans la fiche de frais :")
+        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Veuillez cocher les déplacements que vous souhaitez inclure dans la fiche de frais :"))
         
         # ListCtrl
         self.ctrl_deplacements = ListCtrl(self.panel_base,  IDpersonne=IDpersonne)
@@ -41,9 +43,9 @@ class MyFrame(wx.Frame):
         # Hyperlink cocher les non remboursés
         self.hyperlink_nonRembourses = self.Build_Hyperlink()
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Imprimer_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Imprimer"), cheminImage="Images/32x32/Imprimante.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -54,7 +56,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Imprimer une fiche de frais de déplacements")
+        self.SetTitle(_(u"Imprimer une fiche de frais de déplacements"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -95,14 +97,14 @@ class MyFrame(wx.Frame):
     def Build_Hyperlink(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self.panel_base, -1, u"Sélectionner uniquement les déplacements non-remboursés", URL="")
+        hyper = hl.HyperLinkCtrl(self.panel_base, -1, _(u"Sélectionner uniquement les déplacements non-remboursés"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLACK", "BLACK", "BLUE")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour sélectionner uniquement \nles déplacements non-remboursés"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner uniquement \nles déplacements non-remboursés")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -128,7 +130,7 @@ class MyFrame(wx.Frame):
         
         # Validation de la sélection
         if len(selections) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez fait aucune sélection", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez fait aucune sélection"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -164,19 +166,19 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # Création des colonnes
         self.InsertColumn(0, u"N°")
         self.SetColumnWidth(0, 50)
-        self.InsertColumn(1, u"Date")
+        self.InsertColumn(1, _(u"Date"))
         self.SetColumnWidth(1, 80)
-        self.InsertColumn(2, u"Objet")
+        self.InsertColumn(2, _(u"Objet"))
         self.SetColumnWidth(2, 80) 
-        self.InsertColumn(3, u"Trajet")
+        self.InsertColumn(3, _(u"Trajet"))
         self.SetColumnWidth(3, 170)  
-        self.InsertColumn(4, u"Distance")
+        self.InsertColumn(4, _(u"Distance"))
         self.SetColumnWidth(4, 70)
-        self.InsertColumn(5, u"Tarif")
+        self.InsertColumn(5, _(u"Tarif"))
         self.SetColumnWidth(5, 70)  
-        self.InsertColumn(6, u"Montant")
+        self.InsertColumn(6, _(u"Montant"))
         self.SetColumnWidth(6, 70)
-        self.InsertColumn(7, u"Rmbst")
+        self.InsertColumn(7, _(u"Rmbst"))
         self.SetColumnWidth(7, 50)  
         
         # Remplissage avec les valeurs
@@ -248,12 +250,12 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             else :
                 remboursement = ""
             # Formatage distance
-            dist = str(distance) + u" Km"
+            dist = str(distance) + _(u" Km")
             # Formatage montant
             montant = float(distance) * float(tarif_km)
             montantStr = u"%.2f ¤" % montant
             # Formatage tarif/Km
-            tarif_km = str(tarif_km) + u" ¤/km"
+            tarif_km = str(tarif_km) + _(u" ¤/km")
             self.listeDonnees.append( (IDdeplacement, dateTmp, objet, trajet, dist, tarif_km, montantStr, remboursement) )
             index += 1
 
@@ -314,7 +316,7 @@ class ImpressionFicheFrais():
         dataTableau = []
         largeursColonnes = ( (420, 100) )
         dateDuJour = DateEngFr(str(datetime.date.today()))
-        dataTableau.append( (u"Frais de déplacement", u"Edité le %s" % dateDuJour )  )
+        dataTableau.append( (_(u"Frais de déplacement"), _(u"Edité le %s") % dateDuJour )  )
         style = TableStyle([
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black), 
                             ('VALIGN', (0,0), (-1,-1), 'TOP'), 
@@ -338,7 +340,7 @@ class ImpressionFicheFrais():
         dataTableau.append( valeurs )
         
         # Création des labels des colonnes
-        valeurs = (u"ID", u"Date", u"Objet", u"Trajet", u"Distance", u"Tarif/Km", u"Montant")
+        valeurs = (_(u"ID"), _(u"Date"), _(u"Objet"), _(u"Trajet"), _(u"Distance"), _(u"Tarif/Km"), _(u"Montant"))
         dataTableau.append( valeurs )
         
         # Création des groupes
@@ -352,7 +354,7 @@ class ImpressionFicheFrais():
             else:
                 varTrajet = ville_depart + " -> " + ville_arrivee
             varDistance = str(distance) + " Km"
-            varTarif_km = str(tarif_km) + u" ¤/Km"
+            varTarif_km = str(tarif_km) + _(u" ¤/Km")
 ##            varIDremboursement = IDremboursement
             montant = distance * tarif_km
             montant_total += montant
@@ -401,7 +403,7 @@ class ImpressionFicheFrais():
     
     def DateComplete(self, date):
         listeJours = ("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
-        listeMois = (u"janvier", u"février", u"mars", u"avril", u"mai", u"juin", "juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre")
+        listeMois = (_(u"janvier"), _(u"février"), _(u"mars"), _(u"avril"), _(u"mai"), _(u"juin"), "juillet", _(u"août"), _(u"septembre"), _(u"octobre"), _(u"novembre"), _(u"décembre"))
         dateStr = listeJours[date.weekday()] + " " + str(date.day) + " " + listeMois[date.month-1] + " " + str(date.year)
         return dateStr
     

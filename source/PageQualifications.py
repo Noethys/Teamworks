@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import SaisiePieces
 import GestionDB
@@ -32,9 +34,9 @@ class Panel_Statut(wx.Panel):
         self.IDpersonne = IDpersonne
 
         # Widgets
-        self.staticBox_pieces_staticbox = wx.StaticBox(self, -1, u"Pièces à fournir")
-        self.staticBox_dossier_staticbox = wx.StaticBox(self, -1, u"Pièces reçues")
-        self.staticBox_diplomes_staticbox = wx.StaticBox(self, -1, u"Qualifications")
+        self.staticBox_pieces_staticbox = wx.StaticBox(self, -1, _(u"Pièces à fournir"))
+        self.staticBox_dossier_staticbox = wx.StaticBox(self, -1, _(u"Pièces reçues"))
+        self.staticBox_diplomes_staticbox = wx.StaticBox(self, -1, _(u"Qualifications"))
 
         self.list_ctrl_diplomes = ListCtrl_Diplomes(self, -1)
         self.list_ctrl_diplomes.SetMinSize((20, 20))
@@ -59,13 +61,13 @@ class Panel_Statut(wx.Panel):
     def __set_properties(self):
         self.bouton_diplomes_modifier.SetToolTipString("Cliquez ici pour modifier cette liste")
         self.bouton_diplomes_modifier.SetSize(self.bouton_diplomes_modifier.GetBestSize())
-        self.list_ctrl_pieces.SetToolTipString(u"Liste des pièces que la personne doit fournir. \n\nAstuce : Double-cliquez sur une ligne pour créer directement \nune pièce du type sélectionné dans la liste")
-        self.list_ctrl_diplomes.SetToolTipString(u"Cliquez sur le bouton 'Modifier' pour modifier cette liste")
-        self.bouton_dossier_ajouter.SetToolTipString(u"Cliquez ici pour saisir une nouvelle pièce")
+        self.list_ctrl_pieces.SetToolTipString(_(u"Liste des pièces que la personne doit fournir. \n\nAstuce : Double-cliquez sur une ligne pour créer directement \nune pièce du type sélectionné dans la liste"))
+        self.list_ctrl_diplomes.SetToolTipString(_(u"Cliquez sur le bouton 'Modifier' pour modifier cette liste"))
+        self.bouton_dossier_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir une nouvelle pièce"))
         self.bouton_dossier_ajouter.SetSize(self.bouton_dossier_ajouter.GetBestSize())
-        self.bouton_dossier_modifier.SetToolTipString(u"Cliquez ici pour modifier la pièce sélectionnée dans la liste")
+        self.bouton_dossier_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la pièce sélectionnée dans la liste"))
         self.bouton_dossier_modifier.SetSize(self.bouton_dossier_modifier.GetBestSize())
-        self.bouton_dossier_supprimer.SetToolTipString(u"Cliquez ici pour supprimer la pièce sélectionnée")
+        self.bouton_dossier_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la pièce sélectionnée"))
         self.bouton_dossier_supprimer.SetSize(self.bouton_dossier_supprimer.GetBestSize())
 
         # Evenements
@@ -129,7 +131,7 @@ class Panel_Statut(wx.Panel):
     def OnBouton_Diplomes(self, event):
         """ Boîte de dialogue pour choisir les diplômes """
         resultat = ""
-        titre = u"Sélection des qualifications"
+        titre = _(u"Sélection des qualifications")
 
         # Récupération de la liste de tous les diplomes
         DB = GestionDB.DB()
@@ -154,7 +156,7 @@ class Panel_Statut(wx.Panel):
                 preSelection.append(index)
                 TypesDiplomesPerso.append(ID)
             index += 1
-        message = u"Sélectionnez les qualifications que possède la personne dans la liste proposée :"
+        message = _(u"Sélectionnez les qualifications que possède la personne dans la liste proposée :")
         dlg = wx.MultiChoiceDialog(self, message, titre, listeNoms, wx.CHOICEDLG_STYLE)
         
         # Coche ceux qui doivent être déjà sélectionnés dans la liste
@@ -216,7 +218,7 @@ class Panel_Statut(wx.Panel):
         """ Modification de coordonnées """
         index = self.list_ctrl_dossier.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une pièce à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une pièce à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -234,15 +236,15 @@ class Panel_Statut(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une pièce à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une pièce à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
 
         # Demande de confirmation
         textePiece = self.list_ctrl_dossier.GetItemText(index)
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer cette pièce ? \n\n> " + textePiece))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette pièce ? \n\n> ") + textePiece))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -335,14 +337,14 @@ class ListCtrl_Diplomes(wx.ListCtrl):
         """ Item cliqué """
         index = self.GetFirstSelected()
         key = self.GetItemData(index)
-        print u"Click sur l'item ID : ", key
+        print _(u"Click sur l'item ID : "), key
         event.Skip()
 
     def OnItemActivated(self, event):
         """ Item double-cliqué """
         index = self.GetFirstSelected()
         key = self.GetItemData(index)
-        print u"Double-click sur l'item ID : ", key
+        print _(u"Double-click sur l'item ID : "), key
         event.Skip()
         
     def OnSize(self, event):
@@ -363,7 +365,7 @@ class ListCtrl_Diplomes(wx.ListCtrl):
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Modifier")
+        item = wx.MenuItem(menuPop, 10, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Edit.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -624,13 +626,13 @@ class ListCtrl_Dossier(wx.ListCtrl):
         self.IDpersonne = self.GetParent().IDpersonne
 
         # Colonnes
-        self.InsertColumn(0, u"Type de pièce")
+        self.InsertColumn(0, _(u"Type de pièce"))
         self.SetColumnWidth(0, 260)
-        self.InsertColumn(1, u"Obtention")
+        self.InsertColumn(1, _(u"Obtention"))
         self.SetColumnWidth(1, 80)
-        self.InsertColumn(2, u"Expiration")
+        self.InsertColumn(2, _(u"Expiration"))
         self.SetColumnWidth(2, 80)
-        self.InsertColumn(3, u"Observations")
+        self.InsertColumn(3, _(u"Observations"))
         self.SetColumnWidth(3, 180)
 
         self.il = wx.ImageList(16, 16)
@@ -679,7 +681,7 @@ class ListCtrl_Dossier(wx.ListCtrl):
             # Autres colonnes
             self.SetStringItem(index, 1, dateDebut)
             if dateFin == "01/01/2999":
-                dateFin = u"Illimitée"
+                dateFin = _(u"Illimitée")
             self.SetStringItem(index, 2, dateFin)
             self.SetStringItem(index, 3, self.etatExpiration(valeurs[2], valeurs[3]))
             # Intégration du data ID
@@ -724,22 +726,22 @@ class ListCtrl_Dossier(wx.ListCtrl):
         if reste != "0:00:00":
             jours = int(reste[:reste.index("day")])
             if jours < 0:
-                return u"Pièce expirée"
+                return _(u"Pièce expirée")
             elif jours == 1:
-                return u"Expire demain !"
+                return _(u"Expire demain !")
             else:
-                return u"Expire dans %d jours" % jours
+                return _(u"Expire dans %d jours") % jours
         else:
-            return u"Expire aujourd'hui !"
+            return _(u"Expire aujourd'hui !")
         return "ok"
 
     def ColumnSorter(self, key1, key2):
         item1 = self.GetItem( self.FindItemData(-1, key1), 2).GetText()
         item2 = self.GetItem( self.FindItemData(-1, key2), 2).GetText()
         # Intercepte les illimités et les transforme en date très lointaine
-        if item1 == u"Illimitée":
+        if item1 == _(u"Illimitée"):
             item1 = "01/01/2999"
-        if item2 == u"Illimitée":
+        if item2 == _(u"Illimitée"):
             item2 = "01/01/2999"
         # Bascule les dates françaises en dates anglaises pour faire le tri
         item1 = DateFrEng(item1)
@@ -808,7 +810,7 @@ class ListCtrl_Dossier(wx.ListCtrl):
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -817,14 +819,14 @@ class ListCtrl_Dossier(wx.ListCtrl):
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)

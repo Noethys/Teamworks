@@ -6,6 +6,7 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 
 import sys
 import socket
@@ -29,7 +30,7 @@ except :
     5. Attendez quelques instants, quittez le terminal puis relancez Teamworks
     Le problème devrait être résolu définitivement. Sinon contactez le créateur de Teamworks.
     """
-    dlg = wx.MessageDialog(None, message, u"Erreur de communication avec OpenOffice", wx.OK | wx.ICON_ERROR)
+    dlg = wx.MessageDialog(None, message, _(u"Erreur de communication avec OpenOffice"), wx.OK | wx.ICON_ERROR)
     dlg.ShowModal()
     dlg.Destroy()
 
@@ -78,7 +79,7 @@ class Pilotage():
 Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votre texte : \n\n"""
         for motCle, valeur in listeValeurs :
             texte += "  - {" + motCle + "} \n"
-        texte += u"\n(Effacez bien-sûr ce petit texte d'introduction après l'avoir lu !!!)"
+        texte += _(u"\n(Effacez bien-sûr ce petit texte d'introduction après l'avoir lu !!!)")
         
         objText = self.document.Text
         objCursor = objText.createTextCursor()
@@ -109,12 +110,12 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
             if nbre == 0 : listeNotFind.append((motCle, valeur))
         
         if len(listeNotFind) == 0 :
-            txtPublipostage = u"\n\n> Toutes les valeurs ont été placées dans le document."
+            txtPublipostage = _(u"\n\n> Toutes les valeurs ont été placées dans le document.")
         else:
             if len(listeNotFind) == 1 :
-                txtPublipostage = u"\n\n> Remarque : Un mot-clé n'a pas été dans le document : "
+                txtPublipostage = _(u"\n\n> Remarque : Un mot-clé n'a pas été dans le document : ")
             else:
-                txtPublipostage = u"\n\n> Remarque : Certains mot-clés n'ont pas été trouvés dans le document : "
+                txtPublipostage = _(u"\n\n> Remarque : Certains mot-clés n'ont pas été trouvés dans le document : ")
             for item in listeNotFind :
                 txtPublipostage += "{" + item[0] + "}, "
             txtPublipostage = txtPublipostage[:-2] + "."
@@ -127,7 +128,7 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
         dest = "file:///" + cheminDoc.replace("\\", "/")
         args = ()
         self.document.storeAsURL(dest, args)
-        txtSave = u"\n\n> Document sauvegardé sur votre ordinateur."
+        txtSave = _(u"\n\n> Document sauvegardé sur votre ordinateur.")
         print "Sauvegarde doc..."
         return txtSave
 
@@ -169,9 +170,9 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
                 uno.invoke(self.document, "print", (args, ))
                 print "Impression..."
                 time.sleep(2) # Attend 2 secondes que le doc soit envoyé à l'imprimante, sinon bug !
-            txtImpress = u"\n\n> Document imprimé en " + str(nbreExemplaires) + " exemplaire(s)."
+            txtImpress = _(u"\n\n> Document imprimé en ") + str(nbreExemplaires) + " exemplaire(s)."
         except :
-            txtImpress = u"\n\n> Problème d'impression."
+            txtImpress = _(u"\n\n> Problème d'impression.")
         return txtImpress
     
                        

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
@@ -19,14 +21,14 @@ class MyFrame(wx.Frame):
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.sizer_contenu_staticbox = wx.StaticBox(self.panel_base, -1, "")
-        self.label_valeur = wx.StaticText(self.panel_base, -1, u"Valeur :")
+        self.label_valeur = wx.StaticText(self.panel_base, -1, _(u"Valeur :"))
         self.text_valeur = wx.TextCtrl(self.panel_base, -1, "", style=wx.TE_CENTRE)
         self.label_euro = wx.StaticText(self.panel_base, -1, u"¤")
-        self.label_dateDebut = wx.StaticText(self.panel_base, -1, u"A partir du :")
+        self.label_dateDebut = wx.StaticText(self.panel_base, -1, _(u"A partir du :"))
         self.datepicker_dateDebut = wx.DatePickerCtrl(self.panel_base, -1, style=wx.DP_DROPDOWN)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         self.IDvaleur = IDvaleur
         if IDvaleur != 0 : 
@@ -41,7 +43,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Gestion de la valeur du point")
+        self.SetTitle(_(u"Gestion de la valeur du point"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -141,7 +143,7 @@ class MyFrame(wx.Frame):
         # Vérifie que une valeur a été saisie
         valeur = self.text_valeur.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir une valeur de point.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir une valeur de point."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_valeur.SetFocus()
@@ -151,8 +153,8 @@ class MyFrame(wx.Frame):
         for lettre in valeur :
             if lettre not in "0123456789." : incoherences += "'"+ lettre + "', "
         if len(incoherences) != 0 :
-            txt = u"Caractères incorrects : " + incoherences[:-2]
-            dlg = wx.MessageDialog(self, u"La valeur de point que vous avez saisie n'est pas correcte.\n\n" + txt, "Erreur", wx.OK)  
+            txt = _(u"Caractères incorrects : ") + incoherences[:-2]
+            dlg = wx.MessageDialog(self, _(u"La valeur de point que vous avez saisie n'est pas correcte.\n\n") + txt, "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_valeur.SetFocus()

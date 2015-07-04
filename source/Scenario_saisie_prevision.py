@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 
@@ -14,34 +16,34 @@ import GestionDB
 class MyDialog(wx.Dialog):
     """ Saisie d'une prévision pour un scénario """
     def __init__(self, parent, prevision=None, mode_heure=0):
-        wx.Dialog.__init__(self, parent, id=-1, title=u"Saisie d'une prévision")
+        wx.Dialog.__init__(self, parent, id=-1, title=_(u"Saisie d'une prévision"))
         self.prevision = prevision
         self.mode_heure = mode_heure
 
         # Label
-        self.label_intro = wx.StaticText(self, -1, u"Saisissez une prévision :")
+        self.label_intro = wx.StaticText(self, -1, _(u"Saisissez une prévision :"))
         
         self.staticbox_periode = wx.StaticBox(self, -1, u"")
                 
         # Type
-        self.label_type = wx.StaticText(self, -1, u"Type :")
-        self.ctrl_type = wx.Choice(self, -1, choices = [u"Heures à réaliser (+)", u"Heures déjà réalisées (-)"])
+        self.label_type = wx.StaticText(self, -1, _(u"Type :"))
+        self.ctrl_type = wx.Choice(self, -1, choices = [_(u"Heures à réaliser (+)"), _(u"Heures déjà réalisées (-)")])
         self.ctrl_type.SetSelection(0)
         
         # Temps
-        self.label_temps = wx.StaticText(self, -1, u"Temps :")
+        self.label_temps = wx.StaticText(self, -1, _(u"Temps :"))
         self.ctrl_temps_heures = wx.TextCtrl(self, -1, u"0", size=(50, -1), style=wx.TE_RIGHT)
         self.label_temps_signe = wx.StaticText(self, -1, u"h")
         self.ctrl_temps_minutes = wx.TextCtrl(self, -1, u"00", size=(30, -1))
         
         # Mode Heure/décimal
-        self.label_mode = wx.StaticText(self, -1, u"Mode :")
-        self.ctrl_modeHeure = wx.Choice(self, -1, choices = [u"Heure", u"Décimal"])
+        self.label_mode = wx.StaticText(self, -1, _(u"Mode :"))
+        self.ctrl_modeHeure = wx.Choice(self, -1, choices = [_(u"Heure"), _(u"Décimal")])
         self.ctrl_modeHeure.SetSelection(self.mode_heure)
         
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -56,14 +58,14 @@ class MyDialog(wx.Dialog):
         if self.mode_heure == 1 :
             self.ConvertModeHeure(self.ctrl_temps_minutes.GetValue(), 1)
             self.ctrl_modeHeure.SetSelection(1)
-            self.ctrl_temps_minutes.SetToolTipString(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")
+            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)"))
 
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
-        self.ctrl_temps_heures.SetToolTipString(u"Saisissez un nombre d'heures")
-        self.ctrl_temps_minutes.SetToolTipString(u"Saisissez un nombre de minutes (entre 0 et 59)")
+        self.ctrl_temps_heures.SetToolTipString(_(u"Saisissez un nombre d'heures"))
+        self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -117,7 +119,7 @@ class MyDialog(wx.Dialog):
         
         if erreur == True :
             self.ctrl_temps_heures.SetValue("0")
-##            dlg = wx.MessageDialog(self, u"Le nombre d'heures semble inexact. Veuillez vérifier votre saisie.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+##            dlg = wx.MessageDialog(self, _(u"Le nombre d'heures semble inexact. Veuillez vérifier votre saisie."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            self.ctrl_temps_heures.SetFocus()
@@ -143,7 +145,7 @@ class MyDialog(wx.Dialog):
         if erreur == True :
             self.ctrl_temps_minutes.SetValue("00")
             minutes = 0
-##            dlg = wx.MessageDialog(self, u"Le nombre de minutes semble inexact. Veuillez vérifier votre saisie.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+##            dlg = wx.MessageDialog(self, _(u"Le nombre de minutes semble inexact. Veuillez vérifier votre saisie."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            self.ctrl_temps_minutes.SetFocus()
@@ -176,12 +178,12 @@ class MyDialog(wx.Dialog):
             resultat = min * 60 / 100
             self.label_temps_signe.SetLabel(u"h")
             self.ctrl_temps_minutes.SetValue( "%02d" % resultat)
-            self.ctrl_temps_minutes.SetToolTipString(u"Saisissez un nombre de minutes (entre 0 et 59)")
+            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
         if mode == 1 :
             resultat = min * 100 / 60 
             self.label_temps_signe.SetLabel(u".")
             self.ctrl_temps_minutes.SetValue(str(resultat))
-            self.ctrl_temps_minutes.SetToolTipString(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")
+            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)"))
         self.mode_heure = mode
 
     def GetPrevision(self):

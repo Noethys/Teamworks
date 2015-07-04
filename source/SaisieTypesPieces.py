@@ -6,13 +6,15 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
 
 class Frm_SaisieTypesPieces(wx.Frame):
-    def __init__(self, parent, ID, title=u"Saisie d'un type de pièce", IDtype_piece=0):
+    def __init__(self, parent, ID, title=_(u"Saisie d'un type de pièce"), IDtype_piece=0):
         # begin wxGlade: Frm_SaisieTypesPieces.__init__
         wx.Frame.__init__(self, parent, ID, title=title, style=wx.DEFAULT_FRAME_STYLE)
         self.MakeModal(True)
@@ -21,30 +23,30 @@ class Frm_SaisieTypesPieces(wx.Frame):
         self.IDtype_piece = IDtype_piece
         
         self.panel_base = wx.Panel(self, -1)
-        self.sizer_duree_staticbox = wx.StaticBox(self.panel_base, -1, u"2. Durée de validité")
-        self.sizer_diplomes_staticbox = wx.StaticBox(self.panel_base, -1, u"3. Qualifications associés")
-        self.sizer_nom_staticbox = wx.StaticBox(self.panel_base, -1, u"1. Nom du type de pièce (ex : Diplôme BAFA ou Certificat médical)")
+        self.sizer_duree_staticbox = wx.StaticBox(self.panel_base, -1, _(u"2. Durée de validité"))
+        self.sizer_diplomes_staticbox = wx.StaticBox(self.panel_base, -1, _(u"3. Qualifications associés"))
+        self.sizer_nom_staticbox = wx.StaticBox(self.panel_base, -1, _(u"1. Nom du type de pièce (ex : Diplôme BAFA ou Certificat médical)"))
         self.label_nom = wx.StaticText(self.panel_base, -1, "Nom :")
         self.text_nom = wx.TextCtrl(self.panel_base, -1, "")
-        self.radio_duree_1 = wx.RadioButton(self.panel_base, -1, u"Validité illimitée", style=wx.RB_GROUP)
-        self.radio_duree_2 = wx.RadioButton(self.panel_base, -1, u"Validité limitée : ")
+        self.radio_duree_1 = wx.RadioButton(self.panel_base, -1, _(u"Validité illimitée"), style=wx.RB_GROUP)
+        self.radio_duree_2 = wx.RadioButton(self.panel_base, -1, _(u"Validité limitée : "))
         self.label_jours = wx.StaticText(self.panel_base, -1, "Jours :")
         self.spin_jours = wx.SpinCtrl(self.panel_base, -1, "", min=0, max=100)
         self.label_mois = wx.StaticText(self.panel_base, -1, "Mois :")
         self.spin_mois = wx.SpinCtrl(self.panel_base, -1, "", min=0, max=100)
-        self.label_annees = wx.StaticText(self.panel_base, -1, u"Années :")
+        self.label_annees = wx.StaticText(self.panel_base, -1, _(u"Années :"))
         self.spin_annees = wx.SpinCtrl(self.panel_base, -1, "", min=0, max=100)
-        self.radio_diplomes_1 = wx.RadioButton(self.panel_base, -1, u"Pour tous les employés", style=wx.RB_GROUP)
-        self.radio_diplomes_2 = wx.RadioButton(self.panel_base, -1, u"Pour les employés possédant la ou les qualifications suivantes :")
+        self.radio_diplomes_1 = wx.RadioButton(self.panel_base, -1, _(u"Pour tous les employés"), style=wx.RB_GROUP)
+        self.radio_diplomes_2 = wx.RadioButton(self.panel_base, -1, _(u"Pour les employés possédant la ou les qualifications suivantes :"))
         
         #self.list_diplomes = wx.ListCtrl(self.panel_base, -1, style=wx.LC_REPORT|wx.SUNKEN_BORDER)
         self.ImportationDiplomes()
         self.list_diplomes = wx.CheckListBox(self.panel_base, -1, choices=self.ListeDiplomesPourLBox)
         # ----------------------------------------------------------------------------------------------
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -66,26 +68,26 @@ class Frm_SaisieTypesPieces(wx.Frame):
 
         # Si Modification -> importation des données
         if IDtype_piece == 0 :
-            self.SetTitle(u"Saisie d'un nouveau type de pièce")
+            self.SetTitle(_(u"Saisie d'un nouveau type de pièce"))
         else:
-            self.SetTitle(u"Modification d'un type de pièce")
+            self.SetTitle(_(u"Modification d'un type de pièce"))
             self.Importation()
 
     def __set_properties(self):
         # begin wxGlade: Frm_SaisieTypesPieces.__set_properties
-        self.SetTitle(u"Saisie d'un type de pièce")
+        self.SetTitle(_(u"Saisie d'un type de pièce"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_nom.SetToolTipString(u"Saisissez ici un nom de type de pièce. Par exemple : 'Diplôme B.A.F.A.'...")
-        self.radio_duree_1.SetToolTipString(u"Sélectionnez 'Illimitée' si le type de pièce est valable à vie. Comme le diplôme du BAFA par exemple...")
-        self.radio_duree_2.SetToolTipString(u"Sélectionnez 'Limitée' si vous pouvez définir une durée pour le type de pièce. \nCette durée peut être approximative. Par exemple, pour un certificat valable \n1 an et 6 mois en général, vous devez saisir '1' dans la case Années et '6' dans la case mois")
+        self.text_nom.SetToolTipString(_(u"Saisissez ici un nom de type de pièce. Par exemple : 'Diplôme B.A.F.A.'..."))
+        self.radio_duree_1.SetToolTipString(_(u"Sélectionnez 'Illimitée' si le type de pièce est valable à vie. Comme le diplôme du BAFA par exemple..."))
+        self.radio_duree_2.SetToolTipString(_(u"Sélectionnez 'Limitée' si vous pouvez définir une durée pour le type de pièce. \nCette durée peut être approximative. Par exemple, pour un certificat valable \n1 an et 6 mois en général, vous devez saisir '1' dans la case Années et '6' dans la case mois"))
         self.spin_jours.SetMinSize((60, -1))
         self.spin_mois.SetMinSize((60, -1))
         self.spin_annees.SetMinSize((60, -1))
-        self.radio_diplomes_1.SetToolTipString(u"Avec cette option, toutes les personnes employées devront fournir ce type de pièce quelque soit leur poste et leurs diplômes.")
-        self.radio_diplomes_2.SetToolTipString(u"Sélectionnez les diplômes que vous souhaitez associer avec cette pièce")
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide sur cette fenêtre")
+        self.radio_diplomes_1.SetToolTipString(_(u"Avec cette option, toutes les personnes employées devront fournir ce type de pièce quelque soit leur poste et leurs diplômes."))
+        self.radio_diplomes_2.SetToolTipString(_(u"Sélectionnez les diplômes que vous souhaitez associer avec cette pièce"))
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide sur cette fenêtre"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
@@ -206,7 +208,7 @@ class Frm_SaisieTypesPieces(wx.Frame):
         # Vérification des données saisies
         textNom = self.text_nom.GetValue()
         if textNom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement donner un nom à ce nouveau type de pièce.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement donner un nom à ce nouveau type de pièce."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.text_nom.SetFocus()
@@ -217,7 +219,7 @@ class Frm_SaisieTypesPieces(wx.Frame):
         annees = int(self.spin_annees.GetValue())
 
         if jours == 0 and mois == 0 and annees == 0 and self.radio_duree_2.GetValue() == True:
-            dlg = wx.MessageDialog(self, u"Vous avez sélectionné une durée de validité limitée. \nVous devez donc saisir un nombre de jours et/ou de mois et/ou d'années.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous avez sélectionné une durée de validité limitée. \nVous devez donc saisir un nombre de jours et/ou de mois et/ou d'années."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.spin_jours.SetFocus()
@@ -230,7 +232,7 @@ class Frm_SaisieTypesPieces(wx.Frame):
                 if self.list_diplomes.IsChecked(index):
                     NbreCoches += 1
             if NbreCoches == 0:
-                dlg = wx.MessageDialog(self, u"Vous avez sélectionné d'associer des diplômes. Vous devez donc sélectionner un ou plusieurs diplômes dans la liste proposée.", "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Vous avez sélectionné d'associer des diplômes. Vous devez donc sélectionner un ou plusieurs diplômes dans la liste proposée."), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.spin_jours.SetFocus()

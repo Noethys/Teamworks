@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 from wx.lib.splitter import MultiSplitterWindow
 import GestionDB
@@ -28,7 +30,7 @@ except: pass
 
 class PanelDossiers(FonctionsPerso.PanelArrondi):
     def __init__(self, parent, ID=-1, name="panel_dossiers"):
-        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=u"Etat des dossiers")
+        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=_(u"Etat des dossiers"))
         self.SetBackgroundColour((122, 161, 230))
         
         self.tree_ctrl_problemes = Gadget_pb_personnes.TreeCtrl(self)
@@ -48,7 +50,7 @@ class PanelResume(wx.Panel):
         wx.Panel.__init__(self, parent, -1, name="panel_resume")
         self.parent = parent
         
-        self.barreTitre_resume = FonctionsPerso.BarreTitre(self,  u"Détail de la sélection", u"Détail de la sélection")
+        self.barreTitre_resume = FonctionsPerso.BarreTitre(self,  _(u"Détail de la sélection"), _(u"Détail de la sélection"))
 
         # Contrôles
         self.bitmap_photo = CTRL_Photo.CTRL_Photo(self, style=wx.SUNKEN_BORDER)
@@ -189,7 +191,7 @@ class PanelResume(wx.Panel):
         DB.Close()
         
         if len(listeCoords) != 0 :
-            texteCoords = u"Tél : "
+            texteCoords = _(u"Tél : ")
             for coord in listeCoords :
                 categorie = coord[0]
                 texte = coord[1]
@@ -197,16 +199,16 @@ class PanelResume(wx.Panel):
                 texteCoords += texte + " | "
             texteCoords = texteCoords[:-3]
         else :
-            texteCoords = u"Aucune coordonnée"
+            texteCoords = _(u"Aucune coordonnée")
         
         # Création des lignes
         ligne1 = nom + " " + prenom
         if civilite == "Mr" : 
-            ligne2 = u"Né le "
+            ligne2 = _(u"Né le ")
         else :
-            ligne2 = u"Née le " 
+            ligne2 = _(u"Née le ") 
         ligne2 += date_naiss + u" à " + ville_naiss + ", " + age
-        ligne3 = u"Résidant " + adresse_resid + " " + cp_resid + " " + ville_resid
+        ligne3 = _(u"Résidant ") + adresse_resid + " " + cp_resid + " " + ville_resid
         
         # Photo
 ##        if self.Charge_photo(IDpersonne) == False :
@@ -239,7 +241,7 @@ class PanelResume(wx.Panel):
         contratEnCours = False
         if len(listeContrats) == 0 : 
             # Aucun contrat existant
-            etatContrat = u"Aucun contrat à ce jour."
+            etatContrat = _(u"Aucun contrat à ce jour.")
             detailContrat = u""
         else:
             # Analyse des contrats
@@ -248,39 +250,39 @@ class PanelResume(wx.Panel):
                 # Contrats à durée déterminée
                 if type == "non" : 
                     if date_debut <= dateDuJour <= date_fin : 
-                        etatContrat = u">> Contrat en cours :"
+                        etatContrat = _(u">> Contrat en cours :")
                         detailContrat = classification + " du " + FonctionsPerso.DateEngFr(date_debut) + " au " + FonctionsPerso.DateEngFr(date_fin) + "."
                         contratEnCours = True
                         break
                     elif date_fin < dateDuJour : 
-                        etatContrat = u"Aucun contrat en cours. Dernier contrat :"
+                        etatContrat = _(u"Aucun contrat en cours. Dernier contrat :")
                         detailContrat = classification + " du " + FonctionsPerso.DateEngFr(date_debut) + " au " + FonctionsPerso.DateEngFr(date_fin) + "."
                     elif date_debut > dateDuJour : 
-                        etatContrat = u"Aucun contrat en cours. Prochain contrat :"
+                        etatContrat = _(u"Aucun contrat en cours. Prochain contrat :")
                         detailContrat = classification + " du " + FonctionsPerso.DateEngFr(date_debut) + " au " + FonctionsPerso.DateEngFr(date_fin) + "."
                 else:
                     # Contrats à durée indéterminée
                     if date_rupture != "" :
                         if date_debut <= dateDuJour <= date_rupture : 
-                            etatContrat = u">> Contrat en cours :"
+                            etatContrat = _(u">> Contrat en cours :")
                             detailContrat = classification + " du " + FonctionsPerso.DateEngFr(date_debut) + " au " + FonctionsPerso.DateEngFr(date_rupture) + " (rupture)."
                             contratEnCours = True
                             break
                         elif date_rupture < dateDuJour : 
-                            etatContrat = u"Aucun contrat en cours. Dernier contrat :"
+                            etatContrat = _(u"Aucun contrat en cours. Dernier contrat :")
                             detailContrat = classification + " du " + FonctionsPerso.DateEngFr(date_debut) + " au " + FonctionsPerso.DateEngFr(date_rupture) + " (rupture)."
                         elif date_debut > dateDuJour : 
-                            etatContrat = u"Aucun contrat en cours. Prochain contrat :"
+                            etatContrat = _(u"Aucun contrat en cours. Prochain contrat :")
                             detailContrat = classification + " du " + FonctionsPerso.DateEngFr(date_debut) + " au " + FonctionsPerso.DateEngFr(date_rupture) + " (rupture)."
                     else:
                         if date_debut <= dateDuJour : 
-                            etatContrat = u">> Contrat en cours :"
-                            detailContrat = classification + u" depuis le " + FonctionsPerso.DateEngFr(date_debut) + u" (durée ind.)."
+                            etatContrat = _(u">> Contrat en cours :")
+                            detailContrat = classification + _(u" depuis le ") + FonctionsPerso.DateEngFr(date_debut) + _(u" (durée ind.).")
                             contratEnCours = True
                             break
                         elif date_debut > dateDuJour : 
-                            etatContrat = u"Aucun contrat en cours. Prochain contrat :"
-                            detailContrat = classification + u" à partir du " + FonctionsPerso.DateEngFr(date_debut) + u" (durée ind.)."
+                            etatContrat = _(u"Aucun contrat en cours. Prochain contrat :")
+                            detailContrat = classification + _(u" à partir du ") + FonctionsPerso.DateEngFr(date_debut) + _(u" (durée ind.).")
         
         # Met dans les controles
         self.resume_L1.SetLabel(ligne1)
@@ -352,7 +354,7 @@ class PanelPersonnes(wx.Panel):
         self.bouton_export_excel = wx.BitmapButton(self.window_D, -1, wx.Bitmap("Images/16x16/Excel.png", wx.BITMAP_TYPE_ANY))
         self.bouton_aide = wx.BitmapButton(self.window_D, -1, wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_ANY))
         
-        self.barreTitre_liste = FonctionsPerso.BarreTitre(self.window_D,  u"Liste des personnes", u"Liste des personnes")
+        self.barreTitre_liste = FonctionsPerso.BarreTitre(self.window_D,  _(u"Liste des personnes"), _(u"Liste des personnes"))
         
         # Diminution de la taille de la police sous linux
         if "linux" in sys.platform :
@@ -384,28 +386,28 @@ class PanelPersonnes(wx.Panel):
 ##        self.splitter.SetSashPosition(250, True)
         
     def __set_properties(self):
-        self.barreRecherche.SetToolTipString(u"Saisissez ici un nom, un prénom, un nom de ville, etc... pour retrouver une personne donnée.")
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer une nouvelle fiche individuelle")
+        self.barreRecherche.SetToolTipString(_(u"Saisissez ici un nom, un prénom, un nom de ville, etc... pour retrouver une personne donnée."))
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle fiche individuelle"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier la fiche sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la fiche sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer la fiche sélectionnée dans la liste")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la fiche sélectionnée dans la liste"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_rechercher.SetToolTipString(u"Cliquez ici pour rechercher les personnes présentes sur une période donnée")
+        self.bouton_rechercher.SetToolTipString(_(u"Cliquez ici pour rechercher les personnes présentes sur une période donnée"))
         self.bouton_rechercher.SetSize(self.bouton_rechercher.GetBestSize())
-        self.bouton_affichertout.SetToolTipString(u"Cliquez ici pour réafficher toute la liste")
+        self.bouton_affichertout.SetToolTipString(_(u"Cliquez ici pour réafficher toute la liste"))
         self.bouton_affichertout.SetSize(self.bouton_affichertout.GetBestSize())
-        self.bouton_options.SetToolTipString(u"Cliquez ici pour afficher les options de la liste")
+        self.bouton_options.SetToolTipString(_(u"Cliquez ici pour afficher les options de la liste"))
         self.bouton_options.SetSize(self.bouton_options.GetBestSize())
-        self.bouton_imprimer.SetToolTipString(u"Cliquez ici pour imprimer la liste")
+        self.bouton_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer la liste"))
         self.bouton_imprimer.SetSize(self.bouton_imprimer.GetBestSize())
-        self.bouton_export_texte.SetToolTipString(u"Cliquez ici pour exporter la liste au format texte")
+        self.bouton_export_texte.SetToolTipString(_(u"Cliquez ici pour exporter la liste au format texte"))
         self.bouton_export_texte.SetSize(self.bouton_export_texte.GetBestSize())
-        self.bouton_export_excel.SetToolTipString(u"Cliquez ici pour exporter la liste au format Excel")
+        self.bouton_export_excel.SetToolTipString(_(u"Cliquez ici pour exporter la liste au format Excel"))
         self.bouton_export_excel.SetSize(self.bouton_export_excel.GetBestSize())
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_courrier.SetToolTipString(u"Cliquez ici pour créer un courrier ou un Email par publipostage")
+        self.bouton_courrier.SetToolTipString(_(u"Cliquez ici pour créer un courrier ou un Email par publipostage"))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -489,7 +491,7 @@ class PanelPersonnes(wx.Panel):
             self.AfficheLabelSelection(True)
             date_debut = resultat[0].strftime("%d/%m/%Y")
             date_fin = resultat[1].strftime("%d/%m/%Y")
-            texte = u"Sélection des personnes présentes du %s au %s :" % (date_debut, date_fin)
+            texte = _(u"Sélection des personnes présentes du %s au %s :") % (date_debut, date_fin)
             self.label_selection.SetLabel(texte)
 
     def OnBoutonAfficherTout(self, event):
@@ -559,7 +561,7 @@ class TreeCtrlCategories(wx.TreeCtrl):
         print self.listeDonnees
 
 
-        self.root = self.AddRoot(u"Problèmes à résoudre")
+        self.root = self.AddRoot(_(u"Problèmes à résoudre"))
         self.SetPyData(self.root, None)
 
         self.AddTreeNodes(self.root, self.listeDonnees)
@@ -603,7 +605,7 @@ class BarreRecherche(wx.SearchCtrl):
         wx.SearchCtrl.__init__(self, parent, size=(-1,-1), style=wx.TE_PROCESS_ENTER)
         self.parent = parent
 
-        self.SetDescriptiveText(u"Rechercher une personne dans la liste")
+        self.SetDescriptiveText(_(u"Rechercher une personne dans la liste"))
         self.ShowSearchButton(True)
         
         self.listView = self.GetParent().GetGrandParent().listCtrl_personnes
@@ -643,7 +645,7 @@ class MyFrame(wx.Frame):
         self.statusbar.SetStatusWidths( [360, -1] )
         panel = PanelPersonnes(self)
         panel.InitPage()
-        self.SetTitle(u"Panel Présences")
+        self.SetTitle(_(u"Panel Présences"))
         self.SetSize((900, 800))
         self.Centre()
 

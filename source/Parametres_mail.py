@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import os
@@ -16,22 +18,22 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1, size=(-1, -1), activer_a=True, activer_cci=True, activer_bouton_envoyer=True):
         wx.Panel.__init__(self, parent, ID, name="panel_param_mail", size=size, style=wx.TAB_TRAVERSAL)
         self.listePiecesJointes = []
-        self.label_exp = wx.StaticText(self, -1, u"Exp. :")
+        self.label_exp = wx.StaticText(self, -1, _(u"Exp. :"))
         self.ctrl_exp = wx.Choice(self, -1, choices=[], size=(50, -1))
         self.bouton_exp = wx.Button(self, -1, "...", size=(20, 20))
-        self.label_a = wx.StaticText(self, -1, u"A :")
+        self.label_a = wx.StaticText(self, -1, _(u"A :"))
         self.ctrl_a = wx.TextCtrl(self, -1, "")
         self.bouton_a = wx.Button(self, -1, "...", size=(20, 20))
-        self.label_cci = wx.StaticText(self, -1, u"Cci :")
+        self.label_cci = wx.StaticText(self, -1, _(u"Cci :"))
         self.ctrl_cci = wx.TextCtrl(self, -1, "")
         self.bouton_cci = wx.Button(self, -1, "...", size=(20, 20))
-        self.label_objet = wx.StaticText(self, -1, u"Objet :")
+        self.label_objet = wx.StaticText(self, -1, _(u"Objet :"))
         self.ctrl_objet = wx.TextCtrl(self, -1, "")
-        self.label_joindre = wx.StaticText(self, -1, u"Joindre :")
+        self.label_joindre = wx.StaticText(self, -1, _(u"Joindre :"))
         self.ctrl_joindre = wx.ListBox(self, -1, choices=[], style=wx.LB_MULTIPLE)
         self.bouton_joindre_ajouter = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_ANY))
         self.bouton_joindre_supprimer = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_envoyer = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Envoyer_mail.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_envoyer = CTRL_Bouton_image.CTRL(self, texte=_(u"Envoyer l'Email"), cheminImage="Images/32x32/Emails_exp.png")
         
         self.activer_a = activer_a
         self.activer_bouton_envoyer = activer_bouton_envoyer
@@ -60,17 +62,17 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnboutonEnvoyer, self.bouton_envoyer)
 
     def __set_properties(self):
-        self.ctrl_exp.SetToolTipString(u"Selectionnez votre adresse mail d'expéditeur")
-        self.bouton_exp.SetToolTipString(u"Cliquez ici pour acceder à la gestion des adresses d'expéditeur")
-        self.ctrl_a.SetToolTipString(u"Saisissez ici les adresses des destinataires espacées par des points-virgules")
-        self.bouton_a.SetToolTipString(u"Cliquez ici sélectionner des adresses mail de salariés ou de candidats")
-        self.ctrl_cci.SetToolTipString(u"Saisissez ici les adresses des destinataires CCi (les destinataires n'ont pas connaissance des adresses des autres destinataires) espacées par des points-virgules")
-        self.bouton_cci.SetToolTipString(u"Cliquez ici sélectionner des adresses mail de salariés ou de candidats")
-        self.ctrl_objet.SetToolTipString(u"Saisissez l'objet du message")
-        self.ctrl_joindre.SetToolTipString(u"Liste des pièces à joindre")
-        self.bouton_joindre_ajouter.SetToolTipString(u"Cliquez sur pour ajouter une pièce jointe")
-        self.bouton_joindre_supprimer.SetToolTipString(u"Cliquez ici pour supprimer la piece jointe sélectionnée dans la liste")
-        self.bouton_envoyer.SetToolTipString(u"Cliquez ici pour envoyer le mail")
+        self.ctrl_exp.SetToolTipString(_(u"Selectionnez votre adresse mail d'expéditeur"))
+        self.bouton_exp.SetToolTipString(_(u"Cliquez ici pour acceder à la gestion des adresses d'expéditeur"))
+        self.ctrl_a.SetToolTipString(_(u"Saisissez ici les adresses des destinataires espacées par des points-virgules"))
+        self.bouton_a.SetToolTipString(_(u"Cliquez ici sélectionner des adresses mail de salariés ou de candidats"))
+        self.ctrl_cci.SetToolTipString(_(u"Saisissez ici les adresses des destinataires CCi (les destinataires n'ont pas connaissance des adresses des autres destinataires) espacées par des points-virgules"))
+        self.bouton_cci.SetToolTipString(_(u"Cliquez ici sélectionner des adresses mail de salariés ou de candidats"))
+        self.ctrl_objet.SetToolTipString(_(u"Saisissez l'objet du message"))
+        self.ctrl_joindre.SetToolTipString(_(u"Liste des pièces à joindre"))
+        self.bouton_joindre_ajouter.SetToolTipString(_(u"Cliquez sur pour ajouter une pièce jointe"))
+        self.bouton_joindre_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la piece jointe sélectionnée dans la liste"))
+        self.bouton_envoyer.SetToolTipString(_(u"Cliquez ici pour envoyer le mail"))
 
 
     def __do_layout(self):
@@ -145,7 +147,7 @@ class Panel(wx.Panel):
         # Demande l'emplacement du fichier à joindre
         standardPath = wx.StandardPaths.Get()
         rep = standardPath.GetDocumentsDir()
-        dlg = wx.FileDialog(self, message=u"Veuillez sélectionner le ou les fichiers à joindre", defaultDir=rep, defaultFile="", style=wx.OPEN|wx.FD_MULTIPLE)
+        dlg = wx.FileDialog(self, message=_(u"Veuillez sélectionner le ou les fichiers à joindre"), defaultDir=rep, defaultFile="", style=wx.OPEN|wx.FD_MULTIPLE)
         if dlg.ShowModal() == wx.ID_OK:
             chemins = dlg.GetPaths()
         else:
@@ -164,7 +166,7 @@ class Panel(wx.Panel):
     def OnboutonSupprPiece(self, event):
         selections = self.ctrl_joindre.GetSelections()
         if len(selections) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez sélectionné aucune pièce jointe à enlever de la liste !", "Erreur", wx.OK| wx.ICON_ERROR)  
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucune pièce jointe à enlever de la liste !"), "Erreur", wx.OK| wx.ICON_ERROR)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -266,7 +268,7 @@ class Panel(wx.Panel):
         
         # Adresse et serveur SMTP
         if self.ctrl_exp.GetSelection() == -1 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez sélectionné aucune adresse d'expéditeur !", "Erreur", wx.OK| wx.ICON_ERROR)  
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucune adresse d'expéditeur !"), "Erreur", wx.OK| wx.ICON_ERROR)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_exp.SetFocus()
@@ -275,7 +277,7 @@ class Panel(wx.Panel):
         # Destinataires
         if self.activer_a == True :
             if self.ctrl_a.GetValue() == "" :
-                dlg = wx.MessageDialog(self, u"Vous n'avez sélectionné aucune adresse de destinataire !", "Erreur", wx.OK| wx.ICON_ERROR)  
+                dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucune adresse de destinataire !"), "Erreur", wx.OK| wx.ICON_ERROR)  
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.ctrl_a.SetFocus()
@@ -283,7 +285,7 @@ class Panel(wx.Panel):
         
         # Contenu
         if self.ctrl_objet.GetValue() == "" :
-            dlg = wx.MessageDialog(self, u"Vous n'avez saisi aucun objet pour ce message !", "Erreur", wx.OK| wx.ICON_ERROR)  
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez saisi aucun objet pour ce message !"), "Erreur", wx.OK| wx.ICON_ERROR)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_objet.SetFocus()

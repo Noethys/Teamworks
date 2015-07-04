@@ -7,7 +7,9 @@
 # Licence:         Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import Image
 import os
 import cStringIO
@@ -113,14 +115,14 @@ class Track(object):
 
     def GetInfobulle(self):
         if self.isImage == True :
-            typeDoc = u"Image"
+            typeDoc = _(u"Image")
         else:
-            typeDoc = u"Document"
+            typeDoc = _(u"Document")
         if self.label == "" :
             titre = u""
         else:
             titre = u"'%s'" % self.label
-        texte = u"%s %s\n%s\n\nDouble-cliquez pour visualiser ce document" % (typeDoc, self.type.upper(), titre)
+        texte = _(u"%s %s\n%s\n\nDouble-cliquez pour visualiser ce document") % (typeDoc, self.type.upper(), titre)
         return texte
 
 
@@ -197,10 +199,10 @@ class CTRL(TC.ThumbnailCtrl):
     
     def SaisirLabel(self, label=u"", nomFichier=None):
         if nomFichier == None :
-            message = u"Vous pouvez saisir un titre pour ce document (optionnel) :"
+            message = _(u"Vous pouvez saisir un titre pour ce document (optionnel) :")
         else:
-            message = u"Vous pouvez saisir un titre pour le document '%s' (optionnel) :" % nomFichier
-        dlg = wx.TextEntryDialog(self, message, u"Titre du document", label)
+            message = _(u"Vous pouvez saisir un titre pour le document '%s' (optionnel) :") % nomFichier
+        dlg = wx.TextEntryDialog(self, message, _(u"Titre du document"), label)
         if dlg.ShowModal() == wx.ID_OK:
             valeur = dlg.GetValue()
             return valeur
@@ -227,7 +229,7 @@ Tous les fichiers (*.*)|*.*"
         
         # Ouverture de la fenêtre de dialogue
         dlg = wx.FileDialog(
-            self, message=u"Sélectionnez un ou plusieurs documents",
+            self, message=_(u"Sélectionnez un ou plusieurs documents"),
             defaultDir=cheminDefaut, 
             defaultFile="", 
             wildcard=wildcard,
@@ -319,14 +321,14 @@ Tous les fichiers (*.*)|*.*"
         return nbreDocuments
     
     def ImportationScanner(self):
-        dlg = wx.MessageDialog(self, u"Désolé, cette fonction n'est pas encore disponible !", u"Fonction indisponible", wx.OK | wx.ICON_EXCLAMATION)
+        dlg = wx.MessageDialog(self, _(u"Désolé, cette fonction n'est pas encore disponible !"), _(u"Fonction indisponible"), wx.OK | wx.ICON_EXCLAMATION)
         dlg.ShowModal()
         dlg.Destroy()
     
     def SupprimerPage(self, event):
         index = self.GetSelection()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un document !", u"Erreur", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un document !"), _(u"Erreur"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -334,7 +336,7 @@ Tous les fichiers (*.*)|*.*"
         track = thumb.track
         
         # Confirmation
-        dlg = wx.MessageDialog(self, u"Confirmez-vous la suppression de ce document ?", u"Suppression", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"Confirmez-vous la suppression de ce document ?"), _(u"Suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_INFORMATION)
         reponse = dlg.ShowModal()
         dlg.Destroy()
         if reponse != wx.ID_YES :
@@ -346,38 +348,38 @@ Tous les fichiers (*.*)|*.*"
     def ContextMenu(self):
         menu = wx.Menu()
 
-        item = wx.MenuItem(menu, ID_AJOUTER, u"Ajouter des documents")
+        item = wx.MenuItem(menu, ID_AJOUTER, _(u"Ajouter des documents"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.AjouterPage, id=ID_AJOUTER)
         
         menu.AppendSeparator()
         
-        item = wx.MenuItem(menu, ID_ROTATION_GAUCHE, u"Pivoter à gauche")
+        item = wx.MenuItem(menu, ID_ROTATION_GAUCHE, _(u"Pivoter à gauche"))
         item.SetBitmap(wx.Bitmap("Images/Teamword/annuler.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.RotationGauche, id=ID_ROTATION_GAUCHE)
         
-        item = wx.MenuItem(menu, ID_ROTATION_DROITE, u"Pivoter à droite")
+        item = wx.MenuItem(menu, ID_ROTATION_DROITE, _(u"Pivoter à droite"))
         item.SetBitmap(wx.Bitmap("Images/Teamword/repeter.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.RotationDroite, id=ID_ROTATION_DROITE)
         
         menu.AppendSeparator()
         
-        item = wx.MenuItem(menu, ID_VISUALISER, u"Visualiser")
+        item = wx.MenuItem(menu, ID_VISUALISER, _(u"Visualiser"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Loupe.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.VisualiserPage, id=ID_VISUALISER)
         
         menu.AppendSeparator()
 
-        item = wx.MenuItem(menu, ID_MODIFIER_LABEL, u"Modifier le titre")
+        item = wx.MenuItem(menu, ID_MODIFIER_LABEL, _(u"Modifier le titre"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.ModifierLabel, id=ID_MODIFIER_LABEL)
 
-        item = wx.MenuItem(menu, ID_SUPPRIMER, u"Supprimer")
+        item = wx.MenuItem(menu, ID_SUPPRIMER, _(u"Supprimer"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.SupprimerPage, id=ID_SUPPRIMER)
@@ -392,14 +394,14 @@ Tous les fichiers (*.*)|*.*"
     def RotationGauche(self, event):
         index = self.GetSelection()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une image !", u"Erreur", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une image !"), _(u"Erreur"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         thumb = self.GetItem(index)
         track = thumb.track
         if track.isImage == False : 
-            dlg = wx.MessageDialog(self, u"Ce document n'est pas une image !", u"Erreur", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Ce document n'est pas une image !"), _(u"Erreur"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -408,14 +410,14 @@ Tous les fichiers (*.*)|*.*"
     def RotationDroite(self, event):
         index = self.GetSelection()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une image !", u"Erreur", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une image !"), _(u"Erreur"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         thumb = self.GetItem(index)
         track = thumb.track
         if track.isImage == False : 
-            dlg = wx.MessageDialog(self, u"Ce document n'est pas une image !", u"Erreur", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Ce document n'est pas une image !"), _(u"Erreur"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -424,7 +426,7 @@ Tous les fichiers (*.*)|*.*"
     def ModifierLabel(self, event):
         index = self.GetSelection()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un document !", u"Erreur", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un document !"), _(u"Erreur"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -441,7 +443,7 @@ Tous les fichiers (*.*)|*.*"
         index = self.GetSelection()
         print index
         if index == -1 :
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un document !", u"Erreur", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un document !"), _(u"Erreur"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -455,7 +457,7 @@ Tous les fichiers (*.*)|*.*"
             dlg.Show(True)
         else:
             # Création du doc dans le répertoire Temp et ouverture
-            nomFichier = u"Temp/document.%s" % track.type
+            nomFichier = _(u"Temp/document.%s") % track.type
             buffer = track.buffer
             file = open(nomFichier,"wb")
             file.write(buffer)

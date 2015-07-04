@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
@@ -18,8 +20,8 @@ class Panel(wx.Panel):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL)
         
         # Titre et intro
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Le questionnaire", u"")
-        texteIntro = u"Vous pouvez ici concevoir des questionnaires personnalisés pour les fiches\nindividuelles. Commencez par créer des catégories puis paramétrez des\nquestions basées sur les contrôles de votre choix en fonction des données à\nsaisir : texte, liste, entier, etc..."
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Le questionnaire"), u"")
+        texteIntro = _(u"Vous pouvez ici concevoir des questionnaires personnalisés pour les fiches\nindividuelles. Commencez par créer des catégories puis paramétrez des\nquestions basées sur les contrôles de votre choix en fonction des données à\nsaisir : texte, liste, entier, etc...")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
 
         # Questionnaire
@@ -37,11 +39,11 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonMonter, self.bouton_monter)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonDescendre, self.bouton_descendre)
 
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour ajouter une catégorie ou une question")
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier la catégorie ou la question sélectionnée")
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer la catégorie ou la question sélectionnée")
-        self.bouton_monter.SetToolTipString(u"Cliquez ici pour monter la catégorie ou la question sélectionnée")
-        self.bouton_descendre.SetToolTipString(u"Cliquez ici pour descendre la catégorie ou la question sélectionnée")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour ajouter une catégorie ou une question"))
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la catégorie ou la question sélectionnée"))
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la catégorie ou la question sélectionnée"))
+        self.bouton_monter.SetToolTipString(_(u"Cliquez ici pour monter la catégorie ou la question sélectionnée"))
+        self.bouton_descendre.SetToolTipString(_(u"Cliquez ici pour descendre la catégorie ou la question sélectionnée"))
 
 ##        self.label_conclusion = wx.StaticText(self, -1, "Remarques...")
 
@@ -97,9 +99,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -112,15 +114,15 @@ class MyFrame(wx.Frame):
         self.SetSize((450, 450))
 
     def __set_properties(self):
-        self.SetTitle(u"Paramétrage des questionnaires")
+        self.SetTitle(_(u"Paramétrage des questionnaires"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 

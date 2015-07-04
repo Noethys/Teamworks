@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.grid as gridlib
 import wx.lib.mixins.listctrl as listmix
 import sys
@@ -46,10 +48,10 @@ class MyWizard(wx.Frame):
         
         self.panel_base = wx.Panel(self, -1)
         self.static_line = wx.StaticLine(self.panel_base, -1)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
         self.bouton_retour = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Retour_L72.png", wx.BITMAP_TYPE_ANY))
         self.bouton_suite = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Suite_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
                 
@@ -77,17 +79,17 @@ class MyWizard(wx.Frame):
         self.sizer_pages.Layout()
 
     def __set_properties(self):
-        self.SetTitle(u"Edition de documents")
+        self.SetTitle(_(u"Edition de documents"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_retour.SetToolTipString(u"Cliquez ici pour revenir à la page précédente")
+        self.bouton_retour.SetToolTipString(_(u"Cliquez ici pour revenir à la page précédente"))
         self.bouton_retour.SetSize(self.bouton_retour.GetBestSize())
-        self.bouton_suite.SetToolTipString(u"Cliquez ici pour passer à l'étape suivante")
+        self.bouton_suite.SetToolTipString(_(u"Cliquez ici pour passer à l'étape suivante"))
         self.bouton_suite.SetSize(self.bouton_suite.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour fermer l'assistant")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour fermer l'assistant"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((540, 490))
 
@@ -121,7 +123,7 @@ class MyWizard(wx.Frame):
         event.Skip()
         
     def Onbouton_aide(self, event):
-        dlg = wx.MessageDialog(self, u"L'aide pour ce nouveau module est en cours de rédaction.", u"Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide pour ce nouveau module est en cours de rédaction."), _(u"Aide indisponible"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         # FonctionsPerso.Aide(37)
@@ -202,7 +204,7 @@ class Page1(wx.Panel):
         
         self.imgBandeau = wx.StaticBitmap(self, -1, wx.Bitmap("Images/Bandeaux/Contrat.png", wx.BITMAP_TYPE_ANY) )
         
-        self.label_titre = wx.StaticText(self, -1, u"Bienvenue dans l'assistant d'édition de documents")
+        self.label_titre = wx.StaticText(self, -1, _(u"Bienvenue dans l'assistant d'édition de documents"))
         
         # Label Html
         txtIntro = u"""
@@ -247,9 +249,9 @@ class Page2(wx.Panel):
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
-        self.sizer_champs_staticbox = wx.StaticBox(self, -1, u"Données disponibles")
-        self.label_titre = wx.StaticText(self, -1, u"1. Vérification des données du document")
-        self.label_intro = wx.StaticText(self, -1, u"Vous pouvez vérifier et modifier ci-dessous les données qui seront fusionnées :")
+        self.sizer_champs_staticbox = wx.StaticBox(self, -1, _(u"Données disponibles"))
+        self.label_titre = wx.StaticText(self, -1, _(u"1. Vérification des données du document"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Vous pouvez vérifier et modifier ci-dessous les données qui seront fusionnées :"))
         
         self.ImportationChampsPerso()
         
@@ -257,7 +259,7 @@ class Page2(wx.Panel):
         self.grid.SetSize((50, 50))
         self.grid.Remplissage() 
         
-        self.label_remarque = wx.StaticText(self, -1, u"*Champs personnalisés")
+        self.label_remarque = wx.StaticText(self, -1, _(u"*Champs personnalisés"))
         self.label_remarque.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
         
         self.bouton_imprimer = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_ANY))
@@ -274,10 +276,10 @@ class Page2(wx.Panel):
         self.__do_layout()
 
     def __set_properties(self):
-        self.bouton_imprimer.SetToolTipString(u"Cliquez ici pour afficher au format PDF la liste des mots-clés \ndisponibles pour votre modèle de document.\n\nUtilisez cette liste pour créer facilement votre modèle de documents : \nIl vous suffit de taper les mots-clés souhaités dans votre document.")
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un champ personnalisé")
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier le champ personnalisé sélectionné dans la grille")
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le champ personnalisé sélectionné dans la grille")
+        self.bouton_imprimer.SetToolTipString(_(u"Cliquez ici pour afficher au format PDF la liste des mots-clés \ndisponibles pour votre modèle de document.\n\nUtilisez cette liste pour créer facilement votre modèle de documents : \nIl vous suffit de taper les mots-clés souhaités dans votre document."))
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un champ personnalisé"))
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le champ personnalisé sélectionné dans la grille"))
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le champ personnalisé sélectionné dans la grille"))
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
 
     def __do_layout(self):
@@ -327,12 +329,12 @@ class Page2(wx.Panel):
     def OnBoutonModifier(self, event):
         listeSelections = self.grid.GetSelectedRows()
         if len(listeSelections) == 0 :
-            dlg = wx.MessageDialog(self, u"Sélectionnez d'abord un champ personnalisé à modifier en cliquant sur son entête de ligne", "Information", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Sélectionnez d'abord un champ personnalisé à modifier en cliquant sur son entête de ligne"), "Information", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         elif len(listeSelections) > 1 :
-            dlg = wx.MessageDialog(self, u"Vous ne pouvez sélectionner qu'un seul champ personnalisé à la fois", "Information", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous ne pouvez sélectionner qu'un seul champ personnalisé à la fois"), "Information", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -343,12 +345,12 @@ class Page2(wx.Panel):
     def OnBoutonSupprimer(self, event):
         listeSelections = self.grid.GetSelectedRows()
         if len(listeSelections) == 0 :
-            dlg = wx.MessageDialog(self, u"Sélectionnez d'abord un champ personnalisé à supprimer en cliquant sur son entête de ligne", "Information", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Sélectionnez d'abord un champ personnalisé à supprimer en cliquant sur son entête de ligne"), "Information", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         elif len(listeSelections) > 1 :
-            dlg = wx.MessageDialog(self, u"Vous ne pouvez sélectionner qu'un seul champ personnalisé à la fois", "Information", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous ne pouvez sélectionner qu'un seul champ personnalisé à la fois"), "Information", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -397,7 +399,7 @@ class Page2(wx.Panel):
 ##        listeDonnees = DB.ResultatReq()
 ##        DB.Close()
 ##        if len(listeDonnees) != 0 :
-##            dlg = wx.MessageDialog(self, u"Ce champ a déjà été attribué à " + str(len(listeDonnees)) + u" modèle(s) de contrat.\nEtes-vous sûr de vouloir le modifier ?", "Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_EXCLAMATION)
+##            dlg = wx.MessageDialog(self, _(u"Ce champ a déjà été attribué à ") + str(len(listeDonnees)) + _(u" modèle(s) de contrat.\nEtes-vous sûr de vouloir le modifier ?"), "Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_EXCLAMATION)
 ##            reponse = dlg.ShowModal()
 ##            if reponse == wx.ID_NO:
 ##                dlg.Destroy()
@@ -412,8 +414,8 @@ class Page2(wx.Panel):
         motcle, IDchamp = DICT_DONNEES["MOTSCLES"][index]
 
         # Demande de confirmation
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce champ ? \n\n> " + motcle))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce champ ? \n\n> ") + motcle))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -637,7 +639,7 @@ class Page2(wx.Panel):
         largeursColonnes = ( (420, 100) )
         dateDuJour = str(datetime.date.today())
         dateDuJour = str(dateDuJour[8:10]) + "/" + str(dateDuJour[5:7]) + "/" + str(dateDuJour[:4])
-        dataTableau.append( (u"Mots-clés pour documents", u"Edité le %s" % dateDuJour )  )
+        dataTableau.append( (_(u"Mots-clés pour documents"), _(u"Edité le %s") % dateDuJour )  )
         style = TableStyle([
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black), 
                             ('VALIGN', (0,0), (-1,-1), 'TOP'), 
@@ -655,7 +657,7 @@ class Page2(wx.Panel):
         for IDdocument in range(1, DICT_DONNEES["NBREDOCUMENTS"]+1) :
             dataTableau = []
             largeursColonnes = (150, 370)
-            dataTableau.append( (u"Mots-clés", u"Valeurs du document n°%d" % IDdocument) )
+            dataTableau.append( (_(u"Mots-clés"), _(u"Valeurs du document n°%d") % IDdocument) )
             for motcle, type_motcle in DICT_DONNEES["MOTSCLES"] :
                 nomMotcle = "{%s}" % motcle
                 if type_motcle != "base" : nomMotcle += "*"
@@ -739,7 +741,7 @@ class Grid_donnees(gridlib.Grid):
         # Remplissage des colonnes avec les valeurs
         for IDdocument in range(1, nbreDocuments+1) :
             indexColonne = IDdocument-1
-            self.SetColLabelValue(indexColonne, u"Document n°%d" % IDdocument)
+            self.SetColLabelValue(indexColonne, _(u"Document n°%d") % IDdocument)
             self.SetColSize(indexColonne, largeurColonnes)
             dict_valeurs = DICT_DONNEES[IDdocument]
             indexLigne = 0
@@ -769,7 +771,7 @@ class Grid_donnees(gridlib.Grid):
 ##        # Vérification de la valeur
 ##        if valeur == "" :
 ##            self.moveTo = evt.GetRow(), evt.GetCol()
-##            dlg = wx.MessageDialog(self, u"Vous n'avez saisi aucune donnée. \n\nVoulez-vous laisser ce champ vide ?",  u"Vérification", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+##            dlg = wx.MessageDialog(self, _(u"Vous n'avez saisi aucune donnée. \n\nVoulez-vous laisser ce champ vide ?"),  _(u"Vérification"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
 ##            if dlg.ShowModal() == wx.ID_NO :
 ##                pass
 
@@ -789,7 +791,7 @@ class Grid_donnees(gridlib.Grid):
         menuPop = wx.Menu()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 10, u"Ajouter un champ personnalisé")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter un champ personnalisé"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -798,7 +800,7 @@ class Grid_donnees(gridlib.Grid):
         menuPop.AppendSeparator()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 20, u"Modifier le champ personnalisé '%s'" % motcle)
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier le champ personnalisé '%s'") % motcle)
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -806,7 +808,7 @@ class Grid_donnees(gridlib.Grid):
         if IDchamp == "base" : item.Enable(False)
         
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer le champ personnalisé '%s'" % motcle)
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer le champ personnalisé '%s'") % motcle)
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -816,7 +818,7 @@ class Grid_donnees(gridlib.Grid):
         menuPop.AppendSeparator()
         
         # Item Imprimer
-        item = wx.MenuItem(menuPop, 90, u"Imprimer la liste de tous les champs disponibles")
+        item = wx.MenuItem(menuPop, 90, _(u"Imprimer la liste de tous les champs disponibles"))
         bmp = wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -851,9 +853,9 @@ class Page3(wx.Panel):
         self.numChoix = FonctionsPerso.Parametres(mode="get", categorie="document_%s" % categorie_document, nom="choix_editeur", valeur=1)
         
         # Création des widgets
-        self.sizer_staticbox_1 = wx.StaticBox(self, -1, u"Création d'un courrier")
-        self.label_titre = wx.StaticText(self, -1, u"2. Choix du logiciel de publipostage")
-        self.label_intro = wx.StaticText(self, -1, u"Sélectionnez le logiciel qui sera utilisé pour l'édition du document :")
+        self.sizer_staticbox_1 = wx.StaticBox(self, -1, _(u"Création d'un courrier"))
+        self.label_titre = wx.StaticText(self, -1, _(u"2. Choix du logiciel de publipostage"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Sélectionnez le logiciel qui sera utilisé pour l'édition du document :"))
         self.radio_1 = wx.RadioButton(self, -1, "", style=wx.RB_GROUP)
         self.bitmap_1 = wx.StaticBitmap(self, -1, wx.Bitmap("Images/48x48/MsWord.png", wx.BITMAP_TYPE_ANY))
         self.label_choix_1_titre = wx.StaticText(self, -1, "Microsoft WORD")
@@ -864,13 +866,13 @@ class Page3(wx.Panel):
         self.label_choix_2_description = wx.StaticText(self, -1, "Suite OpenOffice")
         self.radio_3 = wx.RadioButton(self, -1, "")
         self.bitmap_3 = wx.StaticBitmap(self, -1, wx.Bitmap("Images/48x48/Texte.png", wx.BITMAP_TYPE_ANY))
-        self.label_choix_3_titre = wx.StaticText(self, -1, u"Traitement de texte intégré")
-        self.label_choix_3_description = wx.StaticText(self, -1, u"Ecrivez et imprimer des documents directement dans Teamworks \ngrâce à Teamword, le traitement de texte intégré")
+        self.label_choix_3_titre = wx.StaticText(self, -1, _(u"Traitement de texte intégré"))
+        self.label_choix_3_description = wx.StaticText(self, -1, _(u"Ecrivez et imprimer des documents directement dans Teamworks \ngrâce à Teamword, le traitement de texte intégré"))
         
-        self.sizer_staticbox_2 = wx.StaticBox(self, -1, u"Création d'un Email")
+        self.sizer_staticbox_2 = wx.StaticBox(self, -1, _(u"Création d'un Email"))
         self.radio_4 = wx.RadioButton(self, -1, "")
         self.bitmap_4 = wx.StaticBitmap(self, -1, wx.Bitmap("Images/48x48/Email.png", wx.BITMAP_TYPE_ANY))
-        self.label_choix_4_titre = wx.StaticText(self, -1, u"Editeur d'Email")
+        self.label_choix_4_titre = wx.StaticText(self, -1, _(u"Editeur d'Email"))
         self.label_choix_4_description = wx.StaticText(self, -1, "Ecrivez et envoyez des Emails directement dans Teamworks \ngrâce à Teamword, l'éditeur d'Email intégré")
         
 ##        self.radio_3.Enable(False)
@@ -1032,9 +1034,9 @@ class Page4(wx.Panel):
         self.choixLogiciel = 1
         self.choixModele = ""
         
-        self.sizer_choix_staticbox = wx.StaticBox(self, -1, u"Liste des documents disponibles")
-        self.label_titre = wx.StaticText(self, -1, u"3. Choix du document de publipostage")
-        self.label_intro = wx.StaticText(self, -1, u"Sélectionnez un fichier dans la liste ou importez-en un en cliquant sur 'importer'.")
+        self.sizer_choix_staticbox = wx.StaticBox(self, -1, _(u"Liste des documents disponibles"))
+        self.label_titre = wx.StaticText(self, -1, _(u"3. Choix du document de publipostage"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Sélectionnez un fichier dans la liste ou importez-en un en cliquant sur 'importer'."))
         
         self.listCtrl = ListCtrl_fichiers(self)
         
@@ -1059,11 +1061,11 @@ class Page4(wx.Panel):
 
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
-        self.bouton_importer.SetToolTipString(u"Cliquer ici pour importer un document présent à un autre endroit sur votre ordinateur.")
-        self.bouton_actualiser.SetToolTipString(u"Cliquez ici pour actualiser l'affichage des noms de fichiers")
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un document")
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier le document sélectionné dans la liste")
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le document sélectionné dans la liste")
+        self.bouton_importer.SetToolTipString(_(u"Cliquer ici pour importer un document présent à un autre endroit sur votre ordinateur."))
+        self.bouton_actualiser.SetToolTipString(_(u"Cliquez ici pour actualiser l'affichage des noms de fichiers"))
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un document"))
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le document sélectionné dans la liste"))
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le document sélectionné dans la liste"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -1134,7 +1136,7 @@ class Page4(wx.Panel):
         cheminDefaut = self.repCourant  + "/Documents/Modeles" #sp.GetDocumentsDir()
         # Ouverture dela fenêtre de dialogue
         dlg = wx.FileDialog(
-            self, message=u"Choisissez un document",
+            self, message=_(u"Choisissez un document"),
             defaultDir=cheminDefaut, 
             defaultFile="",
             wildcard=wildcard,
@@ -1159,7 +1161,7 @@ class Page4(wx.Panel):
         # Vérifie qu'un fichier du même nom n'existe pas déjà
         exists = self.FichierExists(self.cheminDest, nomFichierCourt)
         if exists :
-            dlg = wx.MessageDialog(self, u"Un fichier '" + nomFichierCourt + u"' porte déjà ce nom dans le répertoire des modèles de documents \n\nSi vous souhaitez quand même l'importer, vous devez modifier son nom.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Un fichier '") + nomFichierCourt + _(u"' porte déjà ce nom dans le répertoire des modèles de documents \n\nSi vous souhaitez quand même l'importer, vous devez modifier son nom."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.MAJ_ListCtrl()
@@ -1169,7 +1171,7 @@ class Page4(wx.Panel):
         shutil.copy(nomFichierLong, self.cheminDest)
 
         # Chemin de confirmation d'importation
-        dlg = wx.MessageDialog(self, u"Le fichier '" + nomFichierCourt + u"' a été copié dans le répertoire des modèles de documents", "Information", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"Le fichier '") + nomFichierCourt + _(u"' a été copié dans le répertoire des modèles de documents"), "Information", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
     
@@ -1189,7 +1191,7 @@ class Page4(wx.Panel):
             try : 
                 Word = win32com.client.gencache.EnsureDispatch("Word.Application")
             except :
-                dlg = wx.MessageDialog(self, u"Le logiciel Microsoft Word ne peut pas être ouvert. \nEtes-vous bien sûr qu'il est présent sur votre ordinateur ?", "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Le logiciel Microsoft Word ne peut pas être ouvert. \nEtes-vous bien sûr qu'il est présent sur votre ordinateur ?"), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
@@ -1206,7 +1208,7 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
             for motcle, type_motcle in DICT_DONNEES["MOTSCLES"] :
                 texte += "  - {" + motcle + "} \n"
                 
-            texte += u"\n(Effacez bien-sûr ce petit texte d'introduction après l'avoir lu !!!)"
+            texte += _(u"\n(Effacez bien-sûr ce petit texte d'introduction après l'avoir lu !!!)")
             Word.Selection.TypeText(texte)
             Word.Activate
         
@@ -1219,7 +1221,7 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
                     objServiceManager = win32com.client.Dispatch("com.sun.star.ServiceManager")
                     objDesktop = objServiceManager.CreateInstance("com.sun.star.frame.Desktop")  
                 except :
-                    dlg = wx.MessageDialog(self, u"Le logiciel OpenOffice WRITER ne peut pas être ouvert. \nEtes-vous bien sûr qu'il est présent sur votre ordinateur ?", "Information", wx.OK | wx.ICON_INFORMATION)
+                    dlg = wx.MessageDialog(self, _(u"Le logiciel OpenOffice WRITER ne peut pas être ouvert. \nEtes-vous bien sûr qu'il est présent sur votre ordinateur ?"), "Information", wx.OK | wx.ICON_INFORMATION)
                     dlg.ShowModal()
                     dlg.Destroy()
                     return False
@@ -1235,7 +1237,7 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
                 for motcle, type_motcle in DICT_DONNEES["MOTSCLES"] :
                     texte += "  - {" + motcle + "} \n"
                     
-                texte += u"\n(Effacez bien-sûr ce petit texte d'introduction après l'avoir lu !!!)"
+                texte += _(u"\n(Effacez bien-sûr ce petit texte d'introduction après l'avoir lu !!!)")
                 objText = objDocument.GetText()
                 objCursor = objText.createTextCursor()
                 objText.insertString(objCursor, texte, 0)
@@ -1267,14 +1269,14 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
             texte = u"""Je viens de créer pour vous un nouveau document Teamword Vous pouvez maintenant y saisir le texte de votre choix. Pour insérer des données pour le publipostage, c'est très simple : tapez son mot-clé ! Exemple : "Je suis {CIVILITE} {NOM}" donnera après le publipostage "Je suis David DUPOND"... \n
 La liste des mots-clés disponibles est présentée dans le cadre ci-contre. Double-cliquez sur un mot-clé pour l'insérer dans votre document. \n\n"""
                             
-            texte += u"\n(Effacez bien-sûr ce petit texte d'introduction après l'avoir lu !!!)"
+            texte += _(u"\n(Effacez bien-sûr ce petit texte d'introduction après l'avoir lu !!!)")
             Twd.rtc.WriteText(texte)
                 
     def OnBoutonModifier(self, event):
         """ Modifier un modèle avec un traitement de texte """
         index = self.listCtrl.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un fichier à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un fichier à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -1284,7 +1286,7 @@ La liste des mots-clés disponibles est présentée dans le cadre ci-contre. Double
             # Chargement de Word
             try : Word = win32com.client.Dispatch("Word.Application")
             except :
-                dlg = wx.MessageDialog(self, u"Le logiciel Microsoft Word ne peut pas être ouvert. \nEtes-vous bien sûr qu'il est présent sur votre ordinateur ?", "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Le logiciel Microsoft Word ne peut pas être ouvert. \nEtes-vous bien sûr qu'il est présent sur votre ordinateur ?"), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
@@ -1304,7 +1306,7 @@ La liste des mots-clés disponibles est présentée dans le cadre ci-contre. Double
                     objServiceManager = win32com.client.Dispatch("com.sun.star.ServiceManager")
                     objDesktop = objServiceManager.CreateInstance("com.sun.star.frame.Desktop")  
                 except :
-                    dlg = wx.MessageDialog(self, u"Le logiciel OpenOffice WRITER ne peut pas être ouvert. \nEtes-vous bien sûr qu'il est présent sur votre ordinateur ?", "Information", wx.OK | wx.ICON_INFORMATION)
+                    dlg = wx.MessageDialog(self, _(u"Le logiciel OpenOffice WRITER ne peut pas être ouvert. \nEtes-vous bien sûr qu'il est présent sur votre ordinateur ?"), "Information", wx.OK | wx.ICON_INFORMATION)
                     dlg.ShowModal()
                     dlg.Destroy()
                     return False
@@ -1345,12 +1347,12 @@ La liste des mots-clés disponibles est présentée dans le cadre ci-contre. Double
         """ Suppression du fichier sélectionné """
         index = self.listCtrl.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un fichier à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un fichier à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         # Demande de confirmation
-        dlg = wx.MessageDialog(self, u"Souhaitez-vous vraiment supprimer le fichier suivant ? \n\n>  " + self.nomFichier + u" \n\nAttention, la suppression est définitive !!!",  u"Confirmation de suppression", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+        dlg = wx.MessageDialog(self, _(u"Souhaitez-vous vraiment supprimer le fichier suivant ? \n\n>  ") + self.nomFichier + _(u" \n\nAttention, la suppression est définitive !!!"),  _(u"Confirmation de suppression"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
         if dlg.ShowModal() == wx.ID_NO :
             return
         # Suppression
@@ -1374,7 +1376,7 @@ La liste des mots-clés disponibles est présentée dans le cadre ci-contre. Double
     def Validation(self):
         # Vérifie qu'un fichier a été sélectionné dans la liste :
         if self.nomFichier == "" or self.listCtrl.GetFirstSelected() == -1 :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un fichier de publipostage dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un fichier de publipostage dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return False
@@ -1430,11 +1432,11 @@ class ListCtrl_fichiers(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
         
         # Création des colonnes
         self.nbreColonnes = 3
-        self.InsertColumn(0, u"Nom du fichier")
+        self.InsertColumn(0, _(u"Nom du fichier"))
         self.SetColumnWidth(0, 270) 
-        self.InsertColumn(1, u"Taille")
+        self.InsertColumn(1, _(u"Taille"))
         self.SetColumnWidth(1, 50) 
-        self.InsertColumn(2, u"Dernière modification")
+        self.InsertColumn(2, _(u"Dernière modification"))
         self.SetColumnWidth(2, 100) 
 
         #These two should probably be passed to init more cleanly
@@ -1569,7 +1571,7 @@ class ListCtrl_fichiers(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Créer un nouveau modèle de document")
+        item = wx.MenuItem(menuPop, 10, _(u"Créer un nouveau modèle de document"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -1578,14 +1580,14 @@ class ListCtrl_fichiers(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -1594,7 +1596,7 @@ class ListCtrl_fichiers(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
         menuPop.AppendSeparator()
         
         # Item Parcourir
-        item = wx.MenuItem(menuPop, 40, u"Parcourir")
+        item = wx.MenuItem(menuPop, 40, _(u"Parcourir"))
         bmp = wx.Bitmap("Images/16x16/Inbox.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -1656,35 +1658,35 @@ class Page5(wx.Panel):
         self.repertoire = os.getcwd() + "/Documents/Editions"
         self.dictParamMail = {}
         
-        self.sizer_contenu_staticbox = wx.StaticBox(self, -1, u"Options d'édition")
-        self.label_titre = wx.StaticText(self, -1, u"4. Edition du document")
-        self.label_intro = wx.StaticText(self, -1, u"Vous pouvez définir les options d'édition ci-dessous puis cliquez sur 'Valider'.")
+        self.sizer_contenu_staticbox = wx.StaticBox(self, -1, _(u"Options d'édition"))
+        self.label_titre = wx.StaticText(self, -1, _(u"4. Edition du document"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Vous pouvez définir les options d'édition ci-dessous puis cliquez sur 'Valider'."))
         
-        self.label_envoi_mail = wx.StaticText(self, -1, u"Paramètres d'envoi des Emails :")
+        self.label_envoi_mail = wx.StaticText(self, -1, _(u"Paramètres d'envoi des Emails :"))
         self.panel_param_mail = Parametres_mail.Panel(self, activer_a=False, activer_cci=False, activer_bouton_envoyer=False)
-        self.ctrl_apercu_avant_envoi = wx.CheckBox(self, -1, u"Aperçu du document avant l'envoi par mail")
+        self.ctrl_apercu_avant_envoi = wx.CheckBox(self, -1, _(u"Aperçu du document avant l'envoi par mail"))
         
         self.checkbox_impression = wx.CheckBox(self, -1, "")
         self.label_impress1 = wx.StaticText(self, -1, "Impression en")
         self.combo_box_exemplaires = wx.Choice(self, -1, choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
         self.label_impress2 = wx.StaticText(self, -1, "exemplaire(s)")
-        self.label_imprimante = wx.StaticText(self, -1, u"     Imprimante :")
+        self.label_imprimante = wx.StaticText(self, -1, _(u"     Imprimante :"))
         nomImprimanteDefaut, listeImprimantes, a, b = FonctionsPerso.ListeImprimantes()
         self.combo_box_imprimante = wx.Choice(self, -1, choices=listeImprimantes)
         self.combo_box_imprimante.SetStringSelection(nomImprimanteDefaut)
         self.checkbox_save = wx.CheckBox(self, -1, "")
         self.label_save = wx.StaticText(self, -1, "Sauvegarde :")
-        self.label_repertoire = wx.StaticText(self, -1, u"Répertoire :")
+        self.label_repertoire = wx.StaticText(self, -1, _(u"Répertoire :"))
         self.text_repertoire = wx.TextCtrl(self, -1, "")
         self.bouton_repertoire = wx.Button(self, -1, "...")
         self.label_nom_fichier = wx.StaticText(self, -1, "Noms des fichiers :")
         self.ctrl_nom_fichiers = Grid_noms_fichiers(self)
-        self.label_prefixe = wx.StaticText(self, -1, u"Préfixe des noms :")
+        self.label_prefixe = wx.StaticText(self, -1, _(u"Préfixe des noms :"))
         self.text_prefixe = wx.TextCtrl(self, -1, "")
         self.text_prefixe.Enable(False)
         self.bouton_prefixe = wx.Button(self, -1, "...")
         self.checkbox_apercu = wx.CheckBox(self, -1, "")
-        self.label_apercu = wx.StaticText(self, -1, u"Aperçu avant impression")
+        self.label_apercu = wx.StaticText(self, -1, _(u"Aperçu avant impression"))
         
         self.__set_properties()
         self.__do_layout()
@@ -1721,11 +1723,11 @@ class Page5(wx.Panel):
         self.combo_box_exemplaires.SetMinSize((40, -1))
         self.bouton_repertoire.SetMinSize((20, 20))
         self.bouton_prefixe.SetMinSize((20, 20))
-        self.bouton_repertoire.SetToolTipString(u"Cliquez ici définir un autre répertoire de destination")
-        self.text_repertoire.SetToolTipString(u"Vous pouvez sélectionner un autre répertoire en cliquant sur le bouton '...' ou en tapant directement dans ce cadre de texte.")
-        self.ctrl_nom_fichiers.SetToolTipString(u"Vous pouvez saisir un autre nom de fichier en tapant directement dans ce cadre de texte.")
-        self.bouton_prefixe.SetToolTipString(u"Cliquez ici pour modifier le préfixe des noms de fichiers pour ce modèle de document")
-        self.text_prefixe.SetToolTipString(u"Vous devez définir ici le préfixe des noms de fichiers pour ce modèle de document")
+        self.bouton_repertoire.SetToolTipString(_(u"Cliquez ici définir un autre répertoire de destination"))
+        self.text_repertoire.SetToolTipString(_(u"Vous pouvez sélectionner un autre répertoire en cliquant sur le bouton '...' ou en tapant directement dans ce cadre de texte."))
+        self.ctrl_nom_fichiers.SetToolTipString(_(u"Vous pouvez saisir un autre nom de fichier en tapant directement dans ce cadre de texte."))
+        self.bouton_prefixe.SetToolTipString(_(u"Cliquez ici pour modifier le préfixe des noms de fichiers pour ce modèle de document"))
+        self.text_prefixe.SetToolTipString(_(u"Vous devez définir ici le préfixe des noms de fichiers pour ce modèle de document"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -1878,11 +1880,11 @@ class Page5(wx.Panel):
 
         # Labels
         if self.choixLogiciel == 1 : 
-            self.label_save.SetLabel(u"Sauvegarde du contrat au format WORD :")
-            self.label_apercu.SetLabel(u"Aperçu avant impression sous WORD")
+            self.label_save.SetLabel(_(u"Sauvegarde du contrat au format WORD :"))
+            self.label_apercu.SetLabel(_(u"Aperçu avant impression sous WORD"))
         if self.choixLogiciel == 2 : 
-            self.label_save.SetLabel(u"Sauvegarde du contrat au format OpenOffice Writer :")
-            self.label_apercu.SetLabel(u"Aperçu avant impression sous OpenOffice Writer")
+            self.label_save.SetLabel(_(u"Sauvegarde du contrat au format OpenOffice Writer :"))
+            self.label_apercu.SetLabel(_(u"Aperçu avant impression sous OpenOffice Writer"))
         
         # Définition ou Récupération du préfixe 
         prefixe = self.SetPrefixe()
@@ -1938,7 +1940,7 @@ class Page5(wx.Panel):
         repCourant = os.getcwd() 
         cheminDefaut = repCourant  + "/Documents/Contrats/Editions"
         # Ouverture dela fenêtre de dialogue
-        dlg = wx.DirDialog(self, u"Sélectionnez un répertoire de destination", defaultPath=cheminDefaut, style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+        dlg = wx.DirDialog(self, _(u"Sélectionnez un répertoire de destination"), defaultPath=cheminDefaut, style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
         if dlg.ShowModal() == wx.ID_OK:
             self.repertoire = dlg.GetPath()
             dlg.Destroy()
@@ -1956,15 +1958,15 @@ class Page5(wx.Panel):
     def SetPrefixe(self, modeModification=False):
         categorie_document = DICT_DONNEES["CATEGORIE"]
         nomModele = self.GetGrandParent().page4.nomFichier
-        prefixe = FonctionsPerso.Parametres(mode="get", categorie="document_%s" % categorie_document, nom=u"prefixe_%s" % nomModele, valeur="")
+        prefixe = FonctionsPerso.Parametres(mode="get", categorie="document_%s" % categorie_document, nom=_(u"prefixe_%s") % nomModele, valeur="")
         if prefixe == "" or modeModification == True :
             prefixeValide = False
             while prefixeValide == False :
-                texte = u"Veuillez saisir le préfixe pour les noms de fichiers rattachés au modèle de document '%s'." % nomModele
-                dlg = wx.TextEntryDialog(self, textwrap.fill(texte, width=80) + "\n\n(Exemples : 'CDD', 'Invitation', 'Attestation'...)", u"Choix d'un préfixe", prefixe)
+                texte = _(u"Veuillez saisir le préfixe pour les noms de fichiers rattachés au modèle de document '%s'.") % nomModele
+                dlg = wx.TextEntryDialog(self, textwrap.fill(texte, width=80) + "\n\n(Exemples : 'CDD', 'Invitation', 'Attestation'...)", _(u"Choix d'un préfixe"), prefixe)
                 if dlg.ShowModal() == wx.ID_OK :
                     prefixe = dlg.GetValue()
-                    FonctionsPerso.Parametres(mode="set", categorie="document_%s" % categorie_document, nom=u"prefixe_%s" % nomModele, valeur=prefixe)
+                    FonctionsPerso.Parametres(mode="set", categorie="document_%s" % categorie_document, nom=_(u"prefixe_%s") % nomModele, valeur=prefixe)
                 dlg.Destroy()
                 if prefixe == "" : 
                     prefixeValide = False
@@ -1993,14 +1995,14 @@ class Page5(wx.Panel):
         
             # Vérifie qu'une option a bien été cochée
             if self.checkbox_impression.GetValue() == False and self.checkbox_save.GetValue() == False and self.checkbox_apercu.GetValue() == False :
-                dlg = wx.MessageDialog(self, u"Vous devez cocher au moins une option d'édition.", "Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez cocher au moins une option d'édition."), "Erreur de saisie", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
             
             # Vérifie que le chemin pour la sauvegarde est valide
             if self.checkbox_save.GetValue() == True and (self.text_repertoire.GetValue() == "" or os.path.isdir(self.text_repertoire.GetValue()) == False) :
-                dlg = wx.MessageDialog(self, u"Vous devez saisir un répertoire valide pour la sauvegarde", "Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez saisir un répertoire valide pour la sauvegarde"), "Erreur de saisie", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.text_repertoire.SetFocus()
@@ -2013,7 +2015,7 @@ class Page5(wx.Panel):
                 if dictValeurs["NOMFICHIER"] == "" :
                     erreurNomFichier = True
             if self.checkbox_save.GetValue() == True and erreurNomFichier == True :
-                dlg = wx.MessageDialog(self, u"Un ou plusieurs noms de fichiers ne sont pas valides", "Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Un ou plusieurs noms de fichiers ne sont pas valides"), "Erreur de saisie", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.text_repertoire.SetFocus()
@@ -2077,7 +2079,7 @@ class Grid_noms_fichiers(gridlib.Grid):
         indexLigne = 0
         for IDdocument in range(1, nbreDocuments+1) :
             if dict_noms_fichiers.has_key(IDdocument) :
-                self.SetRowLabelValue(indexLigne, u"Doc n°%d" % IDdocument)
+                self.SetRowLabelValue(indexLigne, _(u"Doc n°%d") % IDdocument)
                 # Colonne sélection
                 self.SetCellValue(indexLigne, 0, str(dict_noms_fichiers[IDdocument]["SELECTION"]))
                 self.SetCellEditor(indexLigne, 0, gridlib.GridCellBoolEditor())
@@ -2108,7 +2110,7 @@ class Grid_noms_fichiers(gridlib.Grid):
         if valeur == "" and indexColonne == 1:
             self.moveTo = indexLigne, indexColonne
             self.SetCellValue(indexLigne, indexColonne, valeur)
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom de fichier pour ce document", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom de fichier pour ce document"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
         # Mémorisation de la valeur
@@ -2141,8 +2143,8 @@ class Page6(wx.Panel):
         self.useTeamword = False
         self.listeDocTraites = []
         
-        self.label_titre = wx.StaticText(self, -1, u"5. Traitement du publipostage")
-        self.label_intro = wx.StaticText(self, -1, u"Cliquez sur 'Valider' pour lancer le publipostage ou revenez en arrière en cliquant sur 'retour'.")
+        self.label_titre = wx.StaticText(self, -1, _(u"5. Traitement du publipostage"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Cliquez sur 'Valider' pour lancer le publipostage ou revenez en arrière en cliquant sur 'retour'."))
         self.gauge = wx.Gauge(self, -1, 1, size=(-1, 10))
         self.ctrl_actions = listCtrl_Actions(self)
         self.bouton_continuer = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/ContinuerPublipostage.png", wx.BITMAP_TYPE_ANY))
@@ -2155,7 +2157,7 @@ class Page6(wx.Panel):
         
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
-        self.bouton_continuer.SetToolTipString(u"Cliquez ici pour continuer le processus de publipostage\naprès une pause aperçu du document.")
+        self.bouton_continuer.SetToolTipString(_(u"Cliquez ici pour continuer le processus de publipostage\naprès une pause aperçu du document."))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=6, cols=1, vgap=10, hgap=10)
@@ -2241,7 +2243,7 @@ class Page6(wx.Panel):
             self.gauge.SetRange(self.nbreCrans)
             self.x = 1
             
-            self.label_intro.SetLabel(u"Opération en cours : Ouverture du logiciel de publipostage")
+            self.label_intro.SetLabel(_(u"Opération en cours : Ouverture du logiciel de publipostage"))
             self.gauge.SetValue(self.x)
             self.x += 1
             
@@ -2267,12 +2269,12 @@ class Page6(wx.Panel):
             
             if IDdocument not in self.listeDocTraites :
                 # Création du nouveau document
-                self.AfficheProgression(IDdocument, "actuel" , u"Création du document", u"Opération en cours : Création du document n°%d" % IDdocument)
+                self.AfficheProgression(IDdocument, "actuel" , _(u"Création du document"), _(u"Opération en cours : Création du document n°%d") % IDdocument)
                 self.publipostage.CreationDocument(cheminModele=self.GetGrandParent().page4.cheminDest + "/" + self.GetGrandParent().page4.nomFichier)
                 if self.publipostage.erreur != None : self.OnErreur(IDdocument, self.publipostage.erreur);return False
                 
                 # Remplacement des valeurs
-                self.AfficheProgression(IDdocument, "actuel" , u"Remplacement des valeurs", u"Opération en cours : Remplacement des valeurs du document n°%d" % IDdocument)
+                self.AfficheProgression(IDdocument, "actuel" , _(u"Remplacement des valeurs"), _(u"Opération en cours : Remplacement des valeurs du document n°%d") % IDdocument)
                 listeValeurs = []
                 for motcle, valeur in DICT_DONNEES[IDdocument].iteritems() :
                     listeValeurs.append((motcle, valeur))
@@ -2285,7 +2287,7 @@ class Page6(wx.Panel):
                     if sauvegarde == True : 
                         dictNomsFichiers = self.GetGrandParent().page5.ctrl_nom_fichiers.GetDictNomsFichiers()
                         if dictNomsFichiers[IDdocument]["SELECTION"] == 1 :
-                            self.AfficheProgression(IDdocument, "actuel" , u"Sauvegarde du document", u"Opération en cours : Sauvegarde du document n°%d" % IDdocument)
+                            self.AfficheProgression(IDdocument, "actuel" , _(u"Sauvegarde du document"), _(u"Opération en cours : Sauvegarde du document n°%d") % IDdocument)
                             nomFichier = dictNomsFichiers[IDdocument]["NOMFICHIER"]
                             repertoire = self.GetGrandParent().page5.text_repertoire.GetValue()
                             extension = self.GetGrandParent().page5.extension
@@ -2301,7 +2303,7 @@ class Page6(wx.Panel):
                 if self.choixLogiciel != 4 :
                     impression = self.GetGrandParent().page5.checkbox_impression.GetValue()
                     if impression == True :
-                        self.AfficheProgression(IDdocument, "actuel" , u"Impression du document", u"Opération en cours : Impression du document n°%d" % IDdocument)
+                        self.AfficheProgression(IDdocument, "actuel" , _(u"Impression du document"), _(u"Opération en cours : Impression du document n°%d") % IDdocument)
                         nbre_exemplaires = int(self.GetGrandParent().page5.combo_box_exemplaires.GetStringSelection())
                         nom_imprimante = self.GetGrandParent().page5.combo_box_imprimante.GetStringSelection()
                         self.publipostage.ImprimerDocument(nom_imprimante, nbre_exemplaires)
@@ -2325,23 +2327,23 @@ class Page6(wx.Panel):
                 apercu = self.GetGrandParent().page5.checkbox_apercu.GetValue()
                 apercu_mail = self.GetGrandParent().page5.ctrl_apercu_avant_envoi.GetValue()
                 if (self.choixLogiciel == 4 and apercu_mail == True) or  (self.choixLogiciel != 4 and apercu == True):
-                    self.AfficheProgression(IDdocument, "actuel" , u"Apercu du document", u"Opération en cours : Aperçu du document n°%d" % IDdocument)
+                    self.AfficheProgression(IDdocument, "actuel" , _(u"Apercu du document"), _(u"Opération en cours : Aperçu du document n°%d") % IDdocument)
                     self.publipostage.ApercuDocument()
                     if self.publipostage.erreur != None : self.OnErreur(self.publipostage.erreur);return False
                 else:
-                    self.AfficheProgression(IDdocument, "actuel" , u"Fermeture du document", u"Opération en cours : Fermeture du document n°%d" % IDdocument)
+                    self.AfficheProgression(IDdocument, "actuel" , _(u"Fermeture du document"), _(u"Opération en cours : Fermeture du document n°%d") % IDdocument)
                     self.publipostage.FermerDocument()
                     if self.publipostage.erreur != None : self.OnErreur(IDdocument, self.publipostage.erreur);return False
                 
                 # Envoi par Email :
                 if self.choixLogiciel == 4 and apercu_mail == False :
-                    self.AfficheProgression(IDdocument, "actuel" , u"Envoi par mail", u"Opération en cours : Envoi par mail du document n°%d" % IDdocument)
+                    self.AfficheProgression(IDdocument, "actuel" , _(u"Envoi par mail"), _(u"Opération en cours : Envoi par mail du document n°%d") % IDdocument)
                     self.publipostage.EnvoyerMail()
                 else:
                     self.x += 1
                         
                 # Fin de document en cours
-                self.AfficheProgression(IDdocument, "ok" , u"Terminé", None)
+                self.AfficheProgression(IDdocument, "ok" , _(u"Terminé"), None)
                 
                 # Ajoute l'ID du doc à la liste des documents traités (sert pour les pauses de Teamword)
                 self.listeDocTraites.append(IDdocument)
@@ -2373,7 +2375,7 @@ class Page6(wx.Panel):
                     
         # Quitter le logiciel
         if apercu == False :
-            self.label_intro.SetLabel(u"Opération en cours : Fermeture du logiciel")
+            self.label_intro.SetLabel(_(u"Opération en cours : Fermeture du logiciel"))
             self.gauge.SetValue(self.x)
             self.x += 1
             self.publipostage.QuitterLogiciel()
@@ -2395,10 +2397,10 @@ class Page6(wx.Panel):
             self.thread.abort()
         
         if self.interrompu == True :
-            message = u"Vous avez interrompu le publipostage ! "
+            message = _(u"Vous avez interrompu le publipostage ! ")
             self.label_intro.SetLabel(message)
         else:
-            message = u"Le publipostage est terminé."
+            message = _(u"Le publipostage est terminé.")
             self.label_intro.SetLabel(message)
         self.gauge.SetValue(self.x)
         self.x += 1
@@ -2411,7 +2413,7 @@ class Page6(wx.Panel):
         self.x += 1
         
     def OnErreur(self, IDdocument=None, txtErreur=""):
-        self.AfficheProgression(IDdocument, "erreur" , u"Erreur : %s" % txtErreur, u"Erreur : %s" % txtErreur)
+        self.AfficheProgression(IDdocument, "erreur" , _(u"Erreur : %s") % txtErreur, _(u"Erreur : %s") % txtErreur)
         if self.useTeamword == False :
             self.thread.abort()
     
@@ -2461,7 +2463,7 @@ class Page6(wx.Panel):
             self.gauge.SetRange(self.nbreCrans)
             self.x = 1
             
-            self.label_intro.SetLabel(u"Opération en cours : Ouverture de Teamword")
+            self.label_intro.SetLabel(_(u"Opération en cours : Ouverture de Teamword"))
             self.gauge.SetValue(self.x)
             self.x += 1
             
@@ -2476,12 +2478,12 @@ class Page6(wx.Panel):
             
             if IDdocument not in self.listeDocTraites :
                 # Création du nouveau document
-                self.AfficheProgression(IDdocument, "actuel" , u"Création du document", u"Opération en cours : Création du document n°%d" % IDdocument)
+                self.AfficheProgression(IDdocument, "actuel" , _(u"Création du document"), _(u"Opération en cours : Création du document n°%d") % IDdocument)
                 self.publipostage.CreationDocument(cheminModele=self.GetGrandParent().page4.cheminDest + "/" + self.GetGrandParent().page4.nomFichier)
                 if self.publipostage.erreur != None : self.OnErreur(IDdocument, self.publipostage.erreur);return False
                 
                 # Remplacement des valeurs
-                self.AfficheProgression(IDdocument, "actuel" , u"Remplacement des valeurs", u"Opération en cours : Remplacement des valeurs du document n°%d" % IDdocument)
+                self.AfficheProgression(IDdocument, "actuel" , _(u"Remplacement des valeurs"), _(u"Opération en cours : Remplacement des valeurs du document n°%d") % IDdocument)
                 listeValeurs = []
                 for motcle, valeur in DICT_DONNEES[IDdocument].iteritems() :
                     listeValeurs.append((motcle, valeur))
@@ -2491,18 +2493,18 @@ class Page6(wx.Panel):
                 # Apercu du document
                 apercu = self.GetGrandParent().page5.checkbox_apercu.GetValue()
                 if apercu == True :
-                    self.AfficheProgression(IDdocument, "actuel" , u"Apercu du document", u"Opération en cours : Aperçu du document n°%d" % IDdocument)
+                    self.AfficheProgression(IDdocument, "actuel" , _(u"Apercu du document"), _(u"Opération en cours : Aperçu du document n°%d") % IDdocument)
                     self.publipostage.ApercuDocument()
                     if self.publipostage.erreur != None : self.OnErreur(self.publipostage.erreur);return False
                 else:
-                    self.AfficheProgression(IDdocument, "actuel" , u"Fermeture du document", u"Opération en cours : Fermeture du document n°%d" % IDdocument)
+                    self.AfficheProgression(IDdocument, "actuel" , _(u"Fermeture du document"), _(u"Opération en cours : Fermeture du document n°%d") % IDdocument)
                     self.publipostage.FermerDocument()
                     if self.publipostage.erreur != None : self.OnErreur(IDdocument, self.publipostage.erreur);return False
                 
                 # Impression du document
                 impression = self.GetGrandParent().page5.checkbox_impression.GetValue()
                 if impression == True :
-                    self.AfficheProgression(IDdocument, "actuel" , u"Impression du document", u"Opération en cours : Impression du document n°%d" % IDdocument)
+                    self.AfficheProgression(IDdocument, "actuel" , _(u"Impression du document"), _(u"Opération en cours : Impression du document n°%d") % IDdocument)
                     nbre_exemplaires = int(self.GetGrandParent().page5.combo_box_exemplaires.GetStringSelection())
                     nom_imprimante = self.GetGrandParent().page5.combo_box_imprimante.GetStringSelection()
                     self.publipostage.ImprimerDocument(nom_imprimante, nbre_exemplaires)
@@ -2511,7 +2513,7 @@ class Page6(wx.Panel):
                     self.x += 1
 
                 # Fin de document en cours
-                self.AfficheProgression(IDdocument, "ok" , u"Terminé", None)
+                self.AfficheProgression(IDdocument, "ok" , _(u"Terminé"), None)
                 
                 # Ajoute l'ID du doc à la liste des documents traités (sert pour les pauses de Teamword)
                 self.listeDocTraites.append(IDdocument)
@@ -2543,7 +2545,7 @@ class Page6(wx.Panel):
                     
         # Quitter le logiciel
         if apercu == False :
-            self.label_intro.SetLabel(u"Opération en cours : Fermeture du logiciel")
+            self.label_intro.SetLabel(_(u"Opération en cours : Fermeture du logiciel"))
             self.gauge.SetValue(self.x)
             self.x += 1
             self.publipostage.QuitterLogiciel()
@@ -2565,10 +2567,10 @@ class Page6(wx.Panel):
             self.thread.abort()
         
         if self.interrompu == True :
-            message = u"Vous avez interrompu le publipostage ! "
+            message = _(u"Vous avez interrompu le publipostage ! ")
             self.label_intro.SetLabel(message)
         else:
-            message = u"Le publipostage est terminé."
+            message = _(u"Le publipostage est terminé.")
             self.label_intro.SetLabel(message)
         self.gauge.SetValue(self.x)
         self.x += 1
@@ -2588,7 +2590,7 @@ class Publipostage_Word():
             self.Word.Visible = False 
         except Exception, err :
             print "Erreur dans l'ouverture de Word : %s" % err
-            self.erreur = u"Impossible d'ouvrir Word"
+            self.erreur = _(u"Impossible d'ouvrir Word")
             self.QuitterLogiciel()
         
     def CreationDocument(self, cheminModele=None):
@@ -2599,7 +2601,7 @@ class Publipostage_Word():
             self.doc = self.Word.ActiveDocument
         except Exception, err :
             print "Erreur dans creation du nouveau du document : %s" % err
-            self.erreur = u"Impossible de créer un nouveau du document"
+            self.erreur = _(u"Impossible de créer un nouveau du document")
             self.QuitterLogiciel()
     
     def RemplacementValeurs(self, listeValeurs=[]):
@@ -2616,7 +2618,7 @@ class Publipostage_Word():
                     self.Word.Selection.TypeText(Text=valeur)
         except Exception, err :
             print "Erreur dans le remplacement des valeurs du document : %s" % err
-            self.erreur = u"Impossible de remplacer les valeurs"
+            self.erreur = _(u"Impossible de remplacer les valeurs")
             self.QuitterLogiciel()
             
     def SauvegardeDocument(self, cheminDoc=None):
@@ -2625,7 +2627,7 @@ class Publipostage_Word():
             self.doc.SaveAs(cheminDoc)
         except Exception, err :
             print "Erreur dans la sauvegarde du document : %s" % err
-            self.erreur = u"Impossible de sauvegarder le document"
+            self.erreur = _(u"Impossible de sauvegarder le document")
             self.QuitterLogiciel()
             
     def ImprimerDocument(self, nom_imprimante=None, nbre_exemplaires=1):
@@ -2640,7 +2642,7 @@ class Publipostage_Word():
                 time.sleep(2)
         except Exception, err :
             print "Erreur dans l'impression du document : %s" % err
-            self.erreur = u"Impossible d'imprimer le document"
+            self.erreur = _(u"Impossible d'imprimer le document")
             self.QuitterLogiciel()
             
     def ApercuDocument(self):
@@ -2650,7 +2652,7 @@ class Publipostage_Word():
             self.Word.Activate
         except Exception, err :
             print "Erreur dans la creation de l'apercu du document : %s" % err
-            self.erreur = u"Impossible de créer un aperçu du document"
+            self.erreur = _(u"Impossible de créer un aperçu du document")
             self.QuitterLogiciel()
     
     def FermerDocument(self):
@@ -2659,7 +2661,7 @@ class Publipostage_Word():
             self.doc.Close(SaveChanges = 0)
         except Exception, err :
             print "Erreur dans la fermeture du document : %s" % err
-            self.erreur = u"Impossible de fermer le document"
+            self.erreur = _(u"Impossible de fermer le document")
             self.QuitterLogiciel()
         
     def QuitterLogiciel(self):
@@ -2672,7 +2674,7 @@ class Publipostage_Word():
             CoUninitialize()
         except Exception, err :
             print "Erreur dans la fermeture de Word : %s" % err
-            self.erreur = u"Impossible de quitter Word"
+            self.erreur = _(u"Impossible de quitter Word")
                             
             
 
@@ -2696,7 +2698,7 @@ class Publipostage_Writer_Windows():
             self.objDesktop = objServiceManager.CreateInstance("com.sun.star.frame.Desktop")  
         except Exception, err :
             print "Erreur dans l'ouverture de Writer : %s" % err
-            self.erreur = u"Impossible d'ouvrir Writer"
+            self.erreur = _(u"Impossible d'ouvrir Writer")
             self.QuitterLogiciel()
     
     def CreationDocument(self, cheminModele=None):
@@ -2708,7 +2710,7 @@ class Publipostage_Writer_Windows():
             self.objDocument.CurrentController.Frame.ContainerWindow.Visible = False
         except Exception, err :
             print "Erreur dans creation du nouveau du document : %s" % err
-            self.erreur = u"Impossible de créer un nouveau du document"
+            self.erreur = _(u"Impossible de créer un nouveau du document")
             self.QuitterLogiciel()
             
     def RemplacementValeurs(self, listeValeurs=[]):
@@ -2723,7 +2725,7 @@ class Publipostage_Writer_Windows():
                 nbre = self.objDocument.replaceAll(orempl)
         except Exception, err :
             print "Erreur dans le remplacement des valeurs du document : %s" % err
-            self.erreur = u"Impossible de remplacer les valeurs"
+            self.erreur = _(u"Impossible de remplacer les valeurs")
             self.QuitterLogiciel()
                 
     def SauvegardeDocument(self, cheminDoc=None):
@@ -2733,7 +2735,7 @@ class Publipostage_Writer_Windows():
             self.objDocument.storeAsURL(dest, self.args)
         except Exception, err :
             print "Erreur dans la sauvegarde du document : %s" % err
-            self.erreur = u"Impossible de sauvegarder le document"
+            self.erreur = _(u"Impossible de sauvegarder le document")
             self.QuitterLogiciel()
                     
     def ImprimerDocument(self, nom_imprimante=None, nbre_exemplaires=1):
@@ -2745,7 +2747,7 @@ class Publipostage_Writer_Windows():
                 time.sleep(2)
         except Exception, err :
             print "Erreur dans l'impression du document : %s" % err
-            self.erreur = u"Impossible d'imprimer le document"
+            self.erreur = _(u"Impossible d'imprimer le document")
             self.QuitterLogiciel()
                 
 ##            warg = []
@@ -2777,7 +2779,7 @@ class Publipostage_Writer_Windows():
             self.objDocument.CurrentController.Frame.ContainerWindow.Visible = True
         except Exception, err :
             print "Erreur dans la creation de l'apercu du document : %s" % err
-            self.erreur = u"Impossible de créer un aperçu du document"
+            self.erreur = _(u"Impossible de créer un aperçu du document")
             self.QuitterLogiciel()
     
     def FermerDocument(self):
@@ -2786,7 +2788,7 @@ class Publipostage_Writer_Windows():
             self.objDocument.Close(False)
         except Exception, err :
             print "Erreur dans la fermeture du document : %s" % err
-            self.erreur = u"Impossible de fermer le document"
+            self.erreur = _(u"Impossible de fermer le document")
             self.QuitterLogiciel()
         
     def QuitterLogiciel(self):
@@ -2799,7 +2801,7 @@ class Publipostage_Writer_Windows():
             CoUninitialize()
         except Exception, err :
             print "Erreur dans la fermeture de Writer : %s" % err
-            self.erreur = u"Impossible de quitter Writer"
+            self.erreur = _(u"Impossible de quitter Writer")
 
     
 class Publipostage_Writer_Linux():
@@ -2814,7 +2816,7 @@ class Publipostage_Writer_Linux():
             self.ooo = Pilotageooo.Pilotage()
         except Exception, err :
             print "Erreur dans l'ouverture de Writer : %s" % err
-            self.erreur = u"Impossible d'ouvrir Writer"
+            self.erreur = _(u"Impossible d'ouvrir Writer")
             self.QuitterLogiciel()
 
     def CreationDocument(self, cheminModele=None):
@@ -2824,7 +2826,7 @@ class Publipostage_Writer_Linux():
             self.ooo.Ouvrir_doc(fichier)
         except Exception, err :
             print "Erreur dans creation du nouveau du document : %s" % err
-            self.erreur = u"Impossible de créer un nouveau du document"
+            self.erreur = _(u"Impossible de créer un nouveau du document")
             self.QuitterLogiciel()
 
     def RemplacementValeurs(self, listeValeurs=[]):
@@ -2833,7 +2835,7 @@ class Publipostage_Writer_Linux():
             txtPublipostage = self.ooo.Remplacer_valeurs(listeValeurs)
         except Exception, err :
             print "Erreur dans le remplacement des valeurs du document : %s" % err
-            self.erreur = u"Impossible de remplacer les valeurs"
+            self.erreur = _(u"Impossible de remplacer les valeurs")
             self.QuitterLogiciel()
 
     def SauvegardeDocument(self, cheminDoc=None):
@@ -2842,7 +2844,7 @@ class Publipostage_Writer_Linux():
             self.ooo.Sauvegarder_doc(cheminDoc)
         except Exception, err :
             print "Erreur dans la sauvegarde du document : %s" % err
-            self.erreur = u"Impossible de sauvegarder le document"
+            self.erreur = _(u"Impossible de sauvegarder le document")
             self.QuitterLogiciel()
             
     def ImprimerDocument(self, nom_imprimante=None, nbre_exemplaires=1):
@@ -2851,7 +2853,7 @@ class Publipostage_Writer_Linux():
             self.ooo.Imprimer_doc(nbre_exemplaires)
         except Exception, err :
             print "Erreur dans l'impression du document : %s" % err
-            self.erreur = u"Impossible d'imprimer le document"
+            self.erreur = _(u"Impossible d'imprimer le document")
             self.QuitterLogiciel()
 
     def ApercuDocument(self):
@@ -2860,7 +2862,7 @@ class Publipostage_Writer_Linux():
             pass
         except Exception, err :
             print "Erreur dans la creation de l'apercu du document : %s" % err
-            self.erreur = u"Impossible de créer un aperçu du document"
+            self.erreur = _(u"Impossible de créer un aperçu du document")
             self.QuitterLogiciel()
     
     def FermerDocument(self):
@@ -2869,7 +2871,7 @@ class Publipostage_Writer_Linux():
             self.ooo.Fermer_doc()
         except Exception, err :
             print "Erreur dans la fermeture du document : %s" % err
-            self.erreur = u"Impossible de fermer le document"
+            self.erreur = _(u"Impossible de fermer le document")
             self.QuitterLogiciel()
         
     def QuitterLogiciel(self):
@@ -2882,7 +2884,7 @@ class Publipostage_Writer_Linux():
             CoUninitialize()
         except Exception, err :
             print "Erreur dans la fermeture de Writer : %s" % err
-            self.erreur = u"Impossible de quitter Writer"
+            self.erreur = _(u"Impossible de quitter Writer")
             
 
 
@@ -2899,7 +2901,7 @@ class Publipostage_Teamword():
             self.Twd = Teamword.MyFrame(self.parent.GetGrandParent())
         except Exception, err :
             print "Erreur dans l'ouverture de Teamword : %s" % err
-            self.erreur = u"Impossible d'ouvrir Teamword"
+            self.erreur = _(u"Impossible d'ouvrir Teamword")
             self.QuitterLogiciel()
         
     def CreationDocument(self, cheminModele=None):
@@ -2908,7 +2910,7 @@ class Publipostage_Teamword():
             self.Twd.CreateNewFile(cheminModele)
         except Exception, err :
             print "Erreur dans creation du nouveau du document : %s" % err
-            self.erreur = u"Impossible de créer un nouveau du document"
+            self.erreur = _(u"Impossible de créer un nouveau du document")
             self.QuitterLogiciel()
     
     def RemplacementValeurs(self, listeValeurs=[]):
@@ -2921,7 +2923,7 @@ class Publipostage_Teamword():
             self.Twd.RemplaceMotscles(listeValeurs2)
         except Exception, err :
             print "Erreur dans le remplacement des valeurs du document : %s" % err
-            self.erreur = u"Impossible de remplacer les valeurs"
+            self.erreur = _(u"Impossible de remplacer les valeurs")
             self.QuitterLogiciel()
             
     def SauvegardeDocument(self, cheminDoc=None):
@@ -2930,7 +2932,7 @@ class Publipostage_Teamword():
             self.Twd.FileSaveAs(cheminDoc)
         except Exception, err :
             print "Erreur dans la sauvegarde du document : %s" % err
-            self.erreur = u"Impossible de sauvegarder le document"
+            self.erreur = _(u"Impossible de sauvegarder le document")
             self.QuitterLogiciel()
             
     def ImprimerDocument(self, nom_imprimante=None, nbre_exemplaires=1):
@@ -2942,7 +2944,7 @@ class Publipostage_Teamword():
             os.chdir(activeDir)
         except Exception, err :
             print "Erreur dans l'impression du document : %s" % err
-            self.erreur = u"Impossible d'imprimer le document"
+            self.erreur = _(u"Impossible d'imprimer le document")
             self.QuitterLogiciel()
     
     def SetParamMail(self, adresseExpediteur, adresseDestinaire, sujetMail, listeFichiersJoints, serveur, port, connexionssl) :
@@ -2958,7 +2960,7 @@ class Publipostage_Teamword():
             self.Twd.Show()
         except Exception, err :
             print "Erreur dans la creation de l'apercu du document : %s" % err
-            self.erreur = u"Impossible de créer un aperçu du document"
+            self.erreur = _(u"Impossible de créer un aperçu du document")
             self.QuitterLogiciel()
     
     def FermerDocument(self):
@@ -2967,7 +2969,7 @@ class Publipostage_Teamword():
             self.Twd.CloseFile(enregistrer=False)
         except Exception, err :
             print "Erreur dans la fermeture du document : %s" % err
-            self.erreur = u"Impossible de fermer le document"
+            self.erreur = _(u"Impossible de fermer le document")
             self.QuitterLogiciel()
         
     def QuitterLogiciel(self):
@@ -2976,7 +2978,7 @@ class Publipostage_Teamword():
             self.Twd.Quitter(enregistrer=False)
         except Exception, err :
             print "Erreur dans la fermeture de Teamword : %s" % err
-            self.erreur = u"Impossible de quitter Teamword"
+            self.erreur = _(u"Impossible de quitter Teamword")
 
 
 
@@ -3015,8 +3017,8 @@ class listCtrl_Actions(wx.ListCtrl):
     def __init__(self, parent):
         wx.ListCtrl.__init__(self, parent, id=-1, style=wx.LC_REPORT)
 
-        self.InsertColumn(0, u"N° document")
-        self.InsertColumn(1, u"Etat")
+        self.InsertColumn(0, _(u"N° document"))
+        self.InsertColumn(1, _(u"Etat"))
         self.SetColumnWidth(0, 120)
         self.SetColumnWidth(1, 290)
         
@@ -3032,7 +3034,7 @@ class listCtrl_Actions(wx.ListCtrl):
         self.DeleteAllItems() 
         indexLigne = 0
         for IDdocument in range(1, DICT_DONNEES["NBREDOCUMENTS"]+1) :
-            self.InsertStringItem(indexLigne, u"Document n°%d" % IDdocument)
+            self.InsertStringItem(indexLigne, _(u"Document n°%d") % IDdocument)
             self.SetStringItem(indexLigne, 1, u"")
             indexLigne += 1
             

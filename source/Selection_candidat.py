@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import OL_candidats
@@ -16,23 +18,23 @@ import OL_personnes
 class MyDialog(wx.Dialog):
     """ Sélection d'un candidat """
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id=-1, title=u"Sélectionner un candidat ou un salarié", size=(450, 600))
+        wx.Dialog.__init__(self, parent, id=-1, title=_(u"Sélectionner un candidat ou un salarié"), size=(450, 600))
 
         # Label
-        self.label = wx.StaticText(self, -1, u"Veuillez sélectionner un candidat ou un salarié :")
+        self.label = wx.StaticText(self, -1, _(u"Veuillez sélectionner un candidat ou un salarié :"))
         
         self.noteBook = wx.Notebook(self, -1, size=(-1, 150), style=wx.BK_TOP)
         self.listCtrl_candidats = OL_candidats.ListView(self.noteBook, id=-1, activeDoubleClic=False, name="OL_candidats", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
         self.listCtrl_candidats.MAJ() 
 ##        self.barreRecherche_candidats = BarreRecherche_candidats(self, listview=self.listCtrl_candidats)
-        self.noteBook.AddPage(self.listCtrl_candidats, u"Liste des candidats")
+        self.noteBook.AddPage(self.listCtrl_candidats, _(u"Liste des candidats"))
         self.listCtrl_personnes = OL_personnes.ListView(self.noteBook, id=-1, activeDoubleClic=False, name="OL_personnes", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
 ##        self.barreRecherche_personnes = BarreRecherche_personnes(self, listview=self.listCtrl_personnes)
-        self.noteBook.AddPage(self.listCtrl_personnes, u"Liste des salariés")
+        self.noteBook.AddPage(self.listCtrl_personnes, _(u"Liste des salariés"))
         
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -71,13 +73,13 @@ class MyDialog(wx.Dialog):
         numPage = self.noteBook.GetSelection()
         
         if numPage== 0 and len(selection_candidat) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez sélectionné aucun candidat !", u"Aucune sélection", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucun candidat !"), _(u"Aucune sélection"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         if numPage== 1 and len(selection_personne) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez sélectionné aucun salarié !", u"Aucune sélection", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucun salarié !"), _(u"Aucune sélection"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -104,7 +106,7 @@ class BarreRecherche_candidats(wx.SearchCtrl):
         wx.SearchCtrl.__init__(self, parent, size=(-1,-1), style=wx.TE_PROCESS_ENTER)
         self.parent = parent
 
-        self.SetDescriptiveText(u"Rechercher une personne dans la liste")
+        self.SetDescriptiveText(_(u"Rechercher une personne dans la liste"))
         self.ShowSearchButton(True)
         
         self.listView = listview
@@ -140,7 +142,7 @@ class BarreRecherche_personnes(wx.SearchCtrl):
         wx.SearchCtrl.__init__(self, parent, size=(-1,-1), style=wx.TE_PROCESS_ENTER)
         self.parent = parent
 
-        self.SetDescriptiveText(u"Rechercher une personne dans la liste")
+        self.SetDescriptiveText(_(u"Rechercher une personne dans la liste"))
         self.ShowSearchButton(True)
         
         self.listView = listview

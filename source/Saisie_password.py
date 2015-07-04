@@ -2,6 +2,7 @@
 # -*- coding: iso-8859-15 -*-
 
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
@@ -20,9 +21,9 @@ class MyFrame(wx.Frame):
         self.label_password2 = wx.StaticText(self.panel_base, -1, "Confirmation :")
         self.text_password2 = wx.TextCtrl(self.panel_base, -1, "", style=wx.TE_PASSWORD)
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -33,17 +34,17 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Saisie d'un mot de passe")
+        self.SetTitle(_(u"Saisie d'un mot de passe"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Cadenas.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_password1.SetToolTipString(u"Saisissez ici votre mot de passe")
-        self.text_password2.SetToolTipString(u"Saisissez ici une deuxième fois votre mot de passe pour confirmation")
+        self.text_password1.SetToolTipString(_(u"Saisissez ici votre mot de passe"))
+        self.text_password2.SetToolTipString(_(u"Saisissez ici une deuxième fois votre mot de passe pour confirmation"))
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -109,7 +110,7 @@ class MyFrame(wx.Frame):
         
         varPassword1 = self.text_password1.GetValue()
         if varPassword1 == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir un mot de passe valide !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir un mot de passe valide !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_password1.SetFocus()
@@ -117,14 +118,14 @@ class MyFrame(wx.Frame):
         
         varPassword2 = self.text_password2.GetValue()
         if varPassword2 == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez confirmer le mot de passe !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez confirmer le mot de passe !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_password2.SetFocus()
             return
         
         if varPassword1 != varPassword2 :
-            dlg = wx.MessageDialog(self, u"Vous avez saisi deux mots de passe différents ! \n\nVeuillez recommencer votre saisie.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous avez saisi deux mots de passe différents ! \n\nVeuillez recommencer votre saisie."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_password1.SetFocus()

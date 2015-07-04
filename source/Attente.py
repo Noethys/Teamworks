@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import threading
 import thread
 import time
@@ -31,11 +33,11 @@ class newThread(threading.Thread):
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, label=""):
-        wx.Frame.__init__(self, parent, -1, title=u"Veuillez patientez", name="frm_attente", style=wx.CAPTION|wx.CLOSE_BOX|wx.SIMPLE_BORDER|wx.CLIP_CHILDREN)
+        wx.Frame.__init__(self, parent, -1, title=_(u"Veuillez patientez"), name="frm_attente", style=wx.CAPTION|wx.CLOSE_BOX|wx.SIMPLE_BORDER|wx.CLIP_CHILDREN)
         self.panel_base = wx.Panel(self, -1)
         self.label_intro = wx.StaticText(self.panel_base, -1, label)
         self.gauge = wx.Gauge(self.panel_base, -1, 50, (110, 95), (250, 25), style=wx.GA_HORIZONTAL|wx.GA_SMOOTH)
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.doExit = 0
         self.__set_properties()
         self.__do_layout()
@@ -81,7 +83,7 @@ class MyFrame(wx.Frame):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_attente = MyFrame(None, u"Texte d'intro ici...")
+    frame_attente = MyFrame(None, _(u"Texte d'intro ici..."))
     app.SetTopWindow(frame_attente)
     frame_attente.Show()
     app.MainLoop()

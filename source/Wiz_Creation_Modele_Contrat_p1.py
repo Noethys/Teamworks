@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import Config_Classifications
 import Config_TypesContrats
@@ -23,10 +25,10 @@ class Page(wx.Panel):
         
         self.dictTypes = {}
         
-        self.sizer_champs_staticbox = wx.StaticBox(self, -1, u"Champs personnalisés")
-        self.sizer_caract_staticbox = wx.StaticBox(self, -1, u"Caractéristiques générales")
-        self.label_titre = wx.StaticText(self, -1, u"Création d'un modèle de contrat")
-        self.label_intro = wx.StaticText(self, -1, u"Saisissez les caractéristiques générales du contrat :")
+        self.sizer_champs_staticbox = wx.StaticBox(self, -1, _(u"Champs personnalisés"))
+        self.sizer_caract_staticbox = wx.StaticBox(self, -1, _(u"Caractéristiques générales"))
+        self.label_titre = wx.StaticText(self, -1, _(u"Création d'un modèle de contrat"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Saisissez les caractéristiques générales du contrat :"))
         
         self.label_type = wx.StaticText(self, -1, "Type de contrat :")
         self.choice_type = wx.Choice(self, -1, choices=[])
@@ -58,7 +60,7 @@ class Page(wx.Panel):
         self.bouton_type.SetToolTipString("Cliquez ici pour ajouter, modifier ou supprimer des types de contrat")
         self.bouton_class.SetMinSize((20, 20))
         self.bouton_class.SetToolTipString("Cliquez ici pour ajouter, modifier ou supprimer des classifications")
-        self.bouton_champs.SetToolTipString(u"Cliquez ici pour créer, modifier ou supprimer des champs personnalisés.")
+        self.bouton_champs.SetToolTipString(_(u"Cliquez ici pour créer, modifier ou supprimer des champs personnalisés."))
         self.bouton_champs.SetMinSize((20, 20))
 
     def __do_layout(self):
@@ -193,14 +195,14 @@ class Page(wx.Panel):
         
         # Vérifie que des valeurs ont été saisies
         if type == None :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un type de contrat dans la liste proposée.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un type de contrat dans la liste proposée."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.choice_type.SetFocus()
             return False
 
         if classification == None :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner une classification dans la liste proposée.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner une classification dans la liste proposée."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.choice_class.SetFocus()
@@ -213,7 +215,7 @@ class Page(wx.Panel):
         
         # Vérifie qu'un champ a été coché   
         if len(self.listCtrl_champs.selections) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez sélectionné aucun champ. \n\nVoulez-vous tout de même continuer ?",  u"Vérification", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucun champ. \n\nVoulez-vous tout de même continuer ?"),  _(u"Vérification"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_NO :
                 dlg.Destroy() 
                 return False
@@ -332,7 +334,7 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
         menuPop = wx.Menu()
         
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 10, u"Créer un nouveau champ")
+        item = wx.MenuItem(menuPop, 10, _(u"Créer un nouveau champ"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -343,14 +345,14 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
             menuPop.AppendSeparator()
             
             # Item Modifier
-            item = wx.MenuItem(menuPop, 20, u"Modifier")
+            item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
             bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
             self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
             # Item Supprimer
-            item = wx.MenuItem(menuPop, 30, u"Supprimer")
+            item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
             bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)

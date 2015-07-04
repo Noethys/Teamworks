@@ -6,8 +6,10 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import datetime
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import operator
 import FonctionsPerso
@@ -22,21 +24,21 @@ except: pass
 
 # Liste sans nom du candidat
 LISTE_COLONNES_1 = [
-            [u"ID", "left", 0, "IDcontrat", "", u"ID du contrat", True, 1 ],
-            [u"Type", "left", 180, "type", "", u"Type de contrat", True, 2 ],
-            [u"Date de début", "left", 90, u"date_debut", "", u"Date de début de contrat", True, 3 ],
-            [u"Date de fin", "left", 90, u"date_fin", "", u"Date de fin de contrat", True, 4 ],
-            [u"Classification", "left", 100, u"classification", "", u"Classification du contrat", True, 5 ],
+            [_(u"ID"), "left", 0, "IDcontrat", "", _(u"ID du contrat"), True, 1 ],
+            [_(u"Type"), "left", 180, "type", "", _(u"Type de contrat"), True, 2 ],
+            [_(u"Date de début"), "left", 90, _(u"date_debut"), "", _(u"Date de début de contrat"), True, 3 ],
+            [_(u"Date de fin"), "left", 90, _(u"date_fin"), "", _(u"Date de fin de contrat"), True, 4 ],
+            [_(u"Classification"), "left", 100, _(u"classification"), "", _(u"Classification du contrat"), True, 5 ],
             ] # nom Colonne, alignement, largeur, nom Champ, Args pour OLV, Description, Affiché ?, Ordre
 
 # Liste avec nom du candidat
 LISTE_COLONNES_2 = [
-            [u"ID", "left", 0, "IDcontrat", "", u"ID du contrat", True, 1 ],
-            [u"Nom du salarié", "left", 140, "nomPersonne", "", u"Nom du salarié", True, 2 ],
-            [u"Type", "left", 180, "type", "", u"Type de contrat", True, 3 ],
-            [u"Date de début", "left", 90, u"date_debut", "date", u"Date de début de contrat", True, 4 ],
-            [u"Date de fin", "left", 90, u"date_fin", "date", u"Date de fin de contrat", True, 5 ],
-            [u"Classification", "left", 100, u"classification", "", u"Classification du contrat", True, 6 ],
+            [_(u"ID"), "left", 0, "IDcontrat", "", _(u"ID du contrat"), True, 1 ],
+            [_(u"Nom du salarié"), "left", 140, "nomPersonne", "", _(u"Nom du salarié"), True, 2 ],
+            [_(u"Type"), "left", 180, "type", "", _(u"Type de contrat"), True, 3 ],
+            [_(u"Date de début"), "left", 90, _(u"date_debut"), "date", _(u"Date de début de contrat"), True, 4 ],
+            [_(u"Date de fin"), "left", 90, _(u"date_fin"), "date", _(u"Date de fin de contrat"), True, 5 ],
+            [_(u"Classification"), "left", 100, _(u"classification"), "", _(u"Classification du contrat"), True, 6 ],
             ] # nom Colonne, alignement, largeur, nom Champ, Args pour OLV, Description, Affiché ?, Ordre
 
 
@@ -271,7 +273,7 @@ class ListView(ObjectListView):
         
         self.SetColumns(liste_Colonnes)
         
-        self.SetEmptyListMsg(u"Aucun contrat")
+        self.SetEmptyListMsg(_(u"Aucun contrat"))
         self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
         if self.activeCheckBoxes == True :
             self.CreateCheckStateColumn(1)
@@ -323,7 +325,7 @@ class ListView(ObjectListView):
         menuPop = wx.Menu()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -331,7 +333,7 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
             
         # Item Modifier
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -339,7 +341,7 @@ class ListView(ObjectListView):
         if noSelection == True : item.Enable(False)
         
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -349,7 +351,7 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
         
         # Item Publipostage
-        item = wx.MenuItem(menuPop, 140, u"Créer un courrier ou un mail par publipostage")
+        item = wx.MenuItem(menuPop, 140, _(u"Créer un courrier ou un mail par publipostage"))
         bmp = wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -359,21 +361,21 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
         
         # Item Rechercher
-        item = wx.MenuItem(menuPop, 80, u"Rechercher")
+        item = wx.MenuItem(menuPop, 80, _(u"Rechercher"))
         bmp = wx.Bitmap("Images/16x16/Loupe.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Rechercher, id=80)
 
         # Item Afficher tout
-        item = wx.MenuItem(menuPop, 50, u"Afficher tout")
+        item = wx.MenuItem(menuPop, 50, _(u"Afficher tout"))
         bmp = wx.Bitmap("Images/16x16/Actualiser.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_AfficherTout, id=50)
         
         # Item Options
-        item = wx.MenuItem(menuPop, 60, u"Options de liste")
+        item = wx.MenuItem(menuPop, 60, _(u"Options de liste"))
         bmp = wx.Bitmap("Images/16x16/Mecanisme.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -382,21 +384,21 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
         
         # Item Imprimer
-        item = wx.MenuItem(menuPop, 90, u"Imprimer la liste")
+        item = wx.MenuItem(menuPop, 90, _(u"Imprimer la liste"))
         bmp = wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.MenuImprimer, id=90)
         
         # Item Export Texte
-        item = wx.MenuItem(menuPop, 100, u"Exporter la liste au format Texte")
+        item = wx.MenuItem(menuPop, 100, _(u"Exporter la liste au format Texte"))
         bmp = wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.MenuExportTexte, id=100)
         
         # Item Export Excel
-        item = wx.MenuItem(menuPop, 110, u"Exporter la liste au format Excel")
+        item = wx.MenuItem(menuPop, 110, _(u"Exporter la liste au format Excel"))
         bmp = wx.Bitmap("Images/16x16/Excel.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -405,7 +407,7 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
 
         # Item Aide
-        item = wx.MenuItem(menuPop, 70, u"Aide")
+        item = wx.MenuItem(menuPop, 70, _(u"Aide"))
         bmp = wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -439,7 +441,7 @@ class ListView(ObjectListView):
 
     def Menu_Aide(self, event):
 ##        self.GetGrandParent().GetParent().OnBoutonAide(None)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         
@@ -470,7 +472,7 @@ class ListView(ObjectListView):
     def Rechercher(self):
         # Récupération des filtres souhaités
         import Filtres_recrutement
-        dlg = Filtres_recrutement.MyDialog(self, categorie="candidatures", listeValeursDefaut=self.listeFiltres, title=u"Sélection de filtres de liste")
+        dlg = Filtres_recrutement.MyDialog(self, categorie="candidatures", listeValeursDefaut=self.listeFiltres, title=_(u"Sélection de filtres de liste"))
         if dlg.ShowModal() == wx.ID_OK:
             listeFiltres = dlg.GetListeFiltres()
             dlg.Destroy()
@@ -484,7 +486,7 @@ class ListView(ObjectListView):
         try :
             if self.GetGrandParent().GetParent().GetName() == "Recrutement" :
                 if len(self.listeFiltres) > 0 :
-                    texte = u"Filtres de sélection : "
+                    texte = _(u"Filtres de sélection : ")
                     for dictFiltre in self.listeFiltres :
                         texte += u"%s (%s), " % (dictFiltre["labelControle"], dictFiltre["label"])
                     texte = texte[:-2]
@@ -531,7 +533,7 @@ class ListView(ObjectListView):
             pass
             
         if len(self.Selection()) == 0:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une candidature à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une candidature à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return False
@@ -550,7 +552,7 @@ class ListView(ObjectListView):
             pass
             
         if len(self.Selection()) == 0:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une candidature à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une candidature à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return False
@@ -558,8 +560,8 @@ class ListView(ObjectListView):
                 
         # Demande de confirmation
         date_depot = self.Selection()[0].depot
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer la candidature du %s ?" % date_depot))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer la candidature du %s ?") % date_depot))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -621,14 +623,14 @@ class ListView(ObjectListView):
     def CourrierPublipostage(self, mode="unique"):
         if mode == "unique" :
             if len(self.Selection()) == 0:
-                dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une candidature dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une candidature dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
             listeID = [self.Selection()[0].IDcandidature,]
         else:
             if self.GetNbreItems() == 0 :
-                dlg = wx.MessageDialog(self, u"Il n'y a aucune candidature dans la liste !", "Erreur", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Il n'y a aucune candidature dans la liste !"), "Erreur", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
@@ -657,7 +659,7 @@ class ListView(ObjectListView):
     def ExportTexte(self):
         """ Export de la liste au format texte """
         if self.GetNbreItems() == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune candidature dans la liste !", "Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune candidature dans la liste !"), "Erreur", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -682,7 +684,7 @@ class ListView(ObjectListView):
         sp = wx.StandardPaths.Get()
         cheminDefaut = sp.GetDocumentsDir()
         dlg = wx.FileDialog(
-            self, message = u"Veuillez sélectionner le répertoire de destination et le nom du fichier", defaultDir=cheminDefaut, 
+            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
             defaultFile = nomFichier, 
             wildcard = wildcard, 
             style = wx.SAVE
@@ -697,7 +699,7 @@ class ListView(ObjectListView):
         
         # Le fichier de destination existe déjà :
         if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?", "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
             if dlg.ShowModal() == wx.ID_NO :
                 return False
                 dlg.Destroy()
@@ -726,8 +728,8 @@ class ListView(ObjectListView):
         f.close()
         
         # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = u"Le fichier Texte a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?"
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = _(u"Le fichier Texte a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -739,13 +741,13 @@ class ListView(ObjectListView):
     def ExportExcel(self):
         """ Export de la liste au format Excel """
         if "linux" in sys.platform :
-            dlg = wx.MessageDialog(self, u"Désolé, cette fonction n'est pas disponible dans la version LINUX de Teamworks.", "Fonction indisponible", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Désolé, cette fonction n'est pas disponible dans la version LINUX de Teamworks."), "Fonction indisponible", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         if self.GetNbreItems() == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune personne dans la liste !", "Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune personne dans la liste !"), "Erreur", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -770,7 +772,7 @@ class ListView(ObjectListView):
         sp = wx.StandardPaths.Get()
         cheminDefaut = sp.GetDocumentsDir()
         dlg = wx.FileDialog(
-            self, message = u"Veuillez sélectionner le répertoire de destination et le nom du fichier", defaultDir=cheminDefaut, 
+            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
             defaultFile = nomFichier, 
             wildcard = wildcard, 
             style = wx.SAVE
@@ -785,7 +787,7 @@ class ListView(ObjectListView):
         
         # Le fichier de destination existe déjà :
         if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?", "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
             if dlg.ShowModal() == wx.ID_NO :
                 return False
                 dlg.Destroy()
@@ -822,8 +824,8 @@ class ListView(ObjectListView):
         wb.save(cheminFichier)
         
         # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?"
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = _(u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -834,7 +836,7 @@ class ListView(ObjectListView):
     def Imprimer(self):
         """ Imprimer la liste au format PDF """
         if self.GetNbreItems() == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune personne dans la liste !", "Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune personne dans la liste !"), "Erreur", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -922,14 +924,14 @@ class Popup(wx.PopupWindow):
         
         # Récupération des données
         listeColonnes = [
-            ( 1, u"Dépôt", img_depot, track.depot_long ),
-            ( 1, u"Nom", None, track.nom_candidat ),
-            ( 2, u"Emploi", None, track.offre_emploi ),
-            ( 3, u"Disponibilités", None, track.disponibilites ),
-            ( 4, u"Fonctions", None, track.fonctions ),
-            ( 5, u"Affectations", None, track.affectations ),
-            ( 6, u"Décision", img_decision, track.decision ),
-            ( 7, u"Réponse", img_reponse, track.texte_reponse_long ),
+            ( 1, _(u"Dépôt"), img_depot, track.depot_long ),
+            ( 1, _(u"Nom"), None, track.nom_candidat ),
+            ( 2, _(u"Emploi"), None, track.offre_emploi ),
+            ( 3, _(u"Disponibilités"), None, track.disponibilites ),
+            ( 4, _(u"Fonctions"), None, track.fonctions ),
+            ( 5, _(u"Affectations"), None, track.affectations ),
+            ( 6, _(u"Décision"), img_decision, track.decision ),
+            ( 7, _(u"Réponse"), img_reponse, track.texte_reponse_long ),
             ] # IndexColonne, Label, Image, Donnée
         
         
@@ -1002,7 +1004,7 @@ class Impression():
         dataTableau = []
         largeursColonnes = ( (620, 100) )
         dateDuJour = DateEngFr(str(datetime.date.today()))
-        dataTableau.append( (u"Liste des candidatures", u"Edité le %s" % dateDuJour )  )
+        dataTableau.append( (_(u"Liste des candidatures"), _(u"Edité le %s") % dateDuJour )  )
         style = TableStyle([
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black), 
                             ('VALIGN', (0,0), (-1,-1), 'TOP'), 

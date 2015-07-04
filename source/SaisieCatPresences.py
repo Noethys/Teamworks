@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import  wx.lib.colourselect as  csel
@@ -20,7 +22,7 @@ def FormateCouleur(texte):
     return (r, v, b)
 
 class Frm_SaisieCatPresences(wx.Frame):
-    def __init__(self, parent, ID, title=u"Saisie d'une nouvelle catégorie", IDcategorie=0, IDcat_parent=0):
+    def __init__(self, parent, ID, title=_(u"Saisie d'une nouvelle catégorie"), IDcategorie=0, IDcat_parent=0):
         wx.Frame.__init__(self, parent, ID, title=title, style=wx.DEFAULT_FRAME_STYLE, size=(350, 420))
         self.MakeModal(True)
         
@@ -33,17 +35,17 @@ class Frm_SaisieCatPresences(wx.Frame):
         # Importation des données
         if self.IDcategorie != 0 :
             self.Importation()
-            self.SetTitle(u"Modification d'une catégorie")
+            self.SetTitle(_(u"Modification d'une catégorie"))
         
         self.panel_base = wx.Panel(self, -1)
-        self.sizer_nom_staticbox = wx.StaticBox(self.panel_base, -1, u"Nom de la catégorie")
-        self.sizer_couleur_staticbox = wx.StaticBox(self.panel_base, -1, u"Couleur")
-        self.sizer_tree_staticbox = wx.StaticBox(self.panel_base, -1, u"Sélection de la catégorie parente")
+        self.sizer_nom_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Nom de la catégorie"))
+        self.sizer_couleur_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Couleur"))
+        self.sizer_tree_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Sélection de la catégorie parente"))
         self.treeCtrl_categories = TreeCtrlCategories(self.panel_base, self.IDcat_parent)
         self.text_nom = wx.TextCtrl(self.panel_base, -1, self.nom_categorie)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.bouton_couleur = csel.ColourSelect(self.panel_base, -1, "", self.couleur, size = (40, 22))
         self.bouton_couleur.Bind(csel.EVT_COLOURSELECT, self.OnSelectColour)
@@ -63,7 +65,7 @@ class Frm_SaisieCatPresences(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.treeCtrl_categories.SetToolTipString(u"Sélectionnez une catégorie PARENTE. Votre nouvelle catégorie sera placée comment enfant de cette catégorie.")
+        self.treeCtrl_categories.SetToolTipString(_(u"Sélectionnez une catégorie PARENTE. Votre nouvelle catégorie sera placée comment enfant de cette catégorie."))
         self.bouton_aide.SetToolTipString("Bouton Aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetToolTipString("Bouton Ok")
@@ -189,14 +191,14 @@ class Frm_SaisieCatPresences(wx.Frame):
 
         # Vérification des données
         if self.couleur == (255, 255, 255):
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner une couleur en cliquant sur le bouton couleur.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner une couleur en cliquant sur le bouton couleur."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.bouton_couleur.SetFocus()
             return
 
         if self.text_nom.GetValue() == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom de catégorie", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom de catégorie"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.text_nom.SetFocus()
@@ -207,7 +209,7 @@ class Frm_SaisieCatPresences(wx.Frame):
         # Demande de confirmation de création de catégorie
         """
         if int(self.IDcat_parent) == 0:
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner une catégorie parente dans la liste proposée.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner une catégorie parente dans la liste proposée."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return"""
@@ -249,7 +251,7 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.SetImageList(il)
         self.il = il
 
-        self.root = self.AddRoot(u"Catégories")
+        self.root = self.AddRoot(_(u"Catégories"))
         self.SetPyData(self.root, 0)
         self.SetItemImage(self.root, self.imgRoot, wx.TreeItemIcon_Normal)
 

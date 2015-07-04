@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
@@ -28,13 +30,13 @@ class MyFrame(wx.Frame):
         for x in range(1, 32) : choices.append(str(x))
         self.choice_jour_fixe = wx.Choice(self.panel_base, -1, choices=choices)
         self.label_mois_fixe = wx.StaticText(self.panel_base, -1, "Mois :")
-        self.choice_mois_fixe = wx.Choice(self.panel_base, -1, choices=["Janvier", u"Février", "Mars", "Avril", "Mai", "Juin", "Juillet", u"Août", "Septembre", "Octobre", "Novembre", u"Décembre"])
+        self.choice_mois_fixe = wx.Choice(self.panel_base, -1, choices=["Janvier", _(u"Février"), "Mars", "Avril", "Mai", "Juin", "Juillet", _(u"Août"), "Septembre", "Octobre", "Novembre", _(u"Décembre")])
         self.label_date_variable = wx.StaticText(self.panel_base, -1, "Date :")
         self.datepicker_date_variable = wx.DatePickerCtrl(self.panel_base, -1, style=wx.DP_DROPDOWN)
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         self.IDferie = IDferie
         if IDferie != 0 : 
@@ -49,7 +51,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Saisie d'un jour férié")
+        self.SetTitle(_(u"Saisie d'un jour férié"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -193,7 +195,7 @@ class MyFrame(wx.Frame):
         
         varNom = self.text_ctrl_nom.GetValue()
         if varNom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir un nom pour ce jour férié. Par exemple : 'Lundi de Pâques'...", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nom pour ce jour férié. Par exemple : 'Lundi de Pâques'..."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_ctrl_nom.SetFocus()
@@ -202,14 +204,14 @@ class MyFrame(wx.Frame):
         if self.typeJour == "fixe" :
             varJour = self.choice_jour_fixe.GetSelection()
             if varJour == -1 or varJour == None :
-                dlg = wx.MessageDialog(self, u"Vous devez sélectionner un jour pour ce jour férié !", "Erreur", wx.OK)  
+                dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un jour pour ce jour férié !"), "Erreur", wx.OK)  
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.choice_jour_fixe.SetFocus()
                 return
             varMois = self.choice_mois_fixe.GetSelection()
             if varMois == -1 or varMois == None :
-                dlg = wx.MessageDialog(self, u"Vous devez sélectionner un mois pour ce jour férié !", "Erreur", wx.OK)  
+                dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un mois pour ce jour férié !"), "Erreur", wx.OK)  
                 dlg.ShowModal()
                 dlg.Destroy()
                 self.choice_mois_fixe.SetFocus()

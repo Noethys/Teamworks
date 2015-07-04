@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import PageGeneralites
 import PageQuestionnaire
 import PageQualifications
@@ -53,10 +55,10 @@ except: pass
 ##        self.GetGrandParent().nouvelleFiche = False
 ##        
 ##        listePages = [
-##            (PageQualifications.Panel_Statut(self, -1, IDpersonne=self.IDpersonne), u"Généralités"),
-##            (PageQuestionnaire.Panel(self, -1, IDpersonne=self.IDpersonne), u"Questionnaire"),
-##            (PageContrats.Panel_Contrats(self, -1, IDpersonne=self.IDpersonne), u"Contrats"),
-##            (PagePresences.Panel(self, -1, IDpersonne=self.IDpersonne), u"Présences"),
+##            (PageQualifications.Panel_Statut(self, -1, IDpersonne=self.IDpersonne), _(u"Généralités")),
+##            (PageQuestionnaire.Panel(self, -1, IDpersonne=self.IDpersonne), _(u"Questionnaire")),
+##            (PageContrats.Panel_Contrats(self, -1, IDpersonne=self.IDpersonne), _(u"Contrats")),
+##            (PagePresences.Panel(self, -1, IDpersonne=self.IDpersonne), _(u"Présences")),
 ##            ]
 ##        
 ##        index = 0
@@ -94,7 +96,7 @@ class Notebook(wx.Notebook):
 
         # Page Généralités
         self.pageGeneralites = PageGeneralites.Panel_general(self, -1, IDpersonne=self.IDpersonne)
-        self.AddPage(self.pageGeneralites, u"Généralités")
+        self.AddPage(self.pageGeneralites, _(u"Généralités"))
         self.SetPageImage(0, self.img1)
         
         # Enregistre la fiche si nouvelle personne et détermination du nouvel IDpersonne
@@ -107,37 +109,37 @@ class Notebook(wx.Notebook):
 
         # Page Questionnaire
         self.pageQuestionnaire = PageQuestionnaire.Panel(self, -1, IDpersonne=self.IDpersonne)
-        self.AddPage(self.pageQuestionnaire, u"Questionnaire")
+        self.AddPage(self.pageQuestionnaire, _(u"Questionnaire"))
         self.SetPageImage(1, self.img8)
 
         # Page Qualifications
         self.pageStatut = PageQualifications.Panel_Statut(self, -1, IDpersonne=self.IDpersonne)
-        self.AddPage(self.pageStatut, u"Qualifications")
+        self.AddPage(self.pageStatut, _(u"Qualifications"))
         self.SetPageImage(2, self.img2)
         
         # Page Contrats
         self.pageContrats = PageContrats.Panel_Contrats(self, -1, IDpersonne=self.IDpersonne)
-        self.AddPage(self.pageContrats, u"Contrats")
+        self.AddPage(self.pageContrats, _(u"Contrats"))
         self.SetPageImage(3, self.img3)
         
         # Page Présences
         self.pagePresences = PagePresences.Panel(self, IDpersonne=self.IDpersonne)
-        self.AddPage(self.pagePresences, u"Présences")
+        self.AddPage(self.pagePresences, _(u"Présences"))
         self.SetPageImage(4, self.img4)
         
         # Page Scénarios
         self.pageScenarios = PageScenarios.Panel(self, IDpersonne=self.IDpersonne)
-        self.AddPage(self.pageScenarios, u"Scénarios")
+        self.AddPage(self.pageScenarios, _(u"Scénarios"))
         self.SetPageImage(5, self.img5)
         
         # Page Frais
         self.pageFrais = PageFrais.Panel(self, IDpersonne=self.IDpersonne)
-        self.AddPage(self.pageFrais, u"Frais")
+        self.AddPage(self.pageFrais, _(u"Frais"))
         self.SetPageImage(6, self.img6)
         
         # Page Candidatures
         self.pageCandidatures = PageCandidatures.Panel(self, IDpersonne=self.IDpersonne)
-        self.AddPage(self.pageCandidatures, u"Recrutement")
+        self.AddPage(self.pageCandidatures, _(u"Recrutement"))
         self.SetPageImage(7, self.img7)
         
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
@@ -149,19 +151,19 @@ class Notebook(wx.Notebook):
             pass
         if etat==True and self.GetPageCount()<=1 :
             # On ajoute les pages
-            self.AddPage(self.pageStatut, u"Questionnaire")
+            self.AddPage(self.pageStatut, _(u"Questionnaire"))
             self.SetPageImage(1, self.img8)
-            self.AddPage(self.pageStatut, u"Qualifications")
+            self.AddPage(self.pageStatut, _(u"Qualifications"))
             self.SetPageImage(2, self.img2)
-            self.AddPage(self.pageContrats, u"Contrats")
+            self.AddPage(self.pageContrats, _(u"Contrats"))
             self.SetPageImage(3, self.img3)
-            self.AddPage(self.pagePresences, u"Présences")
+            self.AddPage(self.pagePresences, _(u"Présences"))
             self.SetPageImage(4, self.img4)
-            self.AddPage(self.pageScenarios, u"Scénarios")
+            self.AddPage(self.pageScenarios, _(u"Scénarios"))
             self.SetPageImage(5, self.img5)
-            self.AddPage(self.pageFrais, u"Frais")
+            self.AddPage(self.pageFrais, _(u"Frais"))
             self.SetPageImage(6, self.img6)
-            self.AddPage(self.pageCandidatures, u"Recrutement")
+            self.AddPage(self.pageCandidatures, _(u"Recrutement"))
             self.SetPageImage(7, self.img7)
             
         if etat==False and self.GetPageCount()>1 :
@@ -192,7 +194,7 @@ class Notebook(wx.Notebook):
         
         
 class MyFrame(wx.Frame):
-    def __init__(self, parent, id=-1, titre=u"Fiche individuelle", IDpersonne=0):
+    def __init__(self, parent, id=-1, titre=_(u"Fiche individuelle"), IDpersonne=0):
         wx.Frame.__init__(self, parent, id, titre, name="FicheIndividuelle", style=wx.DEFAULT_FRAME_STYLE)
         self.MakeModal(True)
 
@@ -211,15 +213,15 @@ class MyFrame(wx.Frame):
         self.panel_1 = wx.Panel(self, -1)
         self.label_hd_CatId = wx.StaticText(self.panel_1, -1, u"")
         self.static_line_1 = wx.StaticLine(self.panel_1, -1)
-        self.label_hd_nomPrenom = wx.StaticText(self.panel_1, -1, u"NOM, Prénom")
-        self.label_hd_adresse = wx.StaticText(self.panel_1, -1, u"Résidant 42 rue des oiseaux 29870 LANNILIS")
-        self.label_hd_naiss = wx.StaticText(self.panel_1, -1, u"Date et lieu de naissance inconnus")
+        self.label_hd_nomPrenom = wx.StaticText(self.panel_1, -1, _(u"NOM, Prénom"))
+        self.label_hd_adresse = wx.StaticText(self.panel_1, -1, _(u"Résidant 42 rue des oiseaux 29870 LANNILIS"))
+        self.label_hd_naiss = wx.StaticText(self.panel_1, -1, _(u"Date et lieu de naissance inconnus"))
         self.bitmap_photo = CTRL_Photo.CTRL_Photo(self.panel_1, style=wx.SUNKEN_BORDER)
         self.bitmap_photo.SetPhoto(IDindividu=None, nomFichier="Images/128x128/Personne.png", taillePhoto=(128, 128), qualite=100)
 
-        self.bitmap_button_aide = wx.BitmapButton(self.panel_1, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_PNG))
-        self.bitmap_button_Ok = wx.BitmapButton(self.panel_1, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_PNG))
-        self.bitmap_button_annuler = wx.BitmapButton(self.panel_1, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_PNG))
+        self.bitmap_button_aide = CTRL_Bouton_image.CTRL(self.panel_1, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bitmap_button_Ok = CTRL_Bouton_image.CTRL(self.panel_1, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bitmap_button_annuler = CTRL_Bouton_image.CTRL(self.panel_1, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
             
         # NoteBook
         self.notebook = Notebook(self.panel_1, IDpersonne=self.IDpersonne)
@@ -270,7 +272,7 @@ class MyFrame(wx.Frame):
         self.label_hd_CatId.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
         self.label_hd_nomPrenom.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.bitmap_photo.SetBackgroundColour(wx.Colour(0, 0, 0))
-        self.txtDefilant.SetToolTipString(u"Cette barre d'information recense les points\nà contrôler sur le dossier de cette personne.")
+        self.txtDefilant.SetToolTipString(_(u"Cette barre d'information recense les points\nà contrôler sur le dossier de cette personne."))
         self.bitmap_photo.SetToolTipString("Cliquez sur le bouton droit de votre souris pour modifier cette image")
         self.bitmap_button_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bitmap_button_aide.SetSize(self.bitmap_button_aide.GetBestSize())
@@ -419,16 +421,16 @@ class MyFrame(wx.Frame):
             ID = self.IDpersonne
         # MàJ de l'affichage du contrat en cours :
         if self.contratEnCours == None :
-            txtContrat = u"Aucun contrat en cours"
+            txtContrat = _(u"Aucun contrat en cours")
         else:
             date_debut = FonctionsPerso.DateEngFr(self.contratEnCours[1])
             if self.contratEnCours[2] == "2999-01-01" :
-                txtContrat = u"Contrat en cours : " + self.contratEnCours[0] + " depuis le " + date_debut + u" (Durée ind.)"
+                txtContrat = _(u"Contrat en cours : ") + self.contratEnCours[0] + " depuis le " + date_debut + _(u" (Durée ind.)")
             else:
                 date_fin = FonctionsPerso.DateEngFr(self.contratEnCours[2])
                 date_rupture = FonctionsPerso.DateEngFr(self.contratEnCours[3])
                 if date_rupture != "//" : date_fin = date_rupture
-                txtContrat = u"Contrat en cours : " + self.contratEnCours[0] + " du " + date_debut + " au " + date_fin
+                txtContrat = _(u"Contrat en cours : ") + self.contratEnCours[0] + " du " + date_debut + " au " + date_fin
             
         # Affichage
         self.label_hd_CatId.SetLabel(txtContrat + " | ID : " + str(ID))
@@ -471,8 +473,8 @@ class MyFrame(wx.Frame):
         if save == False :
             # Annulation impossible
 ##            if self.AnnulationImpossible == True :
-##                txtMessage = u"Désolé, il m'est impossible d'annuler maintenant. Vous devez donc cliquer sur le bouton 'Ok'. \n\nVoulez-vous que je le fasse pour vous maintenant ?"
-##                dlgConfirm = wx.MessageDialog(self, txtMessage, u"Annulation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+##                txtMessage = _(u"Désolé, il m'est impossible d'annuler maintenant. Vous devez donc cliquer sur le bouton 'Ok'. \n\nVoulez-vous que je le fasse pour vous maintenant ?")
+##                dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Annulation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
 ##                reponse = dlgConfirm.ShowModal()
 ##                dlgConfirm.Destroy()
 ##                if reponse == wx.ID_NO:
@@ -507,21 +509,21 @@ class MyFrame(wx.Frame):
     def Verifie_validite_donnees(self):
         # Vérifie Civilité        
         if self.notebook.pageGeneralites.combo_box_civilite.GetStringSelection() == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir obligatoirement une civilité !", "Information", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir obligatoirement une civilité !"), "Information", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.notebook.pageGeneralites.combo_box_civilite.SetFocus()
             return False
         # Vérifie Nom        
         if self.notebook.pageGeneralites.text_nom.GetValue() == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir obligatoirement un nom de famille !", "Information", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir obligatoirement un nom de famille !"), "Information", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.notebook.pageGeneralites.text_nom.SetFocus()
             return False
         # Vérifie Prénom        
         if self.notebook.pageGeneralites.text_prenom.GetValue() == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir obligatoirement un prénom !", "Information", wx.OK | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir obligatoirement un prénom !"), "Information", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.notebook.pageGeneralites.text_prenom.SetFocus()
@@ -541,7 +543,7 @@ class MyFrame(wx.Frame):
 ##        cheminDefaut = sp.GetDocumentsDir()
 ##        # Ouverture dela fenêtre de dialogue
 ##        dlg = wx.FileDialog(
-##            self, message=u"Choisissez une photo",
+##            self, message=_(u"Choisissez une photo"),
 ##            defaultDir=cheminDefaut, 
 ##            defaultFile="",
 ##            wildcard=wildcard,
@@ -602,14 +604,14 @@ class MyFrame(wx.Frame):
 ##        menuPop = wx.Menu()
 ##
 ##        # Item Ajouter
-##        item = wx.MenuItem(menuPop, 10, u"Importer une photo")
+##        item = wx.MenuItem(menuPop, 10, _(u"Importer une photo"))
 ##        bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
 ##        item.SetBitmap(bmp)
 ##        menuPop.AppendItem(item)
 ##        self.Bind(wx.EVT_MENU, self.Menu_Ajouter, id=10)
 ##
 ##        # Item Modifier
-##        item = wx.MenuItem(menuPop, 20, u"Modifier")
+##        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
 ##        bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
 ##        item.SetBitmap(bmp)
 ##        menuPop.AppendItem(item)
@@ -617,7 +619,7 @@ class MyFrame(wx.Frame):
 ##        if self.photo == None : item.Enable(False)
 ##
 ##        # Item Supprimer
-##        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+##        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
 ##        bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
 ##        item.SetBitmap(bmp)
 ##        menuPop.AppendItem(item)
@@ -627,7 +629,7 @@ class MyFrame(wx.Frame):
 ##        menuPop.AppendSeparator()
 ##        
 ##         # Item Imprimer
-##        item = wx.MenuItem(menuPop, 40, u"Imprimer la photo")
+##        item = wx.MenuItem(menuPop, 40, _(u"Imprimer la photo"))
 ##        bmp = wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG)
 ##        item.SetBitmap(bmp)
 ##        menuPop.AppendItem(item)
@@ -641,12 +643,12 @@ class MyFrame(wx.Frame):
 ##        sousmenu1 = wx.Menu()
 ##        indexID = 500
 ##        for nomCadre in FonctionsPerso.GetListeCadresPhotos() :
-##            sousmenu1.Append(indexID, nomCadre.decode("iso-8859-15"), u"Choisir le cadre de décoration '" + nomCadre.decode("iso-8859-15") + u"' pour cette personne", wx.ITEM_RADIO)
+##            sousmenu1.Append(indexID, nomCadre.decode("iso-8859-15"), _(u"Choisir le cadre de décoration '") + nomCadre.decode("iso-8859-15") + _(u"' pour cette personne"), wx.ITEM_RADIO)
 ##            if nomCadre.decode("iso-8859-15") == nomCadrePersonne :
 ##                sousmenu1.Check(indexID, True)
 ##            self.Bind(wx.EVT_MENU, self.Menu_ChoixCadre, id=indexID)
 ##            indexID += 1
-##        menuPop.AppendMenu(50, u"Choisir un cadre de décoration", sousmenu1)
+##        menuPop.AppendMenu(50, _(u"Choisir un cadre de décoration"), sousmenu1)
 ##        self.PopupMenu(menuPop)
 ##        menuPop.Destroy()
 ##        
@@ -684,8 +686,8 @@ class MyFrame(wx.Frame):
 ##
 ##    def Menu_Supprimer(self, event):
 ##        """ Suppression de la photo """
-##        txtMessage = u"Souhaitez-vous vraiment supprimer cette photo ?"
-##        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+##        txtMessage = _(u"Souhaitez-vous vraiment supprimer cette photo ?")
+##        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
 ##        reponse = dlgConfirm.ShowModal()
 ##        dlgConfirm.Destroy()
 ##        if reponse == wx.ID_NO:
@@ -729,7 +731,7 @@ if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
 
-##    dlgSaisie = wx.TextEntryDialog(None, u"Entrez un ID :", "Choix de l'ID", "0", style=wx.OK|wx.CANCEL)
+##    dlgSaisie = wx.TextEntryDialog(None, _(u"Entrez un ID :"), "Choix de l'ID", "0", style=wx.OK|wx.CANCEL)
 ##    reponse = dlgSaisie.ShowModal()
 ##    if reponse == wx.ID_OK:
 ##        ID = int(dlgSaisie.GetValue())

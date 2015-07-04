@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import os
 import GestionDB
@@ -23,13 +25,13 @@ class MyFrame(wx.Frame):
         self.nomPersonne = None
         
         self.panel_base = wx.Panel(self, -1)
-        self.label_intro = wx.StaticText(self.panel_base, -1, u"Veuillez sélectionner une personne dans la liste pour afficher les déplacements et remboursements correspondants :")
-        self.staticBox_selection = wx.StaticBox(self.panel_base, -1, u"Sélection")
+        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Veuillez sélectionner une personne dans la liste pour afficher les déplacements et remboursements correspondants :"))
+        self.staticBox_selection = wx.StaticBox(self.panel_base, -1, _(u"Sélection"))
         
         # Filtres d'affichage
-        self.label_check_tous = wx.StaticText(self.panel_base, -1, u"Afficher toutes les personnes" )
+        self.label_check_tous = wx.StaticText(self.panel_base, -1, _(u"Afficher toutes les personnes") )
         self.ctrl_check_tous = wx.RadioButton(self.panel_base, -1, "", style = wx.RB_GROUP )
-        self.label_check_nonRembourses = wx.StaticText(self.panel_base, -1, u"Afficher uniquement les \npersonnes ayant au moins un \ndéplacement non remboursé" )
+        self.label_check_nonRembourses = wx.StaticText(self.panel_base, -1, _(u"Afficher uniquement les \npersonnes ayant au moins un \ndéplacement non remboursé") )
         self.ctrl_check_nonRembourses = wx.RadioButton(self.panel_base, -1, "")
         self.ctrl_check_nonRembourses.SetValue(True)
         
@@ -39,8 +41,8 @@ class MyFrame(wx.Frame):
         # Page Frais à importer
         self.panel_pageFrais = PageFrais.Panel(self.panel_base,  IDpersonne=self.IDpersonne)
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Fermer_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Fermer"), cheminImage="Images/32x32/Fermer.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -59,7 +61,7 @@ class MyFrame(wx.Frame):
         
         
     def __set_properties(self):
-        self.SetTitle(u"Gestion des frais de déplacement")
+        self.SetTitle(_(u"Gestion des frais de déplacement"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -125,11 +127,11 @@ class MyFrame(wx.Frame):
         # MAJ du IDpersonne si demandé
         if self.IDpersonne != 0 :
             self.panel_pageFrais.IDpersonne = self.IDpersonne
-            if self.IDpersonne == None : self.panel_pageFrais.staticBox_deplacements.SetLabel(u"Déplacements")
-            else : self.panel_pageFrais.staticBox_deplacements.SetLabel(u"Déplacements de %s" % self.nomPersonne)
+            if self.IDpersonne == None : self.panel_pageFrais.staticBox_deplacements.SetLabel(_(u"Déplacements"))
+            else : self.panel_pageFrais.staticBox_deplacements.SetLabel(_(u"Déplacements de %s") % self.nomPersonne)
             self.panel_pageFrais.ctrl_deplacements.IDpersonne = self.IDpersonne
-            if self.IDpersonne == None : self.panel_pageFrais.staticBox_remboursements.SetLabel(u"Remboursements")
-            else : self.panel_pageFrais.staticBox_remboursements.SetLabel(u"Remboursements de %s" % self.nomPersonne)
+            if self.IDpersonne == None : self.panel_pageFrais.staticBox_remboursements.SetLabel(_(u"Remboursements"))
+            else : self.panel_pageFrais.staticBox_remboursements.SetLabel(_(u"Remboursements de %s") % self.nomPersonne)
             self.panel_pageFrais.ctrl_remboursements.IDpersonne = self.IDpersonne
         # MAJ des listCtrl
         self.panel_pageFrais.ctrl_deplacements.MAJListeCtrl()
@@ -185,13 +187,13 @@ class ListCtrl_personnes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Co
         
         # Création des colonnes
         self.nbreColonnes = 4
-        self.InsertColumn(0, u"ID")
+        self.InsertColumn(0, _(u"ID"))
         self.SetColumnWidth(0, 0)
-        self.InsertColumn(1, u"Nom et prénom")
+        self.InsertColumn(1, _(u"Nom et prénom"))
         self.SetColumnWidth(1, 200)
-        self.InsertColumn(2, u"Déplac. remboursés")
+        self.InsertColumn(2, _(u"Déplac. remboursés"))
         self.SetColumnWidth(2, 120)
-        self.InsertColumn(3, u"Déplac. non remboursés")
+        self.InsertColumn(3, _(u"Déplac. non remboursés"))
         self.SetColumnWidth(3, 150)
 
         #These two should probably be passed to init more cleanly
@@ -258,9 +260,9 @@ class ListCtrl_personnes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Co
             nbreNonRembourses = valeurs[4]
             montantNonRembourses = valeurs[5]
             if nbreRembourses == 0 : txtRembourses = ""
-            else : txtRembourses = str(nbreRembourses) + u" (soit %.2f ¤) " % montantRembourses
+            else : txtRembourses = str(nbreRembourses) + _(u" (soit %.2f ¤) ") % montantRembourses
             if nbreNonRembourses == 0 : txtNonRembourses = ""
-            else : txtNonRembourses = str(nbreNonRembourses) + u" (soit %.2f ¤) " % montantNonRembourses
+            else : txtNonRembourses = str(nbreNonRembourses) + _(u" (soit %.2f ¤) ") % montantNonRembourses
             
             if self.GetGrandParent().ctrl_check_nonRembourses.GetValue() == True :
                 if nbreNonRembourses > 0 :

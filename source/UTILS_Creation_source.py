@@ -6,6 +6,7 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+from UTILS_Traduction import _
 import os
 import glob
 import zipfile
@@ -98,5 +99,5 @@ def CreationSource(nomZip = "teamworks_source.zip"):
 
 
 
-if __name__ == u"__main__":
+if __name__ == _(u"__main__"):
     CreationSource()

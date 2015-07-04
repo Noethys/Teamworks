@@ -134,6 +134,7 @@ Version 0.9
 #----------------------------------------------------------------------
 
 import wx
+import CTRL_Bouton_image
 import os
 import time
 import cStringIO

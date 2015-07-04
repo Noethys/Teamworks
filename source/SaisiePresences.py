@@ -6,8 +6,10 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import wx.lib.masked as masked
@@ -21,7 +23,7 @@ import wx.lib.dialogs
 def DatetimeDateEnStr(date):
     """ Transforme un datetime.date en date complète : Ex : lundi 15 janvier 2008 """
     listeJours = ("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
-    listeMois = ("janvier", u"février", "mars", "avril", "mai", "juin", "juillet", u"août", "septembre", "octobre", "novembre", u"décembre")
+    listeMois = ("janvier", _(u"février"), "mars", "avril", "mai", "juin", "juillet", _(u"août"), "septembre", "octobre", "novembre", _(u"décembre"))
     dateStr = listeJours[date.weekday()] + " " + str(date.day) + " " + listeMois[date.month-1] + " " + str(date.year)
     return dateStr
 
@@ -63,27 +65,27 @@ class Panel(wx.Panel):
             self.CreationDictDonnees(listeDonnees)
 
         self.panel_base = wx.Panel(self, -1)
-        self.sizer_heures_staticbox = wx.StaticBox(self.panel_base, -1, u"Horaires")
-        self.sizer_intitule_staticbox = wx.StaticBox(self.panel_base, -1, u"Légende")
-        self.sizer_droit_staticbox = wx.StaticBox(self.panel_base, -1, u"Catégorie")
-        self.sizer_donnees_staticbox = wx.StaticBox(self.panel_base, -1, u"Dates et personnes sélectionnées")
+        self.sizer_heures_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Horaires"))
+        self.sizer_intitule_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Légende"))
+        self.sizer_droit_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Catégorie"))
+        self.sizer_donnees_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Dates et personnes sélectionnées"))
 
         self.listCtrl_donnees = ListCtrl_donnees(self.panel_base)
         self.listCtrl_donnees.SetMinSize((20, 80))
         if self.IDmodif != 0 : self.listCtrl_donnees.Enable(False)
         
-        self.label_heure_debut = wx.StaticText(self.panel_base, -1, u"Début :")
+        self.label_heure_debut = wx.StaticText(self.panel_base, -1, _(u"Début :"))
         self.text_heure_debut = masked.TextCtrl(self.panel_base, -1, "", style=wx.TE_CENTRE, mask = "##:##", validRegex   = "[0-2][0-9]:[0-5][0-9]")
-        self.label_heure_fin = wx.StaticText(self.panel_base, -1, u"Fin :")
+        self.label_heure_fin = wx.StaticText(self.panel_base, -1, _(u"Fin :"))
         self.text_heure_fin = masked.TextCtrl(self.panel_base, -1, "", style=wx.TE_CENTRE, mask = "##:##", validRegex   = "[0-2][0-9]:[0-5][0-9]")
 
         self.text_intitule = wx.TextCtrl(self.panel_base, -1, "", style=wx.TE_MULTILINE)
        
         self.treeCtrl_categories = TreeCtrlCategories(self.panel_base)
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.dictPersonnes = self.ImportPersonnes()
         
@@ -117,14 +119,14 @@ class Panel(wx.Panel):
         self.text_heure_fin.SetMinSize((65, -1))
         self.text_heure_fin.SetFont(wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.text_heure_fin.SetCtrlParameters(invalidBackgroundColour = "PINK")
-        self.text_intitule.SetToolTipString(u"Saisissez ici une légende (optionnel)")
-        self.bouton_aide.SetToolTipString(u"Bouton Aide")
-        self.treeCtrl_categories.SetToolTipString(u"Sélectionnez ici une catégorie")
-        self.listCtrl_donnees.SetToolTipString(u"Vous pouvez désélectionner ici une ou plusieurs tâches\nque vous ne souhaitez finalement pas enregistrer.")
+        self.text_intitule.SetToolTipString(_(u"Saisissez ici une légende (optionnel)"))
+        self.bouton_aide.SetToolTipString(_(u"Bouton Aide"))
+        self.treeCtrl_categories.SetToolTipString(_(u"Sélectionnez ici une catégorie"))
+        self.listCtrl_donnees.SetToolTipString(_(u"Vous pouvez désélectionner ici une ou plusieurs tâches\nque vous ne souhaitez finalement pas enregistrer."))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Bouton Ok")
+        self.bouton_ok.SetToolTipString(_(u"Bouton Ok"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Bouton annuler")
+        self.bouton_annuler.SetToolTipString(_(u"Bouton annuler"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -248,7 +250,7 @@ class Panel(wx.Panel):
             for key, valeurs in self.dictDonnees.iteritems() :
                 if valeurs[2] == True : selection = True
             if selection == False:
-                message = u"Vous devez sélectionner au moins une date."
+                message = _(u"Vous devez sélectionner au moins une date.")
                 wx.MessageBox(message, "Erreur de saisie")
                 return False
 
@@ -256,47 +258,47 @@ class Panel(wx.Panel):
         heureDebut = self.text_heure_debut.GetValue()
         heureFin = self.text_heure_fin.GetValue()
         if heureDebut == "  :  " :
-            message = u"Vous devez saisir une heure de début."
+            message = _(u"Vous devez saisir une heure de début.")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_debut.SetFocus()
             return False
         if heureDebut[3:] >= "60" or heureDebut[3] == " " or heureDebut[4] == " ":
-            message = u"L'heure de début n'est pas valide."
+            message = _(u"L'heure de début n'est pas valide.")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_debut.SetFocus()
             return False
         if heureDebut[4] != "5" and heureDebut[4] != "0" :
-            message = u"Vous ne pouvez saisir qu'un horaire terminant par 0 ou 5. \nEx.: 10:05 ou 10:10 ou 10:15, etc... mais pas 10:02 !"
+            message = _(u"Vous ne pouvez saisir qu'un horaire terminant par 0 ou 5. \nEx.: 10:05 ou 10:10 ou 10:15, etc... mais pas 10:02 !")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_debut.SetFocus()
             return False
         if heureFin == "  :  " :
-            message = u"Vous devez saisir une heure de fin."
+            message = _(u"Vous devez saisir une heure de fin.")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_fin.SetFocus()
             return False
         if heureDebut < "00:00" or heureDebut > "24:00" :
-            message = u"L'heure de début n'est pas valide"
+            message = _(u"L'heure de début n'est pas valide")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_debut.SetFocus()
             return False
         if heureFin[3:] >= "60" or heureFin[3] == " " or heureFin[4] == " ":
-            message = u"L'heure de fin n'est pas valide."
+            message = _(u"L'heure de fin n'est pas valide.")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_fin.SetFocus()
             return False
         if heureFin < "00:00" or heureFin > "24:00" :
-            message = u"L'heure de fin n'est pas valide"
+            message = _(u"L'heure de fin n'est pas valide")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_fin.SetFocus()
             return False
         if heureFin[4] != "5" and heureFin[4] != "0" :
-            message = u"Vous ne pouvez saisir qu'un horaire terminant par 0 ou 5. \nEx.: 10:05 ou 10:10 ou 10:15, etc... mais pas 10:02 !"
+            message = _(u"Vous ne pouvez saisir qu'un horaire terminant par 0 ou 5. \nEx.: 10:05 ou 10:10 ou 10:15, etc... mais pas 10:02 !")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_fin.SetFocus()
             return False
         if heureDebut > heureFin :
-            message = u"L'heure de fin doit être supérieure à l'heure de début !"
+            message = _(u"L'heure de fin doit être supérieure à l'heure de début !")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_debut.SetFocus()
             return False
@@ -306,7 +308,7 @@ class Panel(wx.Panel):
         HMax = datetime.timedelta(hours=int(heureFin[:2]), minutes=int(heureFin[3:]))
         delta = ((HMax - HMin).seconds)/60.0
         if delta < 15 :
-            message = u"La durée de la tâche doit être au minimum de 15 minutes !"
+            message = _(u"La durée de la tâche doit être au minimum de 15 minutes !")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_heure_debut.SetFocus()
             return False
@@ -314,14 +316,14 @@ class Panel(wx.Panel):
         # Vérifie qu'une catégorie a été sélectionnée
         IDcategorie = self.treeCtrl_categories.selection
         if IDcategorie == None :
-            message = u"Vous devez sélectionner une catégorie dans la liste proposée."
+            message = _(u"Vous devez sélectionner une catégorie dans la liste proposée.")
             wx.MessageBox(message, "Erreur de saisie")
             return False
 
         # Vérifie la taille de l'intitulé
         intitule = self.text_intitule.GetValue()
         if len(intitule) > 200:
-            message = u"Vous devez écrire une légende plus courte !"
+            message = _(u"Vous devez écrire une légende plus courte !")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_intitule.SetFocus()
             return False
@@ -358,7 +360,7 @@ class Panel(wx.Panel):
                 delta = int(self.text_heure_fin.GetPlainValue()) - int(self.text_heure_debut.GetPlainValue())
                 if delta < 1:
                     validation = False
-                    dlg = wx.MessageDialog(self, u"L'heure de fin doit être supérieure à l'heure de début !", "Information", wx.OK | wx.ICON_INFORMATION)
+                    dlg = wx.MessageDialog(self, _(u"L'heure de fin doit être supérieure à l'heure de début !"), "Information", wx.OK | wx.ICON_INFORMATION)
                     dlg.ShowModal()
                     dlg.Destroy()
                     return
@@ -397,7 +399,7 @@ class Panel(wx.Panel):
                 delta = int(self.text_heure_fin.GetPlainValue()) - int(self.text_heure_debut.GetPlainValue())
                 if delta < 1:
                     validation = False
-                    dlg = wx.MessageDialog(self, u"L'heure de fin doit être supérieure à l'heure de début !", "Information", wx.OK | wx.ICON_INFORMATION)
+                    dlg = wx.MessageDialog(self, _(u"L'heure de fin doit être supérieure à l'heure de début !"), "Information", wx.OK | wx.ICON_INFORMATION)
                     dlg.ShowModal()
                     dlg.Destroy()
                     return
@@ -443,7 +445,7 @@ class Panel(wx.Panel):
         if nbreResultats > 1 : pasChevauchement = False
         
         if pasChevauchement == False :
-            dlg = wx.MessageDialog(self, u"Vous avez modifié les horaires de la tâche et elle chevauche désormais une autre tâche sur la même journée pour le même animateur. \n\nVeuillez donc modifier les horaires saisis pour pouvoir l'enregistrer.", "Erreur de saisie", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous avez modifié les horaires de la tâche et elle chevauche désormais une autre tâche sur la même journée pour le même animateur. \n\nVeuillez donc modifier les horaires saisis pour pouvoir l'enregistrer."), "Erreur de saisie", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return  "PasOk"      
@@ -514,18 +516,18 @@ class Panel(wx.Panel):
         
         if nbreInvalides != 0 :
             message = ""
-            if nbreValides == 0 : message += u"Aucune tâche n'a été correctement enregistrée.\n\nL"
-            elif nbreValides == 1 : message += str(nbreValides) + u" tâche a été correctement enregistrée.\n\nMais l"
-            else: message += str(nbreValides) + u" tâches ont été correctement enregistrées.\n\nMais l"
+            if nbreValides == 0 : message += _(u"Aucune tâche n'a été correctement enregistrée.\n\nL")
+            elif nbreValides == 1 : message += str(nbreValides) + _(u" tâche a été correctement enregistrée.\n\nMais l")
+            else: message += str(nbreValides) + _(u" tâches ont été correctement enregistrées.\n\nMais l")
             if nbreInvalides == 1 :
-                message += u"a tâche de la liste suivante n'a pas pu être saisie car elle chevauchait une ou plusieurs des tâches existantes. "
-                message += u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celle-ci.\n\n"
+                message += _(u"a tâche de la liste suivante n'a pas pu être saisie car elle chevauchait une ou plusieurs des tâches existantes. ")
+                message += _(u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celle-ci.\n\n")
             else:
-                message += u"es " + str(nbreInvalides) + u" tâches de la liste suivante n'ont pas pu être saisies car elles chevauchaient des tâches existantes. "
-                message += u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celles-ci.\n\n"
+                message += _(u"es ") + str(nbreInvalides) + _(u" tâches de la liste suivante n'ont pas pu être saisies car elles chevauchaient des tâches existantes. ")
+                message += _(u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celles-ci.\n\n")
             for exception in listeExceptions :
                 message += "   > Le " + exception[1] + " pour " + exception[0] + "\n"
-            dlg = wx.lib.dialogs.ScrolledMessageDialog(self, message, u"Rapport d'erreurs")
+            dlg = wx.lib.dialogs.ScrolledMessageDialog(self, message, _(u"Rapport d'erreurs"))
             dlg.ShowModal()
 
     def SauvegardeModele(self):
@@ -550,7 +552,7 @@ class Panel(wx.Panel):
         # Envoi des données au form de saisie des modèles
         valid = self.GetGrandParent().Sauvegarde((ID, IDmodele, type, periode, jour, heureDebut, heureFin, IDcategorie, intitule))
         if valid == False : 
-            dlg = wx.MessageDialog(self, u"Les horaires que vous avez saisis chevauchent déjà une autre tâche sur la même journée.", "Erreur de saisie", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Les horaires que vous avez saisis chevauchent déjà une autre tâche sur la même journée."), "Erreur de saisie", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return "PasOk"       
@@ -631,9 +633,9 @@ class ListCtrl_donnees(wx.ListCtrl, CheckListCtrlMixin):
             self.dictDonnees[ID][2] = etat
         # Modification du label du sizer
         if nbreItems == 1 : 
-            texteLabel = str(nbreItems) + u" tâche sera créée"
+            texteLabel = str(nbreItems) + _(u" tâche sera créée")
         else:
-            texteLabel = str(nbreItems) + u" tâches seront créées"
+            texteLabel = str(nbreItems) + _(u" tâches seront créées")
         self.parent.GetParent().sizer_donnees_staticbox.SetLabel(texteLabel)
 
     def InitColonnes(self):
@@ -692,7 +694,7 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.SetImageList(il)
         self.il = il
 
-        self.root = self.AddRoot(u"Catégories")
+        self.root = self.AddRoot(_(u"Catégories"))
         self.SetPyData(self.root, None)
 
         self.Remplissage()
@@ -792,15 +794,15 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
 class Frm_SaisiePresences(wx.Frame):
     def __init__(self, parent, listeDonnees=[], IDmodif=0, mode="planning", panelPlanning=None):
-        wx.Frame.__init__(self, parent, -1, name="frm_saisiePresence", title=u"Saisie de présences", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, -1, name="frm_saisiePresence", title=_(u"Saisie de présences"), style=wx.DEFAULT_FRAME_STYLE)
         self.panelPlanning = panelPlanning
         self.panel = Panel(self, listeDonnees=listeDonnees, IDmodif=IDmodif, mode=mode, panelPlanning=self.panelPlanning)
         
         # Propriétés
         if IDmodif == 0 :
-            self.SetTitle(u"Saisie d'une tâche")
+            self.SetTitle(_(u"Saisie d'une tâche"))
         else:
-            self.SetTitle(u"Modification d'une tâche")
+            self.SetTitle(_(u"Modification d'une tâche"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_PNG))
         self.SetIcon(_icon)

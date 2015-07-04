@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
@@ -19,16 +21,16 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, name="panel_config_password", style=wx.TAB_TRAVERSAL)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Protection par mot de passe", u"")
-        texteIntro = u"Vous pouvez protéger l'accès à ce fichier par un mot de passe. L'utilisateur de ce fichier devra\nainsi saisir le mot de passe à son ouverture. Cochez la case et saisissez le mot de passe souhaité\nà deux reprises. Pour désactiver la protection, il vous suffit de décocher cette case."
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Protection par mot de passe"), u"")
+        texteIntro = _(u"Vous pouvez protéger l'accès à ce fichier par un mot de passe. L'utilisateur de ce fichier devra\nainsi saisir le mot de passe à son ouverture. Cochez la case et saisissez le mot de passe souhaité\nà deux reprises. Pour désactiver la protection, il vous suffit de décocher cette case.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
-        self.staticbox = wx.StaticBox(self, -1, u"Protection")
-        self.checkBox = wx.CheckBox(self, -1, u"Activer la protection par mot de passe")
+        self.staticbox = wx.StaticBox(self, -1, _(u"Protection"))
+        self.checkBox = wx.CheckBox(self, -1, _(u"Activer la protection par mot de passe"))
         self.MAJ_checkBox() 
         
         self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         if parent.GetName() != "treebook_configuration" :
             self.bouton_aide.Show(False)
 
@@ -82,7 +84,7 @@ class Panel(wx.Panel):
         
         # Enleve le mot de passe
         if self.checkBox.GetValue() == False :
-            dlg = wx.MessageDialog(self, u"Voulez-vous vraiment annuler la protection par mot de passe ?", "Confirmation", wx.YES_NO | wx.ICON_QUESTION)
+            dlg = wx.MessageDialog(self, _(u"Voulez-vous vraiment annuler la protection par mot de passe ?"), "Confirmation", wx.YES_NO | wx.ICON_QUESTION)
             if dlg.ShowModal() == wx.ID_YES:
                 # Enregistrement dans la base
                 DB = GestionDB.DB()
@@ -116,9 +118,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -131,15 +133,15 @@ class MyFrame(wx.Frame):
         self.SetSize((550, 450))
 
     def __set_properties(self):
-        self.SetTitle(u"Protection par mot de passe")
+        self.SetTitle(_(u"Protection par mot de passe"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 

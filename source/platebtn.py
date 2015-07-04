@@ -87,6 +87,7 @@ __all__ = ["PlateButton",
 #-----------------------------------------------------------------------------#
 # Imports
 import wx
+import CTRL_Bouton_image
 import wx.lib.newevent
 
 # Local Imports

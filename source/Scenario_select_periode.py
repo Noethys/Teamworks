@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import datetime
@@ -20,12 +22,12 @@ def DateEngEnDateDD(dateEng):
 class MyDialog(wx.Dialog):
     """ Sélection d'une période pour un scénario """
     def __init__(self, parent, date_debut=None, date_fin=None):
-        wx.Dialog.__init__(self, parent, id=-1, title=u"Sélection d'une période de référence")
+        wx.Dialog.__init__(self, parent, id=-1, title=_(u"Sélection d'une période de référence"))
         self.date_debut = date_debut
         self.date_fin = date_fin
 
         # Label
-        self.label = wx.StaticText(self, -1, u"Sélectionnez une période :")
+        self.label = wx.StaticText(self, -1, _(u"Sélectionnez une période :"))
         
         self.staticbox_periode = wx.StaticBox(self, -1, u"")
         
@@ -44,24 +46,24 @@ class MyDialog(wx.Dialog):
         self.ctrl_date_fin.Enable(False)
         
         # Période : A partir
-        self.label_date_aPartir = wx.StaticText(self, -1, u"A partir du")
+        self.label_date_aPartir = wx.StaticText(self, -1, _(u"A partir du"))
         self.ctrl_date_aPartir = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         self.ctrl_date_aPartir.Enable(False)
         
         # Période : Jusq'au
-        self.label_date_jusque = wx.StaticText(self, -1, u"Jusqu'au")
+        self.label_date_jusque = wx.StaticText(self, -1, _(u"Jusqu'au"))
         self.ctrl_date_jusque = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         self.ctrl_date_jusque.Enable(False)
         
         # Période : Tout
-        self.label_date_tout= wx.StaticText(self, -1, u"Tout")
+        self.label_date_tout= wx.StaticText(self, -1, _(u"Tout"))
         
         # Période : Rien
-        self.label_date_rien= wx.StaticText(self, -1, u"Rien")
+        self.label_date_rien= wx.StaticText(self, -1, _(u"Rien"))
         
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -216,7 +218,7 @@ class MyDialog(wx.Dialog):
             date_debut = self.GetDatePickerValue(self.ctrl_date_debut)
             date_fin = self.GetDatePickerValue(self.ctrl_date_fin)
             if date_debut > date_fin :
-                dlg = wx.MessageDialog(self, u"La date de début ne peut pas être supérieure à la date de fin !", u"Erreur de saisie", wx.OK | wx.ICON_EXCLAMATION)
+                dlg = wx.MessageDialog(self, _(u"La date de début ne peut pas être supérieure à la date de fin !"), _(u"Erreur de saisie"), wx.OK | wx.ICON_EXCLAMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return

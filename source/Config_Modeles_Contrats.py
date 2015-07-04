@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
@@ -17,8 +19,8 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, name="panel_config_Modeles_Contrats", style=wx.TAB_TRAVERSAL)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Les modèles de contrats", u"")
-        texteIntro = u"Vous pouvez ici créer, modifier ou supprimer les modèles de contrats. Ceux-ci\nsont bien utiles quand vous avez besoin de créer souvent les mêmes types de \ncontrat."
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Les modèles de contrats"), u"")
+        texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer les modèles de contrats. Ceux-ci\nsont bien utiles quand vous avez besoin de créer souvent les mêmes types de \ncontrat.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
         self.listCtrl = ListCtrl(self)
@@ -44,13 +46,13 @@ class Panel(wx.Panel):
         self.bouton_supprimer.Enable(False)
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un nouveau champ personnalisé")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau champ personnalisé"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier le champ sélectionné dans la liste")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le champ sélectionné dans la liste"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le champ sélectionné dans la liste")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le champ sélectionné dans la liste"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -94,7 +96,7 @@ class Panel(wx.Panel):
     def Modifier(self):
         index = self.listCtrl.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un modèle à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un modèle à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -102,7 +104,7 @@ class Panel(wx.Panel):
 ##        # Avertissement si cet item a déjà été attribué à une personne
 ##        nbreTitulaires = int(self.listCtrl_Situations.GetItem(index, 2).GetText())
 ##        if nbreTitulaires != 0:
-##            message =u"Avertissement : Ce type de situation sociale a déjà été attribué a " + str(nbreTitulaires) + u" personne(s). Toute modification sera donc répercutée en cascade sur toutes les fiches des personnes à qui cette situation sociale a été attribuée. \n\nSouhaitez-vous quand même modifier ce type de situation ?"
+##            message =_(u"Avertissement : Ce type de situation sociale a déjà été attribué a ") + str(nbreTitulaires) + _(u" personne(s). Toute modification sera donc répercutée en cascade sur toutes les fiches des personnes à qui cette situation sociale a été attribuée. \n\nSouhaitez-vous quand même modifier ce type de situation ?")
 ##            dlg = wx.MessageDialog(self, message, "Information", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_INFORMATION)
 ##            reponse = dlg.ShowModal()
 ##            if reponse == wx.ID_NO:
@@ -123,7 +125,7 @@ class Panel(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un modèle à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un modèle à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -131,7 +133,7 @@ class Panel(wx.Panel):
 ##        # Vérifie que cet item n'est attribuée à aucune personne
 ##        nbreTitulaires = int(self.listCtrl_Situations.GetItem(index, 2).GetText())
 ##        if nbreTitulaires != 0:
-##            dlg = wx.MessageDialog(self, u"Pour des raisons de sécurité des données, vous ne pouvez pas supprimer un type de situation sociale qui a déjà été attribué à des personnes.\n\nSi vous voulez vraiment le supprimer, vous devez d'abord supprimer cette situation sociale sur chaque fiche individuelle concernée.", "Information", wx.OK | wx.ICON_INFORMATION)
+##            dlg = wx.MessageDialog(self, _(u"Pour des raisons de sécurité des données, vous ne pouvez pas supprimer un type de situation sociale qui a déjà été attribué à des personnes.\n\nSi vous voulez vraiment le supprimer, vous devez d'abord supprimer cette situation sociale sur chaque fiche individuelle concernée."), "Information", wx.OK | wx.ICON_INFORMATION)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            return
@@ -139,8 +141,8 @@ class Panel(wx.Panel):
         # Demande de confirmation
         IDmodele = int(self.listCtrl.GetItem(index, 0).GetText())
         Nom = self.listCtrl.GetItem(index, 1).GetText()
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce champ ? \n\n> " + Nom))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce champ ? \n\n> ") + Nom))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -218,11 +220,11 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         
         # Création des colonnes
         self.nbreColonnes =2
-        self.InsertColumn(0, u"     ID")
+        self.InsertColumn(0, _(u"     ID"))
         self.SetColumnWidth(0, 0)
-        self.InsertColumn(1, u"Nom")
+        self.InsertColumn(1, _(u"Nom"))
         self.SetColumnWidth(1, 200)  
-        self.InsertColumn(2, u"Description")
+        self.InsertColumn(2, _(u"Description"))
         self.SetColumnWidth(2, 200)  
         
         #These two should probably be passed to init more cleanly
@@ -337,7 +339,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -346,14 +348,14 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -382,9 +384,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -395,15 +397,15 @@ class MyFrame(wx.Frame):
         
 
     def __set_properties(self):
-        self.SetTitle(u"Gestion des modèles de contrats")
+        self.SetTitle(_(u"Gestion des modèles de contrats"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 

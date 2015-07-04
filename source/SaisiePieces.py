@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.masked as masked
 import wx.lib.mixins.listctrl  as  listmix
 import SaisiePieces
@@ -17,7 +19,7 @@ import CTRL_Vignettes_documents
 
 
 class SaisiePieces(wx.Frame):
-    def __init__(self, parent, ID, title=u"Saisie des pièces", IDpiece=0, IDpersonne=0, IDtypePiece=None):
+    def __init__(self, parent, ID, title=_(u"Saisie des pièces"), IDpiece=0, IDpersonne=0, IDtypePiece=None):
         # begin wxGlade: SaisiePieces.__init__
         wx.Frame.__init__(self, parent, ID, title=title, style=wx.DEFAULT_FRAME_STYLE)
         self.MakeModal(True)
@@ -29,14 +31,14 @@ class SaisiePieces(wx.Frame):
         self.selection2 = ("NoSelect",) # Pour mémoriser la sélection dans la liste des autres pièces
         
         self.panel_base = wx.Panel(self, -1)
-        self.sizer_date_debut_staticbox = wx.StaticBox(self.panel_base, -1, u"2. Saisissez la date de début")
+        self.sizer_date_debut_staticbox = wx.StaticBox(self.panel_base, -1, _(u"2. Saisissez la date de début"))
         self.sizer_date_fin_staticbox = wx.StaticBox(self.panel_base, -1, "3. Saisissez la date de fin")
-        self.sizer_type_staticbox = wx.StaticBox(self.panel_base, -1, u"1. Sélectionnez un type de pièce")
-        self.radio_pieces_1 = wx.RadioButton(self.panel_base, -1, u"Dans la liste de pièces que la personne doit fournir :", style = wx.RB_GROUP)
+        self.sizer_type_staticbox = wx.StaticBox(self.panel_base, -1, _(u"1. Sélectionnez un type de pièce"))
+        self.radio_pieces_1 = wx.RadioButton(self.panel_base, -1, _(u"Dans la liste de pièces que la personne doit fournir :"), style = wx.RB_GROUP)
         
         self.list_ctrl_pieces = ListCtrl_Pieces(self.panel_base, -1)
         
-        self.radio_pieces_2 = wx.RadioButton(self.panel_base, -1, u"Dans la liste des autres types de pièces :")
+        self.radio_pieces_2 = wx.RadioButton(self.panel_base, -1, _(u"Dans la liste des autres types de pièces :"))
 
         # Importe les durées de validité des types de pièces
         self.RemplissageAutresTypes()
@@ -46,10 +48,10 @@ class SaisiePieces(wx.Frame):
         self.text_date_debut = masked.TextCtrl(self.panel_base, -1, "", style=wx.TE_CENTRE, mask = "##/##/####")
         self.radio_date_fin_1 = wx.RadioButton(self.panel_base, -1, "Date :", style = wx.RB_GROUP)
         self.text_date_fin = masked.TextCtrl(self.panel_base, -1, "", style=wx.TE_CENTRE, mask = "##/##/####")
-        self.radio_date_fin_2 = wx.RadioButton(self.panel_base, -1, u"Validité illimitée")
+        self.radio_date_fin_2 = wx.RadioButton(self.panel_base, -1, _(u"Validité illimitée"))
 
         # Pages capturées
-        self.sizer_pages_staticbox = wx.StaticBox(self.panel_base, -1, u"Documents associés")
+        self.sizer_pages_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Documents associés"))
         self.ctrl_pages = CTRL_Vignettes_documents.CTRL(self.panel_base, IDpiece=self.IDpiece, style=wx.BORDER_SUNKEN)
         self.bouton_ajouter_page = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_ANY))
         self.bouton_supprimer_page = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_ANY))
@@ -57,9 +59,9 @@ class SaisiePieces(wx.Frame):
         self.bouton_zoom_plus = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/zoom_plus.png", wx.BITMAP_TYPE_ANY))
         self.bouton_zoom_moins = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/zoom_moins.png", wx.BITMAP_TYPE_ANY))
 
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -69,9 +71,9 @@ class SaisiePieces(wx.Frame):
 
         # Si Modification -> importation des données
         if IDpiece == 0 :
-            self.SetTitle(u"Saisie d'une pièce")
+            self.SetTitle(_(u"Saisie d'une pièce"))
         else:
-            self.SetTitle(u"Modification d'une pièce")
+            self.SetTitle(_(u"Modification d'une pièce"))
             self.Importation()
 
         # Binds
@@ -106,18 +108,18 @@ class SaisiePieces(wx.Frame):
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.radio_pieces_2.SetToolTipString(u"Cliquez ici si la pièce que vous souhaitez enregistrer n'est pas dans la liste des pièces obligatoires à fournir")
-        self.list_ctrl_pieces.SetToolTipString(u"Sélectionnez un type de pièce en cliquant sur son nom")
-        self.text_date_debut.SetToolTipString(u"Saisissez la date de début de validité.\nRemarque : Il s'agit bien de la date d'emission de la pièce \n(par exemple, la date d'obtention d'un diplôme) et non la date à laquelle vous avez reçue la pièce")
-        self.text_date_fin.SetToolTipString(u"Saisissez la date d'expiration de la pièce")
-        self.radio_date_fin_1.SetToolTipString(u"Cliquez ici si la pièce a une durée de validité limitée dans le temps")
-        self.radio_date_fin_2.SetToolTipString(u"Cliquez ici si la pièce que vous souhaitez enregistrer a une durée de validité illimitée")
+        self.radio_pieces_2.SetToolTipString(_(u"Cliquez ici si la pièce que vous souhaitez enregistrer n'est pas dans la liste des pièces obligatoires à fournir"))
+        self.list_ctrl_pieces.SetToolTipString(_(u"Sélectionnez un type de pièce en cliquant sur son nom"))
+        self.text_date_debut.SetToolTipString(_(u"Saisissez la date de début de validité.\nRemarque : Il s'agit bien de la date d'emission de la pièce \n(par exemple, la date d'obtention d'un diplôme) et non la date à laquelle vous avez reçue la pièce"))
+        self.text_date_fin.SetToolTipString(_(u"Saisissez la date d'expiration de la pièce"))
+        self.radio_date_fin_1.SetToolTipString(_(u"Cliquez ici si la pièce a une durée de validité limitée dans le temps"))
+        self.radio_date_fin_2.SetToolTipString(_(u"Cliquez ici si la pièce que vous souhaitez enregistrer a une durée de validité illimitée"))
 
-        self.bouton_ajouter_page.SetToolTipString(u"Cliquez ici pour ajouter un document")
-        self.bouton_supprimer_page.SetToolTipString(u"Cliquez ici pour supprimer le document sélectionné")
-        self.bouton_visualiser_page.SetToolTipString(u"Cliquez ici pour visualiser le document sélectionné")
-        self.bouton_zoom_plus.SetToolTipString(u"Cliquez ici pour agrandir les vignettes")
-        self.bouton_zoom_moins.SetToolTipString(u"Cliquez ici pour réduire les vignettes")
+        self.bouton_ajouter_page.SetToolTipString(_(u"Cliquez ici pour ajouter un document"))
+        self.bouton_supprimer_page.SetToolTipString(_(u"Cliquez ici pour supprimer le document sélectionné"))
+        self.bouton_visualiser_page.SetToolTipString(_(u"Cliquez ici pour visualiser le document sélectionné"))
+        self.bouton_zoom_plus.SetToolTipString(_(u"Cliquez ici pour agrandir les vignettes"))
+        self.bouton_zoom_moins.SetToolTipString(_(u"Cliquez ici pour réduire les vignettes"))
         self.SetMinSize((640, 500)) 
 
     def __do_layout(self):
@@ -281,14 +283,14 @@ class SaisiePieces(wx.Frame):
         # Validation du listCtrl
         if self.radio_pieces_1.GetValue() == True:
             if self.selection1 == ("NoSelect",):
-                message = u"Vous devez sélectionner un type de pièce dans la liste proposée."
+                message = _(u"Vous devez sélectionner un type de pièce dans la liste proposée.")
                 wx.MessageBox(message, "Erreur de saisie")
                 return
 
         # Validation du comboBox
         if self.radio_pieces_2.GetValue() == True:
             if self.selection2 == ("NoSelect",):
-                message = u"Vous devez sélectionner un autre type de pièce dans la liste proposée."
+                message = _(u"Vous devez sélectionner un autre type de pièce dans la liste proposée.")
                 wx.MessageBox(message, "Erreur de saisie")
                 self.combo_box_autres.SetFocus()
                 return
@@ -296,7 +298,7 @@ class SaisiePieces(wx.Frame):
         # Validation de la date de début
         textDate = self.text_date_debut.GetValue()
         if textDate == "  /  /    ":
-            message = u"Vous devez saisir une date de début de validité."
+            message = _(u"Vous devez saisir une date de début de validité.")
             wx.MessageBox(message, "Erreur de saisie")
             self.text_date_debut.SetFocus()
             return
@@ -309,7 +311,7 @@ class SaisiePieces(wx.Frame):
         if self.radio_date_fin_1.GetValue() == True:
             textDate = self.text_date_fin.GetValue()
             if textDate == "  /  /    ":
-                message = u"Vous devez saisir une date de fin de validité."
+                message = _(u"Vous devez saisir une date de fin de validité.")
                 wx.MessageBox(message, "Erreur de saisie")
                 self.text_date_fin.SetFocus()
                 return
@@ -327,7 +329,7 @@ class SaisiePieces(wx.Frame):
             if reste != "0:00:00":
                 jours = int(reste[:reste.index("day")])
                 if jours < 0:
-                    message = u"Vous devez saisir une date de fin de validité supérieure à la date de début !"
+                    message = _(u"Vous devez saisir une date de fin de validité supérieure à la date de début !")
                     wx.MessageBox(message, "Erreur de saisie")
                     self.text_date_fin.SetFocus()
                     return
@@ -839,34 +841,34 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090"):
     listeErreurs = []
     # On vérifie si les cases ne sont pas vides
     if texte[0] == " " or texte[1] == " ":
-        listeErreurs.append(u"le jour")
+        listeErreurs.append(_(u"le jour"))
     if texte[3] == " " or texte[4] == " ":
-        listeErreurs.append(u"le mois")
+        listeErreurs.append(_(u"le mois"))
     if texte[6] == " " or texte[7] == " " or texte[8] == " " or texte[9] == " ":
-        listeErreurs.append(u"l'année")
+        listeErreurs.append(_(u"l'année"))
     
     if texte != "  /  /    ":
 
         # On vérifie que les chiffres existent
-        if u"le jour" not in listeErreurs:
+        if _(u"le jour") not in listeErreurs:
             jour = int(texte[:2])
             if jour == 0 or jour > 31:
-                listeErreurs.append(u"le jour")
+                listeErreurs.append(_(u"le jour"))
 
-        if u"le mois" not in listeErreurs:
+        if _(u"le mois") not in listeErreurs:
             mois = int(texte[3:5])
             if mois == 0 or mois > 12:
-                listeErreurs.append(u"le mois")
+                listeErreurs.append(_(u"le mois"))
                 
-        if u"l'année" not in listeErreurs:
+        if _(u"l'année") not in listeErreurs:
             annee = int(texte[6:10])
             if annee < 1900 or annee > 2999:
-                listeErreurs.append(u"l'année")
+                listeErreurs.append(_(u"l'année"))
         
         # Test de la date avec le datetime
         try : testDate = datetime.date(year=int(texte[6:10]), month=int(texte[3:5]), day=int(texte[:2]))
         except : 
-            wx.MessageBox(u"La date de début que vous avez saisie n'est pas valide", "Erreur de date")
+            wx.MessageBox(_(u"La date de début que vous avez saisie n'est pas valide"), "Erreur de date")
             return False
               
         # Affichage du message d'erreur
@@ -874,12 +876,12 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090"):
         if len(listeErreurs) != 0:
             # Message en cas de date incomplète
             if len(listeErreurs) == 1:
-                message = u"Une incohérence a été détectée dans " + listeErreurs[0]
+                message = _(u"Une incohérence a été détectée dans ") + listeErreurs[0]
             if len(listeErreurs) == 2:
-                message = u"Des incohérences ont été détectées dans " + listeErreurs[0] + " et " + listeErreurs[1]
+                message = _(u"Des incohérences ont été détectées dans ") + listeErreurs[0] + " et " + listeErreurs[1]
             if len(listeErreurs) == 3:
-                message = u"Des incohérences ont été détectées dans " + listeErreurs[0]  + ", " + listeErreurs[1]  + " et " + listeErreurs[2]
-            message = message + u" de la date que vous venez de saisir. Veuillez la vérifier."
+                message = _(u"Des incohérences ont été détectées dans ") + listeErreurs[0]  + ", " + listeErreurs[1]  + " et " + listeErreurs[2]
+            message = message + _(u" de la date que vous venez de saisir. Veuillez la vérifier.")
 
             wx.MessageBox(message, "Erreur de date")
             return False
@@ -890,11 +892,11 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090"):
             date_sel = int(str(texte[6:10]) + str(texte[3:5]) + str(texte[:2]))
 
             if date_sel < date_min:
-                message = u"La date que vous venez de saisir semble trop ancienne. Veuillez la vérifier."
+                message = _(u"La date que vous venez de saisir semble trop ancienne. Veuillez la vérifier.")
                 wx.MessageBox(message, "Erreur de date")
                 return False
             if date_sel > date_max:
-                message = u"La date que vous venez de saisir semble trop élevée. Veuillez la vérifier."
+                message = _(u"La date que vous venez de saisir semble trop élevée. Veuillez la vérifier.")
                 wx.MessageBox(message, "Erreur de date")
                 return False
             

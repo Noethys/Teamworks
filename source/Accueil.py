@@ -3,10 +3,12 @@
 #-----------------------------------------------------------
 # Auteur:        Ivan LUCAS
 # Copyright:    (c) 2008-09 Ivan LUCAS
-# Licence:      License GNU GPL
+# Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 
 import  wx.html as  html
 import  wx.lib.wxpTag   
@@ -15,11 +17,11 @@ import GestionDB
 import UTILS_Config
 
 # Liste des gadgets par défaut
-LISTEGADGETSDEFAUT = [      ["dossiers_incomplets",  { "label" : u"Dossiers incomplets", "taille" : (200, 200), "affichage" : True, "config" : False } ], 
-                                                ["horloge", { "label" : u"Horloge", "taille" : (200, 200), "affichage" : True, "config" : True, "couleur_face" : (214, 223, 247) } ],
-                                                ["calendrier", { "label" : u"Calendrier", "taille" : (200, 200), "affichage" : True, "config" : True } ],
-                                                ["updater", { "label" : u"Mises à jour internet", "taille" : (200, 200), "affichage" : True, "config" : False} ],
-                                                ["notes", { "label" : u"Bloc-notes", "taille" : (200, 200), "affichage" : True, "config" : True, "texte" : u"Hello !", "taillePolice" : 10, "familyPolice" : 74, "stylePolice" : 90, "weightPolice" : 90 , "nomPolice" : "Segoe Print" } ],
+LISTEGADGETSDEFAUT = [      ["dossiers_incomplets",  { "label" : _(u"Dossiers incomplets"), "taille" : (200, 200), "affichage" : True, "config" : False } ], 
+                                                ["horloge", { "label" : _(u"Horloge"), "taille" : (200, 200), "affichage" : True, "config" : True, "couleur_face" : (214, 223, 247) } ],
+                                                ["calendrier", { "label" : _(u"Calendrier"), "taille" : (200, 200), "affichage" : True, "config" : True } ],
+                                                ["updater", { "label" : _(u"Mises à jour internet"), "taille" : (200, 200), "affichage" : True, "config" : False} ],
+                                                ["notes", { "label" : _(u"Bloc-notes"), "taille" : (200, 200), "affichage" : True, "config" : True, "texte" : _(u"Hello !"), "taillePolice" : 10, "familyPolice" : 74, "stylePolice" : 90, "weightPolice" : 90 , "nomPolice" : "Segoe Print" } ],
                                                 ] # nomGadget, dict de paramètres
 
 
@@ -294,8 +296,8 @@ class AffichageGadgets():
             index += 1
         
         # Boîte de dialogue
-        message = u"Sélectionnez les gadgets que vous souhaitez afficher sur votre page d'accueil"
-        dlg = wx.MultiChoiceDialog(None, message, u"Affichage des gadgets", listeNoms, wx.CHOICEDLG_STYLE)
+        message = _(u"Sélectionnez les gadgets que vous souhaitez afficher sur votre page d'accueil")
+        dlg = wx.MultiChoiceDialog(None, message, _(u"Affichage des gadgets"), listeNoms, wx.CHOICEDLG_STYLE)
         # Coche ceux qui doivent être déjà sélectionnés dans la liste
         dlg.SetSelections(preSelection)
         # Résultats

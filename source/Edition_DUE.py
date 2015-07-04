@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import  wx.grid as gridlib
 import FonctionsPerso
@@ -18,114 +20,114 @@ import os
 import sys
 
 styles = {
-    1 : (u"Texte normal", 11.35, 20, 0),
-    2 : (u"Grande case", 11.35, 20, 2.25),
-    3 : (u"Petite case à cocher", 6, 6, 0),
-    4 : (u"Case à cocher ombrée", 10, 20, 0),
-    5 : (u"Texte normal 2", 12, 20, 2.25),
+    1 : (_(u"Texte normal"), 11.35, 20, 0),
+    2 : (_(u"Grande case"), 11.35, 20, 2.25),
+    3 : (_(u"Petite case à cocher"), 6, 6, 0),
+    4 : (_(u"Case à cocher ombrée"), 10, 20, 0),
+    5 : (_(u"Texte normal 2"), 12, 20, 2.25),
     }#  (Label du style, largeur, hauteur, espacement
     
     
 categories = {
-    1 : (u"Etablissement employeur"),
-    2 : (u"Futur salarié"),
-    3 : (u"Autres éléments"),
+    1 : (_(u"Etablissement employeur")),
+    2 : (_(u"Futur salarié")),
+    3 : (_(u"Autres éléments")),
     }#  (Label de la catégorie)
     
     
 champs = [
-    ["NUM_SIRET", u"Numéro Siret", "texte", 1, u"", True,  
+    ["NUM_SIRET", _(u"Numéro Siret"), "texte", 1, u"", True,  
      (
         (1, 14, "num", 2, (115.8, 119)),
         )
     ],
-    ["CODE_APE", u"Code APE", "texte", 1, u"", True, 
+    ["CODE_APE", _(u"Code APE"), "texte", 1, u"", True, 
      (
         (1, 4, "alpha", 2, (400.5, 119)),
         )
     ],
-    ["CIVILITE_EMPLOYEUR", u"Civilité de l'employeur", "radio", 1, u"", True, 
+    ["CIVILITE_EMPLOYEUR", _(u"Civilité de l'employeur"), "radio", 1, u"", True, 
      (
-         (u"M.", "x", 3, (116.5, 136)),
-         (u"Mme", "x", 3, (135.5, 136)),
-         (u"Melle", "x", 3, (162, 136)),
-        (u"Non renseigné", " ", 3, (162, 136)),
+         (_(u"M."), "x", 3, (116.5, 136)),
+         (_(u"Mme"), "x", 3, (135.5, 136)),
+         (_(u"Melle"), "x", 3, (162, 136)),
+        (_(u"Non renseigné"), " ", 3, (162, 136)),
          )
     ],
-    ["DENOMINATION", u"Dénomination de l'employeur", "texte", 1, u"", True, 
+    ["DENOMINATION", _(u"Dénomination de l'employeur"), "texte", 1, u"", True, 
      (
          (1, 32, "alpha", 1, (189.4, 144.3)),
          )
     ],
-    ["ADRESSE_ETABLISS", u"Adresse de l'établissement", "texte", 1, u"", True, 
+    ["ADRESSE_ETABLISS", _(u"Adresse de l'établissement"), "texte", 1, u"", True, 
      (
          (1, 39, "alpha", 1, (110, 165)),
          )
     ],
-    ["CP_ETABLISS", u"Code postal de l'établissement", "texte", 1, u"", True, 
+    ["CP_ETABLISS", _(u"Code postal de l'établissement"), "texte", 1, u"", True, 
      (
          (1, 5, "alpha", 2, (110, 184)),
          )
     ],
-    ["VILLE_ETABLISS", u"Ville de l'établissement", "texte", 1, u"", True, 
+    ["VILLE_ETABLISS", _(u"Ville de l'établissement"), "texte", 1, u"", True, 
      (
          (1, 32, "alpha", 1, (189.4, 184)),
          )
     ],
-    ["ADRESSE_CORRESP", u"Adresse de correspondance", "texte", 1, u"", True, 
+    ["ADRESSE_CORRESP", _(u"Adresse de correspondance"), "texte", 1, u"", True, 
      (
          (1, 39, "alpha", 1, (110, 205)),
          )
     ],
-    ["CP_CORRESP", u"Code postal Adresse de correspondance", "texte", 1, u"", True, 
+    ["CP_CORRESP", _(u"Code postal Adresse de correspondance"), "texte", 1, u"", True, 
      (
          (1, 5, "alpha", 2, (110, 224)),
          )
     ],
-    ["VILLE_CORRESP", u"Ville de l'adresse de correspondance", "texte", 1, u"", True, 
+    ["VILLE_CORRESP", _(u"Ville de l'adresse de correspondance"), "texte", 1, u"", True, 
      (
          (1, 32, "alpha", 1, (189.4, 224)),
          )
     ],
-    ["TEL_EMPLOYEUR", u"Numéro de téléphone Employeur", "texte", 1, u"", True, 
+    ["TEL_EMPLOYEUR", _(u"Numéro de téléphone Employeur"), "texte", 1, u"", True, 
      (
          (1, 10, "num", 2, (185.6, 250)),
          )
     ],
-    ["FAX_EMPLOYEUR", u"Numéro de fax Employeur", "texte", 1, u"", True, 
+    ["FAX_EMPLOYEUR", _(u"Numéro de fax Employeur"), "texte", 1, u"", True, 
      (
          (1, 10, "num", 2, (418.6, 250)),
          )
     ],
-    ["CIVILITE_SALARIE", u"Civilité du salarié", "radio", 2, u"", False, 
+    ["CIVILITE_SALARIE", _(u"Civilité du salarié"), "radio", 2, u"", False, 
      (
-         (u"M.", "x", 3, (116.5, 294)),
-         (u"Mme", "x", 3, (135.5, 294)),
-         (u"Melle", "x", 3, (162, 294)),
+         (_(u"M."), "x", 3, (116.5, 294)),
+         (_(u"Mme"), "x", 3, (135.5, 294)),
+         (_(u"Melle"), "x", 3, (162, 294)),
          )
     ],
-    ["NOMNAISS_SALARIE", u"Nom de naissance", "texte", 2, u"", False, 
+    ["NOMNAISS_SALARIE", _(u"Nom de naissance"), "texte", 2, u"", False, 
      (
          (1, 13, "alpha", 1, (192, 296)),
          )
     ],
-    ["NOMMARITAL_SALARIE", u"Nom marital", "texte", 2, u"", False, 
+    ["NOMMARITAL_SALARIE", _(u"Nom marital"), "texte", 2, u"", False, 
      (
          (1, 13, "alpha", 1, (405, 296)),
          )
     ],
-    ["PRENOM_SALARIE", u"Prénoms (dans l'ordre de l'état civil)", "texte", 2, u"", False, 
+    ["PRENOM_SALARIE", _(u"Prénoms (dans l'ordre de l'état civil)"), "texte", 2, u"", False, 
      (
          (1, 31, "alpha", 1, (116, 316)),
          )
     ],
-    ["SEXE_SALARIE", u"Sexe", "radio", 2, u"", False, 
+    ["SEXE_SALARIE", _(u"Sexe"), "radio", 2, u"", False, 
      (
-        (u"Masculin", "M", 2, (511, 319)),
-        (u"Féminin", "F", 2, (511, 319)),
+        (_(u"Masculin"), "M", 2, (511, 319)),
+        (_(u"Féminin"), "F", 2, (511, 319)),
          )
     ],
-    ["NUMSECU_SALARIE", u"Numéro de sécurité sociale", "texte", 2, u"", False, 
+    ["NUMSECU_SALARIE", _(u"Numéro de sécurité sociale"), "texte", 2, u"", False, 
      (
          (1, 1, "num", 2, (115, 341)),
          (2, 3, "num", 2, (132.5, 341)),
@@ -136,158 +138,158 @@ champs = [
          (14, 15, "num", 2, (311, 341)),
          )
     ],
-    ["DATENAISS_SALARIE", u"Date de naissance (format JJMMAAAA)", "texte", 2, u"", False, 
+    ["DATENAISS_SALARIE", _(u"Date de naissance (format JJMMAAAA)"), "texte", 2, u"", False, 
      (
          (1, 2, "num", 2, (440, 341)),
          (3, 4, "num", 2, (470, 341)),
          (5, 8, "num", 2, (500.5, 341)),
          )
     ],
-    ["NATIONALITE1_SALARIE", u"Nationalité", "radio", 2, u"", False, 
+    ["NATIONALITE1_SALARIE", _(u"Nationalité"), "radio", 2, u"", False, 
      (
-         (u"Française", "x", 4, (116, 366)),
-         (u"Etrangère", "x", 4, (176.5, 366)),
+         (_(u"Française"), "x", 4, (116, 366)),
+         (_(u"Etrangère"), "x", 4, (176.5, 366)),
          )
     ],
-    ["NATIONALITE2_SALARIE", u"Si étrangère, quelle nationalité ?", "texte", 2, u"", False, 
+    ["NATIONALITE2_SALARIE", _(u"Si étrangère, quelle nationalité ?"), "texte", 2, u"", False, 
      (
          (1, 24, "alpha", 1, (280.5, 365)),
          )
     ],
-    ["DEPARTNAISS_SALARIE", u"Numéro de département de naissance", "texte", 2, u"", False, 
+    ["DEPARTNAISS_SALARIE", _(u"Numéro de département de naissance"), "texte", 2, u"", False, 
      (
          (1, 3, "alpha", 2, (110, 387)),
          )
     ],
-    ["VILLENAISS_SALARIE", u"Ville de naissance", "texte", 2, u"", False, 
+    ["VILLENAISS_SALARIE", _(u"Ville de naissance"), "texte", 2, u"", False, 
      (
          (1, 35, "alpha", 1, (155.7, 387)),
          )
     ],
-    ["PAYSNAISS_SALARIE", u"Pays de naissance", "texte", 2, u"", False, 
+    ["PAYSNAISS_SALARIE", _(u"Pays de naissance"), "texte", 2, u"", False, 
      (
          (1, 35, "alpha", 1, (393.5, 387)),
          )
     ],
-    ["ADRESSE_SALARIE", u"Adresse", "texte", 2, u"", False, 
+    ["ADRESSE_SALARIE", _(u"Adresse"), "texte", 2, u"", False, 
      (
          (1, 39, "alpha", 1, (110, 411)),
          )
     ],
-    ["CP_SALARIE", u"Code postal", "texte", 2, u"", False, 
+    ["CP_SALARIE", _(u"Code postal"), "texte", 2, u"", False, 
      (
          (1, 5, "alpha", 2, (110, 433)),
          )
     ],
-    ["VILLE_SALARIE", u"Ville", "texte", 2, u"", False, 
+    ["VILLE_SALARIE", _(u"Ville"), "texte", 2, u"", False, 
      (
          (1, 32, "alpha", 1, (189, 433)),
          )
     ],
-    ["DATE_EMBAUCHE", u"Date d'embauche (format JJMMAAAA)", "texte", 2, u"", False, 
+    ["DATE_EMBAUCHE", _(u"Date d'embauche (format JJMMAAAA)"), "texte", 2, u"", False, 
      (
          (1, 2, "num", 2, (200, 460.5)),
          (3, 4, "num", 2, (231, 460.5)),
          (5, 8, "num", 2, (261, 460.5)),
          )
     ],
-    ["HEURE_EMBAUCHE", u"Heure d'embauche (format HHMM)", "texte", 2, u"", True, 
+    ["HEURE_EMBAUCHE", _(u"Heure d'embauche (format HHMM)"), "texte", 2, u"", True, 
      (
          (1, 2, "num", 2, (497, 460.5)),
          (3, 4, "num", 2, (528, 460.5)),
          )
     ],
-    ["SANTE_CODE", u"Service de santé au travail (Code)", "texte", 3, u"", True, 
+    ["SANTE_CODE", _(u"Service de santé au travail (Code)"), "texte", 3, u"", True, 
      (
          (1, 3, "alpha", 2, (103.5, 514)),
          )
     ],
-    ["SANTE_NOM", u"Service de santé (Nom et adresse)", "texte", 3, u"", True, 
+    ["SANTE_NOM", _(u"Service de santé (Nom et adresse)"), "texte", 3, u"", True, 
      (
          (1, 28, "alpha", 1, (147.5, 514)),
          (29, 56, "alpha", 1, (147.5, 534)),
          )
     ],
-    ["SANTE_ENTREPRISE", u"Service de santé au travail de l'entreprise ?", "radio", 3, u"Non", True, 
+    ["SANTE_ENTREPRISE", _(u"Service de santé au travail de l'entreprise ?"), "radio", 3, _(u"Non"), True, 
      (
-         (u"Oui", "x", 4, (480.5, 524)),
-         (u"Non", " ", 4, (480.5, 524)),
+         (_(u"Oui"), "x", 4, (480.5, 524)),
+         (_(u"Non"), " ", 4, (480.5, 524)),
          )
     ],
-    ["EFFECTIF_AVANT_1", u"Effectif de l'établissement avant embauche", "texte", 3, u"", True, 
+    ["EFFECTIF_AVANT_1", _(u"Effectif de l'établissement avant embauche"), "texte", 3, u"", True, 
      (
          (1, 4, "num", 2, (194, 557)),
          )
     ],
-    ["PREMIER_SALARIE", u"S'agit-il du premier salarié avant l'embauche", "radio", 3, u"Non", True, 
+    ["PREMIER_SALARIE", _(u"S'agit-il du premier salarié avant l'embauche"), "radio", 3, _(u"Non"), True, 
      (
-         (u"Oui", "x", 4, (264, 577)),
-         (u"Non", "x", 4, (301, 576)),
+         (_(u"Oui"), "x", 4, (264, 577)),
+         (_(u"Non"), "x", 4, (301, 576)),
          )
     ],
-    ["EFFECTIF_AVANT_2", u"Si oui, effectif avant l'embauche", "texte", 3, u"", True, 
+    ["EFFECTIF_AVANT_2", _(u"Si oui, effectif avant l'embauche"), "texte", 3, u"", True, 
      (
          (1, 5, "num", 2, (203, 598)),
          )
     ],
-    ["ACTIVITE_PRINCIPALE", u"Activité exercée dans l'établissement", "texte", 3, u"", True, 
+    ["ACTIVITE_PRINCIPALE", _(u"Activité exercée dans l'établissement"), "texte", 3, u"", True, 
      (
          (1, 36, "alpha", 5, (42, 614)),
          )
     ],
-    ["NATURE_EMPLOI", u"Nature de l'emploi et qualification", "texte", 3, u"", True, 
+    ["NATURE_EMPLOI", _(u"Nature de l'emploi et qualification"), "texte", 3, u"", True, 
      (
          (1, 2, "alpha", 2, (159, 632)),
          )
     ],
-    ["PERIODE_ESSAI", u"Durée de la période d'essai (en jours)", "texte", 3, u"", False, 
+    ["PERIODE_ESSAI", _(u"Durée de la période d'essai (en jours)"), "texte", 3, u"", False, 
      (
          (1, 2, "num", 2, (403, 633)),
          )
     ],
-    ["SITUATION_SALARIE", u"Situation du salarié avant l'embauche", "texte", 3, u"", True, 
+    ["SITUATION_SALARIE", _(u"Situation du salarié avant l'embauche"), "texte", 3, u"", True, 
      (
          (1, 1, "alpha", 2, (180, 654)),
          )
     ],
-    ["DUREE_TRAVAIL_HEBDO", u"Durée du travail hebdomadaire (en heures)", "texte", 3, u"", True, 
+    ["DUREE_TRAVAIL_HEBDO", _(u"Durée du travail hebdomadaire (en heures)"), "texte", 3, u"", True, 
      (
          (1, 2, "num", 2, (218, 674)),
          )
     ],
-    ["DUREE_TRAVAIL_MENS", u"OU durée du travail mensuel (en heures)", "texte", 3, u"", True, 
+    ["DUREE_TRAVAIL_MENS", _(u"OU durée du travail mensuel (en heures)"), "texte", 3, u"", True, 
      (
          (1, 3, "num", 2, (330, 674)),
          )
     ],
-    ["DUREE_TRAVAIL_ANNU", u"OU durée du travail annuelle (en heures)", "texte", 3, u"", True, 
+    ["DUREE_TRAVAIL_ANNU", _(u"OU durée du travail annuelle (en heures)"), "texte", 3, u"", True, 
      (
          (1, 4, "num", 2, (469.5, 674)),
          )
     ],
-    ["CONTRAT_NOUVELLES", u"Contrat Nouvelles Embauches ?", "radio", 3, u"Non", True, 
+    ["CONTRAT_NOUVELLES", _(u"Contrat Nouvelles Embauches ?"), "radio", 3, _(u"Non"), True, 
      (
-         (u"Oui", "x", 4, (35, 695)),
-         (u"Non", " ", 4, (35, 695)),
+         (_(u"Oui"), "x", 4, (35, 695)),
+         (_(u"Non"), " ", 4, (35, 695)),
          )
     ],
-    ["CONTRAT_TYPE", u"Type de contrat", "radio", 3, u"", False, 
+    ["CONTRAT_TYPE", _(u"Type de contrat"), "radio", 3, u"", False, 
      (
-         (u"Contrat à durée indéterminée", "x", 4, (35, 716)),
-         (u"Contrat à durée déterminée", "x", 4, (171, 716)),
+         (_(u"Contrat à durée indéterminée"), "x", 4, (35, 716)),
+         (_(u"Contrat à durée déterminée"), "x", 4, (171, 716)),
          )
     ],
-    ["DATE_FIN_CONTRAT", u"Si CDD, date de fin de contrat", "texte", 3, u"", False, 
+    ["DATE_FIN_CONTRAT", _(u"Si CDD, date de fin de contrat"), "texte", 3, u"", False, 
      (
          (1, 2, "num", 2, (442, 717)),
          (3, 4, "num", 2, (470, 717)),
          (5, 8, "num", 2, (500, 717)),
          )
     ],
-    ["AGENT_TITULAIRE", u"S'agit-il d'un agent titulaire (fonction publique)", "radio", 3, u"Non", False, 
+    ["AGENT_TITULAIRE", _(u"S'agit-il d'un agent titulaire (fonction publique)"), "radio", 3, _(u"Non"), False, 
      (
-         (u"Oui", "x", 4, (487, 760.5)),
-         (u"Non", "x", 4, (523, 760.5)),
+         (_(u"Oui"), "x", 4, (487, 760.5)),
+         (_(u"Non"), "x", 4, (523, 760.5)),
          )
     ],
     ]#  (Code, Label, type de contrôle, IDcategorie, valeur, Sauvegarder ?,
@@ -301,7 +303,7 @@ class CreationPDF(threading.Thread) :
     def __init__(self, parent, listeChamps) :
         self.parent = parent
         self.listeChamps = listeChamps
-        self.nomDocument = u"Temp/Impression_DUE"
+        self.nomDocument = _(u"Temp/Impression_DUE")
         if "win" in sys.platform : self.nomDocument = self.nomDocument.replace("/", "\\")
         threading.Thread.__init__(self)
 ##        self.Creation()
@@ -475,7 +477,7 @@ class Grid(gridlib.Grid):
 ##        # Vérification de la valeur
 ##        if valeur == "" :
 ##            self.moveTo = evt.GetRow(), evt.GetCol()
-##            dlg = wx.MessageDialog(self, u"Vous n'avez saisi aucune donnée. \n\nVoulez-vous laisser ce champ vide ?",  u"Vérification", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+##            dlg = wx.MessageDialog(self, _(u"Vous n'avez saisi aucune donnée. \n\nVoulez-vous laisser ce champ vide ?"),  _(u"Vérification"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
 ##            if dlg.ShowModal() == wx.ID_NO :
 ##                pass
         
@@ -519,8 +521,8 @@ class MyFrame(wx.Frame):
         
         self.panel_base = wx.Panel(self, -1)
         self.sizer_grid_staticbox = wx.StaticBox(self.panel_base, -1, "Champs")
-        self.label_intro = wx.StaticText(self.panel_base, -1, u"Vérifiez, modifiez ou ajoutez les données puis cliquez sur 'Ok'.")
-        self.label_info = wx.StaticText(self.panel_base, -1, u"Remarque : Les champs marqués d'un astérique * sont mémorisés.")
+        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Vérifiez, modifiez ou ajoutez les données puis cliquez sur 'Ok'."))
+        self.label_info = wx.StaticText(self.panel_base, -1, _(u"Remarque : Les champs marqués d'un astérique * sont mémorisés."))
         font = wx.Font(7, wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.label_info.SetFont(font)
                
@@ -528,9 +530,9 @@ class MyFrame(wx.Frame):
         self.Import_Donnees()
         self.gridChamps = Grid(self.panel_base)
 
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Apercu_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Fermer_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aperçu"), cheminImage="Images/32x32/Apercu.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Fermer"), cheminImage="Images/32x32/Fermer.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -541,7 +543,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
                 
     def __set_properties(self):
-        self.SetTitle(u"Edition d'une déclaration préalable à l'embauche")
+        self.SetTitle(_(u"Edition d'une déclaration préalable à l'embauche"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -594,7 +596,7 @@ class MyFrame(wx.Frame):
     def Onbouton_ok(self, event):
         """ Affichage du PDF """
         if "linux" not in sys.platform :
-            self.frmAttente = Attente.MyFrame(None, label=u"Création du document PDF en cours...")
+            self.frmAttente = Attente.MyFrame(None, label=_(u"Création du document PDF en cours..."))
             self.frmAttente.Show()
             self.frmAttente.MakeModal(True)
         
@@ -669,9 +671,9 @@ class MyFrame(wx.Frame):
         type_CDI = listeType[2]
         
         if type_CDI == "non" :
-            type_contrat = u"Contrat à durée déterminée"
+            type_contrat = _(u"Contrat à durée déterminée")
         else:
-            type_contrat = "" #u"Contrat à durée indéterminée"
+            type_contrat = "" #_(u"Contrat à durée indéterminée")
                 
         # Base valeurs_point
         req = """
@@ -719,17 +721,17 @@ class MyFrame(wx.Frame):
         # Adaptation des données
         if civilite == "Mr" : 
             civilite = "M."
-            sexe = u"Masculin"
+            sexe = _(u"Masculin")
             nomNaiss = nom
             nomMarital = ""
         if civilite == "Mme" : 
             civilite = "Mme"
-            sexe = u"Féminin"
+            sexe = _(u"Féminin")
             nomNaiss = nom_jfille
             nomMarital = nom
         if civilite == "Melle" : 
             civilite = "Melle"
-            sexe = u"Féminin"
+            sexe = _(u"Féminin")
             nomNaiss = nom
             nomMarital = ""
         num_secu = num_secu.replace(" ", "")
@@ -758,11 +760,11 @@ class MyFrame(wx.Frame):
         DB.ExecuterReq(req)
         listePays = DB.ResultatReq()
         nationalite = listePays[0][0]
-        if nationalite == u"Française" :
-            nationalite1 = u"Française"
+        if nationalite == _(u"Française") :
+            nationalite1 = _(u"Française")
             nationalite2 = ""
         else:
-            nationalite1 = u"Etrangère"
+            nationalite1 = _(u"Etrangère")
             nationalite2 = nationalite
         
         # Pays de naissance

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import sys 
 import GestionDB
 import datetime
@@ -18,13 +20,13 @@ import FonctionsPerso
 def DatetimeDateEnStr(date):
     """ Transforme un datetime.date en date complète : Ex : lundi 15 janvier 2008 """
     listeJours = ("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
-    listeMois = ("janvier", u"février", "mars", "avril", "mai", "juin", "juillet", u"août", "septembre", "octobre", "novembre", u"décembre")
+    listeMois = ("janvier", _(u"février"), "mars", "avril", "mai", "juin", "juillet", _(u"août"), "septembre", "octobre", "novembre", _(u"décembre"))
     dateStr = listeJours[date.weekday()] + " " + str(date.day) + " " + listeMois[date.month-1] + " " + str(date.year)
     return dateStr
 
 class Frm_confirm_appli(wx.Frame):
     def __init__(self, parent, nbreTaches=0, dictTaches={}, listeCreationsTaches=[], inclureFeries=False ):
-        wx.Frame.__init__(self, parent, -1, title=u"Confirmation d'application des modèles", name="frm_confirmApplication", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, -1, title=_(u"Confirmation d'application des modèles"), name="frm_confirmApplication", style=wx.DEFAULT_FRAME_STYLE)
         
         self.dictTaches = dictTaches
         self.listeCreationsTaches = listeCreationsTaches
@@ -33,9 +35,9 @@ class Frm_confirm_appli(wx.Frame):
         self.panel_base_1 = wx.Panel(self, -1)
         self.panel_base_2 = wx.Panel(self.panel_base_1, -1)
         if nbreTaches == 1 :
-            txt = u"Confirmez-vous la création de la tâche suivante ?"
+            txt = _(u"Confirmez-vous la création de la tâche suivante ?")
         else:
-            txt = u"Confirmez-vous la création des " + str(nbreTaches) + u" tâches suivantes ?"
+            txt = _(u"Confirmez-vous la création des ") + str(nbreTaches) + _(u" tâches suivantes ?")
         self.label_confirmation = wx.StaticText(self.panel_base_2, -1, txt)
         self.tree_taches = TreeCtrlTaches(self.panel_base_2)
         self.gauge = wx.Gauge(self.panel_base_2, -1, nbreTaches, size=(-1, 10))
@@ -202,7 +204,7 @@ class Frm_confirm_appli(wx.Frame):
             self.gauge.SetValue(x)
             # Met à jour le label d'information
             pourcentage = (x * 100) / nbreTaches
-            message =  str(pourcentage) + u" % - Veuillez patienter durant la création des tâches... "
+            message =  str(pourcentage) + _(u" % - Veuillez patienter durant la création des tâches... ")
             self.label_confirmation.SetLabel(message)
             
             if self.thread1.stop == True:
@@ -219,7 +221,7 @@ class Frm_confirm_appli(wx.Frame):
         self.thread1.abort()
         
         if interrompu == True :
-            message = u"Vous avez interrompu le processus ! Cliquez sur Ok pour quitter."
+            message = _(u"Vous avez interrompu le processus ! Cliquez sur Ok pour quitter.")
             self.label_confirmation.SetLabel(message)
         else:
             self.AffichageExceptions()
@@ -234,11 +236,11 @@ class Frm_confirm_appli(wx.Frame):
         
         if nbreInvalides != 0 :
             if nbreInvalides == 1 :
-                message = u"1 tâche n'a pas pu être enregistrée."
+                message = _(u"1 tâche n'a pas pu être enregistrée.")
             else:
-                message = str(nbreInvalides) + u" tâches n'ont pas pu être enregistrées."
+                message = str(nbreInvalides) + _(u" tâches n'ont pas pu être enregistrées.")
         else:
-            message = u"Toutes les tâches ont été créées avec succès."
+            message = _(u"Toutes les tâches ont été créées avec succès.")
         self.label_confirmation.SetLabel(message)
         
     def Importation_Feries(self):
@@ -264,18 +266,18 @@ class Frm_confirm_appli(wx.Frame):
     
 ##        if nbreInvalides != 0 :
 ##            message = ""
-##            if nbreValides == 0 : message += u"Aucune tâche n'a été correctement enregistrée.\n\nL"
-##            elif nbreValides == 1 : message += str(nbreValides) + u" tâche a été correctement enregistrée.\n\nMais l"
-##            else: message += str(nbreValides) + u" tâches ont été correctement enregistrées.\n\nMais l"
+##            if nbreValides == 0 : message += _(u"Aucune tâche n'a été correctement enregistrée.\n\nL")
+##            elif nbreValides == 1 : message += str(nbreValides) + _(u" tâche a été correctement enregistrée.\n\nMais l")
+##            else: message += str(nbreValides) + _(u" tâches ont été correctement enregistrées.\n\nMais l")
 ##            if nbreInvalides == 1 :
-##                message += u"a tâche de la liste suivante n'a pas pu être saisie car elle chevauchait une ou plusieurs des tâches existantes. "
-##                message += u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celle-ci.\n\n"
+##                message += _(u"a tâche de la liste suivante n'a pas pu être saisie car elle chevauchait une ou plusieurs des tâches existantes. ")
+##                message += _(u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celle-ci.\n\n")
 ##            else:
-##                message += u"es " + str(nbreInvalides) + u" tâches de la liste suivante n'ont pas pu être saisies car elles chevauchaient des tâches existantes. "
-##                message += u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celles-ci.\n\n"
+##                message += _(u"es ") + str(nbreInvalides) + _(u" tâches de la liste suivante n'ont pas pu être saisies car elles chevauchaient des tâches existantes. ")
+##                message += _(u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celles-ci.\n\n")
 ##            for exception in self.listeExceptions :
 ##                message += "   > Le " + exception[1] + " pour " + exception[0] + " de " + exception[2][0] + u" à " + exception[2][1] + ".\n"
-##            dlg = wx.lib.dialogs.ScrolledMessageDialog(self, message, u"Rapport d'erreurs")
+##            dlg = wx.lib.dialogs.ScrolledMessageDialog(self, message, _(u"Rapport d'erreurs"))
 ##            dlg.ShowModal()
         
         
@@ -336,7 +338,7 @@ class TreeCtrlTaches(wx.TreeCtrl):
         self.DeleteAllItems()
         
         # Création de la racine
-        self.root = self.AddRoot(u"Tâches à créer :")
+        self.root = self.AddRoot(_(u"Tâches à créer :"))
         self.SetPyData(self.root, None)
         # Image
         self.SetItemImage(self.root, self.imgRacine, wx.TreeItemIcon_Normal)

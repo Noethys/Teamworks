@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
@@ -17,8 +19,8 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Les diffuseurs d'offres d'emploi", u"")
-        texteIntro = u"Vous pouvez ici créer, modifier ou supprimer des diffuseurs d'offres d'emploi.\nExemples : 'Pôle Emploi.', 'Presse', 'Fédération', etc..."
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Les diffuseurs d'offres d'emploi"), u"")
+        texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer des diffuseurs d'offres d'emploi.\nExemples : 'Pôle Emploi.', 'Presse', 'Fédération', etc...")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         self.listCtrl = ListCtrl(self)
         self.listCtrl.SetMinSize((20, 20)) 
@@ -44,13 +46,13 @@ class Panel(wx.Panel):
         self.bouton_supprimer.Enable(False)
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un nouveau diffuseur")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau diffuseur"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier le diffuseur sélectionné dans la liste")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le diffuseur sélectionné dans la liste"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le diffuseur sélectionné dans la liste")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le diffuseur sélectionné dans la liste"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -80,7 +82,7 @@ class Panel(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        dlg = wx.TextEntryDialog(self, u"Saisissez le nom du nouveau diffuseur :", u"Saisie d'un diffuseur", u"")
+        dlg = wx.TextEntryDialog(self, _(u"Saisissez le nom du nouveau diffuseur :"), _(u"Saisie d'un diffuseur"), u"")
         if dlg.ShowModal() == wx.ID_OK:
             varNom = dlg.GetValue()
             dlg.Destroy()
@@ -89,7 +91,7 @@ class Panel(wx.Panel):
             return
 
         if varNom == "":
-            dlg = wx.MessageDialog(self, u"Le nom que vous avez saisi n'est pas valide.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Le nom que vous avez saisi n'est pas valide."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -112,7 +114,7 @@ class Panel(wx.Panel):
     def Modifier(self):
         index = self.listCtrl.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un diffuseur à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un diffuseur à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -127,14 +129,14 @@ class Panel(wx.Panel):
         listeDonnees = DB.ResultatReq()
         DB.Close()
         if len(listeDonnees) != 0 :
-            dlg = wx.MessageDialog(self, u"Ce diffuseur a déjà été attribué à " + str(len(listeDonnees)) + u" offre(s) d'emploi.\nEtes-vous sûr de vouloir le modifier ?", "Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Ce diffuseur a déjà été attribué à ") + str(len(listeDonnees)) + _(u" offre(s) d'emploi.\nEtes-vous sûr de vouloir le modifier ?"), "Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_EXCLAMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_NO:
                 dlg.Destroy()
                 return
             else: dlg.Destroy()
                 
-        dlg = wx.TextEntryDialog(self, u"Saisissez le nom du nouveau diffuseur :", u"Modification du nom du diffuseur", varNom)
+        dlg = wx.TextEntryDialog(self, _(u"Saisissez le nom du nouveau diffuseur :"), _(u"Modification du nom du diffuseur"), varNom)
         if dlg.ShowModal() == wx.ID_OK:
             varNom = dlg.GetValue()
             dlg.Destroy()
@@ -143,7 +145,7 @@ class Panel(wx.Panel):
             return
 
         if varNom == "":
-            dlg = wx.MessageDialog(self, u"Le nom que vous avez saisi n'est pas valide.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Le nom que vous avez saisi n'est pas valide."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -167,7 +169,7 @@ class Panel(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un diffuseur à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un diffuseur à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -182,14 +184,14 @@ class Panel(wx.Panel):
         listeDonnees = DB.ResultatReq()
         DB.Close()
         if len(listeDonnees) != 0 :
-            dlg = wx.MessageDialog(self, u"Vous avez déjà enregistré " + str(len(listeDonnees)) + u" offres(s) d'emploi avec cette affectation \nVous ne pouvez donc pas la supprimer.", "Information", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous avez déjà enregistré ") + str(len(listeDonnees)) + _(u" offres(s) d'emploi avec cette affectation \nVous ne pouvez donc pas la supprimer."), "Information", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         # Demande de confirmation
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce diffuseur ? \n\n> " + Nom))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce diffuseur ? \n\n> ") + Nom))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -207,7 +209,7 @@ class Panel(wx.Panel):
 
     def OnBoutonAide(self, event):
 ##        affectationsPerso.Aide(38)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         
@@ -253,11 +255,11 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         
         # Création des colonnes
         self.nbreColonnes = 3
-        self.InsertColumn(0, u"     ID")
+        self.InsertColumn(0, _(u"     ID"))
         self.SetColumnWidth(0, 0)
-        self.InsertColumn(1, u"Diffuseur")
+        self.InsertColumn(1, _(u"Diffuseur"))
         self.SetColumnWidth(1, 230)
-        self.InsertColumn(2, u"Nb offres d'emploi diffusées")
+        self.InsertColumn(2, _(u"Nb offres d'emploi diffusées"))
         self.SetColumnWidth(2, 120)        
 
         #These two should probably be passed to init more cleanly
@@ -399,7 +401,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -408,14 +410,14 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -444,9 +446,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -459,15 +461,15 @@ class MyFrame(wx.Frame):
         self.SetSize((450, 350))
 
     def __set_properties(self):
-        self.SetTitle(u"Gestion des diffuseurs d'offres d'emploi")
+        self.SetTitle(_(u"Gestion des diffuseurs d'offres d'emploi"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 
@@ -500,7 +502,7 @@ class MyFrame(wx.Frame):
         
     def Onbouton_aide(self, event):
 ##        FonctionsPerso.Aide(38)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
             

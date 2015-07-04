@@ -7,6 +7,7 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+from UTILS_Traduction import _
 from Crypto.Cipher import AES
 import hashlib
 import pickle

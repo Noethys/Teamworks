@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import wx.lib.hyperlink as hl
 
@@ -39,40 +41,40 @@ import Config_Questionnaire
 # Type page, contenu (panel ou texteIntro pour les rubriques), titre, nom image
 LISTE_PAGES = [
 
-    ( "rubrique", u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants.", u"Affichage", "Outils.png"),
-    ( "page", "Config_Gadgets.Panel(self, -1)", u"Les gadgets", "Calendrier_ajout.png"),
+    ( "rubrique", _(u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants."), _(u"Affichage"), "Outils.png"),
+    ( "page", "Config_Gadgets.Panel(self, -1)", _(u"Les gadgets"), "Calendrier_ajout.png"),
     
-    ( "rubrique", u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants.", u"Fichiers", "Repertoire.png"),
-    ( "page", "Config_Sauvegarde.Panel(self, -1)", u"Sauvegarde automatique", "Sauvegarder_param.png"),
-    ( "page", "Config_Password.Panel(self, -1)", u"Protection par mot de passe", "Cadenas.png"),
-    ( "page", "Config_AdressesMail.Panel(self, -1)", u"Adresses expédition de mails", "Mail.png"),
-    ( "page", "Config_Utilisateurs_Reseau.Panel(self, -1)", u"Utilisateurs réseau", "Identite.png"),
+    ( "rubrique", _(u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants."), _(u"Fichiers"), "Repertoire.png"),
+    ( "page", "Config_Sauvegarde.Panel(self, -1)", _(u"Sauvegarde automatique"), "Sauvegarder_param.png"),
+    ( "page", "Config_Password.Panel(self, -1)", _(u"Protection par mot de passe"), "Cadenas.png"),
+    ( "page", "Config_AdressesMail.Panel(self, -1)", _(u"Adresses expédition de mails"), "Mail.png"),
+    ( "page", "Config_Utilisateurs_Reseau.Panel(self, -1)", _(u"Utilisateurs réseau"), "Identite.png"),
     
-    ( "rubrique", u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants.", u"Données personnes", "Personnes.png"),
-    ( "page", "Config_Questionnaire.Panel(self, -1)", u"Le questionnaire", "Questionnaire.png"),
-    ( "page", "Config_TypesDiplomes.Panel_TypesDiplomes(self, -1)", u"Les types de qualifications", "Personnes.png"),
-    ( "page", "Config_TypesPieces.Panel_TypesPieces(self, -1)", u"Les types de pièces", "Personnes.png"),
-    ( "page", "Config_Situations.Panel(self, -1)", u"Les types de situations", "Personnes.png"),
-    ( "page", "Config_Pays.Panel(self, -1)", u"Les pays et nationalités", "Drapeau.png"),
+    ( "rubrique", _(u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants."), _(u"Données personnes"), "Personnes.png"),
+    ( "page", "Config_Questionnaire.Panel(self, -1)", _(u"Le questionnaire"), "Questionnaire.png"),
+    ( "page", "Config_TypesDiplomes.Panel_TypesDiplomes(self, -1)", _(u"Les types de qualifications"), "Personnes.png"),
+    ( "page", "Config_TypesPieces.Panel_TypesPieces(self, -1)", _(u"Les types de pièces"), "Personnes.png"),
+    ( "page", "Config_Situations.Panel(self, -1)", _(u"Les types de situations"), "Personnes.png"),
+    ( "page", "Config_Pays.Panel(self, -1)", _(u"Les pays et nationalités"), "Drapeau.png"),
     
-    ( "rubrique", u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants.", u"Données contrats", "Document.png"),
-    ( "page", "Config_Classifications.Panel(self, -1)", u"Les classifications", "Document.png"),
-    ( "page", "Config_ChampsContrats.Panel(self, -1)", u"Les champs de contrats", "Document.png"),
-    ( "page", "Config_Modeles_Contrats.Panel(self, -1)", u"Les modèles de contrats", "Document.png"),
-    ( "page", "Config_TypesContrats.Panel(self, -1)", u"Les types de contrats", "Document.png"),
-    ( "page", "Config_ValPoint.Panel(self, -1)", u"Les valeurs de points", "Document.png"),
+    ( "rubrique", _(u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants."), _(u"Données contrats"), "Document.png"),
+    ( "page", "Config_Classifications.Panel(self, -1)", _(u"Les classifications"), "Document.png"),
+    ( "page", "Config_ChampsContrats.Panel(self, -1)", _(u"Les champs de contrats"), "Document.png"),
+    ( "page", "Config_Modeles_Contrats.Panel(self, -1)", _(u"Les modèles de contrats"), "Document.png"),
+    ( "page", "Config_TypesContrats.Panel(self, -1)", _(u"Les types de contrats"), "Document.png"),
+    ( "page", "Config_ValPoint.Panel(self, -1)", _(u"Les valeurs de points"), "Document.png"),
     
-    ( "rubrique", u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants.", u"Présences", "Presences.png"),
-    ( "page", "Config_Cat_Presences.Panel_CatPresences(self, -1)", u"Les catégories de présences", "Presences.png"),
-    ( "page", "Config_Periodes_Vacances.Panel(self, -1)", u"Les périodes de vacances", "Calendrier3jours.png"),
-    ( "page", "Config_Jours_Feries.Panel(self, -1)", u"Les jours fériés", "Calendrier_jour.png"),
+    ( "rubrique", _(u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants."), _(u"Présences"), "Presences.png"),
+    ( "page", "Config_Cat_Presences.Panel_CatPresences(self, -1)", _(u"Les catégories de présences"), "Presences.png"),
+    ( "page", "Config_Periodes_Vacances.Panel(self, -1)", _(u"Les périodes de vacances"), "Calendrier3jours.png"),
+    ( "page", "Config_Jours_Feries.Panel(self, -1)", _(u"Les jours fériés"), "Calendrier_jour.png"),
     
-    ( "rubrique", u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants.", u"Recrutement", "Mail.png"),
-    ( "page", "Config_Verrouillage_Entretien.Panel(self, -1)", u"Protection des entretiens", "Cadenas.png"),
-    ( "page", "Config_Fonctions.Panel(self, -1)", u"Les fonctions", "Mail.png"),
-    ( "page", "Config_Affectations.Panel(self, -1)", u"Les affectations", "Mail.png"),
-    ( "page", "Config_Diffuseurs.Panel(self, -1)", u"Les diffuseurs", "Mail.png"),
-    ( "page", "Config_Emplois.Panel(self, -1)", u"Les offres d emploi", "Mail.png"),
+    ( "rubrique", _(u"Cliquez sur l'une des rubriques présentées ci-dessous ou dans l'arborescence de gauche pour accéder aux paramétrages correspondants."), _(u"Recrutement"), "Mail.png"),
+    ( "page", "Config_Verrouillage_Entretien.Panel(self, -1)", _(u"Protection des entretiens"), "Cadenas.png"),
+    ( "page", "Config_Fonctions.Panel(self, -1)", _(u"Les fonctions"), "Mail.png"),
+    ( "page", "Config_Affectations.Panel(self, -1)", _(u"Les affectations"), "Mail.png"),
+    ( "page", "Config_Diffuseurs.Panel(self, -1)", _(u"Les diffuseurs"), "Mail.png"),
+    ( "page", "Config_Emplois.Panel(self, -1)", _(u"Les offres d emploi"), "Mail.png"),
     
     ]
 

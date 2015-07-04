@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.masked as masked
 import GestionDB
 import FonctionsPerso
@@ -15,7 +17,7 @@ import FonctionsPerso
 class FrameCoords(wx.Frame):
     def __init__(self, parent, ID, title, size, IDcoord=0, IDpersonne=0):
         # begin wxGlade: FrameCoords.__init__
-        wx.Frame.__init__(self, parent, ID, title=u"Coordonnées", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, ID, title=_(u"Coordonnées"), style=wx.DEFAULT_FRAME_STYLE)
 
         self.parent = parent
         self.IDpersonne = IDpersonne
@@ -26,8 +28,8 @@ class FrameCoords(wx.Frame):
         if self.parent.GetName() == "panel_generalites" : self.nomTable = "coordonnees"
         
         self.panel_frame = wx.Panel(self, -1)
-        self.sizer_infos_staticbox = wx.StaticBox(self.panel_frame, -1, u"2. Saisissez les informations")
-        self.sizer_categories_staticbox = wx.StaticBox(self.panel_frame, -1, u"1. Sélectionnez une catégorie")
+        self.sizer_infos_staticbox = wx.StaticBox(self.panel_frame, -1, _(u"2. Saisissez les informations"))
+        self.sizer_categories_staticbox = wx.StaticBox(self.panel_frame, -1, _(u"1. Sélectionnez une catégorie"))
         self.categorieSelect = ""
 
         self.MakeModal(True)
@@ -44,18 +46,18 @@ class FrameCoords(wx.Frame):
         self.label_fax = wx.StaticText(self.panel_frame, -1, "Fax")
         self.label_email = wx.StaticText(self.panel_frame, -1, "Email")
         
-        self.label_info_mail = wx.StaticText(self.panel_frame, -1, u"Email :")
+        self.label_info_mail = wx.StaticText(self.panel_frame, -1, _(u"Email :"))
         self.text_info_mail = wx.TextCtrl(self.panel_frame, -1, "")
-        self.label_info_tel = wx.StaticText(self.panel_frame, -1, u"N° Fixe :")
+        self.label_info_tel = wx.StaticText(self.panel_frame, -1, _(u"N° Fixe :"))
         self.text_info_tel = masked.TextCtrl(self.panel_frame, -1, "", style=wx.TE_CENTRE, mask = "##.##.##.##.##.")
 
         self.label_info_mail.Hide()
         self.text_info_mail.Hide()
                 
-        self.label_intitule = wx.StaticText(self.panel_frame, -1, u"Intitulé :")
+        self.label_intitule = wx.StaticText(self.panel_frame, -1, _(u"Intitulé :"))
         self.text_intitule = wx.TextCtrl(self.panel_frame, -1, "")
-        self.bouton_Ok = wx.BitmapButton(self.panel_frame, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_Annuler = wx.BitmapButton(self.panel_frame, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_Ok = CTRL_Bouton_image.CTRL(self.panel_frame, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_Annuler = CTRL_Bouton_image.CTRL(self.panel_frame, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -87,13 +89,13 @@ class FrameCoords(wx.Frame):
         self.bouton_mobile.SetSize(self.bouton_mobile.GetBestSize())
         self.bouton_fax.SetSize(self.bouton_fax.GetBestSize())
         self.bouton_email.SetSize(self.bouton_email.GetBestSize())
-        self.bouton_Ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_Ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_Ok.SetSize(self.bouton_Ok.GetBestSize())
-        self.bouton_Annuler.SetToolTipString(u"Cliquez ici pour annuler")
+        self.bouton_Annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
         self.bouton_Annuler.SetSize(self.bouton_Annuler.GetBestSize())
-        self.text_info_tel.SetToolTipString(u"Saisissez ici un numéro de téléphone")
-        self.text_info_mail.SetToolTipString(u"Saisissez ici une adresse Mail valide")
-        self.text_intitule.SetToolTipString(u"Vous pouvez, si vous le souhaitez, saisir ici un intitulé. Ex : 'Contact à Rennes' ou 'Domicile des parents'...")
+        self.text_info_tel.SetToolTipString(_(u"Saisissez ici un numéro de téléphone"))
+        self.text_info_mail.SetToolTipString(_(u"Saisissez ici une adresse Mail valide"))
+        self.text_intitule.SetToolTipString(_(u"Vous pouvez, si vous le souhaitez, saisir ici un intitulé. Ex : 'Contact à Rennes' ou 'Domicile des parents'..."))
         # end wxGlade
 
     def __do_layout(self):
@@ -158,7 +160,7 @@ class FrameCoords(wx.Frame):
 
         # Activation des champs
         self.ActivationChamps(True)
-        self.label_info_tel.SetLabel(u"N° Fixe :")        
+        self.label_info_tel.SetLabel(_(u"N° Fixe :"))        
         self.text_info_tel.SetFocus()
         self.categorieSelect = "Fixe"
         self.label_info_mail.Hide()
@@ -177,7 +179,7 @@ class FrameCoords(wx.Frame):
 
         # Activation des champs
         self.ActivationChamps(True)
-        self.label_info_tel.SetLabel(u"N° Mobile :")
+        self.label_info_tel.SetLabel(_(u"N° Mobile :"))
         self.text_info_tel.SetFocus()
         self.categorieSelect = "Mobile"
         self.label_info_mail.Hide()
@@ -195,7 +197,7 @@ class FrameCoords(wx.Frame):
 
         # Activation des champs
         self.ActivationChamps(True)
-        self.label_info_tel.SetLabel(u"N° Fax :")
+        self.label_info_tel.SetLabel(_(u"N° Fax :"))
         self.text_info_tel.SetFocus()
         self.categorieSelect = "Fax"
         self.label_info_mail.Hide()
@@ -289,7 +291,7 @@ class FrameCoords(wx.Frame):
     def OnBouton_Ok(self, event):
         """ Validation de la saisie """
         if self.categorieSelect == "":
-            message = u"Vous devez commencer par sélectionner une catégorie."
+            message = _(u"Vous devez commencer par sélectionner une catégorie.")
             wx.MessageBox(message, "Erreur de saisie")
             return
 
@@ -298,20 +300,20 @@ class FrameCoords(wx.Frame):
             text = self.text_info_mail.GetValue()
             # Vérifie si Email vide
             if text == "":
-                message = u"Vous devez saisir une adresse Email valide."
+                message = _(u"Vous devez saisir une adresse Email valide.")
                 wx.MessageBox(message, "Erreur de saisie")
                 self.text_info_mail.SetFocus()
                 return
             # Vérifie si Email valide
             posAt = text.find("@")
             if posAt == -1:
-                message = u"L'adresse Email que vous avez saisie n'est pas valide."
+                message = _(u"L'adresse Email que vous avez saisie n'est pas valide.")
                 wx.MessageBox(message, "Erreur de saisie")
                 self.text_info_mail.SetFocus()
                 return
             posPoint = text.rfind(".")
             if posPoint < posAt :
-                message = u"L'adresse Email que vous avez saisie n'est pas valide."
+                message = _(u"L'adresse Email que vous avez saisie n'est pas valide.")
                 wx.MessageBox(message, "Erreur de saisie")
                 self.text_info_mail.SetFocus()
                 return
@@ -321,7 +323,7 @@ class FrameCoords(wx.Frame):
             text = self.text_info_tel.GetValue()
             # Vérifie si Tél vide
             if text == "" or text == "  .  .  .  .  .":
-                message = u"Vous devez saisir un numéro de téléphone valide."
+                message = _(u"Vous devez saisir un numéro de téléphone valide.")
                 wx.MessageBox(message, "Erreur de saisie")
                 self.text_info_tel.SetFocus()
                 return
@@ -329,7 +331,7 @@ class FrameCoords(wx.Frame):
             posChiffres = [0, 1, 3, 4, 6, 7, 9, 10, 12, 13]
             for position in posChiffres:
                 if text[position].isdigit() == False:
-                    message = u"Le numéro de téléphone ne semble pas valide."
+                    message = _(u"Le numéro de téléphone ne semble pas valide.")
                     wx.MessageBox(message, "Erreur de saisie")
                     self.text_info_tel.SetFocus()
                     return
@@ -415,7 +417,7 @@ class FrameCoords(wx.Frame):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frameCoords = FrameCoords(None, -1, u"Coordonnées", size=(280, 290))
+    frameCoords = FrameCoords(None, -1, _(u"Coordonnées"), size=(280, 290))
     app.SetTopWindow(frameCoords)
     frameCoords.Show()
     app.MainLoop()

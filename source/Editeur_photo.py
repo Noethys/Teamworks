@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import Image
 import cStringIO
 import GestionDB
@@ -146,7 +148,7 @@ class ImgBox(wx.Window):
         dc.DrawRectangle(self.posxCadre, self.posyCadre, self.tailleCadre, self.tailleCadre)
         dc.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Arial'))
         dc.SetTextForeground("CYAN")
-        dc.DrawText(u"Cadre de sélection", self.posxCadre+3, self.posyCadre+1) 
+        dc.DrawText(_(u"Cadre de sélection"), self.posxCadre+3, self.posyCadre+1) 
         
         # Dessine l'aperçu
         posxApercu, posyApercu, tailleApercu = (10, 10, 100)
@@ -156,9 +158,9 @@ class ImgBox(wx.Window):
         dc.DrawBitmap(self.apercu, posxApercu, posyApercu, 0)
         dc.SetTextForeground("RED")
         if nomCadre == None :
-            texteApercu = u"Aperçu"
+            texteApercu = _(u"Aperçu")
         else:
-            texteApercu = u"Aperçu sans déco."
+            texteApercu = _(u"Aperçu sans déco.")
         dc.DrawText(texteApercu, posxApercu+3, posyApercu+1) 
         
         # Dessine le cadre de l'aperçu
@@ -303,16 +305,16 @@ class MyFrame(wx.Frame):
         # Widgets
         self.imgbox = ImgBox(self.panel,-1, image=image)
         
-        self.staticBox_rotation = wx.StaticBox(self.panel, -1, u"Rotation")
+        self.staticBox_rotation = wx.StaticBox(self.panel, -1, _(u"Rotation"))
         self.bouton_rotation_gauche = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/22x22/RotationGauche.png", wx.BITMAP_TYPE_PNG))
         self.bouton_rotation_droite = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/22x22/RotationDroite.png", wx.BITMAP_TYPE_PNG))
         
-        self.staticBox_zoom = wx.StaticBox(self.panel, -1, u"Zoom")
+        self.staticBox_zoom = wx.StaticBox(self.panel, -1, _(u"Zoom"))
         self.slider_zoom = wx.Slider(self.panel, -1,  500, 1, 1000, size=(-1, -1), style=wx.SL_HORIZONTAL)
         self.img_loupe_plus = wx.StaticBitmap(self.panel, -1, wx.Bitmap("Images/22x22/ZoomPlus.png", wx.BITMAP_TYPE_ANY))
         self.img_loupe_moins = wx.StaticBitmap(self.panel, -1, wx.Bitmap("Images/22x22/ZoomMoins.png", wx.BITMAP_TYPE_ANY))
         
-        self.staticBox_decoration = wx.StaticBox(self.panel, -1, u"Cadre de décoration")
+        self.staticBox_decoration = wx.StaticBox(self.panel, -1, _(u"Cadre de décoration"))
         listeCadres = FonctionsPerso.GetListeCadresPhotos()
         self.combobox_decoration = wx.Choice(self.panel, -1, choices=listeCadres)
         
@@ -322,17 +324,17 @@ class MyFrame(wx.Frame):
         else:
             self.combobox_decoration.SetSelection(0)
         
-        self.staticBox_texte_photo = wx.StaticBox(self.panel, -1, u"Texte personnalisé")
+        self.staticBox_texte_photo = wx.StaticBox(self.panel, -1, _(u"Texte personnalisé"))
         textePhoto = FonctionsPerso.RecupTextePhotoPersonne(self.IDpersonne)
         self.texte_photo = wx.TextCtrl(self.panel, -1, textePhoto)
         
-        self.staticBox_reinit = wx.StaticBox(self.panel, -1, u"Réinitialisation")
+        self.staticBox_reinit = wx.StaticBox(self.panel, -1, _(u"Réinitialisation"))
         self.bouton_reinit = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/22x22/Photo.png", wx.BITMAP_TYPE_ANY), size=(70, -1))
         
         # Boutons
-        self.bouton_aide = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -350,18 +352,18 @@ class MyFrame(wx.Frame):
         
         
     def __set_properties(self):
-        self.SetTitle(u"Editeur de photo")
+        self.SetTitle(_(u"Editeur de photo"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider l'image")
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider l'image"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
         
-        self.bouton_rotation_gauche.SetToolTipString(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens inverse des aiguilles d'une montre")
-        self.bouton_rotation_droite.SetToolTipString(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens des aiguilles d'une montre")
-        self.slider_zoom.SetToolTipString(u"Ajustez avec cette fonction zoom\nla taille de la photo")
-        self.bouton_reinit.SetToolTipString(u"Cliquez ici pour réinitialiser la position\net la taille de la photo initiale")
+        self.bouton_rotation_gauche.SetToolTipString(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens inverse des aiguilles d'une montre"))
+        self.bouton_rotation_droite.SetToolTipString(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens des aiguilles d'une montre"))
+        self.slider_zoom.SetToolTipString(_(u"Ajustez avec cette fonction zoom\nla taille de la photo"))
+        self.bouton_reinit.SetToolTipString(_(u"Cliquez ici pour réinitialiser la position\net la taille de la photo initiale"))
         
         self.SetMinSize((700, 600))
 
@@ -446,7 +448,7 @@ class MyFrame(wx.Frame):
         nomImage = self.imgbox.SaveImage()
         # Sauvegarde du cadre de décoration
         cadrePhoto = self.combobox_decoration.GetStringSelection()
-        if cadrePhoto == u"Aucun" : cadrePhoto = ""
+        if cadrePhoto == _(u"Aucun") : cadrePhoto = ""
         listeDonnees = [("cadre_photo", cadrePhoto),]
         DB = GestionDB.DB()
         DB.ReqMAJ("personnes", listeDonnees, "IDpersonne", self.IDpersonne)

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
@@ -49,35 +51,35 @@ class Panel(wx.Panel):
             self.listeNomsVilles.append(nom)
         
         # Identite
-        self.sizer_identite_staticbox = wx.StaticBox(self, -1, u"Identité")
-        self.label_civilite = wx.StaticText(self, -1, u"Civilité :")
-        self.ctrl_civilite = wx.Choice(self, -1, choices=[u"Mr", u"Melle", u"Mme"])
-        self.label_nom = wx.StaticText(self, -1, u"Nom :")
+        self.sizer_identite_staticbox = wx.StaticBox(self, -1, _(u"Identité"))
+        self.label_civilite = wx.StaticText(self, -1, _(u"Civilité :"))
+        self.ctrl_civilite = wx.Choice(self, -1, choices=[_(u"Mr"), _(u"Melle"), _(u"Mme")])
+        self.label_nom = wx.StaticText(self, -1, _(u"Nom :"))
         self.ctrl_nom = wx.TextCtrl(self, -1, u"")
-        self.label_prenom = wx.StaticText(self, -1, u"Prénom :")
+        self.label_prenom = wx.StaticText(self, -1, _(u"Prénom :"))
         self.ctrl_prenom = wx.TextCtrl(self, -1, u"")
-        self.label_date_naiss = wx.StaticText(self, -1, u"Date naiss. :")
+        self.label_date_naiss = wx.StaticText(self, -1, _(u"Date naiss. :"))
         self.ctrl_radio_1 = wx.RadioButton(self, -1, u"", style=wx.RB_GROUP)
         self.ctrl_date_naiss = masked.TextCtrl(self, -1, "", style=wx.TE_CENTRE, mask = "##/##/####") 
         self.ctrl_age_1 = wx.TextCtrl(self, -1, "", style=wx.TE_CENTRE, size=(46,-1))
         self.ctrl_radio_2 = wx.RadioButton(self, -1, u"")
-        self.label_age = wx.StaticText(self, -1, u"ou âge :")
+        self.label_age = wx.StaticText(self, -1, _(u"ou âge :"))
         self.ctrl_age_2 = wx.TextCtrl(self, -1, "", style=wx.TE_CENTRE, size=(30,-1))
-        self.label_ans = wx.StaticText(self, -1, u"ans")
+        self.label_ans = wx.StaticText(self, -1, _(u"ans"))
         
         # Adresse
-        self.sizer_adresse_staticbox = wx.StaticBox(self, -1, u"Adresse")
-        self.label_adresse = wx.StaticText(self, -1, u"     Adresse :")
+        self.sizer_adresse_staticbox = wx.StaticBox(self, -1, _(u"Adresse"))
+        self.label_adresse = wx.StaticText(self, -1, _(u"     Adresse :"))
         self.ctrl_adresse = wx.TextCtrl(self, -1, u"", style=wx.TE_MULTILINE)
-        self.label_cp = wx.StaticText(self, -1, u"C.P. :")
+        self.label_cp = wx.StaticText(self, -1, _(u"C.P. :"))
         self.ctrl_cp = TextCtrlCp(self, value="", listeVilles=self.listeVilles, size=(55, -1), style=wx.TE_CENTRE, mask = "#####") 
-        self.label_ville = wx.StaticText(self, -1, u"Ville :")
+        self.label_ville = wx.StaticText(self, -1, _(u"Ville :"))
         self.ctrl_ville = TextCtrlVille(self, value="", ctrlCp=self.ctrl_cp, listeVilles=self.listeVilles, listeNomsVilles=self.listeNomsVilles)
         self.ctrl_cp.ctrlVille = self.ctrl_ville
         self.bouton_villes = wx.Button(self, -1, u"...")
         
         # Coords
-        self.sizer_coords_staticbox = wx.StaticBox(self, -1, u"Coordonnées")
+        self.sizer_coords_staticbox = wx.StaticBox(self, -1, _(u"Coordonnées"))
         self.ctrl_coords = ListCtrlCoords(self, -1)
         self.ctrl_coords.SetMinSize((20, 20))
         self.bouton_ajouter_coord = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_ANY))
@@ -85,14 +87,14 @@ class Panel(wx.Panel):
         self.bouton_supprimer_coord = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_ANY))
 
         # Qualifications
-        self.sizer_qualifications_staticbox = wx.StaticBox(self, -1, u"Qualifications")
+        self.sizer_qualifications_staticbox = wx.StaticBox(self, -1, _(u"Qualifications"))
         self.ctrl_qualifications = ListCtrl_Diplomes(self, -1)
         self.ctrl_qualifications.SetMinSize((20, 20))
         self.ctrl_qualifications.SetBackgroundColour((236, 233, 216))
         self.bouton_qualifications = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_ANY))
 
         # Candidatures
-        self.sizer_candidatures_staticbox = wx.StaticBox(self, -1, u"Candidatures")
+        self.sizer_candidatures_staticbox = wx.StaticBox(self, -1, _(u"Candidatures"))
         self.ctrl_candidatures = OL_candidatures.ListView(self, id=-1, name="OL_candidatures", IDcandidat=self.IDcandidat, style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
         self.ctrl_candidatures.SetMinSize((20, 20))
         self.ctrl_candidatures.MAJ(IDpersonne=self.IDcandidat)
@@ -101,7 +103,7 @@ class Panel(wx.Panel):
         self.bouton_supprimer_cand = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_ANY))
         
         # Entretiens
-        self.sizer_entretiens_staticbox = wx.StaticBox(self, -1, u"Entretiens")
+        self.sizer_entretiens_staticbox = wx.StaticBox(self, -1, _(u"Entretiens"))
         self.ctrl_entretiens = OL_entretiens.ListView(self, id=-1, name="OL_entretiens", IDcandidat=self.IDcandidat, style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
         self.ctrl_entretiens.SetMinSize((20, 20))
         self.ctrl_entretiens.MAJ(IDcandidat=self.IDcandidat)
@@ -110,16 +112,16 @@ class Panel(wx.Panel):
         self.bouton_supprimer_entretien = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_ANY))
         
         # Memo
-        self.sizer_memo_staticbox = wx.StaticBox(self, -1, u"Mémo")
+        self.sizer_memo_staticbox = wx.StaticBox(self, -1, _(u"Mémo"))
         self.ctrl_memo = wx.TextCtrl(self, -1, u"", style=wx.TE_MULTILINE)
         self.ctrl_memo.SetMinSize((200, 30))
         
         # Boutons de commande
         self.bouton_convertir = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Convertir_candidat.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
         self.bouton_courrier = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Envoyer_courrier.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
             
         self.__set_properties()
         self.__do_layout()
@@ -158,36 +160,36 @@ class Panel(wx.Panel):
             self.bouton_ok.SetFocus()
         
     def __set_properties(self):
-        self.ctrl_civilite.SetToolTipString(u"Sélectionnez la civilité du candidat")
+        self.ctrl_civilite.SetToolTipString(_(u"Sélectionnez la civilité du candidat"))
         self.ctrl_civilite.SetSelection(0)
         self.ctrl_nom.SetFont(wx.Font(14, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
-        self.ctrl_nom.SetToolTipString(u"Saisissez le nom de famille du candidat")
+        self.ctrl_nom.SetToolTipString(_(u"Saisissez le nom de famille du candidat"))
         self.ctrl_prenom.SetFont(wx.Font(14, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
-        self.ctrl_prenom.SetToolTipString(u"Saisissez le prénom du candidat")
-        self.ctrl_date_naiss.SetToolTipString(u"Saisissez la date de naissance du candidat")
+        self.ctrl_prenom.SetToolTipString(_(u"Saisissez le prénom du candidat"))
+        self.ctrl_date_naiss.SetToolTipString(_(u"Saisissez la date de naissance du candidat"))
         self.ctrl_age_1.Enable(False)
-        self.ctrl_age_2.SetToolTipString(u"Saisissez l'âge du candidat si vous ne connaissez pas sa date de naissance")
-        self.ctrl_adresse.SetToolTipString(u"Saisissez l'adresse du candidat")
+        self.ctrl_age_2.SetToolTipString(_(u"Saisissez l'âge du candidat si vous ne connaissez pas sa date de naissance"))
+        self.ctrl_adresse.SetToolTipString(_(u"Saisissez l'adresse du candidat"))
         self.ctrl_cp.SetMinSize((60, -1))
-        self.ctrl_cp.SetToolTipString(u"Saisissez le code postal")
-        self.ctrl_ville.SetToolTipString(u"Saisissez la ville")
+        self.ctrl_cp.SetToolTipString(_(u"Saisissez le code postal"))
+        self.ctrl_ville.SetToolTipString(_(u"Saisissez la ville"))
         self.bouton_villes.SetMinSize((20, 20))
-        self.bouton_villes.SetToolTipString(u"Cliquez ici pour la gestion des villes")
-        self.bouton_ajouter_coord.SetToolTipString(u"Cliquez ici pour ajouter une coordonnée")
-        self.bouton_modifier_coord.SetToolTipString(u"Cliquez ici pour modifier la coordonnée selectionnée")
-        self.bouton_supprimer_coord.SetToolTipString(u"Cliquez ici pour supprimer la coordonnée selectionnée")
-        self.bouton_qualifications.SetToolTipString(u"Cliquez ici pour sélectionner des qualifications pour ce candidat")
-        self.bouton_ajouter_cand.SetToolTipString(u"Cliquez ici pour créer une candidature pour ce candidat")
-        self.bouton_modifier_cand.SetToolTipString(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste")
-        self.bouton_supprimer_cand.SetToolTipString(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste")
-        self.bouton_ajouter_entretien.SetToolTipString(u"Cliquez ici pour créer un entretien")
-        self.bouton_modifier_entretien.SetToolTipString(u"Cliquez ici pour modifier l'entretien selectionné dans la liste")
-        self.bouton_supprimer_entretien.SetToolTipString(u"Cliquez ici pour supprimer l'entretien selectionné dans la liste")
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_convertir.SetToolTipString(u"Cliquez ici pour convertir la fiche de ce candidat en fiche individuelle d'employé")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider la fiche")
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler")
-        self.bouton_courrier.SetToolTipString(u"Cliquez ici pour créer un courrier ou un mail par publipostage")
+        self.bouton_villes.SetToolTipString(_(u"Cliquez ici pour la gestion des villes"))
+        self.bouton_ajouter_coord.SetToolTipString(_(u"Cliquez ici pour ajouter une coordonnée"))
+        self.bouton_modifier_coord.SetToolTipString(_(u"Cliquez ici pour modifier la coordonnée selectionnée"))
+        self.bouton_supprimer_coord.SetToolTipString(_(u"Cliquez ici pour supprimer la coordonnée selectionnée"))
+        self.bouton_qualifications.SetToolTipString(_(u"Cliquez ici pour sélectionner des qualifications pour ce candidat"))
+        self.bouton_ajouter_cand.SetToolTipString(_(u"Cliquez ici pour créer une candidature pour ce candidat"))
+        self.bouton_modifier_cand.SetToolTipString(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste"))
+        self.bouton_supprimer_cand.SetToolTipString(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste"))
+        self.bouton_ajouter_entretien.SetToolTipString(_(u"Cliquez ici pour créer un entretien"))
+        self.bouton_modifier_entretien.SetToolTipString(_(u"Cliquez ici pour modifier l'entretien selectionné dans la liste"))
+        self.bouton_supprimer_entretien.SetToolTipString(_(u"Cliquez ici pour supprimer l'entretien selectionné dans la liste"))
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_convertir.SetToolTipString(_(u"Cliquez ici pour convertir la fiche de ce candidat en fiche individuelle d'employé"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider la fiche"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.bouton_courrier.SetToolTipString(_(u"Cliquez ici pour créer un courrier ou un mail par publipostage"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=6, cols=1, vgap=0, hgap=0)
@@ -323,7 +325,7 @@ class Panel(wx.Panel):
         # Civilité
         civilite = self.ctrl_civilite.GetSelection()
         if civilite == -1 :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner une civilité", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner une civilité"), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_civilite.SetFocus()
@@ -333,20 +335,20 @@ class Panel(wx.Panel):
         nom = self.ctrl_nom.GetValue()
         prenom = self.ctrl_prenom.GetValue()
         if nom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom"), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_nom.SetFocus()
             return False
         if prenom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un prénom", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un prénom"), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_prenom.SetFocus()
             return False
         
         # Confirmation de la sauvegarde
-        dlg = wx.MessageDialog(self, u"Avant d'ouvrir l'assistant publipostage, il est nécessaire\nde sauvegarder les données de cette fiche. Confirmez-vous ?", "Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(self, _(u"Avant d'ouvrir l'assistant publipostage, il est nécessaire\nde sauvegarder les données de cette fiche. Confirmez-vous ?"), "Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlg.ShowModal()
         if reponse == wx.ID_NO:
             dlg.Destroy()
@@ -462,19 +464,19 @@ class Panel(wx.Panel):
                 
         
     def AjouterCoord(self, event):
-        frameCoords = SaisieCoords.FrameCoords(self, -1, u"Coordonnées", size=(280, 290), IDcoord=0, IDpersonne=self.IDcandidat)
+        frameCoords = SaisieCoords.FrameCoords(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=0, IDpersonne=self.IDcandidat)
         frameCoords.Show()
 
     def ModifierCoord(self, event):
         """ Modification de coordonnées """
         index = self.ctrl_coords.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un item à modifier dans la liste des coordonnées", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un item à modifier dans la liste des coordonnées"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         varIDcoord = self.ctrl_coords.GetItemData(index)
-        frameCoords = SaisieCoords.FrameCoords(self, -1, u"Coordonnées", size=(280, 290), IDcoord=varIDcoord, IDpersonne=self.IDcandidat)
+        frameCoords = SaisieCoords.FrameCoords(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=varIDcoord, IDpersonne=self.IDcandidat)
         frameCoords.Show()
 
     def SupprimerCoord(self, event):
@@ -483,15 +485,15 @@ class Panel(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un item à supprimer dans la liste des coordonnées", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un item à supprimer dans la liste des coordonnées"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
 
         # Demande de confirmation
         texteCoord = self.ctrl_coords.GetItemText(index)
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer cette coordonnée ? \n\n> " + texteCoord))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette coordonnée ? \n\n> ") + texteCoord))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -509,7 +511,7 @@ class Panel(wx.Panel):
     def OnBoutonQualifications(self, event):
         """ Boîte de dialogue pour choisir les diplômes """
         resultat = ""
-        titre = u"Sélection des qualifications"
+        titre = _(u"Sélection des qualifications")
 
         # Récupération de la liste de tous les diplomes
         DB = GestionDB.DB()
@@ -534,7 +536,7 @@ class Panel(wx.Panel):
                 preSelection.append(index)
                 TypesDiplomesPerso.append(ID)
             index += 1
-        message = u"Sélectionnez les qualifications que possède le candidat dans la liste proposée :"
+        message = _(u"Sélectionnez les qualifications que possède le candidat dans la liste proposée :")
         dlg = wx.MultiChoiceDialog(self, message, titre, listeNoms, wx.CHOICEDLG_STYLE)
         
         # Coche ceux qui doivent être déjà sélectionnés dans la liste
@@ -598,7 +600,7 @@ class Panel(wx.Panel):
 
     def Onbouton_aide(self, event):
 ##        FonctionsPerso.Aide(38)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
             
@@ -622,7 +624,7 @@ class Panel(wx.Panel):
         # Civilité
         civilite = self.ctrl_civilite.GetSelection()
         if civilite == -1 :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner une civilité", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner une civilité"), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_civilite.SetFocus()
@@ -632,13 +634,13 @@ class Panel(wx.Panel):
         nom = self.ctrl_nom.GetValue()
         prenom = self.ctrl_prenom.GetValue()
         if nom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom"), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_nom.SetFocus()
             return False
         if prenom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un prénom", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un prénom"), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_prenom.SetFocus()
@@ -719,8 +721,8 @@ class Panel(wx.Panel):
     def OnBoutonConvertir(self, event):
         """ Convertir en fiche individuelle """
         # Demande de confirmation
-        txtMessage = u"Cette fonction vous permet de convertir une fiche CANDIDAT en fiche INDIVIDUELLE (fiche salarié). \nAttention, cette action est irreversible !\n\nConfirmez-vous la conversion ?"
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Conversion de fiche", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = _(u"Cette fonction vous permet de convertir une fiche CANDIDAT en fiche INDIVIDUELLE (fiche salarié). \nAttention, cette action est irreversible !\n\nConfirmez-vous la conversion ?")
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Conversion de fiche"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -742,41 +744,41 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090"):
     listeErreurs = []
     # On vérifie si les cases ne sont pas vides
     if texte[0] == " " or texte[1] == " ":
-        listeErreurs.append(u"le jour")
+        listeErreurs.append(_(u"le jour"))
     if texte[3] == " " or texte[4] == " ":
-        listeErreurs.append(u"le mois")
+        listeErreurs.append(_(u"le mois"))
     if texte[6] == " " or texte[7] == " " or texte[8] == " " or texte[9] == " ":
-        listeErreurs.append(u"l'année")
+        listeErreurs.append(_(u"l'année"))
     
     if texte != "  /  /    ":
 
         # On vérifie que les chiffres existent
-        if u"le jour" not in listeErreurs:
+        if _(u"le jour") not in listeErreurs:
             jour = int(texte[:2])
             if jour == 0 or jour > 31:
-                listeErreurs.append(u"le jour")
+                listeErreurs.append(_(u"le jour"))
 
-        if u"le mois" not in listeErreurs:
+        if _(u"le mois") not in listeErreurs:
             mois = int(texte[3:5])
             if mois == 0 or mois > 12:
-                listeErreurs.append(u"le mois")
+                listeErreurs.append(_(u"le mois"))
                 
-        if u"l'année" not in listeErreurs:
+        if _(u"l'année") not in listeErreurs:
             annee = int(texte[6:10])
             if annee < 1900 or annee > 2999:
-                listeErreurs.append(u"l'année")
+                listeErreurs.append(_(u"l'année"))
               
         # Affichage du message d'erreur
         
         if len(listeErreurs) != 0:
             # Message en cas de date incomplète
             if len(listeErreurs) == 1:
-                message = u"Une incohérence a été détectée dans " + listeErreurs[0]
+                message = _(u"Une incohérence a été détectée dans ") + listeErreurs[0]
             if len(listeErreurs) == 2:
-                message = u"Des incohérences ont été détectées dans " + listeErreurs[0] + " et " + listeErreurs[1]
+                message = _(u"Des incohérences ont été détectées dans ") + listeErreurs[0] + " et " + listeErreurs[1]
             if len(listeErreurs) == 3:
-                message = u"Des incohérences ont été détectées dans " + listeErreurs[0]  + ", " + listeErreurs[1]  + " et " + listeErreurs[2]
-            message = message + u" de la date que vous venez de saisir. Veuillez la vérifier."
+                message = _(u"Des incohérences ont été détectées dans ") + listeErreurs[0]  + ", " + listeErreurs[1]  + " et " + listeErreurs[2]
+            message = message + _(u" de la date que vous venez de saisir. Veuillez la vérifier.")
 
             wx.MessageBox(message, "Erreur de date")
             return False
@@ -787,11 +789,11 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090"):
             date_sel = int(str(texte[6:10]) + str(texte[3:5]) + str(texte[:2]))
 
             if date_sel < date_min:
-                message = u"La date que vous venez de saisir semble trop ancienne. Veuillez la vérifier."
+                message = _(u"La date que vous venez de saisir semble trop ancienne. Veuillez la vérifier.")
                 wx.MessageBox(message, "Erreur de date")
                 return False
             if date_sel > date_max:
-                message = u"La date que vous venez de saisir semble trop élevée. Veuillez la vérifier."
+                message = _(u"La date que vous venez de saisir semble trop élevée. Veuillez la vérifier.")
                 wx.MessageBox(message, "Erreur de date")
                 return False
             
@@ -895,7 +897,7 @@ class ListCtrl_Diplomes(wx.ListCtrl):
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Modifier")
+        item = wx.MenuItem(menuPop, 10, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Edit.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -946,7 +948,7 @@ class TextCtrlCp(masked.TextCtrl):
         # Code postal introuvable
         if nbreReponses == 0:
             if textCode.strip() != '':
-                dlg = wx.MessageDialog(self, u"Ce code postal n'est pas répertorié dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie.", "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Ce code postal n'est pas répertorié dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie."), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
             return
@@ -969,10 +971,10 @@ class TextCtrlCp(masked.TextCtrl):
     def ChoixVilles(self, cp, listeReponses):
         """ Boîte de dialogue pour donner le choix entre plusieurs villes possédant un code postal identique """
         resultat = ""
-        titre = u"Sélection d'une ville"
+        titre = _(u"Sélection d'une ville")
         nbreReponses = len(listeReponses)
         listeReponses.sort()
-        message = str(nbreReponses) + u" villes possèdent le code postal " + str(cp) + u". Double-cliquez sur\nle nom d'une ville pour la sélectionner :"
+        message = str(nbreReponses) + _(u" villes possèdent le code postal ") + str(cp) + _(u". Double-cliquez sur\nle nom d'une ville pour la sélectionner :")
         dlg = wx.SingleChoiceDialog(self, message, titre, listeReponses, wx.CHOICEDLG_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             resultat = dlg.GetStringSelection()
@@ -1020,7 +1022,7 @@ class TextCtrlVille(wx.TextCtrl):
 
         # Si la ville saisie n'existe pas
         if nbreCodes == 0:
-            dlg = wx.MessageDialog(self, u"Cette ville n'est pas répertoriée dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Cette ville n'est pas répertoriée dans la base de données. \nVérifiez que vous n'avez pas fait d'erreur de saisie."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
         
@@ -1058,10 +1060,10 @@ class TextCtrlVille(wx.TextCtrl):
     def ChoixCodes(self, ville, listeReponses):
         """ Boîte de dialogue pour donner le choix entre plusieurs villes possédant le même nom """
         resultat = ""
-        titre = u"Sélection d'une ville"
+        titre = _(u"Sélection d'une ville")
         nbreReponses = len(listeReponses)
         listeReponses.sort()
-        message = str(nbreReponses) + u" villes portent le nom " + str(ville) + u". Double-cliquez sur\nle code postal d'une ville pour la sélectionner :"
+        message = str(nbreReponses) + _(u" villes portent le nom ") + str(ville) + _(u". Double-cliquez sur\nle code postal d'une ville pour la sélectionner :")
         dlg = wx.SingleChoiceDialog(self, message, titre, listeReponses, wx.CHOICEDLG_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             resultat = dlg.GetStringSelection()
@@ -1237,7 +1239,7 @@ class ListCtrlCoords(wx.ListCtrl):
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -1246,14 +1248,14 @@ class ListCtrlCoords(wx.ListCtrl):
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -1262,7 +1264,7 @@ class ListCtrlCoords(wx.ListCtrl):
         # Si c'est un item Email, on ajoute "Envoyer Email"
         if self.DictCoords[key][2] == "Email" :
             menuPop.AppendSeparator()
-            item = wx.MenuItem(menuPop, 40, u"Envoyer un E-mail")
+            item = wx.MenuItem(menuPop, 40, _(u"Envoyer un E-mail"))
             bmp = wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
@@ -1350,9 +1352,9 @@ class MyFrame(wx.Frame):
                 
         # Propriétés
         if IDcandidat == None :
-            self.SetTitle(u"Saisie d'un candidat")
+            self.SetTitle(_(u"Saisie d'un candidat"))
         else:
-            self.SetTitle(u"Modification d'un candidat")
+            self.SetTitle(_(u"Modification d'un candidat"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -1385,7 +1387,7 @@ class MyFrame(wx.Frame):
         self.Destroy()
 
         
-if __name__ == u"__main__":
+if __name__ == _(u"__main__"):
     app = wx.App(0)
     #wx.InitAllImageHandlers()
     frame_1 = MyFrame(None, IDcandidat=3)

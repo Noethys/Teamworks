@@ -6,8 +6,10 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import datetime
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import wx.lib.hyperlink as hl
 import operator
@@ -37,28 +39,28 @@ VERROUILLAGE = None
 
 # Liste sans nom du candidat
 LISTE_COLONNES_1 = [
-            [u"ID", "left", 0, "IDentretien", "", u"ID de l'entretien", True, 1 ],
-            [u"Date", "left", 80, u"date", "date", u"Date de l'entretien", True, 2 ],
-            [u"Heure", "left", 50, "heure", "heure", u"Heure de l'entretien", True, 3 ],
-            [u"Avis", "left", 120, "avis", "image_avis", u"Avis sur le candidat", True, 4 ],
-            [u"Commentaire", "left", 270, "remarques", "", u"Commentaire sur l'entretien", True, 5 ],
+            [_(u"ID"), "left", 0, "IDentretien", "", _(u"ID de l'entretien"), True, 1 ],
+            [_(u"Date"), "left", 80, _(u"date"), "date", _(u"Date de l'entretien"), True, 2 ],
+            [_(u"Heure"), "left", 50, "heure", "heure", _(u"Heure de l'entretien"), True, 3 ],
+            [_(u"Avis"), "left", 120, "avis", "image_avis", _(u"Avis sur le candidat"), True, 4 ],
+            [_(u"Commentaire"), "left", 270, "remarques", "", _(u"Commentaire sur l'entretien"), True, 5 ],
             ] # nom Colonne, alignement, largeur, nom Champ, Args pour OLV, Description, Affiché ?, Ordre
 
 # Liste avec nom du candidat
 LISTE_COLONNES_2 = [
-            [u"ID", "left", 0, "IDentretien", "", u"ID de l'entretien", True, 1 ],
-            [u"Date", "left", 80, u"date", "date", u"Date de l'entretien", True, 2 ],
-            [u"Heure", "left", 50, "heure", "heure", u"Heure de l'entretien", True, 3 ],
-            [u"Nom", "left", 120, "nom_candidat", "", u"Nom du candidat", True, 4 ],
-            [u"Avis", "left", 120, "avis", "image_avis", u"Avis sur le candidat", True, 5 ],
-            [u"Commentaire", "left", 300, "remarques", "", u"Commentaire sur l'entretien", True, 6 ],
+            [_(u"ID"), "left", 0, "IDentretien", "", _(u"ID de l'entretien"), True, 1 ],
+            [_(u"Date"), "left", 80, _(u"date"), "date", _(u"Date de l'entretien"), True, 2 ],
+            [_(u"Heure"), "left", 50, "heure", "heure", _(u"Heure de l'entretien"), True, 3 ],
+            [_(u"Nom"), "left", 120, "nom_candidat", "", _(u"Nom du candidat"), True, 4 ],
+            [_(u"Avis"), "left", 120, "avis", "image_avis", _(u"Avis sur le candidat"), True, 5 ],
+            [_(u"Commentaire"), "left", 300, "remarques", "", _(u"Commentaire sur l'entretien"), True, 6 ],
             ] # nom Colonne, alignement, largeur, nom Champ, Args pour OLV, Description, Affiché ?, Ordre
 
 # Liste pour gagdet
 LISTE_COLONNES_3 = [
-            [u"ID", "left", 0, "IDentretien", "", u"ID de l'entretien", True, 1 ],
-            [u"Date et Heure et Nom", "left", 210, u"date_heure_nom", "date_heure_nom", u"Date, heure et nom", True, 2 ],
-            [u"Avis", "left", 0, "avis", "image_avis", u"Avis sur le candidat", False, 4 ],
+            [_(u"ID"), "left", 0, "IDentretien", "", _(u"ID de l'entretien"), True, 1 ],
+            [_(u"Date et Heure et Nom"), "left", 210, _(u"date_heure_nom"), "date_heure_nom", _(u"Date, heure et nom"), True, 2 ],
+            [_(u"Avis"), "left", 0, "avis", "image_avis", _(u"Avis sur le candidat"), False, 4 ],
             ] # nom Colonne, alignement, largeur, nom Champ, Args pour OLV, Description, Affiché ?, Ordre
 
 # ---------------------------------------- LISTVIEW   -----------------------------------------------------------------------
@@ -72,7 +74,7 @@ class Track(object):
         self.date_heure = self.date + ";" + self.heure
         if VERROUILLAGE == True :
             self.avis = 999
-            self.remarques = u"Commentaire verrouillé"
+            self.remarques = _(u"Commentaire verrouillé")
         else:
             self.avis = donnees[4]
             self.remarques = donnees[5]
@@ -147,12 +149,12 @@ class ListView(ObjectListView):
         if self.afficheHyperlink == False : return
         password = FonctionsPerso.Parametres(mode="get", categorie="recrutement", nom="password_entretien", valeur="")
         if VERROUILLAGE == True :
-            self.texteVerrouillage.SetLabel(u"Cliquez ici pour déverrouiller l'affichage")
+            self.texteVerrouillage.SetLabel(_(u"Cliquez ici pour déverrouiller l'affichage"))
         else:
             if password == "" :
-                self.texteVerrouillage.SetLabel(u"Cliquez ici pour définir un code de verrouillage de l'affichage")
+                self.texteVerrouillage.SetLabel(_(u"Cliquez ici pour définir un code de verrouillage de l'affichage"))
             else:
-                self.texteVerrouillage.SetLabel(u"Cliquez ici pour verrouiller l'affichage")
+                self.texteVerrouillage.SetLabel(_(u"Cliquez ici pour verrouiller l'affichage"))
         
     def OnItemActivated(self,event):
         self.Modifier()
@@ -366,12 +368,12 @@ class ListView(ObjectListView):
             else: return self.imgAvis0
         
         def FormateLabelAvis(avis):
-            if avis == 0 : return u"Avis inconnu"
-            if avis == 1 : return u"Pas convaincant"
-            if avis == 2 : return u"Mitigé"
-            if avis == 3 : return u"Bien"
-            if avis == 4 : return u"Très bien"
-            if avis == 999 : return u"Avis verrouillé"
+            if avis == 0 : return _(u"Avis inconnu")
+            if avis == 1 : return _(u"Pas convaincant")
+            if avis == 2 : return _(u"Mitigé")
+            if avis == 3 : return _(u"Bien")
+            if avis == 4 : return _(u"Très bien")
+            if avis == 999 : return _(u"Avis verrouillé")
             else: return ""
             
         def FormateDate(dateStr):
@@ -426,7 +428,7 @@ class ListView(ObjectListView):
         self.SetColumns(liste_Colonnes)
 
         self.SetSortColumn(self.columns[1])
-        self.SetEmptyListMsg(u"Aucun entretien")
+        self.SetEmptyListMsg(_(u"Aucun entretien"))
         self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
         self.SetObjects(self.donnees)
         
@@ -481,7 +483,7 @@ class ListView(ObjectListView):
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -490,7 +492,7 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -498,7 +500,7 @@ class ListView(ObjectListView):
         if noSelection == True : item.Enable(False)
         
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -509,10 +511,10 @@ class ListView(ObjectListView):
         
         # Item Verrouillage
         if VERROUILLAGE == True :
-            item = wx.MenuItem(menuPop, 120, u"Déverrouillage")
+            item = wx.MenuItem(menuPop, 120, _(u"Déverrouillage"))
             bmp = wx.Bitmap("Images/16x16/Cadenas.png", wx.BITMAP_TYPE_PNG)
         else:
-            item = wx.MenuItem(menuPop, 120, u"Verrouillage")
+            item = wx.MenuItem(menuPop, 120, _(u"Verrouillage"))
             bmp = wx.Bitmap("Images/16x16/Cadenas_ferme.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -521,21 +523,21 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
         
         # Item Rechercher
-        item = wx.MenuItem(menuPop, 80, u"Rechercher")
+        item = wx.MenuItem(menuPop, 80, _(u"Rechercher"))
         bmp = wx.Bitmap("Images/16x16/Loupe.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Rechercher, id=80)
 
         # Item Afficher tout
-        item = wx.MenuItem(menuPop, 50, u"Afficher tout")
+        item = wx.MenuItem(menuPop, 50, _(u"Afficher tout"))
         bmp = wx.Bitmap("Images/16x16/Actualiser.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_AfficherTout, id=50)
         
         # Item Options
-        item = wx.MenuItem(menuPop, 60, u"Options de liste")
+        item = wx.MenuItem(menuPop, 60, _(u"Options de liste"))
         bmp = wx.Bitmap("Images/16x16/Mecanisme.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -544,21 +546,21 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
         
         # Item Imprimer
-        item = wx.MenuItem(menuPop, 90, u"Imprimer la liste")
+        item = wx.MenuItem(menuPop, 90, _(u"Imprimer la liste"))
         bmp = wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.MenuImprimer, id=90)
         
         # Item Export Texte
-        item = wx.MenuItem(menuPop, 100, u"Exporter la liste au format Texte")
+        item = wx.MenuItem(menuPop, 100, _(u"Exporter la liste au format Texte"))
         bmp = wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.MenuExportTexte, id=100)
         
         # Item Export Excel
-        item = wx.MenuItem(menuPop, 110, u"Exporter la liste au format Excel")
+        item = wx.MenuItem(menuPop, 110, _(u"Exporter la liste au format Excel"))
         bmp = wx.Bitmap("Images/16x16/Excel.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -567,7 +569,7 @@ class ListView(ObjectListView):
         menuPop.AppendSeparator()
 
         # Item Aide
-        item = wx.MenuItem(menuPop, 70, u"Aide")
+        item = wx.MenuItem(menuPop, 70, _(u"Aide"))
         bmp = wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -601,7 +603,7 @@ class ListView(ObjectListView):
 
     def Menu_Aide(self, event):
 ##        self.GetGrandParent().GetParent().OnBoutonAide(None)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         
@@ -632,7 +634,7 @@ class ListView(ObjectListView):
     def Rechercher(self):
         # Récupération des filtres souhaités
         import Filtres_recrutement
-        dlg = Filtres_recrutement.MyDialog(self, categorie="entretiens", listeValeursDefaut=self.listeFiltres, title=u"Sélection de filtres de liste")
+        dlg = Filtres_recrutement.MyDialog(self, categorie="entretiens", listeValeursDefaut=self.listeFiltres, title=_(u"Sélection de filtres de liste"))
         if dlg.ShowModal() == wx.ID_OK:
             listeFiltres = dlg.GetListeFiltres()
             dlg.Destroy()
@@ -646,7 +648,7 @@ class ListView(ObjectListView):
         try :
             if self.GetGrandParent().GetParent().GetName() == "Recrutement" :
                 if len(self.listeFiltres) > 0 :
-                    texte = u"Filtres de sélection : "
+                    texte = _(u"Filtres de sélection : ")
                     for dictFiltre in self.listeFiltres :
                         texte += u"%s (%s), " % (dictFiltre["labelControle"], dictFiltre["label"])
                     texte = texte[:-2]
@@ -693,7 +695,7 @@ class ListView(ObjectListView):
             pass
             
         if len(self.Selection()) == 0:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un entretien à modifier dans la liste", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un entretien à modifier dans la liste"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -719,7 +721,7 @@ class ListView(ObjectListView):
             pass
             
         if len(self.Selection()) == 0:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un entretien à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un entretien à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -727,8 +729,8 @@ class ListView(ObjectListView):
         # Demande de confirmation
         texte = self.Selection()[0].date
         nom_complet = self.Selection()[0].nom_candidat
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer l'entretien du %s pour %s ?" % (FonctionsPerso.DateEngFr(texte), nom_complet)))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer l'entretien du %s pour %s ?") % (FonctionsPerso.DateEngFr(texte), nom_complet)))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -787,7 +789,7 @@ class ListView(ObjectListView):
     def ExportTexte(self):
         """ Export de la liste au format texte """
         if self.GetNbreItems() == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune personne dans la liste !", "Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune personne dans la liste !"), "Erreur", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -812,7 +814,7 @@ class ListView(ObjectListView):
         sp = wx.StandardPaths.Get()
         cheminDefaut = sp.GetDocumentsDir()
         dlg = wx.FileDialog(
-            self, message = u"Veuillez sélectionner le répertoire de destination et le nom du fichier", defaultDir=cheminDefaut, 
+            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
             defaultFile = nomFichier, 
             wildcard = wildcard, 
             style = wx.SAVE
@@ -827,7 +829,7 @@ class ListView(ObjectListView):
         
         # Le fichier de destination existe déjà :
         if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?", "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
             if dlg.ShowModal() == wx.ID_NO :
                 return False
                 dlg.Destroy()
@@ -856,8 +858,8 @@ class ListView(ObjectListView):
         f.close()
         
         # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = u"Le fichier Texte a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?"
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = _(u"Le fichier Texte a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -869,13 +871,13 @@ class ListView(ObjectListView):
     def ExportExcel(self):
         """ Export de la liste au format Excel """
         if "linux" in sys.platform :
-            dlg = wx.MessageDialog(self, u"Désolé, cette fonction n'est pas disponible dans la version LINUX de Teamworks.", "Fonction indisponible", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Désolé, cette fonction n'est pas disponible dans la version LINUX de Teamworks."), "Fonction indisponible", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         if self.GetNbreItems() == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune personne dans la liste !", "Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune personne dans la liste !"), "Erreur", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -900,7 +902,7 @@ class ListView(ObjectListView):
         sp = wx.StandardPaths.Get()
         cheminDefaut = sp.GetDocumentsDir()
         dlg = wx.FileDialog(
-            self, message = u"Veuillez sélectionner le répertoire de destination et le nom du fichier", defaultDir=cheminDefaut, 
+            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
             defaultFile = nomFichier, 
             wildcard = wildcard, 
             style = wx.SAVE
@@ -915,7 +917,7 @@ class ListView(ObjectListView):
         
         # Le fichier de destination existe déjà :
         if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?", "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
             if dlg.ShowModal() == wx.ID_NO :
                 return False
                 dlg.Destroy()
@@ -952,8 +954,8 @@ class ListView(ObjectListView):
         wb.save(cheminFichier)
         
         # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?"
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = _(u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -964,7 +966,7 @@ class ListView(ObjectListView):
     def Imprimer(self):
         """ Imprimer la liste au format PDF """
         if self.GetNbreItems() == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune personne dans la liste !", "Erreur", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune personne dans la liste !"), "Erreur", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -999,7 +1001,7 @@ class ListView(ObjectListView):
                 if pwd == password :
                     VERROUILLAGE = False
                 else:
-                    dlg2 = wx.MessageDialog(self, u"Votre mot de passe est erroné.", u"Mot de passe erroné", wx.OK | wx.ICON_ERROR)
+                    dlg2 = wx.MessageDialog(self, _(u"Votre mot de passe est erroné."), _(u"Mot de passe erroné"), wx.OK | wx.ICON_ERROR)
                     dlg2.ShowModal()
                     dlg2.Destroy()
                 dlg.Destroy()
@@ -1013,7 +1015,7 @@ class ListView(ObjectListView):
                 
                 # si pas de mot de passe : on en créé un :
                 import Saisie_password_dialog
-                texteIntro = u"Vous pouvez protéger l'accès aux informations liées aux entretiens \nd'embauche (avis et commentaires). Saisissez le mot de passe \nsouhaité à deux reprises pour activer cette protection :"
+                texteIntro = _(u"Vous pouvez protéger l'accès aux informations liées aux entretiens \nd'embauche (avis et commentaires). Saisissez le mot de passe \nsouhaité à deux reprises pour activer cette protection :")
                 dlg = Saisie_password_dialog.MyDialog(self, texteIntro=texteIntro)
                 if dlg.ShowModal() == wx.ID_OK:
                     pwd = dlg.GetPassword()
@@ -1074,7 +1076,7 @@ class Impression():
         dataTableau = []
         largeursColonnes = ( (620, 100) )
         dateDuJour = DateEngFr(str(datetime.date.today()))
-        dataTableau.append( (u"Liste des entretiens", u"Edité le %s" % dateDuJour )  )
+        dataTableau.append( (_(u"Liste des entretiens"), _(u"Edité le %s") % dateDuJour )  )
         style = TableStyle([
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black), 
                             ('VALIGN', (0,0), (-1,-1), 'TOP'), 
@@ -1155,22 +1157,22 @@ class Hyperlink(hl.HyperLinkCtrl):
 # -------------------------------------------------------------------------------------------------------------------------------------------
 
 class SaisiePassword(wx.Dialog):
-    def __init__(self, parent, id=-1, title=u"Saisie du code de déverrouillage"):
+    def __init__(self, parent, id=-1, title=_(u"Saisie du code de déverrouillage")):
         wx.Dialog.__init__(self, parent, id, title)
             
         self.sizer_3_staticbox = wx.StaticBox(self, -1, "")
-        self.label_2 = wx.StaticText(self, -1, u"Les avis et commentaires sont verrouillés.\nPour les afficher, saisissez votre code de déverrouillage :")
+        self.label_2 = wx.StaticText(self, -1, _(u"Les avis et commentaires sont verrouillés.\nPour les afficher, saisissez votre code de déverrouillage :"))
         self.label_password = wx.StaticText(self, -1, "Mot de passe :")
         self.text_password = wx.TextCtrl(self, -1, "", size=(200, -1), style=wx.TE_PASSWORD)
         
-        self.label_3 = wx.StaticText(self, -1, u"Remarque : Le déverrouillage ne sera effectif que jusqu'à la fermeture du logiciel.\nPour désactiver définitivement la protection par mot de passe, rendez-vous dans \nle panneau Configuration (rubrique 'Recrutement').")
+        self.label_3 = wx.StaticText(self, -1, _(u"Remarque : Le déverrouillage ne sera effectif que jusqu'à la fermeture du logiciel.\nPour désactiver définitivement la protection par mot de passe, rendez-vous dans \nle panneau Configuration (rubrique 'Recrutement')."))
         defaultFont = self.GetFont()
         defaultFont.SetPointSize(7)
         self.label_3.SetFont(defaultFont)
         
-        self.bouton_ok = wx.BitmapButton(self, wx.ID_OK, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
-        self.text_password.SetToolTipString(u"Saisissez votre mot de passe ici")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, id=wx.ID_OK, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
+        self.text_password.SetToolTipString(_(u"Saisissez votre mot de passe ici"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Cadenas.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)

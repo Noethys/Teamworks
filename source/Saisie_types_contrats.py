@@ -6,8 +6,10 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
@@ -21,17 +23,17 @@ class MyFrame(wx.Frame):
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.sizer_contenu_staticbox = wx.StaticBox(self.panel_base, -1, "")
-        self.label_nom_abrege = wx.StaticText(self.panel_base, -1, u"Nom abrégé :")
+        self.label_nom_abrege = wx.StaticText(self.panel_base, -1, _(u"Nom abrégé :"))
         self.text_nom_abrege = wx.TextCtrl(self.panel_base, -1, "")
         self.label_nom_abrege_aide = wx.StaticText(self.panel_base, -1, "(5 lettres maximum)")
         self.label_nom = wx.StaticText(self.panel_base, -1, "Nom complet :")
         self.text_nom = wx.TextCtrl(self.panel_base, -1, "")
-        self.label_duree = wx.StaticText(self.panel_base, -1, u"A durée \nindéterminée ?", style=wx.ALIGN_RIGHT)
+        self.label_duree = wx.StaticText(self.panel_base, -1, _(u"A durée \nindéterminée ?"), style=wx.ALIGN_RIGHT)
         self.radio_oui = wx.RadioButton(self.panel_base, -1, "Oui", style=wx.RB_GROUP)
         self.radio_non = wx.RadioButton(self.panel_base, -1, "Non")
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.IDtype = IDtype
         if IDtype != 0 : 
@@ -48,16 +50,16 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Saisie d'un type de contrat")
+        self.SetTitle(_(u"Saisie d'un type de contrat"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.text_nom_abrege.SetMinSize((50, -1))
-        self.text_nom_abrege.SetToolTipString(u"Saisissez un nom abrégé. Par ex: 'CDD', 'CDI'...")
+        self.text_nom_abrege.SetToolTipString(_(u"Saisissez un nom abrégé. Par ex: 'CDD', 'CDI'..."))
         self.label_nom_abrege_aide.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
-        self.text_nom.SetToolTipString(u"Saisissez le nom complet. Par ex: 'Contrat à durée indéterminée'...")
-        self.radio_oui.SetToolTipString(u"Cochez 'Oui' si le type de contrat est à durée indéterminée.")
-        self.radio_non.SetToolTipString(u"Cochez 'Oui' si le type de contrat est à durée déterminée.")
+        self.text_nom.SetToolTipString(_(u"Saisissez le nom complet. Par ex: 'Contrat à durée indéterminée'..."))
+        self.radio_oui.SetToolTipString(_(u"Cochez 'Oui' si le type de contrat est à durée indéterminée."))
+        self.radio_non.SetToolTipString(_(u"Cochez 'Oui' si le type de contrat est à durée déterminée."))
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
@@ -173,7 +175,7 @@ class MyFrame(wx.Frame):
             
         # Vérifie que un nom abrégé a été saisi
         if nom_abrege == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom abrégé.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom abrégé."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_nom_abrege.SetFocus()
@@ -181,7 +183,7 @@ class MyFrame(wx.Frame):
         
         # Vérifie que un nom abrégé ne dépasse pas 5 caractéres
         if len(nom_abrege) > 5 :
-            dlg = wx.MessageDialog(self, u"Le nom abrégé ne doit pas dépasser 5 caractères !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Le nom abrégé ne doit pas dépasser 5 caractères !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_nom_abrege.SetFocus()
@@ -189,7 +191,7 @@ class MyFrame(wx.Frame):
         
         # Vérifie que un nom abrégé a été saisi
         if nom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom complet.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom complet."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_nom.SetFocus()

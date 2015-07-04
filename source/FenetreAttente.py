@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 
 class GaugePulse(wx.Dialog):
     def __init__(self, *args, **kwds):
@@ -30,7 +32,7 @@ class GaugePulse(wx.Dialog):
         # begin wxGlade: MyGauge.__set_properties
         self.SetTitle("")
         self.SetSize((350, 155))
-        self.bouton_Annuler.SetToolTipString(u"Cliquez ici pour interrompre la procédure")
+        self.bouton_Annuler.SetToolTipString(_(u"Cliquez ici pour interrompre la procédure"))
         # end wxGlade
 
     def __do_layout(self):

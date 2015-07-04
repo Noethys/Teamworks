@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
@@ -27,10 +29,10 @@ class MyWizard(wx.Frame):
         
         self.panel_base = wx.Panel(self, -1)
         self.static_line = wx.StaticLine(self.panel_base, -1)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
         self.bouton_retour = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Retour_L72.png", wx.BITMAP_TYPE_ANY))
         self.bouton_suite = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Suite_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
                 
@@ -61,7 +63,7 @@ class MyWizard(wx.Frame):
         self.dictChamps = {} 
         
         if IDcontrat != 0 : 
-            self.SetTitle(u"Modification d'un contrat")
+            self.SetTitle(_(u"Modification d'un contrat"))
             self.Importation(IDcontrat)
         
         # Création des pages
@@ -104,17 +106,17 @@ class MyWizard(wx.Frame):
         self.sizer_pages.Layout()
 
     def __set_properties(self):
-        self.SetTitle(u"Création d'un contrat")
+        self.SetTitle(_(u"Création d'un contrat"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_retour.SetToolTipString(u"Cliquez ici pour revenir à la page précédente")
+        self.bouton_retour.SetToolTipString(_(u"Cliquez ici pour revenir à la page précédente"))
         self.bouton_retour.SetSize(self.bouton_retour.GetBestSize())
-        self.bouton_suite.SetToolTipString(u"Cliquez ici pour passer à l'étape suivante")
+        self.bouton_suite.SetToolTipString(_(u"Cliquez ici pour passer à l'étape suivante"))
         self.bouton_suite.SetSize(self.bouton_suite.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler la création du contrat")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler la création du contrat"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((500, 460))
 

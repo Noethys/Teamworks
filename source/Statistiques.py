@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import time
@@ -47,7 +49,7 @@ def DateEngEnDateDD(dateEng):
 def DatetimeDateEnStr(date):
     """ Transforme un datetime.date en date complète : Ex : lundi 15 janvier 2008 """
     listeJours = ("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
-    listeMois = (u"janvier", u"février", u"mars", u"avril", u"mai", u"juin", u"juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre")
+    listeMois = (_(u"janvier"), _(u"février"), _(u"mars"), _(u"avril"), _(u"mai"), _(u"juin"), _(u"juillet"), _(u"août"), _(u"septembre"), _(u"octobre"), _(u"novembre"), _(u"décembre"))
     dateStr = listeJours[date.weekday()] + " " + str(date.day) + " " + listeMois[date.month-1] + " " + str(date.year)
     return dateStr
 
@@ -81,7 +83,7 @@ class PanelGraph(wx.Panel):
         standardPath = wx.StandardPaths.Get()
         save_destination = standardPath.GetDocumentsDir()
 
-        dlg = wx.FileDialog(self, message=u"Enregistrer le graphe sous...",
+        dlg = wx.FileDialog(self, message=_(u"Enregistrer le graphe sous..."),
                             defaultDir = save_destination, defaultFile="graphe.png",
                             wildcard=file_choices, style=wx.SAVE)
 
@@ -90,8 +92,8 @@ class PanelGraph(wx.Panel):
             self.canvas.print_figure(path,dpi=300)
             if (path.find(save_destination) ==  0):
                 path = path[len(save_destination)+1:]
-            message = u"Le graphe a été sauvegardé avec succès dans le répertoire \n%s" % path
-            dlg = wx.MessageDialog(self, message, u"Sauvegarde", wx.OK | wx.ICON_INFORMATION)
+            message = _(u"Le graphe a été sauvegardé avec succès dans le répertoire \n%s") % path
+            dlg = wx.MessageDialog(self, message, _(u"Sauvegarde"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             
@@ -100,8 +102,8 @@ class PanelGraph(wx.Panel):
     
     def Clipboard_image(self):
         self.canvas.Copy_to_Clipboard()
-        message = u"Le graphe a été envoyé dans le presse-papiers."
-        dlg = wx.MessageDialog(self, message, u"Presse-papiers", wx.OK | wx.ICON_INFORMATION)
+        message = _(u"Le graphe a été envoyé dans le presse-papiers.")
+        dlg = wx.MessageDialog(self, message, _(u"Presse-papiers"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         
@@ -139,7 +141,7 @@ class PanelGraph(wx.Panel):
         else:
             # Mode Heure
             if hr == "00" : hr = "0"
-            resultat = u"%sh%s" % (hr, mn)
+            resultat = _(u"%sh%s") % (hr, mn)
         return resultat
     
     def MAJ(self) :
@@ -296,10 +298,10 @@ class PanelGraph(wx.Panel):
             ax.set_ylabel("Heures")
             labels = ax.get_yticklabels()
             setp(labels, rotation=0, fontsize=9) 
-            titreGraph = u"Répartition des heures par personne et par catégorie"
+            titreGraph = _(u"Répartition des heures par personne et par catégorie")
 ##            ax.set_title(titreGraph)
         else:
-            titreGraph = u"Répartition des heures par\npersonne et par catégorie"
+            titreGraph = _(u"Répartition des heures par\npersonne et par catégorie")
 ##            self.figure.suptitle(titreGraph, fontsize=13, x=0.09, y=0.94, horizontalalignment = 'left')
 
         # Légende
@@ -433,7 +435,7 @@ class PanelGraph(wx.Panel):
                 return a
             if len(listeHeures) > 20 :
                 ma20 = moving_average(listeHeures, 20, type='simple')
-                linema20, = ax.plot(listeDates, ma20, color='red', lw=2, label=u"Evolution moyenne")
+                linema20, = ax.plot(listeDates, ma20, color='red', lw=2, label=_(u"Evolution moyenne"))
 
         else :
             
@@ -547,7 +549,7 @@ class PanelGraph(wx.Panel):
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, listeDates=[], periode = None, listePersonnes=[]):
-        wx.Frame.__init__(self, parent, -1, title=u"Statistiques", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, -1, title=_(u"Statistiques"), style=wx.DEFAULT_FRAME_STYLE)
         self.MakeModal(True)
         
         self.parent = parent
@@ -559,63 +561,63 @@ class MyFrame(wx.Frame):
         self.panel = wx.Panel(self, -1)
         
         # StaticBox
-        self.staticbox_mode = wx.StaticBox(self.panel, -1, u"Mode d'affichage")
-        self.staticbox_periode = wx.StaticBox(self.panel, -1, u"Période")
-        self.staticbox_options = wx.StaticBox(self.panel, -1, u"Options d'affichage")
-        self.staticbox_personnes = wx.StaticBox(self.panel, -1, u"Personnes")
-        self.staticbox_tableau = wx.StaticBox(self.panel, -1, u"Statistiques")
+        self.staticbox_mode = wx.StaticBox(self.panel, -1, _(u"Mode d'affichage"))
+        self.staticbox_periode = wx.StaticBox(self.panel, -1, _(u"Période"))
+        self.staticbox_options = wx.StaticBox(self.panel, -1, _(u"Options d'affichage"))
+        self.staticbox_personnes = wx.StaticBox(self.panel, -1, _(u"Personnes"))
+        self.staticbox_tableau = wx.StaticBox(self.panel, -1, _(u"Statistiques"))
         
         # Mode d'affichage
         self.bouton_mode_tableau = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/32x32/Tableau.png", wx.BITMAP_TYPE_ANY))
         self.bouton_mode_graph = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/32x32/GraphNB.png", wx.BITMAP_TYPE_ANY))
         
         # Période
-        self.radio_dates = wx.RadioButton(self.panel, -1, u"Dates sélectionnées", size=(300, -1), style = wx.RB_GROUP)
-        self.radio_periode = wx.RadioButton(self.panel, -1, u"Une période :")
+        self.radio_dates = wx.RadioButton(self.panel, -1, _(u"Dates sélectionnées"), size=(300, -1), style = wx.RB_GROUP)
+        self.radio_periode = wx.RadioButton(self.panel, -1, _(u"Une période :"))
         date_debut, date_fin = self.periode
         self.hyperlink_periode = self.Build_Hyperlink_periode(date_debut, date_fin)
         
         if len(self.listeDates) > 0 :
             self.radio_dates.SetValue(True)
             if len(self.listeDates) == 1 :
-                self.radio_dates.SetLabel(u"La date sélectionnée dans le planning")
+                self.radio_dates.SetLabel(_(u"La date sélectionnée dans le planning"))
             else:
-                self.radio_dates.SetLabel(u"Les %d dates sélectionnées dans le planning" % len(self.listeDates))
+                self.radio_dates.SetLabel(_(u"Les %d dates sélectionnées dans le planning") % len(self.listeDates))
             self.hyperlink_periode.Enable(False)
         else:
             self.radio_periode.SetValue(True)
             self.radio_dates.Enable(False)
-            self.radio_dates.SetLabel(u"Aucune date disponible")
+            self.radio_dates.SetLabel(_(u"Aucune date disponible"))
         
         # Options d'affichage
         
         # Choix graph
-        self.label_choix_graph = wx.StaticText(self.panel, -1, u"Graphe :")
+        self.label_choix_graph = wx.StaticText(self.panel, -1, _(u"Graphe :"))
         self.ctrl_choix_graph = wx.Choice(self.panel, -1, size=(490, -1), choices = [
-            u"1. Répartition des heures par personne et par catégorie (Histogramme)", 
-            u"2. Répartition des heures par personne et par catégorie (Histogramme + tableau de données)", 
-            u"3. Répartition des heures par personne et par catégorie (Histogramme polaire)", 
-            u"4. Répartition des heures par personne et par catégorie (Secteurs)", 
-            u"5. Evolution annuelle du total des heures des personnes sélectionnées (Courbes)", 
-            u"6. Evolution annuelle des heures des personnes sélectionnées par catégorie (Courbes)", 
-##            u"7. GraphTest", 
+            _(u"1. Répartition des heures par personne et par catégorie (Histogramme)"), 
+            _(u"2. Répartition des heures par personne et par catégorie (Histogramme + tableau de données)"), 
+            _(u"3. Répartition des heures par personne et par catégorie (Histogramme polaire)"), 
+            _(u"4. Répartition des heures par personne et par catégorie (Secteurs)"), 
+            _(u"5. Evolution annuelle du total des heures des personnes sélectionnées (Courbes)"), 
+            _(u"6. Evolution annuelle des heures des personnes sélectionnées par catégorie (Courbes)"), 
+##            _(u"7. GraphTest"), 
             ])
         self.ctrl_choix_graph.SetSelection(0)
         
         # Choix affichage détail
-        self.label_detail = wx.StaticText(self.panel, -1, u"Détail :")
-        self.ctrl_detail = wx.Choice(self.panel, -1, choices = [u"Aucun", u"Jour", u"Mois", u"Année"])
+        self.label_detail = wx.StaticText(self.panel, -1, _(u"Détail :"))
+        self.ctrl_detail = wx.Choice(self.panel, -1, choices = [_(u"Aucun"), _(u"Jour"), _(u"Mois"), _(u"Année")])
         self.ctrl_detail.SetSelection(0)
         
         # Choix Groupement
-        self.label_groupement = wx.StaticText(self.panel, -1, u"Grouper par :")
-        self.ctrl_groupement = wx.Choice(self.panel, -1, choices = [u"Personne", u"Jour"])
+        self.label_groupement = wx.StaticText(self.panel, -1, _(u"Grouper par :"))
+        self.ctrl_groupement = wx.Choice(self.panel, -1, choices = [_(u"Personne"), _(u"Jour")])
         self.ctrl_groupement.SetSelection(0)
         self.ctrl_groupement.Enable(False)
         
         # Choix affichage heure/décimal
-        self.label_modeHeure = wx.StaticText(self.panel, -1, u"Mode minutes :")
-        self.ctrl_modeHeure = wx.Choice(self.panel, -1, choices = [u"Normal", u"Décimal"])
+        self.label_modeHeure = wx.StaticText(self.panel, -1, _(u"Mode minutes :"))
+        self.ctrl_modeHeure = wx.Choice(self.panel, -1, choices = [_(u"Normal"), _(u"Décimal")])
         self.ctrl_modeHeure.SetSelection(0)
         
         # Personnes
@@ -636,13 +638,13 @@ class MyFrame(wx.Frame):
         self.ctrl_choix_graph.Show(False)
         
         # Boutons
-        self.bouton_aide = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
         self.bouton_excel= wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Export_excel.png", wx.BITMAP_TYPE_ANY))
         self.bouton_imprimer_tableau = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Imprimer_tableau.png", wx.BITMAP_TYPE_ANY))
         self.bouton_save_image = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Enregistrer_graphe.png", wx.BITMAP_TYPE_ANY))
         self.bouton_clipboard_image = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Clipboard_image.png", wx.BITMAP_TYPE_ANY))
         self.bouton_imprimer_image = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Imprimer_graphe.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_fermer = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Fermer_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_fermer = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Fermer"), cheminImage="Images/32x32/Fermer.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -678,13 +680,13 @@ class MyFrame(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_fermer.SetToolTipString(u"Cliquez ici pour fermer")
-        self.bouton_excel.SetToolTipString(u"Cliquez ici pour exporter les données des statistiques au format Excel")
-        self.bouton_save_image.SetToolTipString(u"Cliquez ici pour enregistrer le graphe au format image")
-        self.bouton_clipboard_image.SetToolTipString(u"Cliquez ici pour envoyer le graphe dans le presse-papiers")
-        self.bouton_imprimer_image.SetToolTipString(u"Cliquez ici pour publier le graphe au format PDF")
-        self.bouton_imprimer_tableau.SetToolTipString(u"Cliquez ici pour publier le tableau au format PDF")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_fermer.SetToolTipString(_(u"Cliquez ici pour fermer"))
+        self.bouton_excel.SetToolTipString(_(u"Cliquez ici pour exporter les données des statistiques au format Excel"))
+        self.bouton_save_image.SetToolTipString(_(u"Cliquez ici pour enregistrer le graphe au format image"))
+        self.bouton_clipboard_image.SetToolTipString(_(u"Cliquez ici pour envoyer le graphe dans le presse-papiers"))
+        self.bouton_imprimer_image.SetToolTipString(_(u"Cliquez ici pour publier le graphe au format PDF"))
+        self.bouton_imprimer_tableau.SetToolTipString(_(u"Cliquez ici pour publier le tableau au format PDF"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -813,7 +815,7 @@ class MyFrame(wx.Frame):
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour sélectionner une autre période"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner une autre période")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -839,14 +841,14 @@ class MyFrame(wx.Frame):
     def Build_Hyperlink_select_all(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self.panel, -1, u"Tout sélect.", URL="")
+        hyper = hl.HyperLinkCtrl(self.panel, -1, _(u"Tout sélect."), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink_select_all)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLUE", "BLUE", "RED")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour sélectionner toutes les personnes de la liste"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner toutes les personnes de la liste")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -858,14 +860,14 @@ class MyFrame(wx.Frame):
     def Build_Hyperlink_deselect_all(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self.panel, -1, u"Tout désélect.", URL="")
+        hyper = hl.HyperLinkCtrl(self.panel, -1, _(u"Tout désélect."), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink_deselect_all)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLUE", "BLUE", "RED")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour désélectionner toutes les personnes de la liste"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour désélectionner toutes les personnes de la liste")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -878,14 +880,14 @@ class MyFrame(wx.Frame):
     def Build_Hyperlink_presents(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self.panel, -1, u"Sélectionner les présents", URL="")
+        hyper = hl.HyperLinkCtrl(self.panel, -1, _(u"Sélectionner les présents"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink_presents)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLUE", "BLUE", "RED")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour sélectionner uniquement les personnes présentes sur la période"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner uniquement les personnes présentes sur la période")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -1150,7 +1152,7 @@ class MyFrame(wx.Frame):
                     
                 data.append(dataTemp)
             
-            titreGraph = u"Répartition des heures par personne et par catégorie"
+            titreGraph = _(u"Répartition des heures par personne et par catégorie")
             
         
         # Mode : Avec détail et Groupement par période :
@@ -1238,7 +1240,7 @@ class MyFrame(wx.Frame):
 
     def OnBoutonExcel(self, event):
         if "linux" in sys.platform :
-            dlg = wx.MessageDialog(self, u"Désolé, cette fonction n'est pas disponible sous Linux.", u"Fonction indisponible", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Désolé, cette fonction n'est pas disponible sous Linux."), _(u"Fonction indisponible"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -1349,7 +1351,7 @@ class MyFrame(wx.Frame):
         sp = wx.StandardPaths.Get()
         cheminDefaut = sp.GetDocumentsDir()
         dlg = wx.FileDialog(
-            self, message = u"Veuillez sélectionner le répertoire de destination et le nom du fichier", defaultDir=cheminDefaut, 
+            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
             defaultFile = nomFichier, 
             wildcard = wildcard, 
             style = wx.SAVE
@@ -1364,7 +1366,7 @@ class MyFrame(wx.Frame):
         
         # Le fichier de destination existe déjà :
         if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?", "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
             if dlg.ShowModal() == wx.ID_NO :
                 return False
                 dlg.Destroy()
@@ -1393,8 +1395,8 @@ class MyFrame(wx.Frame):
         wb.save(cheminFichier)
         
         # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?"
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = _(u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -1708,7 +1710,7 @@ class Tableau(gridlib.Grid):
             index_col += 1
             
         # Ajout de la colonne TOTAL
-        self.SetCellValue(0, index_col, u"Total")
+        self.SetCellValue(0, index_col, _(u"Total"))
         self.SetReadOnly(0, index_col, True)
         self.SetCellAlignment(0, index_col, wx.ALIGN_CENTRE, wx.ALIGN_CENTRE)
         self.SetRowSize(0, 50)
@@ -2057,7 +2059,7 @@ class Tableau(gridlib.Grid):
             signe = "- "
         if self.mode_heure == 0 :
             # Mode Heure
-            texte = u"%s%sh%s" % (signe, hr, mn)
+            texte = _(u"%s%sh%s") % (signe, hr, mn)
         else:
             # Mode décimal
             minDecimal = int(mn)*100/60
@@ -2068,7 +2070,7 @@ class Tableau(gridlib.Grid):
         # Formate noms de mois :
         if len(label) == 6 or len(label) == 7 :
             numAnnee, numMois = label.split("-")
-            listeMois = ("Janvier", u"Février", "Mars", "Avril", "Mai", "Juin", "Juillet", u"Août", "Septembre", "Octobre", "Novembre", u"Décembre")
+            listeMois = ("Janvier", _(u"Février"), "Mars", "Avril", "Mai", "Juin", "Juillet", _(u"Août"), "Septembre", "Octobre", "Novembre", _(u"Décembre"))
             texte = u"%s %s" % (listeMois[int(numMois)-1], numAnnee)
             return texte
         
@@ -2216,8 +2218,8 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
     def GetPresents(self):
         listePresents = self.GetGrandParent().ctrl_tableau.GetPresents()
         if len(listePresents) == 0 :
-            texte = u"Aucune personne n'est présente pour la période donnée."
-            dlg = wx.MessageDialog(self, texte, u"Sélection des présents", wx.OK|wx.ICON_INFORMATION)  
+            texte = _(u"Aucune personne n'est présente pour la période donnée.")
+            dlg = wx.MessageDialog(self, texte, _(u"Sélection des présents"), wx.OK|wx.ICON_INFORMATION)  
             dlg.ShowModal()
             dlg.Destroy()
         else:

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import os
@@ -30,7 +32,7 @@ class PanelPhoto(wx.Panel):
         self.IDpersonne = IDpersonne
         
         # Choix décoration
-        self.label_decoration = wx.StaticText(self, -1, u"Cadre de décoration :", style=wx.ALIGN_RIGHT)
+        self.label_decoration = wx.StaticText(self, -1, _(u"Cadre de décoration :"), style=wx.ALIGN_RIGHT)
         listeCadres = FonctionsPerso.GetListeCadresPhotos()
         self.combobox_decoration = wx.Choice(self, -1, choices=listeCadres)
         
@@ -42,7 +44,7 @@ class PanelPhoto(wx.Panel):
             self.combobox_decoration.SetSelection(0)
         
         # Saisie du texte personnalisé
-        self.label_texte_perso = wx.StaticText(self, -1, u"Texte personnalisé :", style=wx.ALIGN_RIGHT)
+        self.label_texte_perso = wx.StaticText(self, -1, _(u"Texte personnalisé :"), style=wx.ALIGN_RIGHT)
         self.texte_perso = wx.TextCtrl(self, -1, textePhoto)
         
         # Layout
@@ -140,7 +142,7 @@ class ListBookPhotos(wx.Listbook):
         dc.SelectObject(bmp)
         dc.SetBackground(wx.Brush("WHITE"))
         dc.Clear()
-        texte = u"Pas de photo"
+        texte = _(u"Pas de photo")
         largeurTexte, hauteurTexte = self.GetTextExtent(texte)
         xTexte = (taille/2.0) - (largeurTexte/2.0)
         yTexte = taille/2.0 - hauteurTexte
@@ -172,7 +174,7 @@ class ListBookPhotos(wx.Listbook):
         
 class MyFrame(wx.Frame):
     def __init__(self, parent, listePersonnes=[]):
-        wx.Frame.__init__(self, parent, -1, title=u"Impression de photos", name="frm_impression_photos", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, -1, title=_(u"Impression de photos"), name="frm_impression_photos", style=wx.DEFAULT_FRAME_STYLE)
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.listePersonnes = listePersonnes
@@ -214,49 +216,49 @@ class MyFrame(wx.Frame):
         self.ImportationDonnees()
         
         # Paramètres de la page
-        self.staticbox_page = wx.StaticBox(self.panel_base, -1, u"Paramètres de la page")
+        self.staticbox_page = wx.StaticBox(self.panel_base, -1, _(u"Paramètres de la page"))
         self.ctrl_disposition = wx.combo.BitmapComboBox(self.panel_base, size=(320,-1), style=wx.CB_READONLY)
         
         # Images pour le bitmapComboBox
-        listePhotos = [ (0, u"Pleine page (15.9cm x 15.9cm)"), (1, u"2 photos par page (10.9cm x 10.9cm)"), (2, u"4 photos par page (8.1cm x 8.1cm)"), (3, u"12 photos par page (5.3cm x 5.3cm)"), (4, u"20 photos par page (3.8cm x 3.8cm)"), (5, u"35 photos par page (3.1cm x 3.1cm)")]
+        listePhotos = [ (0, _(u"Pleine page (15.9cm x 15.9cm)")), (1, _(u"2 photos par page (10.9cm x 10.9cm)")), (2, _(u"4 photos par page (8.1cm x 8.1cm)")), (3, _(u"12 photos par page (5.3cm x 5.3cm)")), (4, _(u"20 photos par page (3.8cm x 3.8cm)")), (5, _(u"35 photos par page (3.1cm x 3.1cm)"))]
         for ID, nom in listePhotos :
             bmp = wx.Bitmap("Images/80x80/photo" + str(ID) + ".png", wx.BITMAP_TYPE_PNG)
             self.ctrl_disposition.Append(nom, bmp, ID)
         self.ctrl_disposition.Select(self.dictAffichage["disposition_page"])
         
         # Paramètres de l'impression
-        self.staticbox_param = wx.StaticBox(self.panel_base, -1, u"Paramètres de l'impression")
+        self.staticbox_param = wx.StaticBox(self.panel_base, -1, _(u"Paramètres de l'impression"))
         
-##        self.label_nom = wx.StaticText(self.panel_base, -1, u"Affichage du nom :", style=wx.ALIGN_RIGHT)
+##        self.label_nom = wx.StaticText(self.panel_base, -1, _(u"Affichage du nom :"), style=wx.ALIGN_RIGHT)
 ##        self.bouton_nom_police = wx.Button(self.panel_base, -1, "", size=(120, -1))
 ##        self.bouton_nom_couleur = csel.ColourSelect(self.panel_base, -1, "", self.dictAffichage["nom_couleur"], size = (40, 23))
 ##        self.MajBoutonPoliceNom()
-##        typesNoms = [u"Prénom", u"Nom et prénom", u"Prénom et nom"]
+##        typesNoms = [_(u"Prénom"), _(u"Nom et prénom"), _(u"Prénom et nom")]
 ##        self.combobox_type_nom = wx.Choice(self.panel_base, -1, choices=typesNoms)
 ##        self.combobox_type_nom.SetSelection(self.dictAffichage["type_nom"])
 ##        
-##        self.label_texte_perso = wx.StaticText(self.panel_base, -1, u"Affichage du texte perso. :", style=wx.ALIGN_RIGHT)
+##        self.label_texte_perso = wx.StaticText(self.panel_base, -1, _(u"Affichage du texte perso. :"), style=wx.ALIGN_RIGHT)
 ##        self.bouton_texte_perso_police = wx.Button(self.panel_base, -1, "", size=(120, -1))
 ##        self.bouton_texte_perso_couleur = csel.ColourSelect(self.panel_base, -1, "", self.dictAffichage["texte_perso_couleur"], size = (40, 23))
 ##        self.MajBoutonPoliceTextePerso()
         
-        self.label_bordure = wx.StaticText(self.panel_base, -1, u"Bordures :", style=wx.ALIGN_RIGHT)
+        self.label_bordure = wx.StaticText(self.panel_base, -1, _(u"Bordures :"), style=wx.ALIGN_RIGHT)
         self.bordure = wx.CheckBox(self.panel_base, -1, u"")
         self.bordure.SetValue(self.dictAffichage["bordure"])
-        self.label_nbre_copies = wx.StaticText(self.panel_base, -1, u"Nbre de copies :", style=wx.ALIGN_RIGHT)
+        self.label_nbre_copies = wx.StaticText(self.panel_base, -1, _(u"Nbre de copies :"), style=wx.ALIGN_RIGHT)
         self.nbre_copies = wx.SpinCtrl(self.panel_base, -1, "", size=(60, -1))
         self.nbre_copies.SetRange(1,100)
         self.nbre_copies.SetValue(self.dictAffichage["nbre_copies"])
         
         # Liste des photos
-        self.sizer_grid_staticbox = wx.StaticBox(self.panel_base, -1, u"Paramètres des photos")
-        self.label_intro = wx.StaticText(self.panel_base, -1, u"Sélectionnez les paramètres de votre choix et cliquez sur 'Aperçu'.")
+        self.sizer_grid_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Paramètres des photos"))
+        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Sélectionnez les paramètres de votre choix et cliquez sur 'Aperçu'."))
         self.listBook = ListBookPhotos(self.panel_base)
         
         # Boutons
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Apercu_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Fermer_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aperçu"), cheminImage="Images/32x32/Apercu.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Fermer"), cheminImage="Images/32x32/Fermer.png")
         
         self.bouton_ok.SetFocus()
         
@@ -276,7 +278,7 @@ class MyFrame(wx.Frame):
 
             
     def __set_properties(self):
-        self.SetTitle(u"Impression des photos")
+        self.SetTitle(_(u"Impression des photos"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -435,14 +437,14 @@ class MyFrame(wx.Frame):
     def Build_Hyperlink(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self.panel_base, -1, u"Sélectionner les présents d'une période", URL="")
+        hyper = hl.HyperLinkCtrl(self.panel_base, -1, _(u"Sélectionner les présents d'une période"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLACK", "BLACK", "BLUE")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour sélectionner les personnes présentes sur une période donnée"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner les personnes présentes sur une période donnée")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -465,7 +467,7 @@ class MyFrame(wx.Frame):
                 self.checkListBox.Check(index, False)
         # S'il n'y a aucune personne présente sur la période sélectionnée
         if len(listePersonnesPresentes) == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune personne présente sur la période que vous avez sélectionné.", u"Erreur de saisie", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune personne présente sur la période que vous avez sélectionné."), _(u"Erreur de saisie"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -485,7 +487,7 @@ class MyFrame(wx.Frame):
             
     def Onbouton_ok(self, event):
         """ Affichage du PDF """
-##        self.frmAttente = Attente.MyFrame(None, label=u"Création du document PDF en cours...")
+##        self.frmAttente = Attente.MyFrame(None, label=_(u"Création du document PDF en cours..."))
 ##        self.frmAttente.Show()
 ##        self.frmAttente.MakeModal(True)
         
@@ -508,7 +510,7 @@ class FrameSelectionPersonnes(wx.Frame):
         self.parent = parent
         
         self.panel_base = wx.Panel(self, -1)
-        self.label_intro = wx.StaticText(self.panel_base, -1, u"Veuillez sélectionner les personnes pour lesquelles vous souhaitez imprimer la photo :")
+        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Veuillez sélectionner les personnes pour lesquelles vous souhaitez imprimer la photo :"))
         
         # Données
         self.ImportationDonnees()
@@ -519,9 +521,9 @@ class FrameSelectionPersonnes(wx.Frame):
         # Hyperlink cocher les présents
         self.hyperlink_presents = self.Build_Hyperlink()
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -532,7 +534,7 @@ class FrameSelectionPersonnes(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Impression de photos")
+        self.SetTitle(_(u"Impression de photos"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -591,14 +593,14 @@ class FrameSelectionPersonnes(wx.Frame):
     def Build_Hyperlink(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self.panel_base, -1, u"Sélectionner les présents sur une période donnée", URL="")
+        hyper = hl.HyperLinkCtrl(self.panel_base, -1, _(u"Sélectionner les présents sur une période donnée"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLACK", "BLACK", "BLUE")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(False, False, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour sélectionner les personnes présentes sur une période donnée"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner les personnes présentes sur une période donnée")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -621,7 +623,7 @@ class FrameSelectionPersonnes(wx.Frame):
                 self.checkListBox.Check(index, False)
         # S'il n'y a aucune personne présente sur la période sélectionnée
         if len(listePersonnesPresentes) == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucune personne présente sur la période que vous avez sélectionné.", u"Erreur de saisie", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucune personne présente sur la période que vous avez sélectionné."), _(u"Erreur de saisie"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -643,7 +645,7 @@ class FrameSelectionPersonnes(wx.Frame):
         
         # Validation de la sélection
         if len(selections) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez fait aucune sélection", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez fait aucune sélection"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -746,7 +748,7 @@ class CreationPDF():
                 self.listePersonnesTmp.append((IDpersonne, nom, prenom))
                 
         if len(self.listePersonnesTmp) == 0 :
-            dlg = wx.MessageDialog(None, u"Il n'existe aucune photo pour la ou les personnes sélectionnées !", u"Mot de passe erroné", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(None, _(u"Il n'existe aucune photo pour la ou les personnes sélectionnées !"), _(u"Mot de passe erroné"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return

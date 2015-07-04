@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import os
 import GestionDB
@@ -16,12 +18,12 @@ import datetime
 
 class MyFrame(wx.Dialog):
     def __init__(self, parent, size=(550, 335), listeBoutons=[], type=None):
-        wx.Dialog.__init__(self, parent, -1, title=u"Sélection du type de document")
+        wx.Dialog.__init__(self, parent, -1, title=_(u"Sélection du type de document"))
         self.parent = parent
         self.choix = None
         self.type = type
         self.listeBoutons = listeBoutons
-        self.label_intro = wx.StaticText(self, -1, u"Veuillez sélectionner le type de document à éditer :")
+        self.label_intro = wx.StaticText(self, -1, _(u"Veuillez sélectionner le type de document à éditer :"))
                 
         # Création des boutons de commandes
         index = 1
@@ -31,8 +33,8 @@ class MyFrame(wx.Dialog):
             exec("self.Bind(wx.EVT_BUTTON, self.OnBoutonClic, self.bouton_" + str(index) + ")")
             index += 1
         
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
 
         self.__set_properties()
@@ -108,9 +110,9 @@ if __name__ == "__main__":
     #wx.InitAllImageHandlers()
 
     listeBoutons = [
-        ("Images/BoutonsImages/Imprimer_presences_texteB.png", u"Cliquez ici pour imprimer au format texte"),
-        ("Images/BoutonsImages/Imprimer_presences_graph1B.png", u"Cliquez ici pour imprimer sous forme graphique au format portrait"),
-        ("Images/BoutonsImages/Imprimer_presences_graph2B.png", u"Cliquez ici pour imprimer sous forme graphique au format paysage"),
+        ("Images/BoutonsImages/Imprimer_presences_texteB.png", _(u"Cliquez ici pour imprimer au format texte")),
+        ("Images/BoutonsImages/Imprimer_presences_graph1B.png", _(u"Cliquez ici pour imprimer sous forme graphique au format portrait")),
+        ("Images/BoutonsImages/Imprimer_presences_graph2B.png", _(u"Cliquez ici pour imprimer sous forme graphique au format paysage")),
         ]
 
     frm = MyFrame(None, listeBoutons=listeBoutons)

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import GestionDB
 import sys
@@ -17,9 +19,9 @@ class Page(wx.Panel):
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
-        self.sizer_champs_staticbox = wx.StaticBox(self, -1, u"Champs")
-        self.label_titre = wx.StaticText(self, -1, u"3. Choix des champs personnalisés")
-        self.label_intro = wx.StaticText(self, -1, u"Sélectionnez les données personnalisées que vous souhaitez ajouter aux\ncaractérististiques de ce contrat :")
+        self.sizer_champs_staticbox = wx.StaticBox(self, -1, _(u"Champs"))
+        self.label_titre = wx.StaticText(self, -1, _(u"3. Choix des champs personnalisés"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Sélectionnez les données personnalisées que vous souhaitez ajouter aux\ncaractérististiques de ce contrat :"))
         self.listCtrl_champs = ListCtrl_champs(self)
         self.bouton_champs = wx.Button(self, -1, "...", style=wx.BU_EXACTFIT)
 
@@ -30,7 +32,7 @@ class Page(wx.Panel):
 
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
-        self.bouton_champs.SetToolTipString(u"Cliquez ici pour créer, modifier ou supprimer des champs personnalisés.")
+        self.bouton_champs.SetToolTipString(_(u"Cliquez ici pour créer, modifier ou supprimer des champs personnalisés."))
         self.bouton_champs.SetMinSize((20, 20))
 
     def __do_layout(self):
@@ -63,7 +65,7 @@ class Page(wx.Panel):
         
         # Vérifie qu'un champ a été coché   
         if len(self.listCtrl_champs.selections) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez sélectionné aucun champ. \n\nVoulez-vous tout de même continuer ?",  u"Vérification", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucun champ. \n\nVoulez-vous tout de même continuer ?"),  _(u"Vérification"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_NO :
                 dlg.Destroy() 
                 return False
@@ -185,7 +187,7 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
         menuPop = wx.Menu()
         
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 10, u"Créer un nouveau champ")
+        item = wx.MenuItem(menuPop, 10, _(u"Créer un nouveau champ"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -196,14 +198,14 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
             menuPop.AppendSeparator()
             
             # Item Modifier
-            item = wx.MenuItem(menuPop, 20, u"Modifier")
+            item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
             bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
             self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
             # Item Supprimer
-            item = wx.MenuItem(menuPop, 30, u"Supprimer")
+            item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
             bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)

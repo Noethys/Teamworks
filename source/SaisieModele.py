@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import time
@@ -16,7 +18,7 @@ import FonctionsPerso
 
 class Frm_SaisieModele(wx.Frame):
     def __init__(self, parent, IDmodele=0):
-        wx.Frame.__init__(self, parent, -1, title=u"Saisie de modèles", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, -1, title=_(u"Saisie de modèles"), style=wx.DEFAULT_FRAME_STYLE)
         
         self.IDmodele = IDmodele
         self.nom = ""
@@ -29,28 +31,28 @@ class Frm_SaisieModele(wx.Frame):
             self.Importation_parametres()
         
         self.panel_base = wx.Panel(self, -1)
-        self.sizer_planning_staticbox = wx.StaticBox(self.panel_base, -1, u"Constitution du modèle")
-        self.sizer_param_staticbox = wx.StaticBox(self.panel_base, -1, u"Paramètres du modèle")
-        self.label_nom = wx.StaticText(self.panel_base, -1, u"Nom :")
+        self.sizer_planning_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Constitution du modèle"))
+        self.sizer_param_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Paramètres du modèle"))
+        self.label_nom = wx.StaticText(self.panel_base, -1, _(u"Nom :"))
         self.text_nom = wx.TextCtrl(self.panel_base, -1, self.nom)
         self.label_type = wx.StaticText(self.panel_base, -1, "Type :")
         self.radio_type_1 = wx.RadioButton(self.panel_base, -1, "Journalier", style=wx.RB_GROUP)
         self.radio_type_2 = wx.RadioButton(self.panel_base, -1, "Hebdomadaire")
         self.label_description = wx.StaticText(self.panel_base, -1, "Description :")
         self.text_description = wx.TextCtrl(self.panel_base, -1, self.description, style=wx.TE_MULTILINE)
-        self.label_periodes = wx.StaticText(self.panel_base, -1, u"Périodes :")
+        self.label_periodes = wx.StaticText(self.panel_base, -1, _(u"Périodes :"))
         self.checkbox_periodes_1 = wx.CheckBox(self.panel_base, -1, "Toutes")
-        self.checkbox_periodes_2 = wx.CheckBox(self.panel_base, -1, u"Périodes scolaires")
+        self.checkbox_periodes_2 = wx.CheckBox(self.panel_base, -1, _(u"Périodes scolaires"))
         self.checkbox_periodes_3 = wx.CheckBox(self.panel_base, -1, "Vacances scolaires")
         self.tree_planning = TreeCtrlPlanning(self.panel_base)
-        self.checkbox_inclureferies = wx.CheckBox(self.panel_base, -1, u"Inclure les jours fériés")
+        self.checkbox_inclureferies = wx.CheckBox(self.panel_base, -1, _(u"Inclure les jours fériés"))
         self.checkbox_inclureferies.SetValue(self.inclureFeries)
         self.bouton_ajouter = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_ANY))
         self.bouton_modifier = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_ANY))
         self.bouton_supprimer = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -75,25 +77,25 @@ class Frm_SaisieModele(wx.Frame):
     def __set_properties(self):
         self.MakeModal(True)
         if self.IDmodele == 0 :
-            self.SetTitle(u"Création d'un modèle")
+            self.SetTitle(_(u"Création d'un modèle"))
         else:
-            self.SetTitle(u"Modification d'un modèle")
+            self.SetTitle(_(u"Modification d'un modèle"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_nom.SetToolTipString(u"Saisissez ici le nom de votre choix pour ce modèle")
-        self.radio_type_1.SetToolTipString(u"Sélectionnez 'Journalier' di vous ne souhaitez créer qu'un modèle comportant une journée-type")
-        self.radio_type_2.SetToolTipString(u"Sélectionnez 'Hebdomadaire' si vous souhaitez créer un modèle qui comporte une semaine-type")
-        self.text_description.SetToolTipString(u"Vous pouvez donner ici une description de ce modèle")
-        self.checkbox_periodes_1.SetToolTipString(u"Les tâches saisies dans cette catégorie de période seront créées sur des périodes de vacances et des périodes de vacances")
-        self.checkbox_periodes_2.SetToolTipString(u"Les tâches créées dans cette catégorie seront appliquées uniquement sur des périodes scolaires")
-        self.checkbox_periodes_3.SetToolTipString(u"Les tâches saisies dans cette catégorie de période seront appliquées uniquement sur des vacances scolaires")
+        self.text_nom.SetToolTipString(_(u"Saisissez ici le nom de votre choix pour ce modèle"))
+        self.radio_type_1.SetToolTipString(_(u"Sélectionnez 'Journalier' di vous ne souhaitez créer qu'un modèle comportant une journée-type"))
+        self.radio_type_2.SetToolTipString(_(u"Sélectionnez 'Hebdomadaire' si vous souhaitez créer un modèle qui comporte une semaine-type"))
+        self.text_description.SetToolTipString(_(u"Vous pouvez donner ici une description de ce modèle"))
+        self.checkbox_periodes_1.SetToolTipString(_(u"Les tâches saisies dans cette catégorie de période seront créées sur des périodes de vacances et des périodes de vacances"))
+        self.checkbox_periodes_2.SetToolTipString(_(u"Les tâches créées dans cette catégorie seront appliquées uniquement sur des périodes scolaires"))
+        self.checkbox_periodes_3.SetToolTipString(_(u"Les tâches saisies dans cette catégorie de période seront appliquées uniquement sur des vacances scolaires"))
         self.tree_planning.SetMinSize((500, 250))
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour ajouter une tâche")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour ajouter une tâche"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier la tâche sélectionnée")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la tâche sélectionnée"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer la tâche sélectionnée")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la tâche sélectionnée"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
@@ -101,7 +103,7 @@ class Frm_SaisieModele(wx.Frame):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler")
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.checkbox_inclureferies.SetToolTipString(u"Cochez cette case si vous souhaitez que le modèle soit également appliqué les jours fériés.")
+        self.checkbox_inclureferies.SetToolTipString(_(u"Cochez cette case si vous souhaitez que le modèle soit également appliqué les jours fériés."))
         
         self.checkbox_periodes_1.SetValue(self.periodes[0] )
         self.checkbox_periodes_2.SetValue(self.periodes[1] )
@@ -232,7 +234,7 @@ class Frm_SaisieModele(wx.Frame):
                 modif = True
         
         if modif == True :
-            dlg = wx.MessageDialog(self, u"Vous avez fait des modifications sur ce modèle. Souhaitez-vous vraiment toutes les annuler ?", u"Annulation", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            dlg = wx.MessageDialog(self, _(u"Vous avez fait des modifications sur ce modèle. Souhaitez-vous vraiment toutes les annuler ?"), _(u"Annulation"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_NO :
                 dlg.Destroy() 
                 return
@@ -256,14 +258,14 @@ class Frm_SaisieModele(wx.Frame):
                 periodes += "0"
                 
         if nom == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir un nom pour le modèle.", "Erreur de saisie", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nom pour le modèle."), "Erreur de saisie", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             self.text_nom.SetFocus()
             return
         
         if periodes == "000" :
-            dlg = wx.MessageDialog(self, u"Vous devez cocher au moins une période.", "Erreur de saisie", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez cocher au moins une période."), "Erreur de saisie", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
@@ -271,7 +273,7 @@ class Frm_SaisieModele(wx.Frame):
         # Validation des taches
         listeTaches = self.tree_planning.listeTaches
         if len(listeTaches) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez enregistré aucune tâche pour ce modèle. Souhaitez-vous vraiment quitter l'édition de ce modèle ?",  u"Quitter l'édition d'un modèle", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez enregistré aucune tâche pour ce modèle. Souhaitez-vous vraiment quitter l'édition de ce modèle ?"),  _(u"Quitter l'édition d'un modèle"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
             if dlg.ShowModal() == wx.ID_NO :
                 dlg.Destroy() 
                 return
@@ -340,13 +342,13 @@ class Frm_SaisieModele(wx.Frame):
         treeSelection = self.tree_planning.selection
         
         if treeSelection < 100000 :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un jour dans la liste proposée", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un jour dans la liste proposée"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
         
         if str(treeSelection)[1] == "0" :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un jour dans la liste proposée", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un jour dans la liste proposée"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
@@ -454,12 +456,12 @@ class Frm_SaisieModele(wx.Frame):
         IDmodif = self.tree_planning.selection
         
         if IDmodif >= 100000 or IDmodif==None :
-            dlg = wx.MessageDialog(self, u"Vous n'avez pas sélectionné de tâche à supprimer dans la liste", "Erreur de saisie", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez pas sélectionné de tâche à supprimer dans la liste"), "Erreur de saisie", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
         
-        dlg = wx.MessageDialog(self, u"Souhaitez-vous vraiment supprimer cette tâche ?",  u"Suppression d'une tâche", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+        dlg = wx.MessageDialog(self, _(u"Souhaitez-vous vraiment supprimer cette tâche ?"),  _(u"Suppression d'une tâche"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
         if dlg.ShowModal() == wx.ID_NO :
             dlg.Destroy() 
             return
@@ -515,7 +517,7 @@ class TreeCtrlPlanning(wx.TreeCtrl):
         
         # Création de la racine
         if self.GetGrandParent().nom == "" :
-            nomModele = u"Nouveau modèle"
+            nomModele = _(u"Nouveau modèle")
         else:
             nomModele = self.GetGrandParent().nom
         self.root = self.AddRoot(nomModele)
@@ -523,17 +525,17 @@ class TreeCtrlPlanning(wx.TreeCtrl):
         
         # Création des périodes
         if self.GetGrandParent().periodes[0] == True :
-            self.P1 = self.AppendItem(self.root, u"Toutes les périodes")
+            self.P1 = self.AppendItem(self.root, _(u"Toutes les périodes"))
             self.SetPyData(self.P1, 100000)
             self.CreationJours(self.P1, 1) 
         
         if self.GetGrandParent().periodes[1] == True :
-            self.P2 = self.AppendItem(self.root, u"Périodes scolaires")
+            self.P2 = self.AppendItem(self.root, _(u"Périodes scolaires"))
             self.SetPyData(self.P2, 200000)
             self.CreationJours(self.P2, 2) 
         
         if self.GetGrandParent().periodes[2] == True :
-            self.P3 = self.AppendItem(self.root, u"Vacances scolaires")
+            self.P3 = self.AppendItem(self.root, _(u"Vacances scolaires"))
             self.SetPyData(self.P3, 300000)
             self.CreationJours(self.P3, 3) 
         
@@ -543,9 +545,9 @@ class TreeCtrlPlanning(wx.TreeCtrl):
     
     def CreationJours(self, rootPeriode, numPeriode) :
         if self.GetGrandParent().type == "hebdo" :    
-            listeJours = (u"Lundi", u"Mardi", u"Mercredi", u"Jeudi", u"Vendredi", u"Samedi", u"Dimanche")
+            listeJours = (_(u"Lundi"), _(u"Mardi"), _(u"Mercredi"), _(u"Jeudi"), _(u"Vendredi"), _(u"Samedi"), _(u"Dimanche"))
         else:
-            listeJours = (u"Tous les jours",)
+            listeJours = (_(u"Tous les jours"),)
         
         numJour = 1    
         for jour in listeJours :
@@ -663,7 +665,7 @@ class TreeCtrlPlanning(wx.TreeCtrl):
         
         if mode == "jour" :
             # Item Ajouter
-            item = wx.MenuItem(menuPop, 10, u"Ajouter")
+            item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
             bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
@@ -671,14 +673,14 @@ class TreeCtrlPlanning(wx.TreeCtrl):
         
         if mode == "tache" :
             # Item Modifier
-            item = wx.MenuItem(menuPop, 20, u"Modifier")
+            item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
             bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
             self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
             # Item Supprimer
-            item = wx.MenuItem(menuPop, 30, u"Supprimer")
+            item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
             bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)

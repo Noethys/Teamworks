@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import datetime
@@ -19,42 +21,42 @@ except: pass
 
 class SaisieRemboursement(wx.Dialog):
     """ Saisie d'un remboursement pour les frais de déplacement """
-    def __init__(self, parent, id=-1, title=u"Saisie d'un remboursement", IDremboursement=None, IDpersonne=None):
+    def __init__(self, parent, id=-1, title=_(u"Saisie d'un remboursement"), IDremboursement=None, IDpersonne=None):
         wx.Dialog.__init__(self, parent, id, title) #, size=(400, 450)
         self.IDremboursement = IDremboursement
         self.IDpersonne = IDpersonne
         
         # Généralités
-        self.staticbox_generalites = wx.StaticBox(self, -1, u"Caractéristiques")
+        self.staticbox_generalites = wx.StaticBox(self, -1, _(u"Caractéristiques"))
         
-        self.label_date = wx.StaticText(self, -1, u"Date :", size=(60, -1), style=wx.ALIGN_RIGHT)
+        self.label_date = wx.StaticText(self, -1, _(u"Date :"), size=(60, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_date = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         
-        self.label_montant = wx.StaticText(self, -1, u"Montant :", size=(60, -1), style=wx.ALIGN_RIGHT)
+        self.label_montant = wx.StaticText(self, -1, _(u"Montant :"), size=(60, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_montant = wx.TextCtrl(self, -1, u"", size=(50, -1), )
         self.label_euro_montant = wx.StaticText(self, -1, u"¤")
         
-        self.label_utilisateur = wx.StaticText(self, -1, u"Utilisateur :", size=(60, -1), style=wx.ALIGN_RIGHT)
+        self.label_utilisateur = wx.StaticText(self, -1, _(u"Utilisateur :"), size=(60, -1), style=wx.ALIGN_RIGHT)
         self.ImportationPersonnes()
         self.ctrl_utilisateur = AdvancedComboBox( self, "", size=(100, -1), choices = self.listePersonnes)
         
         # Déplacements
-        self.staticbox_deplacements = wx.StaticBox(self, -1, u"Déplacements rattachés")
+        self.staticbox_deplacements = wx.StaticBox(self, -1, _(u"Déplacements rattachés"))
         
         self.label_rattachement = wx.StaticText(self, -1, u"", size=(-1, -1))
         self.ctrl_deplacements = ListCtrl_deplacements(self, size=(-1, 200), IDremboursement=IDremboursement, IDpersonne=self.IDpersonne)
         
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
         
          # IDpersonne :
         if self.IDpersonne != None :
             self.SetPersonne(self.IDpersonne)
         # Si c'est une modification :
         if self.IDremboursement != None :
-            self.SetTitle(u"Modification d'un remboursement")
+            self.SetTitle(_(u"Modification d'un remboursement"))
             self.Importation()
         # Cache le controle utilisateur :
         if self.IDpersonne != None :
@@ -73,21 +75,21 @@ class SaisieRemboursement(wx.Dialog):
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
-        self.ctrl_date.SetToolTipString(u"Sélectionnez ici la date du déplacement")
-        self.ctrl_utilisateur.SetToolTipString(u"Sélectionnez ici l'utilisateur pour ce déplacement")
-##        self.ctrl_objet.SetToolTipString(u"Saisissez ici l'objet du déplacement. Ex : réunion, formation, etc...")
-##        self.ctrl_cp_depart.SetToolTipString(u"Saisissez ici le code postal de la ville de départ")
-##        self.ctrl_ville_depart.SetToolTipString(u"Saisissez ici le nom de la ville de départ")
-##        self.ctrl_cp_arrivee.SetToolTipString(u"Saisissez ici le code postal de la ville d'arrivée")
-##        self.ctrl_ville_arrivee.SetToolTipString(u"Saisissez ici le nom de la ville d'arrivée")
-##        self.ctrl_distance.SetToolTipString(u"Saisissez ici la distance en Km entre les 2 villes sélectionnées.\nSi Teamworks la connait, il l'indiquera automatiquement.")
-##        self.ctrl_aller_retour.SetToolTipString(u"Cochez cette case si le déplacement a fait l'objet d'un aller/retour.\nLa distance sera ainsi doublée.")
-##        self.ctrl_tarif.SetToolTipString(u"Saisissez ici le montant du tarif du Km pour permettre calculer le montant du remboursement pour ce déplacement.")
-##        self.bouton_options_depart.SetToolTipString(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel")
-##        self.bouton_options_arrivee.SetToolTipString(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.ctrl_date.SetToolTipString(_(u"Sélectionnez ici la date du déplacement"))
+        self.ctrl_utilisateur.SetToolTipString(_(u"Sélectionnez ici l'utilisateur pour ce déplacement"))
+##        self.ctrl_objet.SetToolTipString(_(u"Saisissez ici l'objet du déplacement. Ex : réunion, formation, etc..."))
+##        self.ctrl_cp_depart.SetToolTipString(_(u"Saisissez ici le code postal de la ville de départ"))
+##        self.ctrl_ville_depart.SetToolTipString(_(u"Saisissez ici le nom de la ville de départ"))
+##        self.ctrl_cp_arrivee.SetToolTipString(_(u"Saisissez ici le code postal de la ville d'arrivée"))
+##        self.ctrl_ville_arrivee.SetToolTipString(_(u"Saisissez ici le nom de la ville d'arrivée"))
+##        self.ctrl_distance.SetToolTipString(_(u"Saisissez ici la distance en Km entre les 2 villes sélectionnées.\nSi Teamworks la connait, il l'indiquera automatiquement."))
+##        self.ctrl_aller_retour.SetToolTipString(_(u"Cochez cette case si le déplacement a fait l'objet d'un aller/retour.\nLa distance sera ainsi doublée."))
+##        self.ctrl_tarif.SetToolTipString(_(u"Saisissez ici le montant du tarif du Km pour permettre calculer le montant du remboursement pour ce déplacement."))
+##        self.bouton_options_depart.SetToolTipString(_(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel"))
+##        self.bouton_options_arrivee.SetToolTipString(_(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -218,7 +220,7 @@ class SaisieRemboursement(wx.Dialog):
     def montant_EvtKillFocus(self, event):
         # Vérifie la validité de la valeur
         if self.ValideControleFloat(self.ctrl_montant) == False : 
-            dlg = wx.MessageDialog(self, u"Le montant n'est pas valide. \nIl doit être sous la forme '1.32' ou '100.50' par exemple...", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Le montant n'est pas valide. \nIl doit être sous la forme '1.32' ou '100.50' par exemple..."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_deplacements.Enable(False)
@@ -316,7 +318,7 @@ class SaisieRemboursement(wx.Dialog):
         # Vérifie contrôle Utilisateur
         valeur = self.ctrl_utilisateur.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner un utilisateur.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner un utilisateur."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_utilisateur.SetFocus()
@@ -325,21 +327,21 @@ class SaisieRemboursement(wx.Dialog):
         # Vérifie contrôle montant
         valeur = self.ctrl_montant.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un montant en euros pour ce remboursement.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un montant en euros pour ce remboursement."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_montant.SetFocus()
             return
         
         if self.ValideControleFloat(self.ctrl_montant) == False : 
-            dlg = wx.MessageDialog(self, u"Le montant saisi n'est pas valide \nIl doit être sous la forme '32.50' ou '54' par exemple...", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Le montant saisi n'est pas valide \nIl doit être sous la forme '32.50' ou '54' par exemple..."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_montant.SetFocus()
             return
         
         if float(valeur) == 0 :
-            dlg = wx.MessageDialog(self, u"Le montant que vous avez saisi est de 0 ¤\n\nSouhaitez-vous conserver ce montant ?\n(Cliquez sur 'Non' ou 'Annuler' pour modifier maintenant le montant)", u"Erreur de saisie", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Le montant que vous avez saisi est de 0 ¤\n\nSouhaitez-vous conserver ce montant ?\n(Cliquez sur 'Non' ou 'Annuler' pour modifier maintenant le montant)"), _(u"Erreur de saisie"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_NO or reponse == wx.ID_CANCEL:
                 dlg.Destroy()
@@ -351,7 +353,7 @@ class SaisieRemboursement(wx.Dialog):
         listeIDcoches, listeIDdecoches = self.ctrl_deplacements.ListeItemsCoches()
         
         if len(listeIDcoches) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez coché aucun déplacement dans la liste.\n\nSouhaitez-vous quand même valider ?\n(Cliquez sur 'Non' ou 'Annuler' pour cocher maintenant des déplacements)", u"Erreur de saisie", wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez coché aucun déplacement dans la liste.\n\nSouhaitez-vous quand même valider ?\n(Cliquez sur 'Non' ou 'Annuler' pour cocher maintenant des déplacements)"), _(u"Erreur de saisie"), wx.YES_NO|wx.NO_DEFAULT|wx.CANCEL|wx.ICON_EXCLAMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_NO or reponse == wx.ID_CANCEL:
                 dlg.Destroy()
@@ -506,17 +508,17 @@ class ListCtrl_deplacements(wx.ListCtrl, CheckListCtrlMixin):
         # Création des colonnes
         self.InsertColumn(0, u"N°")
         self.SetColumnWidth(0, 50)
-        self.InsertColumn(1, u"Date")
+        self.InsertColumn(1, _(u"Date"))
         self.SetColumnWidth(1, 80)
-        self.InsertColumn(2, u"Objet")
+        self.InsertColumn(2, _(u"Objet"))
         self.SetColumnWidth(2, 80) 
-        self.InsertColumn(3, u"Trajet")
+        self.InsertColumn(3, _(u"Trajet"))
         self.SetColumnWidth(3, 170)  
-        self.InsertColumn(4, u"Distance")
+        self.InsertColumn(4, _(u"Distance"))
         self.SetColumnWidth(4, 70)
-        self.InsertColumn(5, u"Tarif")
+        self.InsertColumn(5, _(u"Tarif"))
         self.SetColumnWidth(5, 70)  
-        self.InsertColumn(6, u"Montant")
+        self.InsertColumn(6, _(u"Montant"))
         self.SetColumnWidth(6, 70)
         
         # Remplissage avec les valeurs
@@ -544,7 +546,7 @@ class ListCtrl_deplacements(wx.ListCtrl, CheckListCtrlMixin):
         # Active ou non ce listCtrl si IDpersonne a été renseigné
         if self.IDpersonne == None :
             self.Enable(False)
-            self.parent.label_rattachement.SetLabel(u"Veuillez sélectionner un utilisateur dans la liste proposée...")
+            self.parent.label_rattachement.SetLabel(_(u"Veuillez sélectionner un utilisateur dans la liste proposée..."))
             return
         else:
             self.Enable(True)
@@ -572,13 +574,13 @@ class ListCtrl_deplacements(wx.ListCtrl, CheckListCtrlMixin):
         
         montantNonRattache = self.montantRemboursement - montantRattache
         if montantNonRattache == 0 :
-            self.parent.label_rattachement.SetLabel(u"Vous devez cocher les déplacements ci-dessous pour les rattacher.")
+            self.parent.label_rattachement.SetLabel(_(u"Vous devez cocher les déplacements ci-dessous pour les rattacher."))
         if montantNonRattache > 0 :
-            self.parent.label_rattachement.SetLabel(u"Vous pouvez encore rattacher pour " + u"%.2f ¤" % montantNonRattache + u" de déplacements.")
+            self.parent.label_rattachement.SetLabel(_(u"Vous pouvez encore rattacher pour ") + u"%.2f ¤" % montantNonRattache + _(u" de déplacements."))
         if montantNonRattache < 0 :
-            self.parent.label_rattachement.SetLabel(u"Attention ! Vous avez rattaché " + u"%.2f ¤" % (-montantNonRattache) + u" de déplacements en trop !")
+            self.parent.label_rattachement.SetLabel(_(u"Attention ! Vous avez rattaché ") + u"%.2f ¤" % (-montantNonRattache) + _(u" de déplacements en trop !"))
         if len(self.donnees) == 0 :
-            self.parent.label_rattachement.SetLabel(u"Aucun déplacement n'est à rattacher pour cette personne.")
+            self.parent.label_rattachement.SetLabel(_(u"Aucun déplacement n'est à rattacher pour cette personne."))
 
     def Importation(self):
         # Récupération des données
@@ -608,12 +610,12 @@ class ListCtrl_deplacements(wx.ListCtrl, CheckListCtrlMixin):
             else:
                 trajet = ville_depart + " -> " + ville_arrivee
             # Formatage distance
-            dist = str(distance) + u" Km"
+            dist = str(distance) + _(u" Km")
             # Formatage montant
             montant = float(distance) * float(tarif_km)
             montantStr = u"%.2f ¤" % montant
             # Formatage tarif/Km
-            tarif_km = str(tarif_km) + u" ¤/km"
+            tarif_km = str(tarif_km) + _(u" ¤/km")
             # Montant rattaché
             if IDremboursement != 0 : 
                 self.montantRattache += montant

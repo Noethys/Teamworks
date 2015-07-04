@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
@@ -24,61 +26,61 @@ class Panel(wx.Panel):
         self.listeDisponibilites = []
         
         # Général
-        self.sizer_generalites_staticbox = wx.StaticBox(self, -1, u"1. Généralités")
-        self.label_introduction = wx.StaticText(self, -1, u"Vous pouvez ici saisir les informations concernant l'offre d'emploi.")
-        self.label_date_debut = wx.StaticText(self, -1, u"Lancement :")
+        self.sizer_generalites_staticbox = wx.StaticBox(self, -1, _(u"1. Généralités"))
+        self.label_introduction = wx.StaticText(self, -1, _(u"Vous pouvez ici saisir les informations concernant l'offre d'emploi."))
+        self.label_date_debut = wx.StaticText(self, -1, _(u"Lancement :"))
         self.ctrl_date_debut = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
-        self.label_date_fin = wx.StaticText(self, -1, u"Clôture :")
+        self.label_date_fin = wx.StaticText(self, -1, _(u"Clôture :"))
         self.ctrl_date_fin = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
-        self.label_intitule = wx.StaticText(self, -1, u"Intitulé :")
+        self.label_intitule = wx.StaticText(self, -1, _(u"Intitulé :"))
         self.ctrl_intitule = wx.TextCtrl(self, -1, "")
-        self.label_detail = wx.StaticText(self, -1, u"Détail :")
+        self.label_detail = wx.StaticText(self, -1, _(u"Détail :"))
         self.ctrl_detail = wx.TextCtrl(self, -1, "", style=wx.TE_MULTILINE)
         self.ctrl_detail.SetMinSize((-1, 100))
-        self.label_reference = wx.StaticText(self, -1, u"N° ANPE :")
+        self.label_reference = wx.StaticText(self, -1, _(u"N° ANPE :"))
         self.ctrl_reference = wx.TextCtrl(self, -1, "")
                 
         # Disponibilités
-        self.sizer_disponibilites_staticbox = wx.StaticBox(self, -1, u"2. Disponibilités")
-        self.label_periodes = wx.StaticText(self, -1, u"Périodes :")
+        self.sizer_disponibilites_staticbox = wx.StaticBox(self, -1, _(u"2. Disponibilités"))
+        self.label_periodes = wx.StaticText(self, -1, _(u"Périodes :"))
         self.ctrl_periodes = ListBoxDisponibilites(self)
         self.ctrl_periodes.SetMinSize((20, 20))
         self.bouton_ajouter_periode = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_ANY))
         self.bouton_modifier_periode = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_ANY))
         self.bouton_supprimer_periode = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_ANY))
-        self.label_periodes_remarques = wx.StaticText(self, -1, u"Remarques :")
+        self.label_periodes_remarques = wx.StaticText(self, -1, _(u"Remarques :"))
         self.ctrl_periodes_remarques = wx.TextCtrl(self, -1, u"")
         
         # Poste
-        self.sizer_poste_staticbox = wx.StaticBox(self, -1, u"3. Poste")
-        self.label_fonction = wx.StaticText(self, -1, u"Fonction :")
+        self.sizer_poste_staticbox = wx.StaticBox(self, -1, _(u"3. Poste"))
+        self.label_fonction = wx.StaticText(self, -1, _(u"Fonction :"))
         self.ctrl_fonction = CheckListBox(self)
         self.ctrl_fonction.SetMinSize((20, 20))
         self.ctrl_fonction.Remplissage(self.Importation_fonctions())
         self.bouton_fonctions = wx.Button(self, -1, "...", size=(20, 20))
-        self.label_affectation = wx.StaticText(self, -1, u"Affectation :")
+        self.label_affectation = wx.StaticText(self, -1, _(u"Affectation :"))
         self.ctrl_affectations = CheckListBox(self)
         self.ctrl_affectations.SetMinSize((20, 20))
         self.ctrl_affectations.Remplissage(self.Importation_affectations())
         self.bouton_affectations = wx.Button(self, -1, "...", size=(20, 20))
-        self.label_poste_remarques = wx.StaticText(self, -1, u"Remarques :")
+        self.label_poste_remarques = wx.StaticText(self, -1, _(u"Remarques :"))
         self.ctrl_poste_remarques = wx.TextCtrl(self, -1, "")
         
         # Diffuseurs
-        self.sizer_diffusion_staticbox = wx.StaticBox(self, -1, u"4. Diffusion de l'offre")
-        self.label_diffuseurs = wx.StaticText(self, -1, u"  Diffuseurs :")
+        self.sizer_diffusion_staticbox = wx.StaticBox(self, -1, _(u"4. Diffusion de l'offre"))
+        self.label_diffuseurs = wx.StaticText(self, -1, _(u"  Diffuseurs :"))
         self.ctrl_diffuseurs = CheckListBox(self)
         self.ctrl_diffuseurs.SetMinSize((20, 20))
         self.ctrl_diffuseurs.Remplissage(self.Importation_diffuseurs())
         self.bouton_diffuseurs = wx.Button(self, -1, "...", size=(20, 20))
         
         # Commandes
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         
         self.__set_properties()
         self.__do_layout()
@@ -102,23 +104,23 @@ class Panel(wx.Panel):
         
         
     def __set_properties(self):
-        self.ctrl_date_debut.SetToolTipString(u"Saisissez la date de lancement de l'offre d'emploi")
-        self.ctrl_date_fin.SetToolTipString(u"Sélectionnez la date de clôture du recrutement pour cette offre d'emploi")
-        self.ctrl_intitule.SetToolTipString(u"Saisissez l'intitulé (nom) de l'offre. Ex : Animateur Mercredis et vacances Saison 2009-10")
-        self.ctrl_detail.SetToolTipString(u"Saisissez le texte détaillé de l'offre d'emploi")
-        self.ctrl_reference.SetToolTipString(u"Saisissez le numéro de l'annonce déposé à l'ANPE. Ex : X455676E")
-        self.ctrl_periodes.SetToolTipString(u"Sélectionnez un ou plusieurs périodes de disponibilités")
-        self.ctrl_periodes_remarques.SetToolTipString(u"Saisissez un complement d'information sur les disponibilités")
-        self.ctrl_fonction.SetToolTipString(u"Cochez la ou les fonctions du poste")
-        self.ctrl_affectations.SetToolTipString(u"Cochez la ou les affectations pour le poste")
-        self.ctrl_poste_remarques.SetToolTipString(u"Saisissez un complément d'information sur le poste")
-        self.bouton_ajouter_periode.SetToolTipString(u"Cliquez ici pour ajouter une période")
-        self.bouton_modifier_periode.SetToolTipString(u"Cliquez ici pour modifier la période sélectionnée")
-        self.bouton_supprimer_periode.SetToolTipString(u"Cliquez ici pour supprimer la période sélectionnée")
-        self.bouton_fonctions.SetToolTipString(u"Cliquez ici pour ajouter, modifier ou supprimer des fonctions")
-        self.bouton_affectations.SetToolTipString(u"Cliquez ici pour ajouter, modifier ou supprimer des affectations")
-        self.bouton_diffuseurs.SetToolTipString(u"Cliquez ici pour ajouter, modifier ou supprimer des diffuseurs")
-        self.ctrl_diffuseurs.SetToolTipString(u"Cochez ici les organismes ou moyens de communication utilisés pour diffuser cette offre d'emploi. Ex : ANPE, Presse, fédération, etc...")
+        self.ctrl_date_debut.SetToolTipString(_(u"Saisissez la date de lancement de l'offre d'emploi"))
+        self.ctrl_date_fin.SetToolTipString(_(u"Sélectionnez la date de clôture du recrutement pour cette offre d'emploi"))
+        self.ctrl_intitule.SetToolTipString(_(u"Saisissez l'intitulé (nom) de l'offre. Ex : Animateur Mercredis et vacances Saison 2009-10"))
+        self.ctrl_detail.SetToolTipString(_(u"Saisissez le texte détaillé de l'offre d'emploi"))
+        self.ctrl_reference.SetToolTipString(_(u"Saisissez le numéro de l'annonce déposé à l'ANPE. Ex : X455676E"))
+        self.ctrl_periodes.SetToolTipString(_(u"Sélectionnez un ou plusieurs périodes de disponibilités"))
+        self.ctrl_periodes_remarques.SetToolTipString(_(u"Saisissez un complement d'information sur les disponibilités"))
+        self.ctrl_fonction.SetToolTipString(_(u"Cochez la ou les fonctions du poste"))
+        self.ctrl_affectations.SetToolTipString(_(u"Cochez la ou les affectations pour le poste"))
+        self.ctrl_poste_remarques.SetToolTipString(_(u"Saisissez un complément d'information sur le poste"))
+        self.bouton_ajouter_periode.SetToolTipString(_(u"Cliquez ici pour ajouter une période"))
+        self.bouton_modifier_periode.SetToolTipString(_(u"Cliquez ici pour modifier la période sélectionnée"))
+        self.bouton_supprimer_periode.SetToolTipString(_(u"Cliquez ici pour supprimer la période sélectionnée"))
+        self.bouton_fonctions.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des fonctions"))
+        self.bouton_affectations.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des affectations"))
+        self.bouton_diffuseurs.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des diffuseurs"))
+        self.ctrl_diffuseurs.SetToolTipString(_(u"Cochez ici les organismes ou moyens de communication utilisés pour diffuser cette offre d'emploi. Ex : ANPE, Presse, fédération, etc..."))
         
 
     def __do_layout(self):
@@ -387,7 +389,7 @@ class Panel(wx.Panel):
         # Modification d'une période de disponibilité
         index = self.ctrl_periodes.GetSelection()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez déjà sélectionner une période dans la liste", u"Erreur", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez déjà sélectionner une période dans la liste"), _(u"Erreur"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -408,7 +410,7 @@ class Panel(wx.Panel):
         # Suppression d'une période de disponibilité
         index = self.ctrl_periodes.GetSelection()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez déjà sélectionner une période dans la liste", u"Erreur", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez déjà sélectionner une période dans la liste"), _(u"Erreur"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -416,9 +418,9 @@ class Panel(wx.Panel):
         
         # Demande de confirmation
         formatDate = "%d/%m/%Y"
-        texteDates = u"Du %s au %s" % (date_debut.strftime(formatDate), date_fin.strftime(formatDate))
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer cette période de disponibilité ? \n\n> %s" % texteDates))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        texteDates = _(u"Du %s au %s") % (date_debut.strftime(formatDate), date_fin.strftime(formatDate))
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette période de disponibilité ? \n\n> %s") % texteDates))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -445,7 +447,7 @@ class Panel(wx.Panel):
         
     def Onbouton_aide(self, event):
 ##        FonctionsPerso.Aide(38)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
             
@@ -461,7 +463,7 @@ class Panel(wx.Panel):
         # Type du dépôt
         valeur = self.ctrl_intitule.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement un intitulé pour cette offre d'emploi.", "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement un intitulé pour cette offre d'emploi."), "Erreur", wx.OK | wx.ICON_EXCLAMATION)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_intitule.SetFocus()
@@ -469,7 +471,7 @@ class Panel(wx.Panel):
 
         # Disponibilités
         if len(self.listeDisponibilites) == 0 :
-            dlgConfirm = wx.MessageDialog(self, u"Vous n'avez saisi aucune période de disponibilité. Confirmez-vous ce choix ?", u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+            dlgConfirm = wx.MessageDialog(self, _(u"Vous n'avez saisi aucune période de disponibilité. Confirmez-vous ce choix ?"), _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
             reponse = dlgConfirm.ShowModal()
             dlgConfirm.Destroy()
             if reponse == wx.ID_NO:
@@ -477,7 +479,7 @@ class Panel(wx.Panel):
         
         # Fonctions
         if len(self.ctrl_fonction.listeIDcoches) == 0 :
-            dlgConfirm = wx.MessageDialog(self, u"Vous n'avez saisi aucune demande de fonction. Confirmez-vous ce choix ?", u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+            dlgConfirm = wx.MessageDialog(self, _(u"Vous n'avez saisi aucune demande de fonction. Confirmez-vous ce choix ?"), _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
             reponse = dlgConfirm.ShowModal()
             dlgConfirm.Destroy()
             if reponse == wx.ID_NO:
@@ -485,7 +487,7 @@ class Panel(wx.Panel):
         
         # Affectations
         if len(self.ctrl_affectations.listeIDcoches) == 0 :
-            dlgConfirm = wx.MessageDialog(self, u"Vous n'avez saisi aucune demande d'affectation. Confirmez-vous ce choix ?", u"Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+            dlgConfirm = wx.MessageDialog(self, _(u"Vous n'avez saisi aucune demande d'affectation. Confirmez-vous ce choix ?"), _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
             reponse = dlgConfirm.ShowModal()
             dlgConfirm.Destroy()
             if reponse == wx.ID_NO:
@@ -675,7 +677,7 @@ class ListBoxDisponibilites(wx.ListBox):
         index = 0
         for IDdisponibilite, date_debut, date_fin in listeDisponibilites :
             formatDate = "%d/%m/%Y"
-            texte = u"Du %s au %s" % (date_debut.strftime(formatDate), date_fin.strftime(formatDate))
+            texte = _(u"Du %s au %s") % (date_debut.strftime(formatDate), date_fin.strftime(formatDate))
             self.Append(texte)
             self.dictIndexes[index] = IDdisponibilite
             index += 1
@@ -693,7 +695,7 @@ class ListBoxDisponibilites(wx.ListBox):
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -703,14 +705,14 @@ class ListBoxDisponibilites(wx.ListBox):
             menuPop.AppendSeparator()
 
             # Item Ajouter
-            item = wx.MenuItem(menuPop, 20, u"Modifier")
+            item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
             bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
             self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
             # Item Supprimer
-            item = wx.MenuItem(menuPop, 30, u"Supprimer")
+            item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
             bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
@@ -778,9 +780,9 @@ class MyFrame(wx.Frame):
                 
         # Propriétés
         if IDemploi == None :
-            self.SetTitle(u"Saisie d'une offre d'emploi")
+            self.SetTitle(_(u"Saisie d'une offre d'emploi"))
         else:
-            self.SetTitle(u"Modification d'une offre d'emploi")
+            self.SetTitle(_(u"Modification d'une offre d'emploi"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import  wx.lib.scrolledpanel as scrolled
@@ -141,10 +143,10 @@ class PanelContacts(scrolled.ScrolledPanel):
         gridSizer = wx.FlexGridSizer(cols=6, vgap=2, hgap=2)
         
         # Création des labels
-        label_nom = wx.StaticText(self, -1, u"Nom et prénom")
-        label_adresse = wx.StaticText(self, -1, u"Adresse")
-        label_coords = wx.StaticText(self, -1, u"Coordonnées")
-        label_datenaiss = wx.StaticText(self, -1, u"Date de naiss.")
+        label_nom = wx.StaticText(self, -1, _(u"Nom et prénom"))
+        label_adresse = wx.StaticText(self, -1, _(u"Adresse"))
+        label_coords = wx.StaticText(self, -1, _(u"Coordonnées"))
+        label_datenaiss = wx.StaticText(self, -1, _(u"Date de naiss."))
         
         font = wx.Font(7, wx.SWISS, wx.NORMAL, wx.NORMAL)
         label_nom.SetFont(font)
@@ -376,24 +378,24 @@ class MyFrame(wx.Frame):
         self.MakeModal(True)
         self.panel_base = wx.Panel(self, -1)
         self.sizer_grid_staticbox = wx.StaticBox(self.panel_base, -1, "Champs")
-        self.label_intro = wx.StaticText(self.panel_base, -1, u"Synchronisez vos contacts Outlook en cliquant sur les boutons ci-dessous :")
+        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Synchronisez vos contacts Outlook en cliquant sur les boutons ci-dessous :"))
                
         # Préparation de la grid
         self.gridChamps = PanelContacts(self.panel_base)
         
-        self.label_synchro = wx.StaticText(self.panel_base, -1, u"Synchro.")
-        self.label_modif = wx.StaticText(self.panel_base, -1, u"Synchro mais modifié")
-        self.label_non_synchro = wx.StaticText(self.panel_base, -1, u"Non synchro.")
+        self.label_synchro = wx.StaticText(self.panel_base, -1, _(u"Synchro."))
+        self.label_modif = wx.StaticText(self.panel_base, -1, _(u"Synchro mais modifié"))
+        self.label_non_synchro = wx.StaticText(self.panel_base, -1, _(u"Non synchro."))
         
         self.label_synchro.SetBackgroundColour(COULEUR_SYNCHRO)
         self.label_modif.SetBackgroundColour(COULEUR_MODIF)
         self.label_non_synchro.SetBackgroundColour(COULEUR_NON_SYNCHRO)
         
-        self.bouton_synchroTout = wx.Button(self.panel_base, -1, u"Tout synchroniser")
-        self.bouton_supprTout = wx.Button(self.panel_base, -1, u"Tout désynchroniser")
+        self.bouton_synchroTout = wx.Button(self.panel_base, -1, _(u"Tout synchroniser"))
+        self.bouton_supprTout = wx.Button(self.panel_base, -1, _(u"Tout désynchroniser"))
 
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Fermer_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Fermer"), cheminImage="Images/32x32/Fermer.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -405,7 +407,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
                 
     def __set_properties(self):
-        self.SetTitle(u"Exportation des contacts vers Outlook")
+        self.SetTitle(_(u"Exportation des contacts vers Outlook"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)

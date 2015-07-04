@@ -6,6 +6,7 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import os
 import GestionDB
 import time
@@ -67,7 +68,7 @@ def Procedure_Recuperation():
 def Enregistrement_base() :
     DB = GestionDB.DB()
     for code, nom in listeComplete :
-        listeDonnees = [("code_drapeau",  code), ("nom",  unicode(nom, "iso-8859-15")), ("nationalite", u"")]
+        listeDonnees = [("code_drapea_(u",  code), (")nom",  unicode(nom, "iso-8859-15")), ("nationalite", u"")]
         newID = DB.ReqInsert("pays", listeDonnees)
         time.sleep(0.1)
         print code

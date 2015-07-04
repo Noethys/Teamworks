@@ -8,9 +8,11 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+from UTILS_Traduction import _
 import sys
 import sqlite3
 import wx
+import CTRL_Bouton_image
 import os
 import MySQLdb
 
@@ -35,7 +37,7 @@ class DB:
         # On ajoute le préfixe de type de fichier et l'extension du fichier
         if suffixe != "" and suffixe != None :
             if suffixe[0] != "T" :
-                suffixe = u"T%s" % suffixe
+                suffixe = _(u"T%s") % suffixe
             if suffixe != None :
                 self.nomFichier += u"_%s" % suffixe
         
@@ -45,7 +47,7 @@ class DB:
         else:
             self.isNetwork = False
             if suffixe != None :
-                self.nomFichier = u"Data/%s.dat" % self.nomFichier
+                self.nomFichier = _(u"Data/%s.dat") % self.nomFichier
         
         # Ouverture de la base de données
         if self.isNetwork == True :
@@ -60,7 +62,7 @@ class DB:
         if self.modeCreation == False :
             if os.path.isfile(nomFichier)  == False :
                 # Teste si c'est une ancienne version de fichier
-                if os.path.isfile(u"Data/%s.twk" % self.nomFichierCourt)  == False :
+                if os.path.isfile(_(u"Data/%s.twk") % self.nomFichierCourt)  == False :
                     print "Le fichier SQLITE demande n'est pas present sur le disque dur."
                     self.echec = 1
                     return
@@ -154,7 +156,7 @@ class DB:
         for table in dicoDB:
             # Affichage dans la StatusBar
             if fenetreParente != None :
-                fenetreParente.SetStatusText(u"Création de la table de données %s..." % table)
+                fenetreParente.SetStatusText(_(u"Création de la table de données %s...") % table)
             req = "CREATE TABLE %s (" % table
             pk = ""
             for descr in dicoDB[table]:
@@ -200,7 +202,7 @@ class DB:
         try:
             self.cursor.execute(req)
         except Exception, err:
-            print u"Requete SQL incorrecte :\n%s\nErreur detectee:\n%s" % (req, err)
+            print _(u"Requete SQL incorrecte :\n%s\nErreur detectee:\n%s") % (req, err)
             return 0
         else:
             return 1
@@ -347,7 +349,7 @@ class DB:
             self.cursor.execute(req, tuple(valeurs))
             self.Commit()
         except Exception, err:
-            print u"Requete sql de mise a jour incorrecte :\n%s\nErreur detectee:\n%s" % (req, err)
+            print _(u"Requete sql de mise a jour incorrecte :\n%s\nErreur detectee:\n%s") % (req, err)
         
     def ReqDEL(self, nomTable, nomChampID, ID):
         """ Suppression d'un enregistrement """
@@ -356,7 +358,7 @@ class DB:
             self.cursor.execute(req)
             self.Commit()
         except Exception, err:
-            print u"Requete sql de suppression incorrecte :\n%s\nErreur detectee:\n%s" % (req, err)
+            print _(u"Requete sql de suppression incorrecte :\n%s\nErreur detectee:\n%s") % (req, err)
         
     def Modifier(self, table, ID, champs, valeurs, dicoDB):
         # champs et valeurs sont des tuples
@@ -385,7 +387,7 @@ class DB:
         """ Dulpliquer un enregistrement d'une table :
              Ex : nomTable="modeles", nomChampCle="IDmodele", ID=22,
              conditions = "IDmodele=12 AND IDtruc>34",
-             dictModifications={"nom" : u"Copie de modele", etc...}
+             dictModifications={"nom" : _(u"Copie de modele"), etc...}
              renvoieCorrespondance = renvoie un dict de type {ancienID : newID, etc...}
              IDmanuel = Attribue le IDprécédent de la table + 1 (pour parer au bug de la table tarifs_ligne
         """
@@ -798,39 +800,39 @@ def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None)
     
     for suffixe, dictTables in ( ("TDATA", Tables.DB_DATA), ("TPHOTOS", Tables.DB_PHOTOS), ("TDOCUMENTS", Tables.DB_DOCUMENTS) ) :
         
-        nomFichierActif = u"Data/%s_%s.dat" % (nomFichier, suffixe)
+        nomFichierActif = _(u"Data/%s_%s.dat") % (nomFichier, suffixe)
         nouveauNom = nouveauFichier[nouveauFichier.index("[RESEAU]"):].replace("[RESEAU]", "")
         
         dictResultats = TestConnexionMySQL(typeTest="fichier", nomFichier=u"%s_%s" % (nouveauFichier, suffixe) )
         # Vérifie la connexion au réseau
         if dictResultats["connexion"][0] == False :
             erreur = dictResultats["connexion"][1]
-            dlg = wx.MessageDialog(None, u"La connexion au réseau MySQL est impossible. \n\nErreur : %s" % erreur, "Erreur de connexion", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(None, _(u"La connexion au réseau MySQL est impossible. \n\nErreur : %s") % erreur, "Erreur de connexion", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             print "connexion reseau MySQL impossible."
             return False
         # Vérifie que le fichier n'est pas déjà utilisé
         if dictResultats["fichier"][0] == True :
-            dlg = wx.MessageDialog(None, u"Le fichier existe déjà.", "Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(None, _(u"Le fichier existe déjà."), "Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             print "le nom existe deja."
             return False
         
         # Création de la base de données
-        if fenetreParente != None : fenetreParente.SetStatusText(u"Conversion du fichier en cours... Création du fichier réseau...")
+        if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Création du fichier réseau..."))
         db = DB(suffixe=suffixe, nomFichier=nouveauFichier, modeCreation=True)
         if db.echec == 1 :
             erreur = db.erreur
-            dlg = wx.MessageDialog(None, u"Erreur dans la création du fichier.\n\nErreur : %s" % erreur, u"Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(None, _(u"Erreur dans la création du fichier.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return False
         print "  > Nouveau fichier reseau %s cree..." % suffixe
         
         # Création des tables
-        if fenetreParente != None : fenetreParente.SetStatusText(u"Conversion du fichier en cours... Création des tables de données %s..." % suffixe)
+        if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Création des tables de données %s...") % suffixe)
         db.CreationTables(dicoDB=dictTables)
         print "  > Nouvelles tables %s creees..." % suffixe
         
@@ -839,7 +841,7 @@ def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None)
         index = 1
         for nomTable in listeTables :
             print "  > Importation de la table '%s' (%d/%d)" % (nomTable, index, len(listeTables))
-            if fenetreParente != None : fenetreParente.SetStatusText(u"Conversion du fichier en cours... Importation de la table %d sur %s..." % (index, len(listeTables)))
+            if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Importation de la table %d sur %s...") % (index, len(listeTables)))
             db.Importation_table(nomTable, nomFichierActif)
             print "     -> ok"
             index += 1
@@ -856,29 +858,29 @@ def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None)
     for suffixe, dictTables in ( ("TDATA", Tables.DB_DATA), ("TPHOTOS", Tables.DB_PHOTOS), ("TDOCUMENTS", Tables.DB_DOCUMENTS) ) :
         
         nomFichierActif = nomFichier[nomFichier.index("[RESEAU]"):].replace("[RESEAU]", "") 
-        nouveauNom = u"Data/%s_%s.dat" % (nomFichier, suffixe)
+        nouveauNom = _(u"Data/%s_%s.dat") % (nomFichier, suffixe)
         
         # Vérifie que le fichier n'est pas déjà utilisé
         if os.path.isfile(nouveauNom)  == True :
-            dlg = wx.MessageDialog(None, u"Le fichier existe déjà.", "Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(None, _(u"Le fichier existe déjà."), "Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             print "le nom existe deja."
             return False
         
         # Création de la base de données
-        if fenetreParente != None : fenetreParente.SetStatusText(u"Conversion du fichier en cours... Création du fichier local...")
+        if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Création du fichier local..."))
         db = DB(suffixe=suffixe, nomFichier=nouveauFichier, modeCreation=True)
         if db.echec == 1 :
             erreur = db.erreur
-            dlg = wx.MessageDialog(None, u"Erreur dans la création du fichier.\n\nErreur : %s" % erreur, u"Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(None, _(u"Erreur dans la création du fichier.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return False
         print "  > Nouveau fichier local %s cree..." % suffixe
         
         # Création des tables
-        if fenetreParente != None : fenetreParente.SetStatusText(u"Conversion du fichier en cours... Création des tables de données %s..." % suffixe)
+        if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Création des tables de données %s...") % suffixe)
         db.CreationTables(dicoDB=dictTables)
         print "  > Nouvelles tables %s creees..." % suffixe
         
@@ -887,7 +889,7 @@ def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None)
         index = 1
         for nomTable in listeTables :
             print "  > Importation de la table '%s' (%d/%d)" % (nomTable, index, len(listeTables))
-            if fenetreParente != None : fenetreParente.SetStatusText(u"Conversion du fichier en cours... Importation de la table %d sur %s..." % (index, len(listeTables)))
+            if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Importation de la table %d sur %s...") % (index, len(listeTables)))
             db.Importation_table_reseau(nomTable, u"%s_%s" % (nomFichier, suffixe), dictTables)
             print "     -> ok"
             index += 1
@@ -931,7 +933,7 @@ def TestConnexionMySQL(typeTest="fichier", nomFichier=""):
                 cursor.execute("USE %s;" % nomFichier)
                 dictResultats["fichier"] =  (True, None)
             else:
-                dictResultats["fichier"] =  (False, u"Accès au fichier impossible.")
+                dictResultats["fichier"] =  (False, _(u"Accès au fichier impossible."))
         except Exception, err :
             dictResultats["fichier"] =  (False, err)
     
@@ -952,7 +954,7 @@ def TestConnexionMySQL(typeTest="fichier", nomFichier=""):
 ##cursor.execute("SHOW VARIABLES like 'character_set_%';")
 ##base.set_character_set('utf8')
 ##print cursor.fetchall()
-##valeur = u"2 euros > 2¤"
+##valeur = _(u"2 euros > 2¤")
 ##cursor.execute("INSERT INTO t1 (champ1) VALUES ('%s');" % valeur.encode("utf-8") ) 
 ##base.commit()
 ##base.close()

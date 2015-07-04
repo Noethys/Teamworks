@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
@@ -24,20 +26,20 @@ class MyFrame(wx.Frame):
         
         self.panel = wx.Panel(self, -1)
         self.sizer_contenu_staticbox = wx.StaticBox(self.panel, -1, "")
-        self.label_date = wx.StaticText(self.panel, -1, u"Date :")
+        self.label_date = wx.StaticText(self.panel, -1, _(u"Date :"))
         self.ctrl_date = wx.DatePickerCtrl(self.panel, -1, style=wx.DP_DROPDOWN)
-        self.label_heure = wx.StaticText(self.panel, -1, u"Heure :")
+        self.label_heure = wx.StaticText(self.panel, -1, _(u"Heure :"))
         self.ctrl_heure = masked.TextCtrl(self.panel, -1, "", size=(60, -1), style=wx.TE_CENTRE, mask = "##:##", validRegex   = "[0-2][0-9]:[0-5][0-9]")
         self.ctrl_heure.SetCtrlParameters(invalidBackgroundColour = "PINK")
-        self.label_avis = wx.StaticText(self.panel, -1, u"Avis :")
-        listeImages = [ (u"Avis inconnu", "Smiley_question.png"), (u"Pas convaincant", "Smiley_nul.png"), (u"Mitigé", "Smiley_bof.png"), (u"Bien", "Smiley_bien.png"), (u"Très bien", "Smiley_genial.png"),]
+        self.label_avis = wx.StaticText(self.panel, -1, _(u"Avis :"))
+        listeImages = [ (_(u"Avis inconnu"), "Smiley_question.png"), (_(u"Pas convaincant"), "Smiley_nul.png"), (_(u"Mitigé"), "Smiley_bof.png"), (_(u"Bien"), "Smiley_bien.png"), (_(u"Très bien"), "Smiley_genial.png"),]
         self.ctrl_avis = BitmapComboBox(self.panel, listeImages=listeImages)
-        self.label_remarques = wx.StaticText(self.panel, -1, u"Commentaire :")
+        self.label_remarques = wx.StaticText(self.panel, -1, _(u"Commentaire :"))
         self.ctrl_remarques = wx.TextCtrl(self.panel, -1, "", style=wx.TE_MULTILINE)
         
-        self.bouton_aide = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         if self.IDentretien != None : 
             self.Importation()
@@ -54,23 +56,23 @@ class MyFrame(wx.Frame):
     def __set_properties(self):
         nom_complet = self.GetNomCandidat(self.IDcandidat, self.IDpersonne)
         if self.IDentretien == None :
-            type = u"Saisie"
+            type = _(u"Saisie")
         else:
-            type = u"Modification"
+            type = _(u"Modification")
         if nom_complet == " None" : 
-            self.SetTitle(u"%s d'un entretien" % type)
+            self.SetTitle(_(u"%s d'un entretien") % type)
         else:
-            self.SetTitle(u"%s d'un entretien pour %s" % (type, nom_complet))
+            self.SetTitle(_(u"%s d'un entretien pour %s") % (type, nom_complet))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.ctrl_date.SetToolTipString(u"Saisissez la date de l'entretien")
-        self.ctrl_heure.SetToolTipString(u"Saisissez l'heure de l'entretien")
-        self.ctrl_avis.SetToolTipString(u"Sélectionnez une appréciation de l'entretien")
-        self.ctrl_remarques.SetToolTipString(u"Saisissez l'avis complet émis après l'entretien")
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider la saisie des données")
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler")
+        self.ctrl_date.SetToolTipString(_(u"Saisissez la date de l'entretien"))
+        self.ctrl_heure.SetToolTipString(_(u"Saisissez l'heure de l'entretien"))
+        self.ctrl_avis.SetToolTipString(_(u"Sélectionnez une appréciation de l'entretien"))
+        self.ctrl_remarques.SetToolTipString(_(u"Saisissez l'avis complet émis après l'entretien"))
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider la saisie des données"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
         self.SetMinSize((450, 330))
 
     def __do_layout(self):
@@ -182,7 +184,7 @@ class MyFrame(wx.Frame):
         
     def OnBoutonAide(self, event):
 ##        FonctionsPerso.Aide(39)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -196,7 +198,7 @@ class MyFrame(wx.Frame):
         
         heure = self.ctrl_heure.GetValue()
         if heure == "" or heure == "  :  " :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir une heure", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir une heure"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_heure.SetFocus()

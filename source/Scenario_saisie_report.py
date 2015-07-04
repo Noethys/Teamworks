@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import datetime
@@ -20,7 +22,7 @@ except: pass
 class MyDialog(wx.Dialog):
     """ Saisie d'une prévision pour un scénario """
     def __init__(self, parent, IDscenario=None, IDpersonne=0, IDcategorie=0, report=None, mode_heure=0):
-        wx.Dialog.__init__(self, parent, id=-1, title=u"Saisie d'un report", size=(440, 420))
+        wx.Dialog.__init__(self, parent, id=-1, title=_(u"Saisie d'un report"), size=(440, 420))
         self.IDscenario = IDscenario
         self.IDpersonne = IDpersonne
         self.report = report
@@ -29,46 +31,46 @@ class MyDialog(wx.Dialog):
         self.IDcategorie = IDcategorie
 
         # Label
-        self.label_intro = wx.StaticText(self, -1, u"Saisissez un report :")
+        self.label_intro = wx.StaticText(self, -1, _(u"Saisissez un report :"))
         
         self.staticbox_periode = wx.StaticBox(self, -1, u"")
         
         # Manuel
-        self.radio_1 = wx.RadioButton(self, -1, u"Manuel", style = wx.RB_GROUP )
+        self.radio_1 = wx.RadioButton(self, -1, _(u"Manuel"), style = wx.RB_GROUP )
                 
         # Type
-        self.label_type = wx.StaticText(self, -1, u"Type :")
-        self.ctrl_type = wx.Choice(self, -1, choices = [u"Heures à réaliser (+)", u"Heures déjà réalisées (-)"])
+        self.label_type = wx.StaticText(self, -1, _(u"Type :"))
+        self.ctrl_type = wx.Choice(self, -1, choices = [_(u"Heures à réaliser (+)"), _(u"Heures déjà réalisées (-)")])
         self.ctrl_type.SetSelection(0)
         
         # Temps
-        self.label_temps = wx.StaticText(self, -1, u"Temps :")
+        self.label_temps = wx.StaticText(self, -1, _(u"Temps :"))
         self.ctrl_temps_heures = wx.TextCtrl(self, -1, u"0", size=(50, -1), style=wx.TE_RIGHT)
         self.label_temps_signe = wx.StaticText(self, -1, u"h")
         self.ctrl_temps_minutes = wx.TextCtrl(self, -1, u"00", size=(30, -1))
         
         # Mode Heure/décimal
-        self.label_mode = wx.StaticText(self, -1, u"Mode :")
-        self.ctrl_modeHeure = wx.Choice(self, -1, choices = [u"Heure", u"Décimal"])
+        self.label_mode = wx.StaticText(self, -1, _(u"Mode :"))
+        self.ctrl_modeHeure = wx.Choice(self, -1, choices = [_(u"Heure"), _(u"Décimal")])
         self.ctrl_modeHeure.SetSelection(self.mode_heure)
         
         # Automatique
-        self.radio_2 = wx.RadioButton(self, -1, u"Automatique")
+        self.radio_2 = wx.RadioButton(self, -1, _(u"Automatique"))
         
         # ListView Scenarios
-        self.label_scenario = wx.StaticText(self, -1, u"Scénario :")
+        self.label_scenario = wx.StaticText(self, -1, _(u"Scénario :"))
         self.listview_scenarios = ListView(self, -1, IDscenario=self.IDscenario, IDpersonne=self.IDpersonne, style=wx.LC_REPORT|wx.SUNKEN_BORDER)
         self.bouton_apercu = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Loupe.png", wx.BITMAP_TYPE_ANY))
         self.bouton_apercu.Enable(False)
         
         # Choix catégorie
-        self.label_categorie = wx.StaticText(self, -1, u"Catégorie :")
+        self.label_categorie = wx.StaticText(self, -1, _(u"Catégorie :"))
         self.ctrl_categorie = wx.combo.BitmapComboBox(self, style=wx.CB_READONLY)
         self.InitCombo(IDscenario=None)
         
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -101,7 +103,7 @@ class MyDialog(wx.Dialog):
         if self.mode_heure == 1 :
             self.ConvertModeHeure(self.ctrl_temps_minutes.GetValue(), 1)
             self.ctrl_modeHeure.SetSelection(1)
-            self.ctrl_temps_minutes.SetToolTipString(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")
+            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)"))
         
         if self.IDpersonne == None :
             self.radio_2.Enable(False)
@@ -110,8 +112,8 @@ class MyDialog(wx.Dialog):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
-        self.ctrl_temps_heures.SetToolTipString(u"Saisissez un nombre d'heures")
-        self.ctrl_temps_minutes.SetToolTipString(u"Saisissez un nombre de minutes (entre 0 et 59)")
+        self.ctrl_temps_heures.SetToolTipString(_(u"Saisissez un nombre d'heures"))
+        self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -237,9 +239,9 @@ class MyDialog(wx.Dialog):
         
         # Liste de groupes de catégories
         listeGroupes = [ 
-            (10000, u"Catégories scénarisées", listeCategoriesPrevues),
-            (10001, u"Catégories utilisées", listeCategoriesUtilisees),
-            (10002, u"Autres catégories", listeAutresCategories),
+            (10000, _(u"Catégories scénarisées"), listeCategoriesPrevues),
+            (10001, _(u"Catégories utilisées"), listeCategoriesUtilisees),
+            (10002, _(u"Autres catégories"), listeAutresCategories),
             ]
         
         # Images pour le bitmapComboBox
@@ -253,9 +255,9 @@ class MyDialog(wx.Dialog):
             
             for IDcategorie in listeCatGroupe :
                 if IDcategorie == 999 :
-                    IDcategorie, nom_categorie, IDcat_parent, ordre, couleur = 999, u"Sans catégorie", 0, 0, "(255, 255, 255)"
+                    IDcategorie, nom_categorie, IDcat_parent, ordre, couleur = 999, _(u"Sans catégorie"), 0, 0, "(255, 255, 255)"
                 elif IDcategorie == 1000 :
-                    IDcategorie, nom_categorie, IDcat_parent, ordre, couleur = 1000, u"Total", 0, 0, "(255, 255, 255)"
+                    IDcategorie, nom_categorie, IDcat_parent, ordre, couleur = 1000, _(u"Total"), 0, 0, "(255, 255, 255)"
                 else:
                     IDcategorie, nom_categorie, IDcat_parent, ordre, couleur = dictCategories[IDcategorie]
                 couleur = self.FormateCouleur(couleur)
@@ -284,7 +286,7 @@ class MyDialog(wx.Dialog):
             signe = "- "
         if self.mode_heure == 0 :
             # Mode Heure
-            texte = u"%s%sh%s" % (signe, hr, mn)
+            texte = _(u"%s%sh%s") % (signe, hr, mn)
         else:
             # Mode décimal
             minDecimal = int(mn)*100/60
@@ -388,7 +390,7 @@ class MyDialog(wx.Dialog):
         
         if erreur == True :
             self.ctrl_temps_heures.SetValue("0")
-##            dlg = wx.MessageDialog(self, u"Le nombre d'heures semble inexact. Veuillez vérifier votre saisie.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+##            dlg = wx.MessageDialog(self, _(u"Le nombre d'heures semble inexact. Veuillez vérifier votre saisie."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            self.ctrl_temps_heures.SetFocus()
@@ -414,7 +416,7 @@ class MyDialog(wx.Dialog):
         if erreur == True :
             self.ctrl_temps_minutes.SetValue("00")
             minutes = 0
-##            dlg = wx.MessageDialog(self, u"Le nombre de minutes semble inexact. Veuillez vérifier votre saisie.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+##            dlg = wx.MessageDialog(self, _(u"Le nombre de minutes semble inexact. Veuillez vérifier votre saisie."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
 ##            dlg.ShowModal()
 ##            dlg.Destroy()
 ##            self.ctrl_temps_minutes.SetFocus()
@@ -447,12 +449,12 @@ class MyDialog(wx.Dialog):
             resultat = min * 60 / 100
             self.label_temps_signe.SetLabel(u"h")
             self.ctrl_temps_minutes.SetValue( "%02d" % resultat)
-            self.ctrl_temps_minutes.SetToolTipString(u"Saisissez un nombre de minutes (entre 0 et 59)")
+            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
         if mode == 1 :
             resultat = min * 100 / 60 
             self.label_temps_signe.SetLabel(u".")
             self.ctrl_temps_minutes.SetValue(str(resultat))
-            self.ctrl_temps_minutes.SetToolTipString(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")
+            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)"))
         self.mode_heure = mode
 
     def GetReport(self):
@@ -467,14 +469,14 @@ class MyDialog(wx.Dialog):
             minutes = int(self.ctrl_temps_minutes.GetValue())
             if self.mode_heure == 1 : 
                 minutes = minutes * 60 / 100
-            report = u"M%s%02d:%02d" % (signe, heures, minutes)
+            report = _(u"M%s%02d:%02d") % (signe, heures, minutes)
             
         else:
             # Mode Auto
             IDscenario = self.listview_scenarios.GetSelection()
             indexCategorie = self.ctrl_categorie.GetSelection()
             IDCategorie = self.ctrl_categorie.GetClientData(indexCategorie)
-            report = u"A%d;%d" % (IDscenario, IDCategorie)
+            report = _(u"A%d;%d") % (IDscenario, IDCategorie)
         
         return report
     
@@ -488,21 +490,21 @@ class MyDialog(wx.Dialog):
             # Mode Auto
             IDscenario = self.listview_scenarios.GetSelection()
             if IDscenario == None :
-                dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner un scénario dans la liste proposée", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner un scénario dans la liste proposée"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
             
             index = self.ctrl_categorie.GetSelection()
             if index == -1 :
-                dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner une catégorie dans la liste proposée", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner une catégorie dans la liste proposée"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
             
             IDCategorie = self.ctrl_categorie.GetClientData(index)
             if IDCategorie >= 10000:
-                dlg = wx.MessageDialog(self, u"Vous devez obligatoirement sélectionner une catégorie dans la liste proposée", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+                dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner une catégorie dans la liste proposée"), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
@@ -620,14 +622,14 @@ class ListView(ObjectListView):
         self.useExpansionColumn = True
         self.SetColumns([
             ColumnDefn(u"", "left", 0, ""),
-            ColumnDefn(u"ID", "center", 0, "IDscenario"),
-            ColumnDefn(u"Nom", "left", 80, "nom"),
-            ColumnDefn(u"Description", "left", 60, "description"),
-            ColumnDefn(u"Date début", "left", 70, "date_debut", stringConverter=FormateDate),
-            ColumnDefn(u"Date fin", "left", 90, "date_fin", stringConverter=FormateDate),
+            ColumnDefn(_(u"ID"), "center", 0, "IDscenario"),
+            ColumnDefn(_(u"Nom"), "left", 80, "nom"),
+            ColumnDefn(_(u"Description"), "left", 60, "description"),
+            ColumnDefn(_(u"Date début"), "left", 70, "date_debut", stringConverter=FormateDate),
+            ColumnDefn(_(u"Date fin"), "left", 90, "date_fin", stringConverter=FormateDate),
         ])
         self.SetSortColumn(self.columns[4])
-        self.SetEmptyListMsg(u"Aucun scénario enregistré")
+        self.SetEmptyListMsg(_(u"Aucun scénario enregistré"))
         self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
         self.SetObjects(self.donnees)
         self.useAlternateBackColors = False

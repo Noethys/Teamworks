@@ -8,8 +8,10 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+from UTILS_Traduction import _
 import Image
 import wx
+import CTRL_Bouton_image
 import os
 
 

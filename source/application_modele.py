@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import sys
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import GestionDB
@@ -27,11 +29,11 @@ class Panel(wx.Panel):
         
         self.panel_base_1 = wx.Panel(self, -1)
         self.panel_base_2 = wx.Panel(self.panel_base_1, -1)
-        self.sizer_modeles_staticbox = wx.StaticBox(self.panel_base_2, -1, u"Sélection des modèles")
-        self.sizer_parametres_staticbox = wx.StaticBox(self.panel_base_2, -1, u"Sélection de la période et des personnes")
+        self.sizer_modeles_staticbox = wx.StaticBox(self.panel_base_2, -1, _(u"Sélection des modèles"))
+        self.sizer_parametres_staticbox = wx.StaticBox(self.panel_base_2, -1, _(u"Sélection de la période et des personnes"))
         self.radio_btn_1 = wx.RadioButton(self.panel_base_2, -1, u"")
-        self.radio_btn_2 = wx.RadioButton(self.panel_base_2, -1, u"Selon les paramètres suivants :")
-        self.label_periode = wx.StaticText(self.panel_base_2, -1, u"Période du :")
+        self.radio_btn_2 = wx.RadioButton(self.panel_base_2, -1, _(u"Selon les paramètres suivants :"))
+        self.label_periode = wx.StaticText(self.panel_base_2, -1, _(u"Période du :"))
         self.date_debut = wx.DatePickerCtrl(self.panel_base_2, -1, style=wx.DP_DROPDOWN)
         self.label_au = wx.StaticText(self.panel_base_2, -1, "au")
         self.date_fin = wx.DatePickerCtrl(self.panel_base_2, -1, style=wx.DP_DROPDOWN)
@@ -83,13 +85,13 @@ class Panel(wx.Panel):
             self.date_fin.SetValue(date)
 
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un modèle")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un modèle"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier le modèle sélectionné dans la liste")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le modèle sélectionné dans la liste"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le modèle sélectionné dans la liste")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le modèle sélectionné dans la liste"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_dupliquer.SetToolTipString(u"Cliquez ici pour dupliquer le modèle sélectionné dans la liste")
+        self.bouton_dupliquer.SetToolTipString(_(u"Cliquez ici pour dupliquer le modèle sélectionné dans la liste"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
@@ -150,13 +152,13 @@ class Panel(wx.Panel):
     def SetLabelRadio1(self):
         """ Assigne un label au radio1 """
         if self.parent.GetName() == "panel_applicModele_FicheInd" :
-            if len(self.selectionLignes) == 0 : txt = u"Selon les dates sélectionnées dans le calendrier"
-            elif len(self.selectionLignes) == 1 : txt = u"Selon la date sélectionnée dans le calendrier"
-            else : txt = u"Selon les " + str(len(self.selectionLignes)) + u" dates sélectionnées dans le calendrier"
+            if len(self.selectionLignes) == 0 : txt = _(u"Selon les dates sélectionnées dans le calendrier")
+            elif len(self.selectionLignes) == 1 : txt = _(u"Selon la date sélectionnée dans le calendrier")
+            else : txt = _(u"Selon les ") + str(len(self.selectionLignes)) + _(u" dates sélectionnées dans le calendrier")
         else :
-            if len(self.selectionLignes) == 0 : txt = u"Selon les lignes sélectionnées dans le planning"
-            elif len(self.selectionLignes) == 1 : txt = u"Selon la ligne sélectionnée dans le planning"
-            else : txt = u"Selon les " + str(len(self.selectionLignes)) + u" lignes sélectionnées dans le planning"
+            if len(self.selectionLignes) == 0 : txt = _(u"Selon les lignes sélectionnées dans le planning")
+            elif len(self.selectionLignes) == 1 : txt = _(u"Selon la ligne sélectionnée dans le planning")
+            else : txt = _(u"Selon les ") + str(len(self.selectionLignes)) + _(u" lignes sélectionnées dans le planning")
         self.radio_btn_1.SetLabel(txt)
         if len(self.selectionLignes) == 0 :
             self.radio_btn_1.Enable(False)
@@ -213,7 +215,7 @@ class Panel(wx.Panel):
         # Vérifie qu'au moins un modèle a été coché
         selectionModeles = self.list_ctrl_modeles.selections
         if len(selectionModeles) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous devez cocher au moins un modèle dans la liste proposée.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez cocher au moins un modèle dans la liste proposée."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
@@ -324,7 +326,7 @@ class Panel(wx.Panel):
         
         if chevauchement > 0 :
             nbreModelesCoches = len(selectionModeles)
-            txt = u"Les " + str(nbreModelesCoches) + u" modèles que vous avez sélectionnés ne sont pas compatibles entre eux : Des tâches se chevauchent. \n\nDéselectionnez ou modifiez les tâches de l'un des modèles."
+            txt = _(u"Les ") + str(nbreModelesCoches) + _(u" modèles que vous avez sélectionnés ne sont pas compatibles entre eux : Des tâches se chevauchent. \n\nDéselectionnez ou modifiez les tâches de l'un des modèles.")
             dlg = wx.MessageDialog(self, txt, "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
@@ -372,7 +374,7 @@ class Panel(wx.Panel):
             
             # Vérifie que au moins 1 nom de personnes a été coché dans le listCtrl
             if len(self.selectionPersonnes) == 0 :
-                dlg = wx.MessageDialog(self, u"Vous devez cocher au moins un nom dans la liste des personnes.", "Erreur", wx.OK)  
+                dlg = wx.MessageDialog(self, _(u"Vous devez cocher au moins un nom dans la liste des personnes."), "Erreur", wx.OK)  
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
@@ -384,7 +386,7 @@ class Panel(wx.Panel):
             date_fin = datetime.date(date_tmp.GetYear(), date_tmp.GetMonth()+1, date_tmp.GetDay())
             
             if date_debut > date_fin :
-                dlg = wx.MessageDialog(self, u"La date de début doit être inférieure à la date de fin.", "Erreur de saisie", wx.OK)  
+                dlg = wx.MessageDialog(self, _(u"La date de début doit être inférieure à la date de fin."), "Erreur de saisie", wx.OK)  
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
@@ -423,7 +425,7 @@ class Panel(wx.Panel):
                             listeCreationsTaches.append(detailTache)         
         
         if len(listeCreationsTaches) == 0 :
-            dlg = wx.MessageDialog(self, u"Selon les paramètres que vous avez saisis, aucune tâche n'est à créer...", "Information", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Selon les paramètres que vous avez saisis, aucune tâche n'est à créer..."), "Information", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -545,18 +547,18 @@ class Panel(wx.Panel):
                 
         if nbreInvalides != 0 :
             message = ""
-            if nbreValides == 0 : message += u"Aucune tâche n'a été correctement enregistrée.\n\nL"
-            elif nbreValides == 1 : message += str(nbreValides) + u" tâche a été correctement enregistrée.\n\nMais l"
-            else: message += str(nbreValides) + u" tâches ont été correctement enregistrées.\n\nMais l"
+            if nbreValides == 0 : message += _(u"Aucune tâche n'a été correctement enregistrée.\n\nL")
+            elif nbreValides == 1 : message += str(nbreValides) + _(u" tâche a été correctement enregistrée.\n\nMais l")
+            else: message += str(nbreValides) + _(u" tâches ont été correctement enregistrées.\n\nMais l")
             if nbreInvalides == 1 :
-                message += u"a tâche de la liste suivante n'a pas pu être saisie car elle chevauchait une ou plusieurs des tâches existantes. "
-                message += u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celle-ci.\n\n"
+                message += _(u"a tâche de la liste suivante n'a pas pu être saisie car elle chevauchait une ou plusieurs des tâches existantes. ")
+                message += _(u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celle-ci.\n\n")
             else:
-                message += u"es " + str(nbreInvalides) + u" tâches de la liste suivante n'ont pas pu être saisies car elles chevauchaient des tâches existantes. "
-                message += u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celles-ci.\n\n"
+                message += _(u"es ") + str(nbreInvalides) + _(u" tâches de la liste suivante n'ont pas pu être saisies car elles chevauchaient des tâches existantes. ")
+                message += _(u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celles-ci.\n\n")
             for exception in listeExceptions :
                 message += "   > Le " + exception[1] + " pour " + exception[0] + " de " + exception[2][0] + u" à " + exception[2][1] + ".\n"
-            dlg = wx.lib.dialogs.ScrolledMessageDialog(self, message, u"Rapport d'erreurs")
+            dlg = wx.lib.dialogs.ScrolledMessageDialog(self, message, _(u"Rapport d'erreurs"))
             dlg.ShowModal()
             
         #print "fin de la procedure d'enregistrement !!!"
@@ -641,7 +643,7 @@ class Panel(wx.Panel):
         """ Modifier un modèle """
         index = self.list_ctrl_modeles.GetFirstSelected()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un modèle dans la liste proposée", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un modèle dans la liste proposée"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
@@ -653,13 +655,13 @@ class Panel(wx.Panel):
         """ Suppression d'un modèle """
         index = self.list_ctrl_modeles.GetFirstSelected()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un modèle dans la liste proposée", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un modèle dans la liste proposée"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
         IDmodele = self.list_ctrl_modeles.GetItemData(index)
         nomModele = self.list_ctrl_modeles.dictModeles[IDmodele][0]
-        dlg = wx.MessageDialog(self, u"Souhaitez-vous vraiment supprimer le modèle '" + nomModele + "' ?",  u"Suppression d'un modèle", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+        dlg = wx.MessageDialog(self, _(u"Souhaitez-vous vraiment supprimer le modèle '") + nomModele + "' ?",  _(u"Suppression d'un modèle"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
         if dlg.ShowModal() == wx.ID_NO :
             dlg.Destroy() 
             return
@@ -685,13 +687,13 @@ class Panel(wx.Panel):
         # Demande de confirmation
         index = self.list_ctrl_modeles.GetFirstSelected()
         if index == -1 : 
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un modèle dans la liste proposée", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un modèle dans la liste proposée"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
         IDmodele = self.list_ctrl_modeles.GetItemData(index)
         nomModele = self.list_ctrl_modeles.dictModeles[IDmodele][0]
-        dlg = wx.MessageDialog(self, u"Souhaitez-vous vraiment dupliquer le modèle '" + nomModele + u"' ?",  u"Duplication d'un modèle", wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
+        dlg = wx.MessageDialog(self, _(u"Souhaitez-vous vraiment dupliquer le modèle '") + nomModele + u"' ?",  _(u"Duplication d'un modèle"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
         if dlg.ShowModal() == wx.ID_NO :
             dlg.Destroy() 
             return
@@ -702,7 +704,7 @@ class Panel(wx.Panel):
         saisieModele.Show()
         
         saisieModele.IDmodele = 0
-        saisieModele.text_nom.SetValue(u"Copie de %s" % nomModele)
+        saisieModele.text_nom.SetValue(_(u"Copie de %s") % nomModele)
         
         
         
@@ -894,7 +896,7 @@ class listCtrl_Modeles(wx.ListCtrl, CheckListCtrlMixin):
         menuPop = wx.Menu()
         
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 10, u"Créer un nouveau modèle")
+        item = wx.MenuItem(menuPop, 10, _(u"Créer un nouveau modèle"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -905,21 +907,21 @@ class listCtrl_Modeles(wx.ListCtrl, CheckListCtrlMixin):
             menuPop.AppendSeparator()
             
             # Item Modifier
-            item = wx.MenuItem(menuPop, 20, u"Modifier")
+            item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
             bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
             self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
             # Item Dupliquer
-            item = wx.MenuItem(menuPop, 40, u"Dupliquer")
+            item = wx.MenuItem(menuPop, 40, _(u"Dupliquer"))
             bmp = wx.Bitmap("Images/16x16/Dupliquer.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
             self.Bind(wx.EVT_MENU, self.Menu_Dupliquer, id=40)
             
             # Item Supprimer
-            item = wx.MenuItem(menuPop, 30, u"Supprimer")
+            item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
             bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
@@ -944,7 +946,7 @@ class listCtrl_Modeles(wx.ListCtrl, CheckListCtrlMixin):
         
 class frm_application_modele(wx.Frame):
     def __init__(self, parent, selectionLignes=[], selectionPersonnes=[], selectionDates=(None, None) ):
-        wx.Frame.__init__(self, parent, -1, title=u"Application de modèles", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, -1, title=_(u"Application de modèles"), style=wx.DEFAULT_FRAME_STYLE)
         self.panel = Panel(self, selectionLignes=selectionLignes, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates)
         
         # Propriétés

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
@@ -18,13 +20,13 @@ class MyFrame(wx.Frame):
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.sizer_contenu_staticbox = wx.StaticBox(self.panel_base, -1, "")
-        self.label_nom = wx.StaticText(self.panel_base, -1, u"Nom du pays :")
+        self.label_nom = wx.StaticText(self.panel_base, -1, _(u"Nom du pays :"))
         self.text_nom = wx.TextCtrl(self.panel_base, -1, "")
-        self.label_nation = wx.StaticText(self.panel_base, -1, u"Nationalité :")
+        self.label_nation = wx.StaticText(self.panel_base, -1, _(u"Nationalité :"))
         self.text_nation = wx.TextCtrl(self.panel_base, -1, "")
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         self.IDpays = IDpays
         if IDpays != 0 : 
@@ -39,17 +41,17 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Gestion des pays")
+        self.SetTitle(_(u"Gestion des pays"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_nom.SetToolTipString(u"Saisissez ici le nom du pays")
-        self.text_nation.SetToolTipString(u"Saisissez ici la nationalité du pays")
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.text_nom.SetToolTipString(_(u"Saisissez ici le nom du pays"))
+        self.text_nation.SetToolTipString(_(u"Saisissez ici la nationalité du pays"))
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((326, 195))
 
@@ -136,7 +138,7 @@ class MyFrame(wx.Frame):
         # Vérifie que une valeur a été saisie
         valeur = self.text_nom.GetValue()
         if valeur == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir au moins un nom de pays !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir au moins un nom de pays !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_nom.SetFocus()

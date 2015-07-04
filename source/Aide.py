@@ -6,25 +6,27 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import os
 
 
 class Aide(wx.Dialog):
     """ Aide provisoire """
-    def __init__(self, parent, id=-1, title=u"Aide"):
+    def __init__(self, parent, id=-1, title=_(u"Aide")):
         wx.Dialog.__init__(self, parent, id, title, size=(350, 200))
 
         # Label
-        txt = u"Le système d'aide n'est pas encore fonctionnel.\n\nVous pouvez tout de même trouver actuellement de l'aide sur le \nsite de TeamWorks."
+        txt = _(u"Le système d'aide n'est pas encore fonctionnel.\n\nVous pouvez tout de même trouver actuellement de l'aide sur le \nsite de TeamWorks.")
         self.label = wx.StaticText(self, -1, txt)
         
         # Boutons
         self.bouton_web = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/acces_site.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_web.SetToolTipString(u"Cliquez ici pour accéder au site de TeamWorks")
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour fermer")
+        self.bouton_web.SetToolTipString(_(u"Cliquez ici pour accéder au site de TeamWorks"))
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour fermer"))
         
         self.__do_layout()
         

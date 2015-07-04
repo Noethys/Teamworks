@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import os
 
@@ -17,7 +19,7 @@ import platebtn # L'event ON ERASE BACKGROUND a été désactivé car il faisait pla
 
 class MyFrame(wx.Dialog):
     def __init__(self, parent, checkAffichage=False, afficherDernierFichier=True, nomDernierFichier=""):
-        wx.Dialog.__init__(self, parent, -1, title=u"Assistant de démarrage", size=(730, -1))
+        wx.Dialog.__init__(self, parent, -1, title=_(u"Assistant de démarrage"), size=(730, -1))
         self.parent = parent
         self.choix = None
         
@@ -25,16 +27,16 @@ class MyFrame(wx.Dialog):
         if "[RESEAU]" in nomDernierFichier :
             nomDernierFichier = nomDernierFichier[nomDernierFichier.index("[RESEAU]"):]
         
-        self.label_intro = wx.StaticText(self, -1, u"Bienvenue dans TeamWorks !")
+        self.label_intro = wx.StaticText(self, -1, _(u"Bienvenue dans TeamWorks !"))
         
         # Boutons de commande spéciaux
         self.listeCommandes = [
-            [ 1, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_video.png", wx.BITMAP_TYPE_ANY), u"Visionner une vidéo de présentation de TeamWorks" ],
-            [ 2, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_nouveau.png", wx.BITMAP_TYPE_ANY), u"Créer un nouveau fichier" ],
-            [ 3, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_tutoriels.png", wx.BITMAP_TYPE_ANY), u"Découvrir en détail les fonctions principales de TeamWorks" ],
-            [ 4, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_ouvrir.png", wx.BITMAP_TYPE_ANY), u"Ouvrir un fichier existant" ],
-            [ 5, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_exemple.png", wx.BITMAP_TYPE_ANY), u"Charger le fichier Exemple" ],
-            [ 6, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_dernier.png", wx.BITMAP_TYPE_ANY), u"Charger le dernier fichier ouvert : %s" % nomDernierFichier ],
+            [ 1, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_video.png", wx.BITMAP_TYPE_ANY), _(u"Visionner une vidéo de présentation de TeamWorks") ],
+            [ 2, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_nouveau.png", wx.BITMAP_TYPE_ANY), _(u"Créer un nouveau fichier") ],
+            [ 3, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_tutoriels.png", wx.BITMAP_TYPE_ANY), _(u"Découvrir en détail les fonctions principales de TeamWorks") ],
+            [ 4, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_ouvrir.png", wx.BITMAP_TYPE_ANY), _(u"Ouvrir un fichier existant") ],
+            [ 5, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_exemple.png", wx.BITMAP_TYPE_ANY), _(u"Charger le fichier Exemple") ],
+            [ 6, "", wx.Bitmap("Images/BoutonsImages/Bienvenue_dernier.png", wx.BITMAP_TYPE_ANY), _(u"Charger le dernier fichier ouvert : %s") % nomDernierFichier ],
             ]
         
         bstyle = platebtn.PB_STYLE_NOBG #| platebtn.PB_STYLE_GRADIENT 
@@ -49,11 +51,11 @@ class MyFrame(wx.Dialog):
         if afficherDernierFichier == False :
             bouton.Show(False)
             
-        self.check_affichage = wx.CheckBox(self, -1, u"Ne plus afficher")
+        self.check_affichage = wx.CheckBox(self, -1, _(u"Ne plus afficher"))
         self.check_affichage.SetValue(checkAffichage)
         
         # Boutons classiques
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
         self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Fermer_assistant.png", wx.BITMAP_TYPE_ANY))
         
         self.__set_properties()
@@ -66,11 +68,11 @@ class MyFrame(wx.Dialog):
         
         
     def __set_properties(self):
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour fermer l'assistant et utiliser TeamWorks")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour fermer l'assistant et utiliser TeamWorks"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.check_affichage.SetToolTipString(u"Cochez cette case pour ne plus faire apparaître cet assistant au démarrage de TeamWorks. \nLe dernier fichier utilisé sera alors automatiquement chargé au démarrage. \n\nRemarque : Il vous sera toujours possible de recharger l'assistant à partir du menu 'fichier'.")
+        self.check_affichage.SetToolTipString(_(u"Cochez cette case pour ne plus faire apparaître cet assistant au démarrage de TeamWorks. \nLe dernier fichier utilisé sera alors automatiquement chargé au démarrage. \n\nRemarque : Il vous sera toujours possible de recharger l'assistant à partir du menu 'fichier'."))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
@@ -24,9 +26,9 @@ class MyDialog(wx.Dialog):
         self.label_password2 = wx.StaticText(self, -1, "Confirmation :")
         self.text_password2 = wx.TextCtrl(self, -1, "", style=wx.TE_PASSWORD)
         
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -35,15 +37,15 @@ class MyDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         
     def __set_properties(self):
-        self.SetTitle(u"Saisie d'un mot de passe")
+        self.SetTitle(_(u"Saisie d'un mot de passe"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Cadenas.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_password1.SetToolTipString(u"Saisissez ici votre mot de passe")
-        self.text_password2.SetToolTipString(u"Saisissez ici une deuxième fois votre mot de passe pour confirmation")
+        self.text_password1.SetToolTipString(_(u"Saisissez ici votre mot de passe"))
+        self.text_password2.SetToolTipString(_(u"Saisissez ici une deuxième fois votre mot de passe pour confirmation"))
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=0, hgap=0)
@@ -86,7 +88,7 @@ class MyDialog(wx.Dialog):
         
         varPassword1 = self.text_password1.GetValue()
         if varPassword1 == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir un mot de passe valide !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir un mot de passe valide !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_password1.SetFocus()
@@ -94,14 +96,14 @@ class MyDialog(wx.Dialog):
         
         varPassword2 = self.text_password2.GetValue()
         if varPassword2 == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez confirmer le mot de passe !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez confirmer le mot de passe !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_password2.SetFocus()
             return
         
         if varPassword1 != varPassword2 :
-            dlg = wx.MessageDialog(self, u"Vous avez saisi deux mots de passe différents ! \n\nVeuillez recommencer votre saisie.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous avez saisi deux mots de passe différents ! \n\nVeuillez recommencer votre saisie."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_password1.SetFocus()
@@ -114,6 +116,6 @@ class MyDialog(wx.Dialog):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frm = MyDialog(None, texteIntro=u"Bonjour !")
+    frm = MyDialog(None, texteIntro=_(u"Bonjour !"))
     frm.ShowModal()
     app.MainLoop()

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import Saisie_password_dialog
@@ -16,15 +18,15 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, name="panel_config_verrouillage_entretien", style=wx.TAB_TRAVERSAL)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Verrouillage des informations des entretiens", u"")
-        texteIntro = u"Vous pouvez protéger l'accès aux informations liées aux entretiens d'embauche (avis et commentaires). L'utilisateur devra ainsi saisir un mot de passe pour les afficher. Cochez la case et saisissez le mot de passe souhaité à deux reprises. Pour désactiver la protection, il vous suffit de décocher cette case."
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Verrouillage des informations des entretiens"), u"")
+        texteIntro = _(u"Vous pouvez protéger l'accès aux informations liées aux entretiens d'embauche (avis et commentaires). L'utilisateur devra ainsi saisir un mot de passe pour les afficher. Cochez la case et saisissez le mot de passe souhaité à deux reprises. Pour désactiver la protection, il vous suffit de décocher cette case.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
-        self.staticbox = wx.StaticBox(self, -1, u"Protection")
-        self.checkBox = wx.CheckBox(self, -1, u"Activer la protection par mot de passe")
+        self.staticbox = wx.StaticBox(self, -1, _(u"Protection"))
+        self.checkBox = wx.CheckBox(self, -1, _(u"Activer la protection par mot de passe"))
         
         self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         if parent.GetName() != "treebook_configuration" :
             self.bouton_aide.Show(False)
 
@@ -66,7 +68,7 @@ class Panel(wx.Panel):
     def OnCheck(self, event):
         # Enleve le mot de passe
         if self.checkBox.GetValue() == False :
-            dlg = wx.MessageDialog(self, u"Voulez-vous vraiment annuler la protection par mot de passe ?", "Confirmation", wx.YES_NO | wx.ICON_QUESTION)
+            dlg = wx.MessageDialog(self, _(u"Voulez-vous vraiment annuler la protection par mot de passe ?"), "Confirmation", wx.YES_NO | wx.ICON_QUESTION)
             if dlg.ShowModal() == wx.ID_YES:
                 dlg.Destroy()
                 # On vérifie que le mot de passe est connu de l'utilisateur
@@ -75,7 +77,7 @@ class Panel(wx.Panel):
                 if dlg.ShowModal() == wx.ID_OK:
                     pwd = dlg.GetPassword()
                     if pwd != password :
-                        dlg2 = wx.MessageDialog(self, u"Votre mot de passe est erroné.", u"Mot de passe erroné", wx.OK | wx.ICON_ERROR)
+                        dlg2 = wx.MessageDialog(self, _(u"Votre mot de passe est erroné."), _(u"Mot de passe erroné"), wx.OK | wx.ICON_ERROR)
                         dlg2.ShowModal()
                         dlg2.Destroy()
                         self.checkBox.SetValue(True)
@@ -106,23 +108,23 @@ class Panel(wx.Panel):
             
     def OnBoutonAide(self, event):
 ##        FonctionsPerso.Aide(26) 
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()  
         
         
 class SaisiePassword(wx.Dialog):
-    def __init__(self, parent, id=-1, title=u"Saisie du code de déverrouillage"):
+    def __init__(self, parent, id=-1, title=_(u"Saisie du code de déverrouillage")):
         wx.Dialog.__init__(self, parent, id, title)
             
         self.sizer_3_staticbox = wx.StaticBox(self, -1, "")
-        self.label_2 = wx.StaticText(self, -1, u"Pour désactiver le mot de passe, vous devez déjà le saisir :")
+        self.label_2 = wx.StaticText(self, -1, _(u"Pour désactiver le mot de passe, vous devez déjà le saisir :"))
         self.label_password = wx.StaticText(self, -1, "Mot de passe :")
         self.text_password = wx.TextCtrl(self, -1, "", size=(200, -1), style=wx.TE_PASSWORD)
 
         self.bouton_ok = wx.BitmapButton(self, wx.ID_OK, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
-        self.text_password.SetToolTipString(u"Saisissez votre mot de passe ici")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
+        self.text_password.SetToolTipString(_(u"Saisissez votre mot de passe ici"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Cadenas.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -164,9 +166,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.bouton_annuler.Show(False)
         self.__set_properties()
         self.__do_layout()
@@ -180,13 +182,13 @@ class MyFrame(wx.Frame):
         self.SetSize((400, 300))
 
     def __set_properties(self):
-        self.SetTitle(u"Verrouillage des informations des entretiens")
+        self.SetTitle(_(u"Verrouillage des informations des entretiens"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -218,7 +220,7 @@ class MyFrame(wx.Frame):
         
     def Onbouton_aide(self, event):
 ##        FonctionsPerso.Aide(26)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
             

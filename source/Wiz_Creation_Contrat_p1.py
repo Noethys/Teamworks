@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 
 
@@ -24,7 +26,7 @@ class Page(wx.Panel):
         
         self.imgBandeau = wx.StaticBitmap(self, -1, wx.Bitmap("Images/Bandeaux/Contrat.png", wx.BITMAP_TYPE_ANY) )
         
-        self.label_titre = wx.StaticText(self, -1, u"Bienvenue dans l'assistant de création de contrat")
+        self.label_titre = wx.StaticText(self, -1, _(u"Bienvenue dans l'assistant de création de contrat"))
         
         # Label Html
         txtIntro = u"""

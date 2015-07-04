@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import sys
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import GestionDB
@@ -18,8 +20,8 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Configuration de la liste", u"")
-        texteIntro = u"Vous pouvez ici modifier les options d'affichage de la liste :"
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Configuration de la liste"), u"")
+        texteIntro = _(u"Vous pouvez ici modifier les options d'affichage de la liste :")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         self.listCtrl = ListCtrl(self)
         self.listCtrl.SetMinSize((20, 20)) 
@@ -40,11 +42,11 @@ class Panel(wx.Panel):
 
         
     def __set_properties(self):
-        self.bouton_reinit.SetToolTipString(u"Cliquez ici pour réinitialiser les paramètres par défaut de l'affichage")
+        self.bouton_reinit.SetToolTipString(_(u"Cliquez ici pour réinitialiser les paramètres par défaut de l'affichage"))
         self.bouton_reinit.SetSize(self.bouton_reinit.GetBestSize())
-        self.bouton_haut.SetToolTipString(u"Cliquez ici pour déplacer la colonne sélectionnée vers le haut")
+        self.bouton_haut.SetToolTipString(_(u"Cliquez ici pour déplacer la colonne sélectionnée vers le haut"))
         self.bouton_haut.SetSize(self.bouton_haut.GetBestSize())
-        self.bouton_bas.SetToolTipString(u"Cliquez ici pour déplacer la colonne sélectionnée vers le bas")
+        self.bouton_bas.SetToolTipString(_(u"Cliquez ici pour déplacer la colonne sélectionnée vers le bas"))
         self.bouton_bas.SetSize(self.bouton_bas.GetBestSize())
         
     def __do_layout(self):
@@ -76,7 +78,7 @@ class Panel(wx.Panel):
 
     def Reinit(self):
         # Avertissement
-        dlg = wx.MessageDialog(self, u"Souhaitez-vous rétablir l'affichage par défaut ?", "Confirmation", wx.YES_NO | wx.CANCEL | wx.ICON_EXCLAMATION)
+        dlg = wx.MessageDialog(self, _(u"Souhaitez-vous rétablir l'affichage par défaut ?"), "Confirmation", wx.YES_NO | wx.CANCEL | wx.ICON_EXCLAMATION)
         if dlg.ShowModal() == wx.ID_YES:
             
             OL = self.GetParent().GetGrandParent() 
@@ -222,9 +224,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -238,15 +240,15 @@ class MyFrame(wx.Frame):
         self.Centre()
 
     def __set_properties(self):
-        self.SetTitle(u"Configuration de la liste de personnes")
+        self.SetTitle(_(u"Configuration de la liste de personnes"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 

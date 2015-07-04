@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import Image
 import cStringIO
 import GestionDB
@@ -169,28 +171,28 @@ class ImgBox(wx.Window):
 
 
 class MyDialog(wx.Dialog):
-    def __init__(self, parent, image=None, titre=u"Editeur photo"):
+    def __init__(self, parent, image=None, titre=_(u"Editeur photo")):
         wx.Dialog.__init__(self, parent, -1, title=titre, name="frm_photo", size=(700, 600))
         
         # Widgets
         self.imgbox = ImgBox(self,-1, image=image)
         
-        self.staticBox_rotation = wx.StaticBox(self, -1, u"Rotation")
+        self.staticBox_rotation = wx.StaticBox(self, -1, _(u"Rotation"))
         self.bouton_rotation_gauche = wx.BitmapButton(self, -1, wx.Bitmap("Images/22x22/RotationGauche.png", wx.BITMAP_TYPE_PNG))
         self.bouton_rotation_droite = wx.BitmapButton(self, -1, wx.Bitmap("Images/22x22/RotationDroite.png", wx.BITMAP_TYPE_PNG))
         
-        self.staticBox_ratio = wx.StaticBox(self, -1, u"Taille de l'image")
+        self.staticBox_ratio = wx.StaticBox(self, -1, _(u"Taille de l'image"))
         self.slider_ratio = wx.Slider(self, -1,  100, 1, 200, size=(-1, -1), style=wx.SL_HORIZONTAL)
         self.img_loupe_plus = wx.StaticBitmap(self, -1, wx.Bitmap("Images/22x22/zoomPlus.png", wx.BITMAP_TYPE_ANY))
         self.img_loupe_moins = wx.StaticBitmap(self, -1, wx.Bitmap("Images/22x22/zoomMoins.png", wx.BITMAP_TYPE_ANY))
                 
-        self.staticBox_reinit = wx.StaticBox(self, -1, u"Réinitialisation")
+        self.staticBox_reinit = wx.StaticBox(self, -1, _(u"Réinitialisation"))
         self.bouton_reinit = wx.BitmapButton(self, -1, wx.Bitmap("Images/22x22/Photo.png", wx.BITMAP_TYPE_ANY), size=(70, -1))
         
         # Boutons
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -205,18 +207,18 @@ class MyDialog(wx.Dialog):
         
         
     def __set_properties(self):
-        self.SetTitle(u"Editeur de photo")
+        self.SetTitle(_(u"Editeur de photo"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider l'image")
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider l'image"))
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
         
-        self.bouton_rotation_gauche.SetToolTipString(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens inverse des aiguilles d'une montre")
-        self.bouton_rotation_droite.SetToolTipString(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens des aiguilles d'une montre")
-        self.slider_ratio.SetToolTipString(u"Ajustez avec cette fonction ratio\nla taille de la photo")
-        self.bouton_reinit.SetToolTipString(u"Cliquez ici pour réinitialiser la position\net la taille de la photo initiale")
+        self.bouton_rotation_gauche.SetToolTipString(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens inverse des aiguilles d'une montre"))
+        self.bouton_rotation_droite.SetToolTipString(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens des aiguilles d'une montre"))
+        self.slider_ratio.SetToolTipString(_(u"Ajustez avec cette fonction ratio\nla taille de la photo"))
+        self.bouton_reinit.SetToolTipString(_(u"Cliquez ici pour réinitialiser la position\net la taille de la photo initiale"))
         
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -281,7 +283,7 @@ class MyDialog(wx.Dialog):
         return self.imgbox.bmp
                 
     def OnBoutonAide(self, event):
-        dlg = wx.MessageDialog(self, u"L'aide pour ce nouveau module est en cours de rédaction.", u"Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide pour ce nouveau module est en cours de rédaction."), _(u"Aide indisponible"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         return

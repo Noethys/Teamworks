@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import  wx.calendar
 import GestionDB
@@ -52,8 +54,8 @@ class PanelGadget(wx.Panel):
         # Boutons
         self.img_config = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Gadget_config.png", wx.BITMAP_TYPE_ANY))
         self.img_fermer = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Gadget_fermer.png", wx.BITMAP_TYPE_ANY))
-        self.img_config.SetToolTipString(u"Cliquez ici pour accéder aux options de ce gadget")
-        self.img_fermer.SetToolTipString(u"Cliquez ici pour fermer ce gadget")
+        self.img_config.SetToolTipString(_(u"Cliquez ici pour accéder aux options de ce gadget"))
+        self.img_fermer.SetToolTipString(_(u"Cliquez ici pour fermer ce gadget"))
         if self.paramGadget["config"] == False : self.img_config.Show(False)
         
         # Layout
@@ -229,7 +231,7 @@ class Gadget_BlocNotes(wx.Panel):
         # Bind
         self.texte.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
         
-        # Archive des paramètres : {"texte" : u"Hello !", "taillePolice" : 10, "familyPolice" : 74, "stylePolice" : 90, "weightPolice" : 90 , "nomPolice" : "Segoe Print", "multipages" : False, "couleur_fond" : (255, 255, 187), "couleur_police" : (255, 0, 0) }
+        # Archive des paramètres : {"texte" : _(u"Hello !"), "taillePolice" : 10, "familyPolice" : 74, "stylePolice" : 90, "weightPolice" : 90 , "nomPolice" : "Segoe Print", "multipages" : False, "couleur_fond" : (255, 255, 187), "couleur_police" : (255, 0, 0) }
 
     def OnKillFocus(self, event):
         """ Sauvegarde du texte """
@@ -325,11 +327,11 @@ class Gadget_Updater(wx.Panel):
         self.parent.couleurFondCadre = couleurFondUpdater
         
         # Widgets
-        self.texte = wx.StaticText(self, -1, u"Une nouvelle version du logiciel est disponible !\n\nCliquez ci-dessous pour la télécharger et l'installer dès maintenant. Cette procédure est automatisée.")   
+        self.texte = wx.StaticText(self, -1, _(u"Une nouvelle version du logiciel est disponible !\n\nCliquez ci-dessous pour la télécharger et l'installer dès maintenant. Cette procédure est automatisée."))   
         self.SetBackgroundColour(couleurFondUpdater)
         
         self.bouton_telecharger = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Telecharger_L140.png", wx.BITMAP_TYPE_ANY), size=(-1, 60))
-        self.bouton_telecharger.SetToolTipString(u"Cliquez ici pour télécharger et installer\nla nouvelle version de TeamWorks")
+        self.bouton_telecharger.SetToolTipString(_(u"Cliquez ici pour télécharger et installer\nla nouvelle version de TeamWorks"))
         
         #font = wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL) 
         #self.contenu.SetFont(font)

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import wx.lib.agw.customtreectrl as CT
@@ -16,7 +18,7 @@ import sys
 class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, name="panel_gadget_pb_personnes", style=wx.TAB_TRAVERSAL)
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Problèmes des fiches", u"")
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Problèmes des fiches"), u"")
         self.treeCtrl = TreeCtrl(self)    
 
         # Layout

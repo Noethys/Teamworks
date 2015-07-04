@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import datetime
@@ -23,7 +25,7 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1, IDpersonne=None):
         wx.Panel.__init__(self, parent, ID, name="gestion_scenarios", style=wx.TAB_TRAVERSAL)
         self.IDpersonne = IDpersonne
-        texteIntro = u"Vous pouvez ici créer, modifier ou supprimer des scénarios."
+        texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer des scénarios.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
         self.listCtrl = ListView(self, IDpersonne=IDpersonne)
@@ -46,13 +48,13 @@ class Panel(wx.Panel):
         self.bouton_supprimer.Enable(False)
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un nouveau scénario")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau scénario"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier le scénario sélectionné dans la liste")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le scénario sélectionné dans la liste"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le scénario sélectionné dans la liste")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le scénario sélectionné dans la liste"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-##        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+##        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -93,7 +95,7 @@ class Panel(wx.Panel):
     def Modifier(self):
         IDscenario = self.listCtrl.GetSelection()
         if IDscenario == None :
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un scénario à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un scénario à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -109,15 +111,15 @@ class Panel(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if IDscenario == None :
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un scénario à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un scénario à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
 
         # Demande de confirmation
         Nom = self.listCtrl.GetNomSelection()
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce scénario ? \n\n> " + Nom))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce scénario ? \n\n> ") + Nom))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -241,7 +243,7 @@ class ListView(GroupListView):
     
         def FormatePeriode(periode):
             date_debut, date_fin = periode.split(";")
-            periode = u"Du %s au %s" % (self.FormateDate(date_debut), self.FormateDate(date_fin))
+            periode = _(u"Du %s au %s") % (self.FormateDate(date_debut), self.FormateDate(date_fin))
             return periode
             
         def GroupKey(track):
@@ -263,13 +265,13 @@ class ListView(GroupListView):
             
             # Utilisation en frame
             self.SetColumns([
-                ColumnDefn(u"Nom du scénario", "left", 200, "nom"),
-                ColumnDefn(u"Période", "left", 165, "periode", stringConverter=FormatePeriode),
-                ColumnDefn(u"Description", "left", 600, "description"),
-                ColumnDefn(u"Personne", "left", 0, "IDpersonne", groupKeyGetter=GroupKey, groupKeyConverter=GroupKeyConverter, stringConverter=FormateNomPersonne),
+                ColumnDefn(_(u"Nom du scénario"), "left", 200, "nom"),
+                ColumnDefn(_(u"Période"), "left", 165, "periode", stringConverter=FormatePeriode),
+                ColumnDefn(_(u"Description"), "left", 600, "description"),
+                ColumnDefn(_(u"Personne"), "left", 0, "IDpersonne", groupKeyGetter=GroupKey, groupKeyConverter=GroupKeyConverter, stringConverter=FormateNomPersonne),
             ])
             self.SetSortColumn(self.columns[4])
-            self.SetEmptyListMsg(u"Aucun scénario enregistré")
+            self.SetEmptyListMsg(_(u"Aucun scénario enregistré"))
             self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
             self.SetObjects(self.donnees)
             
@@ -281,14 +283,14 @@ class ListView(GroupListView):
             
             # Utilisation dans la fiche individuelle
             self.SetColumns([
-                ColumnDefn(u"IDscenario", "left", 0, "IDscenario"),
-                ColumnDefn(u"Nom du scénario", "left", 200, "nom"),
-                ColumnDefn(u"Période", "left", 165, "periode", stringConverter=FormatePeriode),
-                ColumnDefn(u"Description", "left", 600, "description"),
-                ColumnDefn(u"Personne", "left", 0, "IDpersonne", groupKeyGetter=GroupKey, groupKeyConverter=GroupKeyConverter, stringConverter=FormateNomPersonne),
+                ColumnDefn(_(u"IDscenario"), "left", 0, "IDscenario"),
+                ColumnDefn(_(u"Nom du scénario"), "left", 200, "nom"),
+                ColumnDefn(_(u"Période"), "left", 165, "periode", stringConverter=FormatePeriode),
+                ColumnDefn(_(u"Description"), "left", 600, "description"),
+                ColumnDefn(_(u"Personne"), "left", 0, "IDpersonne", groupKeyGetter=GroupKey, groupKeyConverter=GroupKeyConverter, stringConverter=FormateNomPersonne),
             ])
             self.SetSortColumn(self.columns[5])
-            self.SetEmptyListMsg(u"Aucun scénario enregistré")
+            self.SetEmptyListMsg(_(u"Aucun scénario enregistré"))
             self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
             self.SetObjects(self.donnees)
             
@@ -345,14 +347,14 @@ class ListView(GroupListView):
         menuPop = wx.Menu()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images\\16x16\\Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.GetParent().OnBoutonAjouter, id=10)
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images\\16x16\\Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -361,7 +363,7 @@ class ListView(GroupListView):
         menuPop.AppendSeparator()
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images\\16x16\\Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -397,13 +399,13 @@ class MyFrame(wx.Frame):
         
 
     def __set_properties(self):
-        self.SetTitle(u"Gestion des scénarios")
+        self.SetTitle(_(u"Gestion des scénarios"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images\\16x16\\Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_fermer.SetToolTipString(u"Cliquez ici pour fermer")
+        self.bouton_fermer.SetToolTipString(_(u"Cliquez ici pour fermer"))
         self.bouton_fermer.SetSize(self.bouton_fermer.GetBestSize())        
 
     def __do_layout(self):

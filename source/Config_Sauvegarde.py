@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import os
@@ -15,10 +17,10 @@ import wx.lib.agw.customtreectrl as CT
 import datetime
 
 
-LISTE_SOURCES = [    [u"Les fichiers de données", "Data/", "DATA"], 
-                                    [u"Les contrats édités", "Documents/Editions/", "CONE"], 
-                                    [u"Les modèles de contrats", "Documents/Modeles/", "CONM"],
-                                    [u"Les photos des personnes", "Photos/", "PHOT"],
+LISTE_SOURCES = [    [_(u"Les fichiers de données"), "Data/", "DATA"], 
+                                    [_(u"Les contrats édités"), "Documents/Editions/", "CONE"], 
+                                    [_(u"Les modèles de contrats"), "Documents/Modeles/", "CONM"],
+                                    [_(u"Les photos des personnes"), "Photos/", "PHOT"],
                                     ] # Type Source, répertoire, code extension
                                     
 LISTE_INDESIRABLES = [
@@ -100,28 +102,28 @@ class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, name="panel_config_sauvegarde", style=wx.TAB_TRAVERSAL)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Sauvegarde automatique", u"")
-        texteIntro = u"Vous pouvez programmer ici une sauvegarde automatique de vos données. Cette option est appliquée par défaut pour effectuer une sauvegarde de toutes les données à chaque fois que vous quittez Teamworks. Vous pouvez personnaliser les paramétres de cette fonction ci-dessous."
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Sauvegarde automatique"), u"")
+        texteIntro = _(u"Vous pouvez programmer ici une sauvegarde automatique de vos données. Cette option est appliquée par défaut pour effectuer une sauvegarde de toutes les données à chaque fois que vous quittez Teamworks. Vous pouvez personnaliser les paramétres de cette fonction ci-dessous.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
         # Cadre d'activation
-        self.staticbox1 = wx.StaticBox(self, -1, u"Activation")
-        self.checkBox_activer = wx.CheckBox(self, -1, u"Activer la sauvegarde automatique")
+        self.staticbox1 = wx.StaticBox(self, -1, _(u"Activation"))
+        self.checkBox_activer = wx.CheckBox(self, -1, _(u"Activer la sauvegarde automatique"))
                 
         # Cadre des paramètres
-        self.staticbox2 = wx.StaticBox(self, -1, u"Paramètres")
-        self.label_frequence = wx.StaticText(self, -1, u"Fréquence :")
+        self.staticbox2 = wx.StaticBox(self, -1, _(u"Paramètres"))
+        self.label_frequence = wx.StaticText(self, -1, _(u"Fréquence :"))
         self.label_frequence2 = wx.StaticText(self, -1, u"")
-        self.label_elements = wx.StaticText(self, -1, u"Eléments à sauver :")
+        self.label_elements = wx.StaticText(self, -1, _(u"Eléments à sauver :"))
         self.label_elements2 = wx.StaticText(self, -1, u"")
-        self.label_destination = wx.StaticText(self, -1, u"Destination :")
+        self.label_destination = wx.StaticText(self, -1, _(u"Destination :"))
         self.label_destination2 = wx.StaticText(self, -1, u"")
-        self.label_conservation = wx.StaticText(self, -1, u"Conservation :")
+        self.label_conservation = wx.StaticText(self, -1, _(u"Conservation :"))
         self.label_conservation2 = wx.StaticText(self, -1, u"")
         self.bouton_parametres = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Parametres_sauvegarde.png", wx.BITMAP_TYPE_ANY))
         
         self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         if parent.GetName() != "treebook_configuration" :
             self.bouton_aide.Show(False)
 
@@ -213,7 +215,7 @@ class Panel(wx.Panel):
         self.conservation = donnees[0][4]
         
         # Remplissage choice frequence
-        listeFrequences = [ u"A chaque fermeture du logiciel", u"Toutes les semaines", u"Tous les quinze jours", u"Tous les mois"]
+        listeFrequences = [ _(u"A chaque fermeture du logiciel"), _(u"Toutes les semaines"), _(u"Tous les quinze jours"), _(u"Tous les mois")]
         if type(self.frequence) == int :
             self.label_frequence2.SetLabel(listeFrequences[self.frequence])
         # Remplissage listBox Elements
@@ -230,16 +232,16 @@ class Panel(wx.Panel):
         # Remplissage
         if type(self.conservation) == int :
             if self.conservation < 2 : 
-                self.label_conservation2.SetLabel(str(self.conservation) + u" sauvegarde de sécurité sera sauvegardée en archive.")
+                self.label_conservation2.SetLabel(str(self.conservation) + _(u" sauvegarde de sécurité sera sauvegardée en archive."))
             else:
-                self.label_conservation2.SetLabel(str(self.conservation) + u" sauvegardes de sécurité seront conservées en archive.")
+                self.label_conservation2.SetLabel(str(self.conservation) + _(u" sauvegardes de sécurité seront conservées en archive."))
                        
     def OnCheck_activer(self, event):
         
         # Empeche l'activation si c'est un fichier réseau :
         if "[RESEAU]" in FonctionsPerso.GetNomDB() and self.checkBox_activer.GetValue() == True :
             self.checkBox_activer.SetValue(False)
-            dlg = wx.MessageDialog(self, u"La fonction de sauvegarde automatique n'est pas disponible pour les fichiers réseau.", u"Fonction indisponible", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"La fonction de sauvegarde automatique n'est pas disponible pour les fichiers réseau."), _(u"Fonction indisponible"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -273,9 +275,9 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -288,15 +290,15 @@ class MyFrame(wx.Frame):
         self.SetSize((550, 450))
 
     def __set_properties(self):
-        self.SetTitle(u"Sauvegarde automatique")
+        self.SetTitle(_(u"Sauvegarde automatique"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez pour annuler et fermer")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 
@@ -367,25 +369,25 @@ class Saisie_sauvegarde_auto(wx.Frame):
         self.MakeModal(True)
         
         self.panel_base = wx.Panel(self, -1)
-        self.staticbox = wx.StaticBox(self.panel_base, -1, u"Paramètres")
-        self.label_frequence = wx.StaticText(self.panel_base, -1, u"Fréquence :")
-        listeFrequences = [ u"A chaque fermeture du logiciel", u"Toutes les semaines", u"Tous les quinze jours", u"Tous les mois"]
+        self.staticbox = wx.StaticBox(self.panel_base, -1, _(u"Paramètres"))
+        self.label_frequence = wx.StaticText(self.panel_base, -1, _(u"Fréquence :"))
+        listeFrequences = [ _(u"A chaque fermeture du logiciel"), _(u"Toutes les semaines"), _(u"Tous les quinze jours"), _(u"Tous les mois")]
         self.choice_frequence = wx.Choice(self.panel_base, -1, size=(300, -1), choices = listeFrequences)
         listeElements = []
         for source in LISTE_SOURCES :
             listeElements.append(source[0])
-        self.label_elements = wx.StaticText(self.panel_base, -1, u"Eléments à sauver :")
+        self.label_elements = wx.StaticText(self.panel_base, -1, _(u"Eléments à sauver :"))
         self.listBox_elements = wx.CheckListBox(self.panel_base, -1, (-1, -1), wx.DefaultSize, listeElements)
-        self.label_destination = wx.StaticText(self.panel_base, -1, u"Destination :")
+        self.label_destination = wx.StaticText(self.panel_base, -1, _(u"Destination :"))
         self.textctrl_destination = wx.TextCtrl(self.panel_base, -1, "", size=(-1, -1))
         self.bouton_destination = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/Repertoire.png", wx.BITMAP_TYPE_ANY))
-        self.label_conservation = wx.StaticText(self.panel_base, -1, u"Conservation :")
+        self.label_conservation = wx.StaticText(self.panel_base, -1, _(u"Conservation :"))
         self.choice_conservation = wx.Choice(self.panel_base, -1, choices = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
-        self.label_destination2 = wx.StaticText(self.panel_base, -1, u"sauvegardes de sécurité seront conservées en archive.")
+        self.label_destination2 = wx.StaticText(self.panel_base, -1, _(u"sauvegardes de sécurité seront conservées en archive."))
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -403,7 +405,7 @@ class Saisie_sauvegarde_auto(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Sauvegarder_param.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.SetTitle(u"Paramètres de la sauvegarde automatique")
+        self.SetTitle(_(u"Paramètres de la sauvegarde automatique"))
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
@@ -495,7 +497,7 @@ class Saisie_sauvegarde_auto(wx.Frame):
                 cheminDefaut = ""
         else:
             cheminDefaut = ""
-        dlg = wx.DirDialog(self, u"Veuillez sélectionner un répertoire de destination :", defaultPath=cheminDefaut, style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+        dlg = wx.DirDialog(self, _(u"Veuillez sélectionner un répertoire de destination :"), defaultPath=cheminDefaut, style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
         if dlg.ShowModal() == wx.ID_OK:
             self.textctrl_destination.SetValue(dlg.GetPath())
         dlg.Destroy()
@@ -528,7 +530,7 @@ class Saisie_sauvegarde_auto(wx.Frame):
         if len(varElements)>0 :
             varElements = varElements[:-1]
         else:
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner au moins un élément à sauvegarder dans la liste proposée !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner au moins un élément à sauvegarder dans la liste proposée !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -536,14 +538,14 @@ class Saisie_sauvegarde_auto(wx.Frame):
         # Destination
         varDestination = self.textctrl_destination.GetValue()
         if varDestination == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un répertoire de destination valide !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un répertoire de destination valide !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         # Teste la validité du répertoire
         if os.path.isdir(varDestination) == False :
-            dlg = wx.MessageDialog(self, u"Le répertoire de destination sélectionné ne semble pas valide. Veuillez vérifier votre saisie !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Le répertoire de destination sélectionné ne semble pas valide. Veuillez vérifier votre saisie !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -584,25 +586,25 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         self.MakeModal(True)
         
         self.panel_base = wx.Panel(self, -1)
-        texteIntro = u"Vous pouvez ici créer une sauvegarde occasionnelle de vos données. Cela peut vous être utile si vous souhaitez par exemple sauvegarder certaines données sur une clé USB ou si vous allez changer d'ordinateur. Dans ce dernier cas, il vous suffira ensuite de restaurer la sauvegarde sur votre nouvel ordinateur..."
+        texteIntro = _(u"Vous pouvez ici créer une sauvegarde occasionnelle de vos données. Cela peut vous être utile si vous souhaitez par exemple sauvegarder certaines données sur une clé USB ou si vous allez changer d'ordinateur. Dans ce dernier cas, il vous suffira ensuite de restaurer la sauvegarde sur votre nouvel ordinateur...")
         self.label_introduction = FonctionsPerso.StaticWrapText(self.panel_base, -1, texteIntro)
-        self.staticbox = wx.StaticBox(self.panel_base, -1, u"Paramètres de la sauvegarde")
+        self.staticbox = wx.StaticBox(self.panel_base, -1, _(u"Paramètres de la sauvegarde"))
         
-        self.label_nomFichier = wx.StaticText(self.panel_base, -1, u"Nom sauvegarde :")
+        self.label_nomFichier = wx.StaticText(self.panel_base, -1, _(u"Nom sauvegarde :"))
         self.textctrl_nomFichier = wx.TextCtrl(self.panel_base, -1, "")
 
-        self.label_elements = wx.StaticText(self.panel_base, -1, u"Eléments à sauver :")
+        self.label_elements = wx.StaticText(self.panel_base, -1, _(u"Eléments à sauver :"))
         self.treeCtrl = TreeCtrl_Sauvegarde(self.panel_base, -1)       
         
-        self.label_destination = wx.StaticText(self.panel_base, -1, u"Destination :")
+        self.label_destination = wx.StaticText(self.panel_base, -1, _(u"Destination :"))
         standardPath = wx.StandardPaths.Get()
         destination = standardPath.GetDocumentsDir()
         self.textctrl_destination = wx.TextCtrl(self.panel_base, -1, destination, size=(-1, -1))
         self.bouton_destination = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/16x16/Repertoire.png", wx.BITMAP_TYPE_ANY))
         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -623,16 +625,16 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Sauvegarder.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.SetTitle(u"Paramètres de la sauvegarde occasionnelle")
-        self.textctrl_nomFichier.SetToolTipString(u"Saisissez ici un nom pour votre fichier de sauvegarde \nou laissez celui donné par défaut")
-        #self.treeCtrl.SetToolTipString(u"Cochez les éléments que vous souhaitez sauvegarder")
-        self.textctrl_destination.SetToolTipString(u"Vous pouvez saisir ici le répertoire de destination pour votre fichier de sauvegarde \nou cliquez sur le bouton pour choisir un emplacement")
-        self.bouton_destination.SetToolTipString(u"Cliquez ici pour sélectionner un répertoire de destination")
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.SetTitle(_(u"Paramètres de la sauvegarde occasionnelle"))
+        self.textctrl_nomFichier.SetToolTipString(_(u"Saisissez ici un nom pour votre fichier de sauvegarde \nou laissez celui donné par défaut"))
+        #self.treeCtrl.SetToolTipString(_(u"Cochez les éléments que vous souhaitez sauvegarder"))
+        self.textctrl_destination.SetToolTipString(_(u"Vous pouvez saisir ici le répertoire de destination pour votre fichier de sauvegarde \nou cliquez sur le bouton pour choisir un emplacement"))
+        self.bouton_destination.SetToolTipString(_(u"Cliquez ici pour sélectionner un répertoire de destination"))
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -693,7 +695,7 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
                 cheminDefaut = ""
         else:
             cheminDefaut = ""
-        dlg = wx.DirDialog(self, u"Veuillez sélectionner un répertoire de destination :", defaultPath=cheminDefaut, style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+        dlg = wx.DirDialog(self, _(u"Veuillez sélectionner un répertoire de destination :"), defaultPath=cheminDefaut, style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
         if dlg.ShowModal() == wx.ID_OK:
             self.textctrl_destination.SetValue(dlg.GetPath())
         dlg.Destroy()
@@ -718,7 +720,7 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         # Nom du fichier
         varNomFichier = self.textctrl_nomFichier.GetValue()
         if varNomFichier == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez saisir un nom pour le fichier de sauvegarde !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nom pour le fichier de sauvegarde !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -726,7 +728,7 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         # liste des éléments à sauver
         listeElements = self.treeCtrl.GetListeItemsCoches()
         if len(listeElements) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner au moins un élément à sauvegarder dans la liste proposée !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner au moins un élément à sauvegarder dans la liste proposée !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -734,14 +736,14 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         # Destination
         varDestination = self.textctrl_destination.GetValue()
         if varDestination == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner un répertoire de destination valide !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner un répertoire de destination valide !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         # Teste la validité du répertoire
         if os.path.isdir(varDestination) == False :
-            dlg = wx.MessageDialog(self, u"Le répertoire de destination sélectionné ne semble pas valide. Veuillez vérifier votre saisie !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Le répertoire de destination sélectionné ne semble pas valide. Veuillez vérifier votre saisie !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -751,7 +753,7 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         
         # Le fichier de destination existe déjà :
         if os.path.isfile(fichierDest) == True :
-            dlg = wx.MessageDialog(None, u"Un fichier de sauvegarde portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?", "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(None, _(u"Un fichier de sauvegarde portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
             if dlg.ShowModal() == wx.ID_NO :
                 return False
                 dlg.Destroy()
@@ -762,7 +764,7 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         etat = save.Save(fichierDest, listeElements)
         if etat == None :
             # Sauvegarde réussie : Quitte
-            dlg = wx.MessageDialog(self, u"La sauvegarde a été créée avec succès.", "Confirmation", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"La sauvegarde a été créée avec succès."), "Confirmation", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.MakeModal(False)
@@ -773,7 +775,7 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
             return
         else :
             # Message d'erreur
-            dlg = wx.MessageDialog(self, u"L'erreur suivante s'est produit lors de la sauvegarde : \n\n" + err, "Erreur de sauvegarde", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"L'erreur suivante s'est produit lors de la sauvegarde : \n\n") + err, "Erreur de sauvegarde", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -916,7 +918,7 @@ class Sauvegarde_auto():
             return
         else :
             # Message d'erreur
-            dlg = wx.MessageDialog(None, u"L'erreur suivante s'est produit lors de la sauvegarde : \n\n" + etat, "Erreur de sauvegarde", wx.OK)  
+            dlg = wx.MessageDialog(None, _(u"L'erreur suivante s'est produit lors de la sauvegarde : \n\n") + etat, "Erreur de sauvegarde", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -932,12 +934,12 @@ class Restauration(wx.Frame):
         self.MakeModal(True)
         self.fichierRestauration = fichierRestauration
         self.panel_base = wx.Panel(self, -1)
-        texteIntro = u"Veuillez sélectionner les éléments à restaurer :"
+        texteIntro = _(u"Veuillez sélectionner les éléments à restaurer :")
         self.label_introduction = FonctionsPerso.StaticWrapText(self.panel_base, -1, texteIntro)
         self.treeCtrl = TreeCtrl_Restauration(self.panel_base, fichierRestauration, -1)         
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -952,7 +954,7 @@ class Restauration(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Restaurer.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.SetTitle(u"Restauration d'une sauvegarde")
+        self.SetTitle(_(u"Restauration d'une sauvegarde"))
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
@@ -1009,7 +1011,7 @@ class Restauration(wx.Frame):
         # liste des éléments à sauver
         listeFichiers = self.treeCtrl.GetListeItemsCoches()
         if len(listeFichiers) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous devez sélectionner au moins un élément à restaurer dans la liste proposée !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez sélectionner au moins un élément à restaurer dans la liste proposée !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -1033,7 +1035,7 @@ class Restauration(wx.Frame):
             
             # On vérifie que le fichier n'existe pas déjà dans le répertoire de destination
             if os.path.isfile(chemin + nomFichier) == True :
-                dlg = wx.MessageDialog(None, u"Le fichier '" + nomFichier.decode("iso-8859-15") + u"' existe déjà. \n\nVoulez-vous le remplacer ?", "Attention !", wx.YES_NO | wx.CANCEL |wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+                dlg = wx.MessageDialog(None, _(u"Le fichier '") + nomFichier.decode("iso-8859-15") + _(u"' existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.CANCEL |wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
                 reponse = dlg.ShowModal()
                 dlg.Destroy()
                 if reponse == wx.ID_NO :
@@ -1042,7 +1044,7 @@ class Restauration(wx.Frame):
                     validation = True
                 else :
                     validation = "stop"
-                    dlg2 = wx.MessageDialog(self, u"Restauration arrêtée.", u"Restauration arrêtée", wx.OK| wx.ICON_INFORMATION)  
+                    dlg2 = wx.MessageDialog(self, _(u"Restauration arrêtée."), _(u"Restauration arrêtée"), wx.OK| wx.ICON_INFORMATION)  
                     dlg2.ShowModal()
                     dlg2.Destroy()
                     fichierZip.close()
@@ -1058,14 +1060,14 @@ class Restauration(wx.Frame):
                     f.write(buffer)
                     f.close()
                 except err :
-                    dlg = wx.MessageDialog(self, u"La restauration du fichier '" + nomFichier + u"' a rencontré l'erreur suivante : \n" + err, "Erreur", wx.OK| wx.ICON_ERROR)  
+                    dlg = wx.MessageDialog(self, _(u"La restauration du fichier '") + nomFichier + _(u"' a rencontré l'erreur suivante : \n") + err, "Erreur", wx.OK| wx.ICON_ERROR)  
                     dlg.ShowModal()
                     dlg.Destroy()
             
         fichierZip.close()
         
         # Message de confirmation de réussite
-        dlg = wx.MessageDialog(self, u"Vos fichiers ont été restaurés avec succès.", u"Restauration réussie", wx.OK| wx.ICON_INFORMATION)  
+        dlg = wx.MessageDialog(self, _(u"Vos fichiers ont été restaurés avec succès."), _(u"Restauration réussie"), wx.OK| wx.ICON_INFORMATION)  
         dlg.ShowModal()
         dlg.Destroy()
         

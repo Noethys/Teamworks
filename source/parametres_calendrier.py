@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import  wx.lib.colourselect as  csel
@@ -21,7 +23,7 @@ class MyFrame(wx.Frame):
         self.panel_base = wx.Panel(self, -1)
         self.nomGadget = "calendrier"
         
-        self.sizer_contenu_staticbox = wx.StaticBox(self.panel_base, -1, u"Paramètres")
+        self.sizer_contenu_staticbox = wx.StaticBox(self.panel_base, -1, _(u"Paramètres"))
                 
         self.largeur_min = 100
         self.largeur_max = 800
@@ -31,50 +33,50 @@ class MyFrame(wx.Frame):
         self.Importation()
         
         # Largeur
-        self.largeur_label = wx.StaticText(self.panel_base, -1, u"Largeur :")
+        self.largeur_label = wx.StaticText(self.panel_base, -1, _(u"Largeur :"))
         self.largeur_texte = wx.TextCtrl(self.panel_base, -1, str(self.val_largeur), size=(40, -1))
         self.largeur_slider = wx.Slider(self.panel_base, -1, self.val_largeur, self.largeur_min, self.largeur_max, size=(-1, -1), style=wx.SL_HORIZONTAL)
         
         # Hauteur
-        self.hauteur_label = wx.StaticText(self.panel_base, -1, u"Hauteur :")
+        self.hauteur_label = wx.StaticText(self.panel_base, -1, _(u"Hauteur :"))
         self.hauteur_texte = wx.TextCtrl(self.panel_base, -1, str(self.val_hauteur), size=(40, -1))
         self.hauteur_slider = wx.Slider(self.panel_base, -1, self.val_hauteur, self.hauteur_min, self.hauteur_max, size=(-1, -1), style=wx.SL_HORIZONTAL)
         
         
         # Bouton couleur de fond
-        self.label_couleurFond = wx.StaticText(self.panel_base, -1, u"Couleur de fond :")
+        self.label_couleurFond = wx.StaticText(self.panel_base, -1, _(u"Couleur de fond :"))
         self.bouton_couleurFond = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurFond, size = (40, 23))
         
         # Bouton couleur de cases
-        self.label_couleurCases = wx.StaticText(self.panel_base, -1, u"Couleur des cases (semaine):")
+        self.label_couleurCases = wx.StaticText(self.panel_base, -1, _(u"Couleur des cases (semaine):"))
         self.bouton_couleurCases = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurCases, size = (40, 23))
         
         # Bouton couleur des Week-ends
-        self.label_couleurWE = wx.StaticText(self.panel_base, -1, u"Couleur des cases (week-end) :")
+        self.label_couleurWE = wx.StaticText(self.panel_base, -1, _(u"Couleur des cases (week-end) :"))
         self.bouton_couleurWE = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurWE, size = (40, 23))
         
         # Bouton couleur des jours de vacances
-        self.label_couleurVacances = wx.StaticText(self.panel_base, -1, u"Couleur des cases (vacances) :")
+        self.label_couleurVacances = wx.StaticText(self.panel_base, -1, _(u"Couleur des cases (vacances) :"))
         self.bouton_couleurVacances = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurVacances, size = (40, 23))
         
         # Bouton couleur des jours fériés
-        self.label_couleurFerie = wx.StaticText(self.panel_base, -1, u"Couleur des cases (fériés) :")
+        self.label_couleurFerie = wx.StaticText(self.panel_base, -1, _(u"Couleur des cases (fériés) :"))
         self.bouton_couleurFerie = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurFerie, size = (40, 23))
         
         # Bouton couleur des cases sélectionnées
-        self.label_couleurSelect = wx.StaticText(self.panel_base, -1, u"Couleur des cases sélectionnées :")
+        self.label_couleurSelect = wx.StaticText(self.panel_base, -1, _(u"Couleur des cases sélectionnées :"))
         self.bouton_couleurSelect = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurSelect, size = (40, 23))
 
         # Bouton couleur du bord de la case survolée
-        self.label_couleurSurvol = wx.StaticText(self.panel_base, -1, u"Couleur des bords des cases survolées :")
+        self.label_couleurSurvol = wx.StaticText(self.panel_base, -1, _(u"Couleur des bords des cases survolées :"))
         self.bouton_couleurSurvol = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurSurvol, size = (40, 23))
         
         # Bouton couleur de police des numéros de jour
-        self.label_couleurFontJours = wx.StaticText(self.panel_base, -1, u"Couleur de police des numéros de jour :")
+        self.label_couleurFontJours = wx.StaticText(self.panel_base, -1, _(u"Couleur de police des numéros de jour :"))
         self.bouton_couleurFontJours = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurFontJours, size = (40, 23))
         
         # Bouton couleur de police des jours avec des présents
-        self.label_couleurFontJoursAvecPresents = wx.StaticText(self.panel_base, -1, u"Couleur de police si présences :")
+        self.label_couleurFontJoursAvecPresents = wx.StaticText(self.panel_base, -1, _(u"Couleur de police si présences :"))
         self.bouton_couleurFontJoursAvecPresents = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurFontJoursAvecPresents, size = (40, 23))
         
         
@@ -82,9 +84,9 @@ class MyFrame(wx.Frame):
         self.bouton_reinit = self.Build_Hyperlink()
         
         # Boutons de frame
-        self.bouton_aide = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -112,19 +114,19 @@ class MyFrame(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.largeur_texte.SetToolTipString(u"Saisissez ici une valeur pour la largeur du gadget")
-        self.largeur_slider.SetToolTipString(u"Vous pouvez aussi utiliser cette glissière pour régler la largeur")
-        self.hauteur_texte.SetToolTipString(u"Saisissez ici une valeur pour la hauteur du gadget")
-        self.hauteur_slider.SetToolTipString(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur")
-        self.bouton_couleurFond.SetToolTipString(u"Cliquez ici pour modifier la couleur de fond du gadget")
-        self.bouton_couleurCases.SetToolTipString(u"Cliquez ici pour modifier la couleur des cases (semaine)")
-        self.bouton_couleurWE.SetToolTipString(u"Cliquez ici pour modifier la couleur des cases (week-end)")
-        self.bouton_couleurVacances.SetToolTipString(u"Cliquez ici pour modifier la couleur des cases (vacances)")
-        self.bouton_couleurFerie.SetToolTipString(u"Cliquez ici pour modifier la couleur des cases (fériés)")
-        self.bouton_couleurSelect.SetToolTipString(u"Cliquez ici pour modifier la couleur des cases sélectionnées")
-        self.bouton_couleurSurvol.SetToolTipString(u"Cliquez ici pour modifier la couleur des bords des cases survolées")
-        self.bouton_couleurFontJours.SetToolTipString(u"Cliquez ici pour modifier la couleur du texte des numéros de jours")
-        self.bouton_couleurFontJoursAvecPresents.SetToolTipString(u"Cliquez ici pour modifier la couleur du texte des \njours ayant des présences enregistrées")
+        self.largeur_texte.SetToolTipString(_(u"Saisissez ici une valeur pour la largeur du gadget"))
+        self.largeur_slider.SetToolTipString(_(u"Vous pouvez aussi utiliser cette glissière pour régler la largeur"))
+        self.hauteur_texte.SetToolTipString(_(u"Saisissez ici une valeur pour la hauteur du gadget"))
+        self.hauteur_slider.SetToolTipString(_(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur"))
+        self.bouton_couleurFond.SetToolTipString(_(u"Cliquez ici pour modifier la couleur de fond du gadget"))
+        self.bouton_couleurCases.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases (semaine)"))
+        self.bouton_couleurWE.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases (week-end)"))
+        self.bouton_couleurVacances.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases (vacances)"))
+        self.bouton_couleurFerie.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases (fériés)"))
+        self.bouton_couleurSelect.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases sélectionnées"))
+        self.bouton_couleurSurvol.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des bords des cases survolées"))
+        self.bouton_couleurFontJours.SetToolTipString(_(u"Cliquez ici pour modifier la couleur du texte des numéros de jours"))
+        self.bouton_couleurFontJoursAvecPresents.SetToolTipString(_(u"Cliquez ici pour modifier la couleur du texte des \njours ayant des présences enregistrées"))
         
         self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
@@ -229,14 +231,14 @@ class MyFrame(wx.Frame):
     def Build_Hyperlink(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
-        hyper = hl.HyperLinkCtrl(self.panel_base, -1, u"Réinitialiser les paramètres par défaut", URL="")
+        hyper = hl.HyperLinkCtrl(self.panel_base, -1, _(u"Réinitialiser les paramètres par défaut"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink)
         hyper.AutoBrowse(False)
         hyper.SetColours("BLACK", "BLACK", "BLUE")
         hyper.EnableRollover(True)
         hyper.SetUnderlines(True, True, True)
         hyper.SetBold(False)
-        hyper.SetToolTip(wx.ToolTip(u"Cliquez ici pour réinitialiser les paramètres par défaut de ce gadget"))
+        hyper.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour réinitialiser les paramètres par défaut de ce gadget")))
         hyper.UpdateLink()
         hyper.DoPopup(False)
         return hyper
@@ -244,8 +246,8 @@ class MyFrame(wx.Frame):
     def OnLeftLink(self, event):
         """ Réinitialiser les paramètres par défaut """
         # Confirmation
-        message = u"Souhaitez-vous vraiment réinitialiser les paramètres par défaut de ce gadget ?"
-        dlg = wx.MessageDialog(self, message, u"Réinitialisation", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
+        message = _(u"Souhaitez-vous vraiment réinitialiser les paramètres par défaut de ce gadget ?")
+        dlg = wx.MessageDialog(self, message, _(u"Réinitialisation"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
         if dlg.ShowModal() == wx.ID_YES :
             dlg.Destroy()
         else:
@@ -294,7 +296,7 @@ class MyFrame(wx.Frame):
             self.largeur_slider.SetValue(valeur)
         else: valide = False
         if valide == False :
-            dlg = wx.MessageDialog(self, u"La largeur que vous avez saisi n'est pas valide !", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"La largeur que vous avez saisi n'est pas valide !"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.largeur_texte.Undo()
@@ -311,7 +313,7 @@ class MyFrame(wx.Frame):
             self.hauteur_slider.SetValue(valeur)
         else: valide = False
         if valide == False :
-            dlg = wx.MessageDialog(self, u"La hauteur que vous avez saisi n'est pas valide !", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"La hauteur que vous avez saisi n'est pas valide !"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.hauteur_texte.Undo()

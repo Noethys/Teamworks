@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import sys
 from wx.lib.splitter import MultiSplitterWindow
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
@@ -32,7 +34,7 @@ couleurFondWidgets = (214, 223, 247)
 class PanelCalendrier(Calendrier.Panel):
     def __init__(self, parent, ID=-1):
         Calendrier.Panel.__init__(self, parent, ID, bordHaut=35, bordBas=15, bordLateral=15)
-        self.texteTitre = u"Calendrier"
+        self.texteTitre = _(u"Calendrier")
         self.calendrier.SetBackgroundColour(couleurFondWidgets)
         self.SetBackgroundColour((122, 161, 230))
         
@@ -113,7 +115,7 @@ class PanelCalendrierArchive(wx.Panel):
         self.calendrier.couleurWE = (198, 211, 249)
         self.calendrier.couleurSelect = (255, 162, 0)
         
-        self.listeMois = [u"Janvier", u"Février", u"Mars", u"Avril", u"Mai", u"Juin", u"Juillet", u"Août", u"Septembre", u"Octobre", u"Novembre", u"Décembre"]
+        self.listeMois = [_(u"Janvier"), _(u"Février"), _(u"Mars"), _(u"Avril"), _(u"Mai"), _(u"Juin"), _(u"Juillet"), _(u"Août"), _(u"Septembre"), _(u"Octobre"), _(u"Novembre"), _(u"Décembre")]
         self.combo_mois = wx.ComboBox(self, -1, "" , (-1, -1) , (-1, -1), self.listeMois , wx.CB_READONLY)
         
         self.spin = wx.SpinButton(self, -1, size=(30, 20),  style=wx.SP_HORIZONTAL)
@@ -133,9 +135,9 @@ class PanelCalendrierArchive(wx.Panel):
         self.calendrier.SelectJours( [datetime.date.today(),] )
         
         self.bouton_CalendrierAnnuel = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Calendrier_jour.png", wx.BITMAP_TYPE_PNG), size=(28, 21))
-        self.bouton_CalendrierAnnuel.SetToolTipString(u"Cliquez ici pour afficher le calendrier annuel")
+        self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self, u"Calendrier", u"Ceci est l'info-bulle !")
+        self.barreTitre = FonctionsPerso.BarreTitre(self, _(u"Calendrier"), _(u"Ceci est l'info-bulle !"))
 
         # Layout
         sizer =  wx.BoxSizer(wx.VERTICAL)
@@ -190,13 +192,13 @@ class PanelCalendrierArchive(wx.Panel):
         if self.calendrier.GetTypeCalendrier() == "mensuel" :
             self.calendrier.SetTypeCalendrier("annuel")
             self.combo_mois.Enable(False)
-            self.bouton_CalendrierAnnuel.SetToolTipString(u"Cliquez ici pour afficher le calendrier mensuel")
+            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier mensuel"))
             self.GetGrandParent().SetSashPosition(450, True)
             self.GetParent().SetSashPosition(0, 400)
         else:
             self.calendrier.SetTypeCalendrier("mensuel")
             self.combo_mois.Enable(True)
-            self.bouton_CalendrierAnnuel.SetToolTipString(u"Cliquez ici pour afficher le calendrier annuel")
+            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
             self.GetGrandParent().SetSashPosition(230, True)
             self.GetParent().SetSashPosition(0, 220)
     
@@ -231,9 +233,9 @@ class ListCtrl_Legendes(wx.ListCtrl):
 
         self.SetBackgroundColour(couleurFondWidgets)
        
-        self.InsertColumn(0, u"Catégories")
+        self.InsertColumn(0, _(u"Catégories"))
         self.SetColumnWidth(0, 130)
-        self.InsertColumn(1, u"Temps", wx.LIST_FORMAT_RIGHT)
+        self.InsertColumn(1, _(u"Temps"), wx.LIST_FORMAT_RIGHT)
         self.SetColumnWidth(1, 60)        
 
         # Création des items
@@ -387,9 +389,9 @@ class ListCtrl_Legendes(wx.ListCtrl):
         # Création du menu contextuel
         menuPop = wx.Menu()
 
-        menuPop.Append(400, u"Ajouter1", "aide sur ajouter1", wx.ITEM_RADIO)
-        menuPop.Append(401, u"Ajouter2", "aide sur ajouter2", wx.ITEM_RADIO)
-        menuPop.Append(402, u"Ajouter3", "aide sur ajouter3", wx.ITEM_RADIO)
+        menuPop.Append(400, _(u"Ajouter1"), "aide sur ajouter1", wx.ITEM_RADIO)
+        menuPop.Append(401, _(u"Ajouter2"), "aide sur ajouter2", wx.ITEM_RADIO)
+        menuPop.Append(402, _(u"Ajouter3"), "aide sur ajouter3", wx.ITEM_RADIO)
         
         menuPop.AppendSeparator()
 
@@ -417,9 +419,9 @@ class ListCtrl_Legendes(wx.ListCtrl):
     def Menu_Envoyer_Email(self, event):
         print "Envoie Email"
         
-        destinataire = u"ggamer@wanadoo.fr"
-        sujet = u"Test"
-        message = u"Salut ca va"
+        destinataire = _(u"ggamer@wanadoo.fr")
+        sujet = _(u"Test")
+        message = _(u"Salut ca va")
         pieceJointe = "c:\attachment1.txt;c:\attachment2"
         EnvoiMails.mailto_url(destinataire, sujet, message)
 
@@ -494,11 +496,11 @@ class TestPopup(wx.PopupWindow):
 
 class PanelLegendes(FonctionsPerso.PanelArrondi):
     def __init__(self, parent, ID=-1):
-        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre = u"Légende")
+        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre = _(u"Légende"))
 
         # Création Widgets
         self.listCtrlLegendes = ListCtrl_Legendes(self, -1)
-##        self.barreTitre = FonctionsPerso.BarreTitre(self, u"Légende", u"Ceci est l'info-bulle !", arrondis=True, couleurFondPanel=self.GetParent().GetBackgroundColour())
+##        self.barreTitre = FonctionsPerso.BarreTitre(self, _(u"Légende"), _(u"Ceci est l'info-bulle !"), arrondis=True, couleurFondPanel=self.GetParent().GetBackgroundColour())
         
         # Layout
         #box = wx.StaticBox(self, -1, "This is a wx.StaticBox")
@@ -625,7 +627,7 @@ class BarreRecherche(wx.SearchCtrl):
         wx.SearchCtrl.__init__(self, parent, size=(-1,-1), style=wx.TE_PROCESS_ENTER)
         self.parent = parent
 
-        self.SetDescriptiveText(u"Rechercher une personne")
+        self.SetDescriptiveText(_(u"Rechercher une personne"))
         self.ShowSearchButton(True)
         self.ShowCancelButton(True)
 
@@ -669,7 +671,7 @@ class BarreRecherche(wx.SearchCtrl):
 
 class PanelPersonnes(FonctionsPerso.PanelArrondi):
     def __init__(self, parent, ID=-1):
-        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=u"Personnes")
+        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=_(u"Personnes"))
 
         self.triCritere = FonctionsPerso.Parametres(mode="get", categorie="presences", nom="tri_critere", valeur="presence")
         self.triOrdre = FonctionsPerso.Parametres(mode="get", categorie="presences", nom="tri_ordre", valeur="decroissant")
@@ -677,14 +679,14 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         # Création Widgets
         self.imgMenu = wx.StaticBitmap(self, bitmap=wx.Bitmap("Images/16x16/MiniFleche_bas_nr.png", wx.BITMAP_TYPE_PNG))
         self.imgMenu.SetBackgroundColour(couleurFondWidgets)
-        self.imgMenu.SetToolTipString(u"Cliquez ici pour afficher le menu des options d'affichage de la liste")
+        self.imgMenu.SetToolTipString(_(u"Cliquez ici pour afficher le menu des options d'affichage de la liste"))
         self.txtOptions = wx.StaticText(self, -1, "")
         self.txtOptions.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL))
         self.txtOptions.SetBackgroundColour(couleurFondWidgets)
-        self.txtOptions.SetToolTipString(u"Cliquez ici pour afficher le menu des options d'affichage de la liste")
+        self.txtOptions.SetToolTipString(_(u"Cliquez ici pour afficher le menu des options d'affichage de la liste"))
         self.MAJtexteOptions()
         
-##        self.barreTitre = FonctionsPerso.BarreTitre(self, u"Liste des personnes", u"Ceci est l'info-bulle !", arrondis=True, couleurFondPanel=self.GetParent().GetBackgroundColour())
+##        self.barreTitre = FonctionsPerso.BarreTitre(self, _(u"Liste des personnes"), _(u"Ceci est l'info-bulle !"), arrondis=True, couleurFondPanel=self.GetParent().GetBackgroundColour())
 
         self.dictPersonnes = self.Import_Personnes()
         self.listCtrlPersonnes = listCtrl_Personnes(self)
@@ -712,12 +714,12 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         
     def MAJtexteOptions(self):
         """ Creation du StaticText options d'affichage """
-        if self.triOrdre == "croissant" : txt = u"Tri asc. selon "
-        if self.triOrdre == "decroissant" : txt = u"Tri desc. selon "
+        if self.triOrdre == "croissant" : txt = _(u"Tri asc. selon ")
+        if self.triOrdre == "decroissant" : txt = _(u"Tri desc. selon ")
 
-        if self.triCritere == "presence" : txt += u"la dernière présence"
-        if self.triCritere == "nom" : txt += u"le nom"
-        if self.triCritere == "prenom" : txt += u"le prénom"
+        if self.triCritere == "presence" : txt += _(u"la dernière présence")
+        if self.triCritere == "nom" : txt += _(u"le nom")
+        if self.triCritere == "prenom" : txt += _(u"le prénom")
 
         self.txtOptions.SetLabel(txt)
 
@@ -744,9 +746,9 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         menu = wx.Menu()
 
         smTri = wx.Menu()
-        smTri.Append(110, u"Dernière présence", u"Trier selon la dernière présence", wx.ITEM_RADIO)
-        smTri.Append(120, u"Nom", u"Trier selon le nom", wx.ITEM_RADIO)
-        smTri.Append(130, u"Prénom", u"Trier selon le prénom", wx.ITEM_RADIO)
+        smTri.Append(110, _(u"Dernière présence"), _(u"Trier selon la dernière présence"), wx.ITEM_RADIO)
+        smTri.Append(120, _(u"Nom"), _(u"Trier selon le nom"), wx.ITEM_RADIO)
+        smTri.Append(130, _(u"Prénom"), _(u"Trier selon le prénom"), wx.ITEM_RADIO)
         if self.triCritere == "presence" : smTri.Check(110, True)
         if self.triCritere == "nom" : smTri.Check(120, True)
         if self.triCritere == "prenom" : smTri.Check(130, True)
@@ -754,43 +756,43 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         
 
         smOrdre = wx.Menu()
-        smOrdre.Append(210, u"Ordre croissant", u"Trier par ordre croissant", wx.ITEM_RADIO)
-        smOrdre.Append(220, u"Ordre décroissant", u"Trier par ordre décroissant", wx.ITEM_RADIO)
+        smOrdre.Append(210, _(u"Ordre croissant"), _(u"Trier par ordre croissant"), wx.ITEM_RADIO)
+        smOrdre.Append(220, _(u"Ordre décroissant"), _(u"Trier par ordre décroissant"), wx.ITEM_RADIO)
         if self.triOrdre == "croissant" : smOrdre.Check(210, True)
         if self.triOrdre == "decroissant" : smOrdre.Check(220, True)
         menu.AppendMenu(20, "Ordre de tri", smOrdre)
 
         menu.AppendSeparator()
         
-        menu.Append(30, u"Afficher toute la liste", u"Tout afficher")
+        menu.Append(30, _(u"Afficher toute la liste"), _(u"Tout afficher"))
         
         menu.AppendSeparator()
         
-        menu.Append(40, u"Tout sélectionner", u"Tout sélectionner")
-        menu.Append(50, u"Tout désélectionner", u"Tout désélectionner") 
+        menu.Append(40, _(u"Tout sélectionner"), _(u"Tout sélectionner"))
+        menu.Append(50, _(u"Tout désélectionner"), _(u"Tout désélectionner")) 
         
         index = self.listCtrlPersonnes.GetFirstSelected()
         if index != -1:
             IDpersonne = int(self.listCtrlPersonnes.GetItemData(index))
             nomPersonne = self.listCtrlPersonnes.GetItem(index, 0).GetText()
-            texte = u"Sélectionner uniquement " + nomPersonne
+            texte = _(u"Sélectionner uniquement ") + nomPersonne
             menu.Append(55, texte, texte)
              
-        menu.Append(60, u"Sélectionner les personnes présentes", u"Sélectionner les personnes présentes sur les jours sélectionnés")
+        menu.Append(60, _(u"Sélectionner les personnes présentes"), _(u"Sélectionner les personnes présentes sur les jours sélectionnés"))
         
         menu.AppendSeparator()
         
-        menu.Append(70, u"Appliquer un modèle aux personnes sélectionnées", u"Appliquer un modèle aux personnes sélectionnées")
+        menu.Append(70, _(u"Appliquer un modèle aux personnes sélectionnées"), _(u"Appliquer un modèle aux personnes sélectionnées"))
         
         index = self.listCtrlPersonnes.GetFirstSelected()
         if index != -1:
             IDpersonne = int(self.listCtrlPersonnes.GetItemData(index))
             nomPersonne = self.listCtrlPersonnes.GetItem(index, 0).GetText()
             menu.AppendSeparator()
-            texte = u"Afficher la liste des présences de " + nomPersonne
+            texte = _(u"Afficher la liste des présences de ") + nomPersonne
             menu.Append(80, texte, texte)
             
-            texte = u"Imprimer un planning annuel pour " + nomPersonne
+            texte = _(u"Imprimer un planning annuel pour ") + nomPersonne
             menu.Append(90, texte, texte)
 
         self.Bind(wx.EVT_MENU, self.Menu_110, id=110)
@@ -911,7 +913,7 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
                 selectionPersonnes.append(key)
         
         if len(selectionPersonnes) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord cocher un ou plusieurs noms de personnes dans la liste.", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord cocher un ou plusieurs noms de personnes dans la liste."), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
@@ -1082,7 +1084,7 @@ class TestFrame(wx.Frame):
 
     def __set_properties(self):
         # begin wxGlade: TestPlanning.__set_properties
-        self.SetTitle(u"Panel Présences")
+        self.SetTitle(_(u"Panel Présences"))
         self.SetSize((1000, 800))
 ##        self.statusbar.SetStatusWidths([-1])
 ##        # statusbar fields

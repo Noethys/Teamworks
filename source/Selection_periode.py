@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import wx.lib.mixins.listctrl  as  listmix
@@ -17,23 +19,23 @@ import calendar
 
 class SelectionPeriode(wx.Dialog):
     """ On récupère les infos de cette boîte avec GetDates() ou avec GetPersonnesPresentes() """
-    def __init__(self, parent, id=-1, title=u"Sélection d'une période", nomFichier=""):
+    def __init__(self, parent, id=-1, title=_(u"Sélection d'une période"), nomFichier=""):
         wx.Dialog.__init__(self, parent, id, title, size=(350, 400))
 
         # Label
-        self.label = wx.StaticText(self, -1, u"Veuillez sélectionner ou saisir une période :")
+        self.label = wx.StaticText(self, -1, _(u"Veuillez sélectionner ou saisir une période :"))
         
         # listCtrl vacances
-        self.staticbox_vacances = wx.StaticBox(self, -1, u"Périodes de vacances")
+        self.staticbox_vacances = wx.StaticBox(self, -1, _(u"Périodes de vacances"))
         self.ctrl_vacances = ListCtrl_vacances(self)
         self.ctrl_vacances.SetMinSize((20, 20)) 
         
         # Mois et Année
-        self.staticbox_moisAnnee = wx.StaticBox(self, -1, u"Mois et année")
+        self.staticbox_moisAnnee = wx.StaticBox(self, -1, _(u"Mois et année"))
         self.label_mois = wx.StaticText(self, -1, "Mois :", size=(50, -1), style=wx.ALIGN_RIGHT)
-        self.listeMois = [u"", u"Janvier", u"Février", u"Mars", u"Avril", u"Mai", u"Juin", u"Juillet", u"Août", u"Septembre", u"Octobre", u"Novembre", u"Décembre"]
+        self.listeMois = [u"", _(u"Janvier"), _(u"Février"), _(u"Mars"), _(u"Avril"), _(u"Mai"), _(u"Juin"), _(u"Juillet"), _(u"Août"), _(u"Septembre"), _(u"Octobre"), _(u"Novembre"), _(u"Décembre")]
         self.ctrl_mois = wx.Choice(self, -1, choices = self.listeMois) #AdvancedComboBox( self, "", size=(100, -1), choices = self.listeMois)
-        self.label_annee = wx.StaticText(self, -1, u"Année :", style=wx.ALIGN_RIGHT)
+        self.label_annee = wx.StaticText(self, -1, _(u"Année :"), style=wx.ALIGN_RIGHT)
         
         self.listeAnnees = ["",]
         for annee in range(2000, 2050) :
@@ -41,15 +43,15 @@ class SelectionPeriode(wx.Dialog):
         self.ctrl_annee = wx.Choice(self, -1, choices = self.listeAnnees) #AdvancedComboBox( self, "", size=(70, -1), choices = self.listeAnnees) #TextCtrlAnnee(self, "", size=(50, -1) )
         
         # Dates
-        self.staticbox_dates = wx.StaticBox(self, -1, u"Dates")
+        self.staticbox_dates = wx.StaticBox(self, -1, _(u"Dates"))
         self.label_date_debut = wx.StaticText(self, -1, "Du :", size=(50, -1), style=wx.ALIGN_RIGHT)
         self.ctrl_date_debut = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         self.label_date_fin = wx.StaticText(self, -1, "Au :", style=wx.ALIGN_RIGHT)
         self.ctrl_date_fin =wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
         
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -271,9 +273,9 @@ class ListCtrl_vacances(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
         
         # Création des colonnes
         self.nbreColonnes = 2
-        self.InsertColumn(0, u"Nom")
+        self.InsertColumn(0, _(u"Nom"))
         self.SetColumnWidth(0, 100)
-        self.InsertColumn(1, u"Dates")
+        self.InsertColumn(1, _(u"Dates"))
         self.SetColumnWidth(1, 100)
         
         #These two should probably be passed to init more cleanly

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import datetime
@@ -33,7 +35,7 @@ class Panel(wx.Panel):
         self.IDpersonne = IDpersonne
 
         # Widgets
-        self.staticBox_deplacements = wx.StaticBox(self, -1, u"Déplacements")
+        self.staticBox_deplacements = wx.StaticBox(self, -1, _(u"Déplacements"))
         self.ctrl_deplacements = ListCtrl_deplacements(self, -1)
         self.ctrl_deplacements.SetMinSize((20, 20))
         self.bouton_deplacements_ajouter = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG))
@@ -41,7 +43,7 @@ class Panel(wx.Panel):
         self.bouton_deplacements_supprimer = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG))
         self.bouton_deplacements_imprimer = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG))
         
-        self.staticBox_remboursements = wx.StaticBox(self, -1, u"Remboursements")
+        self.staticBox_remboursements = wx.StaticBox(self, -1, _(u"Remboursements"))
         self.ctrl_remboursements = ListCtrl_remboursements(self, -1)
         self.ctrl_remboursements.SetMinSize((20, 20))
         self.bouton_remboursements_ajouter = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG))
@@ -63,19 +65,19 @@ class Panel(wx.Panel):
         
 
     def __set_properties(self):
-        self.bouton_deplacements_ajouter.SetToolTipString(u"Cliquez ici pour saisir un nouveau déplacement")
+        self.bouton_deplacements_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir un nouveau déplacement"))
         self.bouton_deplacements_ajouter.SetSize(self.bouton_deplacements_ajouter.GetBestSize())
-        self.bouton_deplacements_modifier.SetToolTipString(u"Cliquez ici pour modifier le déplacement sélectionné dans la liste")
+        self.bouton_deplacements_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le déplacement sélectionné dans la liste"))
         self.bouton_deplacements_modifier.SetSize(self.bouton_deplacements_modifier.GetBestSize())
-        self.bouton_deplacements_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le déplacement sélectionné dans la liste")
+        self.bouton_deplacements_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le déplacement sélectionné dans la liste"))
         self.bouton_deplacements_supprimer.SetSize(self.bouton_deplacements_supprimer.GetBestSize())
-        self.bouton_deplacements_imprimer.SetToolTipString(u"Cliquez ici pour imprimer une fiche de frais de déplacement")
+        self.bouton_deplacements_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer une fiche de frais de déplacement"))
         
-        self.bouton_remboursements_ajouter.SetToolTipString(u"Cliquez ici pour saisir un nouveau remboursement")
+        self.bouton_remboursements_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir un nouveau remboursement"))
         self.bouton_remboursements_ajouter.SetSize(self.bouton_remboursements_ajouter.GetBestSize())
-        self.bouton_remboursements_modifier.SetToolTipString(u"Cliquez ici pour modifier le remboursement sélectionné dans la liste")
+        self.bouton_remboursements_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le remboursement sélectionné dans la liste"))
         self.bouton_remboursements_modifier.SetSize(self.bouton_remboursements_modifier.GetBestSize())
-        self.bouton_remboursements_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le remboursement sélectionné dans la liste")
+        self.bouton_remboursements_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le remboursement sélectionné dans la liste"))
         self.bouton_remboursements_supprimer.SetSize(self.bouton_remboursements_supprimer.GetBestSize())
 
 
@@ -136,7 +138,7 @@ class Panel(wx.Panel):
 
     def OnBoutonAjoutDeplacement(self, event):
         if self.IDpersonne == None : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une personne dans la liste", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une personne dans la liste"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -156,7 +158,7 @@ class Panel(wx.Panel):
 
     def OnBoutonModifDeplacement(self, event):
         if self.IDpersonne == None : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une personne dans la liste", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une personne dans la liste"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -167,7 +169,7 @@ class Panel(wx.Panel):
         """ Modification de coordonnées """
         index = self.ctrl_deplacements.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un déplacement à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un déplacement à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -185,7 +187,7 @@ class Panel(wx.Panel):
 
     def OnBoutonSupprDeplacement(self, event):
         if self.IDpersonne == None : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une personne dans la liste", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une personne dans la liste"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -198,7 +200,7 @@ class Panel(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un déplacement à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un déplacement à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -217,15 +219,15 @@ class Panel(wx.Panel):
                 dejaAttribue = IDremboursement
                 break
         if dejaAttribue != None : 
-            dlg = wx.MessageDialog(self, u"Ce déplacement a déjà été attribué au remboursement n°" + str(dejaAttribue) + u".\nVous ne pouvez donc pas le supprimer.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Ce déplacement a déjà été attribué au remboursement n°") + str(dejaAttribue) + _(u".\nVous ne pouvez donc pas le supprimer."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         
         # Demande de confirmation
         texte = self.ctrl_deplacements.GetItem(index, 3).GetText() + "\nLe " + self.ctrl_deplacements.GetItem(index, 1).GetText()
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce déplacement ? \n\n" + texte))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce déplacement ? \n\n") + texte))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -246,13 +248,13 @@ class Panel(wx.Panel):
     def OnBoutonImprimerDeplacement(self, event):
         """ Impression """
         if self.IDpersonne == None : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une personne dans la liste", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une personne dans la liste"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
         # Vérifie qu'il existe des déplacements
         if self.ctrl_deplacements.GetItemCount() == 0 :
-            dlg = wx.MessageDialog(self, u"Il n'y a aucun déplacement à imprimer pour cette personne.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucun déplacement à imprimer pour cette personne."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -267,7 +269,7 @@ class Panel(wx.Panel):
 
     def OnBoutonAjoutRemboursement(self, event):
         if self.IDpersonne == None : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une personne dans la liste", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une personne dans la liste"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -287,7 +289,7 @@ class Panel(wx.Panel):
 
     def OnBoutonModifRemboursement(self, event):
         if self.IDpersonne == None : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une personne dans la liste", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une personne dans la liste"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -298,7 +300,7 @@ class Panel(wx.Panel):
         """ Modification de coordonnées """
         index = self.ctrl_remboursements.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un remboursement à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un remboursement à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -316,7 +318,7 @@ class Panel(wx.Panel):
 
     def OnBoutonSupprRemboursement(self, event):
         if self.IDpersonne == None : 
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une personne dans la liste", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une personne dans la liste"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -329,7 +331,7 @@ class Panel(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un remboursement à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un remboursement à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -344,17 +346,17 @@ class Panel(wx.Panel):
         DB.Close()
         nbreRattaches = len(listeDeplacements)
         if nbreRattaches != 0 : 
-            txtMessage = u"Ce remboursement possède déjà " + str(nbreRattaches) + u" déplacement(s) rattaché(s).\nSouhaitez-vous vous quand même le supprimer ?"
-            dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+            txtMessage = _(u"Ce remboursement possède déjà ") + str(nbreRattaches) + _(u" déplacement(s) rattaché(s).\nSouhaitez-vous vous quand même le supprimer ?")
+            dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
             reponse = dlgConfirm.ShowModal()
             dlgConfirm.Destroy()
             if reponse == wx.ID_NO:
                 return
         
         # Demande de confirmation
-        texte = self.ctrl_remboursements.GetItem(index, 2).GetText() + u" d'un montant de " + self.ctrl_remboursements.GetItem(index, 3).GetText() 
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer le remboursement du " + texte + " ?"))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        texte = self.ctrl_remboursements.GetItem(index, 2).GetText() + _(u" d'un montant de ") + self.ctrl_remboursements.GetItem(index, 3).GetText() 
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer le remboursement du ") + texte + " ?"))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -423,19 +425,19 @@ class ListCtrl_deplacements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
         self.nbreColonnes = 8
         self.InsertColumn(0, u"N°")
         self.SetColumnWidth(0, 50)
-        self.InsertColumn(1, u"Date")
+        self.InsertColumn(1, _(u"Date"))
         self.SetColumnWidth(1, 80)
-        self.InsertColumn(2, u"Objet")
+        self.InsertColumn(2, _(u"Objet"))
         self.SetColumnWidth(2, 80) 
-        self.InsertColumn(3, u"Trajet")
+        self.InsertColumn(3, _(u"Trajet"))
         self.SetColumnWidth(3, 170)  
-        self.InsertColumn(4, u"Distance")
+        self.InsertColumn(4, _(u"Distance"))
         self.SetColumnWidth(4, 70)
-        self.InsertColumn(5, u"Tarif")
+        self.InsertColumn(5, _(u"Tarif"))
         self.SetColumnWidth(5, 70)  
-        self.InsertColumn(6, u"Montant")
+        self.InsertColumn(6, _(u"Montant"))
         self.SetColumnWidth(6, 70)
-        self.InsertColumn(7, u"Rmbst")
+        self.InsertColumn(7, _(u"Rmbst"))
         self.SetColumnWidth(7, 50)  
 
         #These two should probably be passed to init more cleanly
@@ -482,12 +484,12 @@ class ListCtrl_deplacements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
             else :
                 remboursement = ""
             # Formatage distance
-            dist = str(distance) + u" Km"
+            dist = str(distance) + _(u" Km")
             # Formatage montant
             montant = float(distance) * float(tarif_km)
             montantStr = u"%.2f ¤" % montant
             # Formatage tarif/Km
-            tarif_km = str(tarif_km) + u" ¤/km"
+            tarif_km = str(tarif_km) + _(u" ¤/km")
             self.donnees[IDdeplacement] = (IDdeplacement, date, objet, trajet, dist, tarif_km, montantStr, remboursement)
             index += 1
             
@@ -570,7 +572,7 @@ class ListCtrl_deplacements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -579,14 +581,14 @@ class ListCtrl_deplacements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -650,11 +652,11 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
         self.SetColumnWidth(0, 0)
         self.InsertColumn(1, u"N°")
         self.SetColumnWidth(1, 30)
-        self.InsertColumn(2, u"Date")
+        self.InsertColumn(2, _(u"Date"))
         self.SetColumnWidth(2, 80)
-        self.InsertColumn(3, u"Montant")
+        self.InsertColumn(3, _(u"Montant"))
         self.SetColumnWidth(3, 70) 
-        self.InsertColumn(4, u"Déplacements rattachés")
+        self.InsertColumn(4, _(u"Déplacements rattachés"))
         self.SetColumnWidth(4, 200)   
 
         #These two should probably be passed to init more cleanly
@@ -695,7 +697,7 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
             # Formatage liste IDdeplacement
             listeID = listeIDdeplacement.split("-")
             if listeID[0] == "" :
-                texteListeID = u"Aucun déplacement rattaché"
+                texteListeID = _(u"Aucun déplacement rattaché")
             else :
                 texteListeID = u"N° "
                 for ID in listeID :
@@ -775,7 +777,7 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -784,14 +786,14 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)

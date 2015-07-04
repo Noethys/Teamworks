@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import wx.lib.agw.customtreectrl as CT
@@ -15,20 +17,20 @@ import wx.lib.agw.customtreectrl as CT
 class MyDialog(wx.Dialog):
     """ Sélection de catégories pour un scénario """
     def __init__(self, parent, listeSelections=[], listeDisabledItems = []):
-        wx.Dialog.__init__(self, parent, id=-1, title=u"Sélection de catégories", size=(450, 600))
+        wx.Dialog.__init__(self, parent, id=-1, title=_(u"Sélection de catégories"), size=(450, 600))
         self.listeSelections = listeSelections
         self.listeDisabledItems = listeDisabledItems
 
         # Label
-        self.label = wx.StaticText(self, -1, u"Veuillez cocher les catégories à inclure obligatoirement dans le scénario :")
+        self.label = wx.StaticText(self, -1, _(u"Veuillez cocher les catégories à inclure obligatoirement dans le scénario :"))
         
         # listCtrl vacances
-        self.staticbox_treeCtrl = wx.StaticBox(self, -1, u"Aucune catégorie sélectionnée")
+        self.staticbox_treeCtrl = wx.StaticBox(self, -1, _(u"Aucune catégorie sélectionnée"))
         self.ctrl_treeCtrl = TreeCtrl(self, listeSelections, listeDisabledItems)
         
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -67,7 +69,7 @@ class MyDialog(wx.Dialog):
         """ Validation des données saisies """
         listeSelections = self.ctrl_treeCtrl.GetListeItemsCoches()
         if len(listeSelections) == 0 :
-            dlg = wx.MessageDialog(self, u"Aucune catégorie n'a été sélectionnée.\n\nSouhaitez-vous valider ce choix ?", "Confirmation", wx.YES_NO|wx.CANCEL|wx.NO_DEFAULT|wx.ICON_EXCLAMATION)
+            dlg = wx.MessageDialog(self, _(u"Aucune catégorie n'a été sélectionnée.\n\nSouhaitez-vous valider ce choix ?"), "Confirmation", wx.YES_NO|wx.CANCEL|wx.NO_DEFAULT|wx.ICON_EXCLAMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_YES:
                 dlg.Destroy()
@@ -97,9 +99,9 @@ class TreeCtrl(CT.CustomTreeCtrl):
     
     def OnItemCheck(self, event):
         nbreSelections = len(self.GetListeItemsCoches())
-        if nbreSelections == 0 : texte = u"Aucune catégorie sélectionnée"
-        if nbreSelections == 1 : texte = u"1 catégorie sélectionnée"
-        if nbreSelections > 1 : texte = u"%d catégories sélectionnées" % nbreSelections
+        if nbreSelections == 0 : texte = _(u"Aucune catégorie sélectionnée")
+        if nbreSelections == 1 : texte = _(u"1 catégorie sélectionnée")
+        if nbreSelections > 1 : texte = _(u"%d catégories sélectionnées") % nbreSelections
         self.GetParent().staticbox_treeCtrl.SetLabel(texte)
         
     def FormateCouleur(self, texte):
@@ -131,7 +133,7 @@ class TreeCtrl(CT.CustomTreeCtrl):
             exec("self.img" + str(ID) +  "= il.Add(self.CreationImage(tailleImages, " + str(r) + ", " + str(v) + ", " + str(b) + "))")
         self.SetImageList(il)
         self.il = il
-        self.root = self.AddRoot(u"Catégories")
+        self.root = self.AddRoot(_(u"Catégories"))
         self.SetPyData(self.root, 0)
         self.SetItemImage(self.root, self.imgRoot, wx.TreeItemIcon_Normal)
         
@@ -178,7 +180,7 @@ class TreeCtrl(CT.CustomTreeCtrl):
         DB.ExecuterReq(req)
         listeCategories = DB.ResultatReq()
         DB.Close()
-        listeCategories.append( (999, u"Sans catégorie", 0, 0, "(255, 255, 255)" ) )
+        listeCategories.append( (999, _(u"Sans catégorie"), 0, 0, "(255, 255, 255)" ) )
         return listeCategories               
 
     def GetListeItemsCoches(self):

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
@@ -22,12 +24,12 @@ class MyFrame(wx.Frame):
             nomFichierTmp = nomFichier[nomFichier.index("[RESEAU]"):]
         else:
             nomFichierTmp = nomFichier
-        self.label_intro = wx.StaticText(self.panel_base, -1, u"Le fichier '" + nomFichierTmp + u"' nécessite un mot de passe :")
+        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Le fichier '") + nomFichierTmp + _(u"' nécessite un mot de passe :"))
         self.sizer_contenu_staticbox = wx.StaticBox(self.panel_base, -1, "")
-        self.label_pwd = wx.StaticText(self.panel_base, -1, u"Mot de passe :")
+        self.label_pwd = wx.StaticText(self.panel_base, -1, _(u"Mot de passe :"))
         self.text_pwd = wx.TextCtrl(self.panel_base, -1, "", size=(200, -1), style=wx.TE_PASSWORD)
-        self.bouton_ok = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel_base, -1, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -37,7 +39,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.SetTitle(u"Saisie du mot de passe")
+        self.SetTitle(_(u"Saisie du mot de passe"))
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Cadenas.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
@@ -90,7 +92,7 @@ class MyFrame(wx.Frame):
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
         if self.text_pwd.GetValue() != self.password :
-            dlg = wx.MessageDialog(self, u"Votre mot de passe est erroné.", u"Mot de passe erroné", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Votre mot de passe est erroné."), _(u"Mot de passe erroné"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.text_pwd.SetValue("")

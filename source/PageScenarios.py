@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import Scenario_gestion
 
 try: import psyco; psyco.full()
@@ -20,7 +22,7 @@ class Panel(wx.Panel):
         self.IDpersonne = IDpersonne
 
         # Widgets
-        self.staticBox_staticbox = wx.StaticBox(self, -1, u"Scénarios")
+        self.staticBox_staticbox = wx.StaticBox(self, -1, _(u"Scénarios"))
         self.panelScenarios = Scenario_gestion.Panel(self, IDpersonne=self.IDpersonne)
         self.panelScenarios.label_introduction.Show(False)
         

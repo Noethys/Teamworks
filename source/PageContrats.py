@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import datetime
@@ -31,8 +33,8 @@ class Panel_Contrats(wx.Panel):
         self.IDpersonne = IDpersonne
 
         # Widgets
-##        self.staticBox_pieces_staticbox = wx.StaticBox(self, -1, u"Pièces à fournir")
-        self.staticBox_contrats_staticbox = wx.StaticBox(self, -1, u"Contrats")
+##        self.staticBox_pieces_staticbox = wx.StaticBox(self, -1, _(u"Pièces à fournir"))
+        self.staticBox_contrats_staticbox = wx.StaticBox(self, -1, _(u"Contrats"))
         self.list_ctrl_contrats = ListCtrl_contrats(self, -1)
         self.list_ctrl_contrats.SetMinSize((20, 20)) 
         
@@ -49,15 +51,15 @@ class Panel_Contrats(wx.Panel):
 
     def __set_properties(self):
 
-        self.bouton_contrats_ajouter.SetToolTipString(u"Cliquez ici pour saisir un nouveau contrat")
+        self.bouton_contrats_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir un nouveau contrat"))
         self.bouton_contrats_ajouter.SetSize(self.bouton_contrats_ajouter.GetBestSize())
-        self.bouton_contrats_modifier.SetToolTipString(u"Cliquez ici pour modifier le contrat sélectionné dans la liste")
+        self.bouton_contrats_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le contrat sélectionné dans la liste"))
         self.bouton_contrats_modifier.SetSize(self.bouton_contrats_modifier.GetBestSize())
-        self.bouton_contrats_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le contrat sélectionné dans la liste")
+        self.bouton_contrats_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le contrat sélectionné dans la liste"))
         self.bouton_contrats_supprimer.SetSize(self.bouton_contrats_supprimer.GetBestSize())
-        self.bouton_signature.SetToolTipString(u"Cliquez ici pour signaler que le contrat est signé ou non")
-        self.bouton_due.SetToolTipString(u"Cliquez ici pour signaler si la DUE a bien été faite")
-        self.bouton_imprimer.SetToolTipString(u"Cliquez ici pour imprimer un contrat, une DUE, une attestation de travail, etc...")
+        self.bouton_signature.SetToolTipString(_(u"Cliquez ici pour signaler que le contrat est signé ou non"))
+        self.bouton_due.SetToolTipString(_(u"Cliquez ici pour signaler si la DUE a bien été faite"))
+        self.bouton_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer un contrat, une DUE, une attestation de travail, etc..."))
         
         # Binds
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAjoutContrat, self.bouton_contrats_ajouter)
@@ -148,7 +150,7 @@ class Panel_Contrats(wx.Panel):
         """ Modification de coordonnées """
         index = self.list_ctrl_contrats.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un contrat à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un contrat à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -166,15 +168,15 @@ class Panel_Contrats(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un contrat à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un contrat à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
 
         # Demande de confirmation
         texteContrat = self.list_ctrl_contrats.GetItem(index, 3).GetText()
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce contrat ? \n\n> " + texteContrat))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce contrat ? \n\n> ") + texteContrat))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -195,7 +197,7 @@ class Panel_Contrats(wx.Panel):
         index = self.list_ctrl_contrats.GetFirstSelected()
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un contrat dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un contrat dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -223,7 +225,7 @@ class Panel_Contrats(wx.Panel):
         index = self.list_ctrl_contrats.GetFirstSelected()
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un contrat dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un contrat dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -251,7 +253,7 @@ class Panel_Contrats(wx.Panel):
         index = self.list_ctrl_contrats.GetFirstSelected()
         # Vérifie qu'un contrat a été sélectionné dans la liste
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un contrat dans la liste proposée.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un contrat dans la liste proposée."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -259,8 +261,8 @@ class Panel_Contrats(wx.Panel):
         # Demande le type d'impression à l'utilisateur
         import Selection_type_document
         listeBoutons = [
-            ("Images/BoutonsImages/Imprimer_doc_DUE.png", u"Cliquez ici pour imprimer une D.U.E."),
-            ("Images/BoutonsImages/Imprimer_doc_contrat.png", u"Cliquez ici pour imprimer un autre document (Contrat, attestation, etc...)"),
+            ("Images/BoutonsImages/Imprimer_doc_DUE.png", _(u"Cliquez ici pour imprimer une D.U.E.")),
+            ("Images/BoutonsImages/Imprimer_doc_contrat.png", _(u"Cliquez ici pour imprimer un autre document (Contrat, attestation, etc...)")),
             ]
         dlg = Selection_type_document.MyFrame(self, size=(450, 335), listeBoutons=listeBoutons, type="contrats")
         if dlg.ShowModal() == wx.ID_OK:
@@ -313,17 +315,17 @@ class ListCtrl_contrats(wx.ListCtrl):
         self.IDpersonne = self.GetParent().IDpersonne
 
         # Colonnes
-        self.InsertColumn(0, u"ID")
+        self.InsertColumn(0, _(u"ID"))
         self.SetColumnWidth(0, 0)
-        self.InsertColumn(1, u"Date de début")
+        self.InsertColumn(1, _(u"Date de début"))
         self.SetColumnWidth(1, 85)
-        self.InsertColumn(2, u"Date de fin")
+        self.InsertColumn(2, _(u"Date de fin"))
         self.SetColumnWidth(2, 85)
-        self.InsertColumn(3, u"Classification")
+        self.InsertColumn(3, _(u"Classification"))
         self.SetColumnWidth(3, 220)
-        self.InsertColumn(4, u"Signé")
+        self.InsertColumn(4, _(u"Signé"))
         self.SetColumnWidth(4, 43)
-        self.InsertColumn(5, u"Due")
+        self.InsertColumn(5, _(u"Due"))
         self.SetColumnWidth(5, 40)
 
         # Création des items
@@ -364,7 +366,7 @@ class ListCtrl_contrats(wx.ListCtrl):
             # Autres colonnes
             self.SetStringItem(index, 1, DateEngFr(date_debut))
             if date_fin == "2999-01-01" :
-                date_fin = u"Indétermin."
+                date_fin = _(u"Indétermin.")
             else:
                 date_fin = DateEngFr(date_fin)
             if date_rupture != "" :
@@ -486,7 +488,7 @@ class ListCtrl_contrats(wx.ListCtrl):
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -495,14 +497,14 @@ class ListCtrl_contrats(wx.ListCtrl):
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -512,9 +514,9 @@ class ListCtrl_contrats(wx.ListCtrl):
         
         # Item SIgnature
         if etatSignature == "Oui" :
-            txt = u"Contrat non signé !"
+            txt = _(u"Contrat non signé !")
         else:
-            txt =u"Contrat signé !"
+            txt =_(u"Contrat signé !")
         item = wx.MenuItem(menuPop, 40, txt)
         bmp = wx.Bitmap("Images/16x16/Signature.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
@@ -523,9 +525,9 @@ class ListCtrl_contrats(wx.ListCtrl):
         
         # Item Due
         if etatDue == "Oui" :
-            txt = u"DUE non faite !"
+            txt = _(u"DUE non faite !")
         else:
-            txt =u"DUE faite !"
+            txt =_(u"DUE faite !")
         item = wx.MenuItem(menuPop, 80, txt)
         bmp = wx.Bitmap("Images/16x16/Due.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
@@ -535,7 +537,7 @@ class ListCtrl_contrats(wx.ListCtrl):
         menuPop.AppendSeparator()
         
         # Item Imprimer 
-        item = wx.MenuItem(menuPop, 50, u"Imprimer un document")
+        item = wx.MenuItem(menuPop, 50, _(u"Imprimer un document"))
         bmp = wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)

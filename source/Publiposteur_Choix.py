@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import sys
 import FonctionsPerso
 import GestionDB
@@ -30,7 +32,7 @@ class TreeCtrl(CT.CustomTreeCtrl):
         self.root = self.AddRoot("Root")
         self.listeDonnees = listeDonnees
 ##        listeDonnees = [ 
-##            (u"Mathis", [(10, u"Contrat1"), (20, u"Contrat 2")],), 
+##            (_(u"Mathis"), [(10, _(u"Contrat1")), (20, _(u"Contrat 2"))],), 
 ##            ]
         
         
@@ -127,10 +129,10 @@ class ToolBook(wx.Toolbook):
         self.panelCandidats.MAJ() 
         self.panelCandidatures.MAJ() 
         
-        self.AddPage(self.panelPersonnes, u"Personnes", imageId=img1)
-        self.AddPage(self.panelContrats, u"Contrats", imageId=img2)
-        self.AddPage(self.panelCandidats, u"Candidats", imageId=img3)
-        self.AddPage(self.panelCandidatures, u"Candidatures", imageId=img4)
+        self.AddPage(self.panelPersonnes, _(u"Personnes"), imageId=img1)
+        self.AddPage(self.panelContrats, _(u"Contrats"), imageId=img2)
+        self.AddPage(self.panelCandidats, _(u"Candidats"), imageId=img3)
+        self.AddPage(self.panelCandidatures, _(u"Candidatures"), imageId=img4)
     
     def GetCategorie(self):
         indexPage = self.GetSelection()
@@ -167,7 +169,7 @@ class ToolBook(wx.Toolbook):
         if self.GetCategorie() == "candidat" : self.panelCandidats.Rechercher()
         if self.GetCategorie() == "candidature" : self.panelCandidatures.Rechercher()
         if self.GetCategorie() == "contrat" :
-            dlg = wx.MessageDialog(self, u"Cette fonction n'est pas encore disponible pour la liste des contrats.", u"Fonction indisponible", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Cette fonction n'est pas encore disponible pour la liste des contrats."), _(u"Fonction indisponible"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -177,7 +179,7 @@ class ToolBook(wx.Toolbook):
         if self.GetCategorie() == "candidat" : self.panelCandidats.AfficherTout()
         if self.GetCategorie() == "candidature" : self.panelCandidatures.AfficherTout()
         if self.GetCategorie() == "contrat" :
-            dlg = wx.MessageDialog(self, u"Cette fonction n'est pas encore disponible pour la liste des contrats.", u"Fonction indisponible", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Cette fonction n'est pas encore disponible pour la liste des contrats."), _(u"Fonction indisponible"), wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -190,7 +192,7 @@ class ToolBook(wx.Toolbook):
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
         DB.Close()
-        listeColonnes = [(u"", 22), (u"Nom", 150), (u"Adresse", 160), (u"CP", 50), (u"Ville", 150)]
+        listeColonnes = [(u"", 22), (_(u"Nom"), 150), (_(u"Adresse"), 160), (_(u"CP"), 50), (_(u"Ville"), 150)]
         return listeColonnes, listeDonnees
 
     def ImportationContrats(self):
@@ -210,7 +212,7 @@ class ToolBook(wx.Toolbook):
         listeContrats = []
         dictGroupes = {}
         for IDcontrat, nomPersonne, classification, type, date_debut, date_fin in listeDonnees :
-            texteContrat = u"%s %s du %s au %s" % (type, classification, FonctionsPerso.DateEngFr(date_debut), FonctionsPerso.DateEngFr(date_fin))
+            texteContrat = _(u"%s %s du %s au %s") % (type, classification, FonctionsPerso.DateEngFr(date_debut), FonctionsPerso.DateEngFr(date_fin))
             if dictGroupes.has_key(nomPersonne) :
                 dictGroupes[nomPersonne].append( (IDcontrat, texteContrat) )
             else:
@@ -230,7 +232,7 @@ class ToolBook(wx.Toolbook):
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
         DB.Close()
-        listeColonnes = [(u"", 22), (u"Nom", 150), (u"Adresse", 160), (u"CP", 50), (u"Ville", 150)]
+        listeColonnes = [(u"", 22), (_(u"Nom"), 150), (_(u"Adresse"), 160), (_(u"CP"), 50), (_(u"Ville"), 150)]
         return listeColonnes, listeDonnees        
 
     def ImportationCandidatures(self):
@@ -250,7 +252,7 @@ class ToolBook(wx.Toolbook):
         listeContrats = []
         dictGroupes = {}
         for IDcandidature, nomCandidat, classification, type, date_debut, date_fin in listeDonnees :
-            texteContrat = u"%s %s du %s au %s" % (type, classification, FonctionsPerso.DateEngFr(date_debut), FonctionsPerso.DateEngFr(date_fin))
+            texteContrat = _(u"%s %s du %s au %s") % (type, classification, FonctionsPerso.DateEngFr(date_debut), FonctionsPerso.DateEngFr(date_fin))
             if dictGroupes.has_key(nomPersonne) :
                 dictGroupes[nomPersonne].append( (IDcontrat, texteContrat) )
             else:
@@ -261,31 +263,31 @@ class ToolBook(wx.Toolbook):
             listeContrats.append( (key, dictGroupes[key]) )
         return listeContrats
 
-## "candidatures":[         ("IDcandidature", "INTEGER PRIMARY KEY AUTOINCREMENT", u"ID", u"ID de la candidature"),
-##                                    ("IDcandidat", "INTEGER", u"IDcandidat", u"ID du candidat"),
-##                                    ("IDpersonne", "INTEGER", u"IDpersonne", u"ID du salarié"),
-##                                    ("date_depot", "DATE", u"Date de la candidature", u"Date de la candidature"),
-##                                    ("IDtype", "INTEGER", u"IDtype", u"ID du type de candidature"),
-##                                    ("acte_remarques", "VARCHAR(300)", u"Remarques", u"Remarques sur le dépôt de candidature"),
-##                                    ("IDemploi", "INTEGER", u"IDemploi", u"ID de l'emploi"),
-##                                    ("periodes_remarques", "VARCHAR(300)", u"Remarques", u"Remarques sur les disponibilités"),
-##                                    ("poste_remarques", "VARCHAR(300)", u"Remarques", u"Remarques sur le poste de la candidature"),
-##                                    ("IDdecision", "INTEGER", u"IDdecision", u"ID de la décision"),
-##                                    ("decision_remarques", "VARCHAR(300)", u"Remarques", u"Remarques sur la décision"),
-##                                    ("reponse_obligatoire", "INTEGER", u"Reponse obligatoire", u"Réponse obligatoire (0 ou 1)"),
-##                                    ("reponse", "INTEGER", u"Reponse", u"Réponse de la candidature (0 ou 1)"),
-##                                    ("date_reponse", "DATE", u"Date de la réponse", u"Date de la réponse"),
-##                                    ("IDtype_reponse", "INTEGER", u"IDtype", u"ID du type de réponse"),
+## "candidatures":[         ("IDcandidature", "INTEGER PRIMARY KEY AUTOINCREMENT", _(u"ID"), _(u"ID de la candidature")),
+##                                    ("IDcandidat", "INTEGER", _(u"IDcandidat"), _(u"ID du candidat")),
+##                                    ("IDpersonne", "INTEGER", _(u"IDpersonne"), _(u"ID du salarié")),
+##                                    ("date_depot", "DATE", _(u"Date de la candidature"), _(u"Date de la candidature")),
+##                                    ("IDtype", "INTEGER", _(u"IDtype"), _(u"ID du type de candidature")),
+##                                    ("acte_remarques", "VARCHAR(300)", _(u"Remarques"), _(u"Remarques sur le dépôt de candidature")),
+##                                    ("IDemploi", "INTEGER", _(u"IDemploi"), _(u"ID de l'emploi")),
+##                                    ("periodes_remarques", "VARCHAR(300)", _(u"Remarques"), _(u"Remarques sur les disponibilités")),
+##                                    ("poste_remarques", "VARCHAR(300)", _(u"Remarques"), _(u"Remarques sur le poste de la candidature")),
+##                                    ("IDdecision", "INTEGER", _(u"IDdecision"), _(u"ID de la décision")),
+##                                    ("decision_remarques", "VARCHAR(300)", _(u"Remarques"), _(u"Remarques sur la décision")),
+##                                    ("reponse_obligatoire", "INTEGER", _(u"Reponse obligatoire"), _(u"Réponse obligatoire (0 ou 1)")),
+##                                    ("reponse", "INTEGER", _(u"Reponse"), _(u"Réponse de la candidature (0 ou 1)")),
+##                                    ("date_reponse", "DATE", _(u"Date de la réponse"), _(u"Date de la réponse")),
+##                                    ("IDtype_reponse", "INTEGER", _(u"IDtype"), _(u"ID du type de réponse")),
 ##                                    ], # Liste des candidatures du candidat
                                     
                                     
 class MyFrame(wx.Frame):
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, -1, title=u"Créer des courriers ou des emails par publipostage", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, -1, title=_(u"Créer des courriers ou des emails par publipostage"), style=wx.DEFAULT_FRAME_STYLE)
         self.parent = parent
         self.panel = wx.Panel(self, -1)
         
-        self.label_intro = wx.StaticText(self.panel, -1, u"Veuillez sélectionner une catégorie de données puis cochez les données à utiliser :")
+        self.label_intro = wx.StaticText(self.panel, -1, _(u"Veuillez sélectionner une catégorie de données puis cochez les données à utiliser :"))
         self.sizer_staticbox = wx.StaticBox(self.panel, -1, u"")
         
         # Panel
@@ -293,14 +295,14 @@ class MyFrame(wx.Frame):
         
         # Commandes
         self.imgFiltrer = wx.StaticBitmap(self.panel, -1, wx.Bitmap("Images/16x16/Loupe.png", wx.BITMAP_TYPE_ANY))
-        self.texteFiltrer = Hyperlink(self.panel, id=100,  label=u"Rechercher", infobulle=u"Rechercher")
+        self.texteFiltrer = Hyperlink(self.panel, id=100,  label=_(u"Rechercher"), infobulle=_(u"Rechercher"))
         self.imgActualiser = wx.StaticBitmap(self.panel, -1, wx.Bitmap("Images/16x16/Actualiser.png", wx.BITMAP_TYPE_ANY))
-        self.texteActualiser = Hyperlink(self.panel, id=200, label=u"Afficher tout", infobulle=u"Afficher tout")
+        self.texteActualiser = Hyperlink(self.panel, id=200, label=_(u"Afficher tout"), infobulle=_(u"Afficher tout"))
         
         # Boutons de commande
-        self.bouton_aide = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Aide_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_ok = wx.BitmapButton(self.panel, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self.panel, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         
         self.__set_properties()
         self.__do_layout()
@@ -314,11 +316,11 @@ class MyFrame(wx.Frame):
         _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(u"Cliquez ici pour valider")
+        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(u"Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((650, 500))
 
@@ -363,7 +365,7 @@ class MyFrame(wx.Frame):
         self.CentreOnScreen()
                     
     def OnBoutonAide(self, event):
-        dlg = wx.MessageDialog(self, u"L'aide pour ce nouveau module est en cours de rédaction.", u"Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide pour ce nouveau module est en cours de rédaction."), _(u"Aide indisponible"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         #FonctionsPerso.Aide(47)
@@ -380,7 +382,7 @@ class MyFrame(wx.Frame):
         listeID = self.toolBook.GetIDCoches()
         
         if len(listeID) == 0 :
-            dlg = wx.MessageDialog(self, u"Vous n'avez coché aucun élément.", u"Erreur de saisie", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez coché aucun élément."), _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return

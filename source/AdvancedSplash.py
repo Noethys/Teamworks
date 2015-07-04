@@ -86,6 +86,7 @@ Latest Revision: Andrea Gavana @ 10 Oct 2005, 15.50 CET
 #----------------------------------------------------------------------
 
 import wx
+import CTRL_Bouton_image
 
 # These Are Used To Declare If The AdvancedSplash Should Be Destroyed After The
 # Timeout Or Not

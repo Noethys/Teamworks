@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import SaisieTypesPieces
@@ -23,24 +25,24 @@ def FormatDuree(duree):
     
     listItems = []
     if jours == 1:
-        textJours = u"%d jour" % jours
+        textJours = _(u"%d jour") % jours
         listItems.append(textJours)
     if jours > 1:
-        textJours = u"%d jours" % jours
+        textJours = _(u"%d jours") % jours
         listItems.append(textJours)
     if mois > 0:
-        textMois = u"%d mois" % mois
+        textMois = _(u"%d mois") % mois
         listItems.append(textMois)
     if annees == 1:
-        textAnnees = u"%d année" % annees
+        textAnnees = _(u"%d année") % annees
         listItems.append(textAnnees)
     if annees > 1:
-        textAnnees = u"%d années" % annees
+        textAnnees = _(u"%d années") % annees
         listItems.append(textAnnees)
 
     nbreItems = len(listItems)
     if nbreItems == 0:
-        resultat = u"Validité illimitée"
+        resultat = _(u"Validité illimitée")
     else:
         if nbreItems == 1:
             resultat = listItems[0]
@@ -56,8 +58,8 @@ class Panel_TypesPieces(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL)
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Les types de pièces", u"")
-        texteIntro = u"Vous pouvez ici ajouter, modifier ou supprimer des types de pièces. Ce sont les documents que les employés doivent vous communiquer. Celles-ci peuvent être obligatoire pour tous (Exemple : 'Certificat médical'...) ou être obligatoire en fonction du diplôme détenu par la personne (Exemple, si une personne a le diplôme 'A.F.P.S.', elle devra donner la pièce 'Diplôme A.F.P.S.'). Vous devez préciser une durée de validité par défaut pour chaque pièce."
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Les types de pièces"), u"")
+        texteIntro = _(u"Vous pouvez ici ajouter, modifier ou supprimer des types de pièces. Ce sont les documents que les employés doivent vous communiquer. Celles-ci peuvent être obligatoire pour tous (Exemple : 'Certificat médical'...) ou être obligatoire en fonction du diplôme détenu par la personne (Exemple, si une personne a le diplôme 'A.F.P.S.', elle devra donner la pièce 'Diplôme A.F.P.S.'). Vous devez préciser une durée de validité par défaut pour chaque pièce.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
         self.listCtrl_TypesPieces = ListCtrlTypesPieces(self)
@@ -80,13 +82,13 @@ class Panel_TypesPieces(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un nouveau type de pièce")
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau type de pièce"))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier un type de pièce sélectionné dans la liste")
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier un type de pièce sélectionné dans la liste"))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer un type de pièce sélectionné dans la liste")
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer un type de pièce sélectionné dans la liste"))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
         
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -129,7 +131,7 @@ class Panel_TypesPieces(wx.Panel):
         """ Modification d'un type de pièce """
         index = self.listCtrl_TypesPieces.GetFirstSelected()
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner un type de pièce à modifier dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un type de pièce à modifier dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -137,7 +139,7 @@ class Panel_TypesPieces(wx.Panel):
         # Avertissement si cette pièce a déjà été attribuée à aucune personne
         nbreTitulaires = int(self.listCtrl_TypesPieces.GetItem(index, 3).GetText())
         if nbreTitulaires != 0:
-            message =u"Avertissement : Ce type de pièce a déjà été attribué a " + str(nbreTitulaires) + u" personne(s). Toute modification sera donc répercutée en cascade sur toutes les fiches des personnes à qui ce type de pièce a été attribué. \n\nSouhaitez-vous quand même modifier ce type de pièce ?"
+            message =_(u"Avertissement : Ce type de pièce a déjà été attribué a ") + str(nbreTitulaires) + _(u" personne(s). Toute modification sera donc répercutée en cascade sur toutes les fiches des personnes à qui ce type de pièce a été attribué. \n\nSouhaitez-vous quand même modifier ce type de pièce ?")
             dlg = wx.MessageDialog(self, message, "Information", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_INFORMATION)
             reponse = dlg.ShowModal()
             if reponse == wx.ID_NO:
@@ -159,7 +161,7 @@ class Panel_TypesPieces(wx.Panel):
 
         # Vérifie qu'un item a bien été sélectionné
         if index == -1:
-            dlg = wx.MessageDialog(self, u"Vous devez d'abord sélectionner une pièce à supprimer dans la liste.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une pièce à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -167,7 +169,7 @@ class Panel_TypesPieces(wx.Panel):
         # Vérifie que cette pièce n'est attribuée à aucune personne
         nbreTitulaires = int(self.listCtrl_TypesPieces.GetItem(index, 3).GetText())
         if nbreTitulaires != 0:
-            dlg = wx.MessageDialog(self, u"Pour des raisons de sécurité des données, vous ne pouvez pas supprimer un type de pièce qui a déjà été attribué à des personnes.\n\nSi vous voulez vraiment le supprimer, vous devez d'abord supprimer les pièces ayant ce nom sur chaque fiche individuelle concernée.", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Pour des raisons de sécurité des données, vous ne pouvez pas supprimer un type de pièce qui a déjà été attribué à des personnes.\n\nSi vous voulez vraiment le supprimer, vous devez d'abord supprimer les pièces ayant ce nom sur chaque fiche individuelle concernée."), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return
@@ -175,8 +177,8 @@ class Panel_TypesPieces(wx.Panel):
         # Demande de confirmation
         IDtype_piece = int(self.listCtrl_TypesPieces.GetItem(index, 0).GetText())
         NomPiece = self.listCtrl_TypesPieces.GetItem(index, 1).GetText()
-        txtMessage = unicode((u"Voulez-vous vraiment supprimer ce type de pièce ? \n\n> " + NomPiece))
-        dlgConfirm = wx.MessageDialog(self, txtMessage, u"Confirmation de suppression", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce type de pièce ? \n\n> ") + NomPiece))
+        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
@@ -235,15 +237,15 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
         
         # Création des colonnes
         self.nbreColonnes = 5
-        self.InsertColumn(0, u"     ID")
+        self.InsertColumn(0, _(u"     ID"))
         self.SetColumnWidth(0, 0)
-        self.InsertColumn(1, u"Nom de la pièce")
+        self.InsertColumn(1, _(u"Nom de la pièce"))
         self.SetColumnWidth(1, 200)
-        self.InsertColumn(2, u"Durée de validité")
+        self.InsertColumn(2, _(u"Durée de validité"))
         self.SetColumnWidth(2, 150)
-        self.InsertColumn(3, u"Nb titulaires")
+        self.InsertColumn(3, _(u"Nb titulaires"))
         self.SetColumnWidth(3, 80)
-        self.InsertColumn(4, u"Diplômes associés")
+        self.InsertColumn(4, _(u"Diplômes associés"))
         self.SetColumnWidth(4, 300)
         
 
@@ -330,12 +332,12 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
 
             texte = ""
             if nbreValeurs == 0:
-                texte = u"Pour tous les employés"
+                texte = _(u"Pour tous les employés")
             else:
                 for index2 in range(nbreValeurs):
                     valeur = valeurs[index2]
                     if valeur == None:
-                        texte = u"Pour tous les employés - "
+                        texte = _(u"Pour tous les employés - ")
                     else:
                         texte = texte + valeur + " - "
 
@@ -436,7 +438,7 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
         menuPop = wx.Menu()
 
         # Item Modifier
-        item = wx.MenuItem(menuPop, 10, u"Ajouter")
+        item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
         bmp = wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
@@ -445,14 +447,14 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
         menuPop.AppendSeparator()
 
         # Item Ajouter
-        item = wx.MenuItem(menuPop, 20, u"Modifier")
+        item = wx.MenuItem(menuPop, 20, _(u"Modifier"))
         bmp = wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_Modifier, id=20)
 
         # Item Supprimer
-        item = wx.MenuItem(menuPop, 30, u"Supprimer")
+        item = wx.MenuItem(menuPop, 30, _(u"Supprimer"))
         bmp = wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)
         item.SetBitmap(bmp)
         menuPop.AppendItem(item)

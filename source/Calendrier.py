@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import calendar
 import datetime
 import time
@@ -364,7 +366,7 @@ class Calendrier(wx.ScrolledWindow):
         event.Skip()
         
     def OnEnter(self, event):
-        txt = u"Restez appuyer sur les touches CONTROL, SHIFT ou ALT pour sélectionner plusieurs jours à la fois."
+        txt = _(u"Restez appuyer sur les touches CONTROL, SHIFT ou ALT pour sélectionner plusieurs jours à la fois.")
         try : wx.GetApp().GetTopWindow().SetStatusText(txt, 1)
         except : pass
         event.Skip()
@@ -404,20 +406,20 @@ class Calendrier(wx.ScrolledWindow):
             # Ecriture d'un texte dans la statutBar
             date = self.IDobjetEnDate(IDobjet)
             listeJours = ("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
-            listeMois = (u"janvier", u"février", u"mars", u"avril", u"mai", u"juin", u"juillet", u"août", u"septembre", u"octobre", u"novembre", u"décembre")
+            listeMois = (_(u"janvier"), _(u"février"), _(u"mars"), _(u"avril"), _(u"mai"), _(u"juin"), _(u"juillet"), _(u"août"), _(u"septembre"), _(u"octobre"), _(u"novembre"), _(u"décembre"))
             dateStr = listeJours[date.weekday()] + " " + str(date.day) + " " + listeMois[date.month-1] + " " + str(date.year)
             texteStatusBar = dateStr
             
             # Si c'est un jour de vacances
             if date in self.joursVacances:
-                texteStatusBar += u" | Jour de vacances"
+                texteStatusBar += _(u" | Jour de vacances")
                 
             # Si c'est un jour férié
             if (date.day, date.month) in self.listeFeriesFixes :
-                texteStatusBar += u" | Jour férié"
+                texteStatusBar += _(u" | Jour férié")
             else:
                 if date in self.listeFeriesVariables :
-                    texteStatusBar += u" | Jour férié"
+                    texteStatusBar += _(u" | Jour férié")
             
             # Actualisation la statusBar
             try : wx.GetApp().GetTopWindow().SetStatusText(texteStatusBar,0)
@@ -525,7 +527,7 @@ class Calendrier(wx.ScrolledWindow):
 
     def DrawHeaderMois(self, dc, nbreSemaines, mois, annee, xMois, yMois, largMois, hautMois):
         """ Dessine un header comportant le nom du mois """
-        listeMois = (u"Janvier", u"Février",u"Mars", u"Avril", u"Mai", u"Juin", u"Juillet", u"Août", u"Septembre", u"Octobre", u"Novembre", u"Décembre")
+        listeMois = (_(u"Janvier"), _(u"Février"),_(u"Mars"), _(u"Avril"), _(u"Mai"), _(u"Juin"), _(u"Juillet"), _(u"Août"), _(u"Septembre"), _(u"Octobre"), _(u"Novembre"), _(u"Décembre"))
         largCase = (largMois / 7.0)
         hautCase = (hautMois / float(nbreSemaines))
         # Réglage de la police
@@ -737,9 +739,9 @@ class Calendrier(wx.ScrolledWindow):
             # Sélection/déselection du jour cliqué
             self.popupID1 = wx.NewId()
             if select == False :
-                texte = u"Sélectionner le " + unicode(texteDate.day) + "/" + unicode(texteDate.month) + "/" + unicode(texteDate.year)
+                texte = _(u"Sélectionner le ") + unicode(texteDate.day) + "/" + unicode(texteDate.month) + "/" + unicode(texteDate.year)
             else:
-                texte = u"Désélectionner le " + unicode(texteDate.day) + "/" + unicode(texteDate.month) + "/" + unicode(texteDate.year)
+                texte = _(u"Désélectionner le ") + unicode(texteDate.day) + "/" + unicode(texteDate.month) + "/" + unicode(texteDate.year)
             menu.Append(self.popupID1, texte)
             self.Bind(wx.EVT_MENU, self.OnPopup1, id=self.popupID1)
             
@@ -747,12 +749,12 @@ class Calendrier(wx.ScrolledWindow):
         
         # Choisir la date d'aujourd'hui
         self.popupID4 = wx.NewId()
-        menu.Append(self.popupID4, u"Sélectionner aujourd'hui")
+        menu.Append(self.popupID4, _(u"Sélectionner aujourd'hui"))
         self.Bind(wx.EVT_MENU, self.OnPopup4, id=self.popupID4)
         
         # Choisir tout le mois
         self.popupID5 = wx.NewId()
-        menu.Append(self.popupID5, u"Sélectionner tout le mois")
+        menu.Append(self.popupID5, _(u"Sélectionner tout le mois"))
         self.Bind(wx.EVT_MENU, self.OnPopup5, id=self.popupID5)
         
         # Choisir une période de vacances
@@ -768,16 +770,16 @@ class Calendrier(wx.ScrolledWindow):
                 self.Bind(wx.EVT_MENU, self.OnPopup3, id=id)
                 index += 1
             # Inclus le sous-menu dans le menu
-            menu.AppendMenu(self.popupID3, u"Sélectionner une période de vacances", sm)
+            menu.AppendMenu(self.popupID3, _(u"Sélectionner une période de vacances"), sm)
         
         # Tout désélectionner
         self.popupID7 = wx.NewId()
-        menu.Append(self.popupID7, u"Tout désélectionner")
+        menu.Append(self.popupID7, _(u"Tout désélectionner"))
         self.Bind(wx.EVT_MENU, self.OnPopup7, id=self.popupID7)
         
         # Exclure les jours de week-end dans les sélections
         self.popupID6 = wx.NewId()
-        menu.Append(self.popupID6, u"Exclure les week-ends des sélections", u"Exclure les week-ends de la sélection", wx.ITEM_CHECK)
+        menu.Append(self.popupID6, _(u"Exclure les week-ends des sélections"), _(u"Exclure les week-ends de la sélection"), wx.ITEM_CHECK)
         if self.selectExclureWE == True :
             menu.Check(self.popupID6, True)
         self.Bind(wx.EVT_MENU, self.OnPopup6, id=self.popupID6)
@@ -785,7 +787,7 @@ class Calendrier(wx.ScrolledWindow):
         # Aide sur le calendrier
         menu.AppendSeparator()
         self.popupID2 = wx.NewId()
-        menu.Append(self.popupID2, u"Aide sur le calendrier")
+        menu.Append(self.popupID2, _(u"Aide sur le calendrier"))
         self.Bind(wx.EVT_MENU, self.OnPopup2, id=self.popupID2)
 
         # make a submenu
@@ -918,9 +920,9 @@ class Panel(wx.Panel):
         self.calendrier.couleurVacances = (255, 255, 187)
         
         # Création des autres widgets
-        self.listeMois = [u"Janvier", u"Février", u"Mars", u"Avril", u"Mai", u"Juin", u"Juillet", u"Août", u"Septembre", u"Octobre", u"Novembre", u"Décembre"]
+        self.listeMois = [_(u"Janvier"), _(u"Février"), _(u"Mars"), _(u"Avril"), _(u"Mai"), _(u"Juin"), _(u"Juillet"), _(u"Août"), _(u"Septembre"), _(u"Octobre"), _(u"Novembre"), _(u"Décembre")]
         if "linux" in sys.platform :
-            self.listeMois = [u"Janv.", u"Fév.", u"Mars", u"Avril", u"Mai", u"Juin", u"Juil.", u"Août", u"Sept.", u"Oct.", u"Nov.", u"Déc."]
+            self.listeMois = [_(u"Janv."), _(u"Fév."), _(u"Mars"), _(u"Avril"), _(u"Mai"), _(u"Juin"), _(u"Juil."), _(u"Août"), _(u"Sept."), _(u"Oct."), _(u"Nov."), _(u"Déc.")]
         self.combo_mois = wx.ComboBox(self, -1, "" , (-1, -1) , (70, -1), self.listeMois , wx.CB_READONLY)
         
         self.spin = wx.SpinButton(self, -1, size=(25, 20),  style=wx.SP_HORIZONTAL)
@@ -946,7 +948,7 @@ class Panel(wx.Panel):
             self.calendrier.SelectJours( [datetime.date.today(),] )
             
         self.bouton_CalendrierAnnuel = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Calendrier_jour.png", wx.BITMAP_TYPE_PNG), size=(28, 21))
-        self.bouton_CalendrierAnnuel.SetToolTipString(u"Cliquez ici pour afficher le calendrier annuel")
+        self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
 
         # Layout
         sizer =  wx.BoxSizer(wx.VERTICAL)
@@ -1010,7 +1012,7 @@ class Panel(wx.Panel):
         if self.calendrier.GetTypeCalendrier() == "mensuel" :
             self.calendrier.SetTypeCalendrier("annuel")
             self.combo_mois.Enable(False)
-            self.bouton_CalendrierAnnuel.SetToolTipString(u"Cliquez ici pour afficher le calendrier mensuel")
+            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier mensuel"))
             
             # l'appel vient de la saisie des présences de la fiche individuelle
             if self.GetGrandParent().GetName() == "panel_saisiePresences_FicheInd" :
@@ -1030,7 +1032,7 @@ class Panel(wx.Panel):
         else:
             self.calendrier.SetTypeCalendrier("mensuel")
             self.combo_mois.Enable(True)
-            self.bouton_CalendrierAnnuel.SetToolTipString(u"Cliquez ici pour afficher le calendrier annuel")
+            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
             
             if self.GetGrandParent().GetName() == "splitter" :
                 self.GetGrandParent().SetSashPosition(240, True)

@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 from wx.lib.splitter import MultiSplitterWindow
 import GestionDB
@@ -35,7 +37,7 @@ MODE_AFFICHAGE = "candidats"
 
 class GadgetEntretiens(FonctionsPerso.PanelArrondi):
     def __init__(self, parent, ID=-1, name="gadget_entretiens"):
-        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=u"Prochains entretiens")
+        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=_(u"Prochains entretiens"))
         self.SetBackgroundColour((122, 161, 230))
         
         self.ctrl = OL_entretiens.ListView(self, id=-1,  name="OL_gadget_entretiens", afficheHyperlink=False, prochainsEntretiens=True, modeAffichage="gadget", colorerSalaries=False, style=wx.LC_REPORT|wx.LC_NO_HEADER|wx.NO_BORDER|wx.LC_SINGLE_SEL)
@@ -56,10 +58,10 @@ class GadgetEntretiens(FonctionsPerso.PanelArrondi):
 
 class GadgetAvertissement(FonctionsPerso.PanelArrondi):
     def __init__(self, parent, ID=-1, name="gadget_avertissement"):
-        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=u"Avertissement")
+        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=_(u"Avertissement"))
         self.SetBackgroundColour((122, 161, 230))
         
-        texteIntro = u"Attention, ce module Recrutement est encore en phase de test. Merci de bien vouloir signaler les bugs rencontrés."
+        texteIntro = _(u"Attention, ce module Recrutement est encore en phase de test. Merci de bien vouloir signaler les bugs rencontrés.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         self.label_introduction.SetBackgroundColour((214, 223, 247))
         
@@ -70,7 +72,7 @@ class GadgetAvertissement(FonctionsPerso.PanelArrondi):
 
 class GadgetInformations(FonctionsPerso.PanelArrondi):
     def __init__(self, parent, ID=-1, name="gadget_informations"):
-        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=u"Informations")
+        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=_(u"Informations"))
         self.SetBackgroundColour((122, 161, 230))
         
         self.treeCtrl = Gadget_candidatures.TreeCtrl(self)
@@ -167,11 +169,11 @@ class Panelidentite(wx.Panel):
             ville_resid = donnees[6]
         
         if date_naiss == "" and age == 0 or age == "" :
-            texteAge = u"Age et date de naissance inconnus"
+            texteAge = _(u"Age et date de naissance inconnus")
         if date_naiss == "" and age != 0 and age != "" :
             texteAge = "Age : %d ans" % age
         if date_naiss != "" and date_naiss != None :
-            texteAge = u"Date de naissance : %s (%s)" % (FonctionsPerso.DateEngFr(date_naiss), self.RetourneAge(donnees[3]))
+            texteAge = _(u"Date de naissance : %s (%s)") % (FonctionsPerso.DateEngFr(date_naiss), self.RetourneAge(donnees[3]))
         
         # Récupération des qualifications du candidat
         DB = GestionDB.DB()
@@ -188,12 +190,12 @@ class Panelidentite(wx.Panel):
         DB.Close()
         texteQualifications = ""
         if len(listeQualifications) == 0 :
-            texteQualifications = u"Aucune qualification"
+            texteQualifications = _(u"Aucune qualification")
         else:
             if civilite == "Mr" :
-                texteQualifications = u"Qualifié "
+                texteQualifications = _(u"Qualifié ")
             else:
-                texteQualifications = u"Qualifiée "
+                texteQualifications = _(u"Qualifiée ")
             index = 1
             for IDtype_diplome, nom_diplome in listeQualifications :
                 texteQualifications += nom_diplome
@@ -217,7 +219,7 @@ class Panelidentite(wx.Panel):
         DB.Close()
         
         if len(listeCoords) != 0 :
-            texteCoords = u"Tél : "
+            texteCoords = _(u"Tél : ")
             for coord in listeCoords :
                 categorie = coord[0]
                 texte = coord[1]
@@ -225,13 +227,13 @@ class Panelidentite(wx.Panel):
                 texteCoords += texte + " | "
             texteCoords = texteCoords[:-3]
         else :
-            texteCoords = u"Aucune coordonnée"
+            texteCoords = _(u"Aucune coordonnée")
         
         # Création des lignes
         ligne1 = nom + " " + prenom
         ligne2 = texteAge
         ligne3 = texteQualifications
-        ligne4 = u"Résidant %s %s %s" % (adresse_resid, cp_resid, ville_resid)
+        ligne4 = _(u"Résidant %s %s %s") % (adresse_resid, cp_resid, ville_resid)
         ligne5 = texteCoords
         # Met dans les controles
         self.resume_L1.SetLabel(ligne1)
@@ -256,7 +258,7 @@ class PanelResume(wx.Panel):
         wx.Panel.__init__(self, parent, -1, name="panel_resume")
         self.parent = parent
         
-        self.barreTitre_resume = FonctionsPerso.BarreTitre(self,  u"Détail de la sélection", u"Détail de la sélection")
+        self.barreTitre_resume = FonctionsPerso.BarreTitre(self,  _(u"Détail de la sélection"), _(u"Détail de la sélection"))
 
         # Contrôles
         self.noteBook = wx.Notebook(self, -1, size=(-1, 150), style=wx.BK_BOTTOM)
@@ -268,15 +270,15 @@ class PanelResume(wx.Panel):
         
         # Panel Identité
         self.panel_identite = Panelidentite(self.noteBook)       
-        self.noteBook.AddPage(self.panel_identite, u"Identité du candidat")
+        self.noteBook.AddPage(self.panel_identite, _(u"Identité du candidat"))
         self.noteBook.SetPageImage(0, self.img1)
         # ListView Candidatures
         self.listCtrl_candidatures = OL_candidatures.ListView(self.noteBook, id=-1,  name="OL_candidatures", modeAffichage = "avec_nom", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)       
-        self.noteBook.AddPage(self.listCtrl_candidatures, u"Candidatures")
+        self.noteBook.AddPage(self.listCtrl_candidatures, _(u"Candidatures"))
         self.noteBook.SetPageImage(1, self.img2)
         # ListView Entretiens
         self.listCtrl_entretiens = OL_entretiens.ListView(self.noteBook, id=-1,  name="OL_entretiens", modeAffichage="avec_nom", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
-        self.noteBook.AddPage(self.listCtrl_entretiens, u"Entretiens")
+        self.noteBook.AddPage(self.listCtrl_entretiens, _(u"Entretiens"))
         self.noteBook.SetPageImage(2, self.img3)
         
         # Propriétés
@@ -298,11 +300,11 @@ class PanelResume(wx.Panel):
             
             if self.noteBook.GetPageCount() == 1 :
                 self.noteBook.RemovePage(0)
-                self.noteBook.AddPage(self.panel_identite, u"Identité du candidat")
+                self.noteBook.AddPage(self.panel_identite, _(u"Identité du candidat"))
                 self.noteBook.SetPageImage(0, self.img1)
-                self.noteBook.AddPage(self.listCtrl_candidatures, u"Candidatures")
+                self.noteBook.AddPage(self.listCtrl_candidatures, _(u"Candidatures"))
                 self.noteBook.SetPageImage(1, self.img2)
-                self.noteBook.AddPage(self.listCtrl_entretiens, u"Entretiens")
+                self.noteBook.AddPage(self.listCtrl_entretiens, _(u"Entretiens"))
                 self.noteBook.SetPageImage(2, self.img3)
             
             # MAJ des pages du noteBook
@@ -317,17 +319,17 @@ class PanelResume(wx.Panel):
             self.listCtrl_entretiens.MAJ()
             
             # MAJ des noms des pages du noteBook
-            self.noteBook.SetPageText(0, u"Identité du candidat")
+            self.noteBook.SetPageText(0, _(u"Identité du candidat"))
             nbreCandidatures = self.listCtrl_candidatures.GetNbreItems()
             if nbreCandidatures == 1 :
-                self.noteBook.SetPageText(1, u"1 candidature")
+                self.noteBook.SetPageText(1, _(u"1 candidature"))
             else:
-                self.noteBook.SetPageText(1, u"%d candidatures" % nbreCandidatures)
+                self.noteBook.SetPageText(1, _(u"%d candidatures") % nbreCandidatures)
             nbreEntretiens = self.listCtrl_entretiens.GetNbreItems()
             if nbreEntretiens == 1 :
-                self.noteBook.SetPageText(2, u"1 entretien")
+                self.noteBook.SetPageText(2, _(u"1 entretien"))
             else:
-                self.noteBook.SetPageText(2, u"%d entretiens" % nbreEntretiens)
+                self.noteBook.SetPageText(2, _(u"%d entretiens") % nbreEntretiens)
             self.panel_identite.Enable(True)
             self.listCtrl_entretiens.Enable(True)
 ##            self.noteBook.SetSelection(0)
@@ -338,30 +340,30 @@ class PanelResume(wx.Panel):
                 self.noteBook.RemovePage(2)
                 self.noteBook.RemovePage(1)
                 self.noteBook.RemovePage(0)
-                self.noteBook.AddPage(self.listCtrl_candidatures, u"Candidatures")
+                self.noteBook.AddPage(self.listCtrl_candidatures, _(u"Candidatures"))
                 self.noteBook.SetPageImage(0, self.img2)
             self.listCtrl_candidatures.IDcandidat = None
             self.listCtrl_candidatures.IDemploi = IDemploi
             self.listCtrl_candidatures.MAJ()
             nbreCandidatures = self.listCtrl_candidatures.GetNbreItems()
             if nbreCandidatures == 1 :
-                self.noteBook.SetPageText(0, u"1 candidature")
+                self.noteBook.SetPageText(0, _(u"1 candidature"))
             else:
-                self.noteBook.SetPageText(0, u"%d candidatures" % nbreCandidatures)
+                self.noteBook.SetPageText(0, _(u"%d candidatures") % nbreCandidatures)
         
     def MAJlabelsPages(self, nomPage="candidatures"):
         if nomPage=="candidatures" :
             nbreCandidatures = self.listCtrl_candidatures.GetNbreItems()
             if nbreCandidatures == 1 :
-                self.noteBook.SetPageText(1, u"1 candidature")
+                self.noteBook.SetPageText(1, _(u"1 candidature"))
             else:
-                self.noteBook.SetPageText(1, u"%d candidatures" % nbreCandidatures)
+                self.noteBook.SetPageText(1, _(u"%d candidatures") % nbreCandidatures)
         if nomPage=="entretiens" :
             nbreEntretiens = self.listCtrl_entretiens.GetNbreItems()
             if nbreEntretiens == 1 :
-                self.noteBook.SetPageText(2, u"1 entretien")
+                self.noteBook.SetPageText(2, _(u"1 entretien"))
             else:
-                self.noteBook.SetPageText(2, u"%d entretiens" % nbreEntretiens)
+                self.noteBook.SetPageText(2, _(u"%d entretiens") % nbreEntretiens)
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -372,24 +374,24 @@ class BarreAffichage(wx.Panel):
         self.parent = parent
 ##        self.SetBackgroundColour("white")
         
-        self.barreTitre = FonctionsPerso.BarreTitre(self,  u"Options d'affichage", u"Options d'affichage")
+        self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Options d'affichage"), _(u"Options d'affichage"))
         
         # Widgets        
-        self.txtRadio = wx.StaticText( self, -1, u"Afficher les :" )
-        self.radio1 = wx.RadioButton( self, -1, u"Candidats", style = wx.RB_GROUP )
-        self.radio2 = wx.RadioButton( self, -1, u"Candidatures" )
-        self.radio3 = wx.RadioButton( self, -1, u"Entretiens")
-        self.radio4 = wx.RadioButton( self, -1, u"Offres d'emploi" )
+        self.txtRadio = wx.StaticText( self, -1, _(u"Afficher les :") )
+        self.radio1 = wx.RadioButton( self, -1, _(u"Candidats"), style = wx.RB_GROUP )
+        self.radio2 = wx.RadioButton( self, -1, _(u"Candidatures") )
+        self.radio3 = wx.RadioButton( self, -1, _(u"Entretiens"))
+        self.radio4 = wx.RadioButton( self, -1, _(u"Offres d'emploi") )
         
         self.boutonOutils = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Outils.png", wx.BITMAP_TYPE_PNG) )
         self.txtOutils = wx.StaticText( self, -1, "Outils" )
-        self.boutonOutils.SetToolTipString(u"Cliquez ici pour afficher le menu des outils du planning")
-        self.txtOutils.SetToolTipString(u"Cliquez ici pour afficher le menu des outils du planning")
+        self.boutonOutils.SetToolTipString(_(u"Cliquez ici pour afficher le menu des outils du planning"))
+        self.txtOutils.SetToolTipString(_(u"Cliquez ici pour afficher le menu des outils du planning"))
         
         self.boutonAide = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_PNG) )
         self.txtAide = wx.StaticText( self, -1, "Aide " )
-        self.boutonAide.SetToolTipString(u"Cliquez ici pour afficher l'aide")
-        self.txtAide.SetToolTipString(u"Cliquez ici pour afficher l'aide")
+        self.boutonAide.SetToolTipString(_(u"Cliquez ici pour afficher l'aide"))
+        self.txtAide.SetToolTipString(_(u"Cliquez ici pour afficher l'aide"))
 
         # Bind
         self.Bind(wx.EVT_RADIOBUTTON, self.OnRadio1, self.radio1 )
@@ -492,7 +494,7 @@ class BarreAffichage(wx.Panel):
         
         # Commande Imprimer
         IDitem = 10
-        item = wx.MenuItem(menu, IDitem, u"Imprimer", u"Imprimer le planning affiché")
+        item = wx.MenuItem(menu, IDitem, _(u"Imprimer"), _(u"Imprimer le planning affiché"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Imprimante.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_10, id=IDitem)
@@ -501,14 +503,14 @@ class BarreAffichage(wx.Panel):
         
         # Commande Stats simples
         IDitem = 20
-        item = wx.MenuItem(menu, IDitem, u"Statistiques", u"Afficher les statistiques des présences")
+        item = wx.MenuItem(menu, IDitem, _(u"Statistiques"), _(u"Afficher les statistiques des présences"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Stats.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_20, id=IDitem)
         
         # Commande Scénarios
         IDitem = 30
-        item = wx.MenuItem(menu, IDitem, u"Gestion des scénarios", u"Gestion des scénarios")
+        item = wx.MenuItem(menu, IDitem, _(u"Gestion des scénarios"), _(u"Gestion des scénarios"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Scenario.png", wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_30, id=IDitem)
@@ -520,19 +522,19 @@ class BarreAffichage(wx.Panel):
 
         # Affichage des légendes
         IDitem = 210
-        smOptions.Append(IDitem, u"Afficher les légendes", u"Affiche ou non les légendes des présences", wx.ITEM_CHECK)
+        smOptions.Append(IDitem, _(u"Afficher les légendes"), _(u"Affiche ou non les légendes des présences"), wx.ITEM_CHECK)
         if hauteurBarre == 26 :
             smOptions.Check(IDitem, True)
         self.Bind(wx.EVT_MENU, self.Menu_210, id=IDitem)
         
         # Affichage des périodes de contrats
         IDitem = 220
-        smOptions.Append(IDitem, u"Afficher les périodes de contrats", u"Affiche ou non les périodes des contrats des personnes sélectionnées", wx.ITEM_CHECK)
+        smOptions.Append(IDitem, _(u"Afficher les périodes de contrats"), _(u"Affiche ou non les périodes des contrats des personnes sélectionnées"), wx.ITEM_CHECK)
         if afficher_contrats == True :
             smOptions.Check(IDitem, True)
         self.Bind(wx.EVT_MENU, self.Menu_220, id=IDitem)
         
-        menu.AppendMenu(20, u"Options d'affichage", smOptions)
+        menu.AppendMenu(20, _(u"Options d'affichage"), smOptions)
         
         self.PopupMenu(menu)
         menu.Destroy()
@@ -544,7 +546,7 @@ class BarreAffichage(wx.Panel):
     def Menu_20(self, event):
         """ Afficher les stats """
         topWindow = wx.GetApp().GetTopWindow() 
-        try : topWindow.SetStatusText(u"Chargement du module des statistiques en cours. Veuillez patientez...")
+        try : topWindow.SetStatusText(_(u"Chargement du module des statistiques en cours. Veuillez patientez..."))
         except : pass
         panelPresences = self.GetGrandParent().GetParent()
         # Récupération des dates du calendrier
@@ -608,15 +610,15 @@ class ToolBar(wx.ToolBar):
         kwds["style"] = wx.TB_FLAT|wx.TB_TEXT
         wx.ToolBar.__init__(self, *args, **kwds)
         self.SetToolBitmapSize((22, 22))
-        self.AddLabelTool(10, u"Candidats", wx.Bitmap("Images/22x22/Candidats.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, u"Afficher la liste des candidats", "")
-        self.AddLabelTool(20, u"Candidatures", wx.Bitmap("Images/22x22/Candidatures.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, u"Afficher la liste des candidatures", "")
-        self.AddLabelTool(30, u"Entretiens", wx.Bitmap("Images/22x22/Entretiens.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, u"Afficher la liste des entretiens", "")
-        self.AddLabelTool(40, u"Offres d'emploi", wx.Bitmap("Images/22x22/Apercu.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, u"Afficher les offres d'emploi et les candidatures associées", "")
+        self.AddLabelTool(10, _(u"Candidats"), wx.Bitmap("Images/22x22/Candidats.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, _(u"Afficher la liste des candidats"), "")
+        self.AddLabelTool(20, _(u"Candidatures"), wx.Bitmap("Images/22x22/Candidatures.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, _(u"Afficher la liste des candidatures"), "")
+        self.AddLabelTool(30, _(u"Entretiens"), wx.Bitmap("Images/22x22/Entretiens.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, _(u"Afficher la liste des entretiens"), "")
+        self.AddLabelTool(40, _(u"Offres d'emploi"), wx.Bitmap("Images/22x22/Apercu.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, _(u"Afficher les offres d'emploi et les candidatures associées"), "")
         self.AddSeparator()
-        self.AddLabelTool(50, u"Rechercher", wx.Bitmap("Images/22x22/Loupe.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, u"Filtrer la liste", "")
-##        self.AddLabelTool(60, u"Outils", wx.Bitmap("Images/22x22/Outils.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, u"Outils", "")
+        self.AddLabelTool(50, _(u"Rechercher"), wx.Bitmap("Images/22x22/Loupe.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _(u"Filtrer la liste"), "")
+##        self.AddLabelTool(60, _(u"Outils"), wx.Bitmap("Images/22x22/Outils.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _(u"Outils"), "")
         self.AddSeparator()
-        self.AddLabelTool(70, u"Aide", wx.Bitmap("Images/22x22/button_help.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, u"Aide", "")
+        self.AddLabelTool(70, _(u"Aide"), wx.Bitmap("Images/22x22/button_help.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _(u"Aide"), "")
         self.Realize()
 
         self.Bind(wx.EVT_TOOL, self.ModeAffichage, id=10)
@@ -700,7 +702,7 @@ class Panel(wx.Panel):
         self.bouton_export_excel = wx.BitmapButton(self.window_D, -1, wx.Bitmap("Images/16x16/Excel.png", wx.BITMAP_TYPE_ANY))
         self.bouton_aide = wx.BitmapButton(self.window_D, -1, wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_ANY))
         
-        self.barreTitre_liste = FonctionsPerso.BarreTitre(self.window_D,  u"Liste des candidats", u"Liste des candidats")
+        self.barreTitre_liste = FonctionsPerso.BarreTitre(self.window_D,  _(u"Liste des candidats"), _(u"Liste des candidats"))
         
         # Diminution de la taille de la police sous linux
         if "linux" in sys.platform :
@@ -733,17 +735,17 @@ class Panel(wx.Panel):
 ##        self.splitter.SetSashPosition(250, True)
         
     def __set_properties(self):
-        self.barreRecherche.SetToolTipString(u"Saisissez ici un nom, un prénom, un nom de ville, etc... pour retrouver un candidat dans la liste.")
-        self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer une nouvelle fiche individuelle")
-        self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier la fiche sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")
-        self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer la fiche sélectionnée dans la liste")
-        self.bouton_affichertout.SetToolTipString(u"Cliquez ici pour réafficher toute la liste")
-        self.bouton_options.SetToolTipString(u"Cliquez ici pour afficher les options de la liste")
-        self.bouton_courrier.SetToolTipString(u"Cliquez ici créer un courrier ou un Email par publipostage")
-        self.bouton_imprimer.SetToolTipString(u"Cliquez ici pour imprimer la liste")
-        self.bouton_export_texte.SetToolTipString(u"Cliquez ici pour exporter la liste au format texte")
-        self.bouton_export_excel.SetToolTipString(u"Cliquez ici pour exporter la liste au format Excel")
-        self.bouton_aide.SetToolTipString(u"Cliquez ici pour obtenir de l'aide")
+        self.barreRecherche.SetToolTipString(_(u"Saisissez ici un nom, un prénom, un nom de ville, etc... pour retrouver un candidat dans la liste."))
+        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle fiche individuelle"))
+        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la fiche sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
+        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la fiche sélectionnée dans la liste"))
+        self.bouton_affichertout.SetToolTipString(_(u"Cliquez ici pour réafficher toute la liste"))
+        self.bouton_options.SetToolTipString(_(u"Cliquez ici pour afficher les options de la liste"))
+        self.bouton_courrier.SetToolTipString(_(u"Cliquez ici créer un courrier ou un Email par publipostage"))
+        self.bouton_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer la liste"))
+        self.bouton_export_texte.SetToolTipString(_(u"Cliquez ici pour exporter la liste au format texte"))
+        self.bouton_export_excel.SetToolTipString(_(u"Cliquez ici pour exporter la liste au format Excel"))
+        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
 
 
     def __do_layout(self):
@@ -844,7 +846,7 @@ class Panel(wx.Panel):
         
     def OnBoutonAide(self, event):
 ##        FonctionsPerso.Aide(12)
-        dlg = wx.MessageDialog(self, u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure.", "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         
@@ -869,42 +871,42 @@ class Panel(wx.Panel):
         if MODE_AFFICHAGE == "candidats" :
             self.listCtrl_candidats.Show(True)
             self.barreRecherche.Show(True)
-            self.barreTitre_liste.barreTitre.SetLabel(u"Liste des candidats")
+            self.barreTitre_liste.barreTitre.SetLabel(_(u"Liste des candidats"))
             self.bouton_courrier.Show(True)
-            self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un nouveau candidat")
-            self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier le candidat sélectionné dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")
-            self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer le candidat sélectionné dans la liste")
+            self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau candidat"))
+            self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le candidat sélectionné dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
+            self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le candidat sélectionné dans la liste"))
         else:
             self.listCtrl_candidats.Show(False)
             self.barreRecherche.Show(False)
         # Candidatures
         if MODE_AFFICHAGE == "candidatures" :
             self.listCtrl_candidatures.Show(True)
-            self.barreTitre_liste.barreTitre.SetLabel(u"Liste des candidatures")
+            self.barreTitre_liste.barreTitre.SetLabel(_(u"Liste des candidatures"))
             self.bouton_courrier.Show(True)
-            self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer une nouvelle candidature")
-            self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")
-            self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste")
+            self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle candidature"))
+            self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
+            self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste"))
         else:
             self.listCtrl_candidatures.Show(False)
         # Entretiens
         if MODE_AFFICHAGE == "entretiens" :
             self.listCtrl_entretiens.Show(True)
-            self.barreTitre_liste.barreTitre.SetLabel(u"Liste des entretiens")
+            self.barreTitre_liste.barreTitre.SetLabel(_(u"Liste des entretiens"))
             self.bouton_courrier.Show(False)
-            self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer un nouvel entretien")
-            self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier l'entretien sélectionné dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")
-            self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer l'entretien sélectionné dans la liste")
+            self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouvel entretien"))
+            self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier l'entretien sélectionné dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
+            self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer l'entretien sélectionné dans la liste"))
         else:
             self.listCtrl_entretiens.Show(False)
         # Offres d'emploi
         if MODE_AFFICHAGE == "emplois" :
             self.listCtrl_emplois.Show(True)
-            self.barreTitre_liste.barreTitre.SetLabel(u"Liste des offres d'emploi")
+            self.barreTitre_liste.barreTitre.SetLabel(_(u"Liste des offres d'emploi"))
             self.bouton_courrier.Show(False)
-            self.bouton_ajouter.SetToolTipString(u"Cliquez ici pour créer une nouvelle offre d'emploi")
-            self.bouton_modifier.SetToolTipString(u"Cliquez ici pour modifier l'offre d'emploi sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")
-            self.bouton_supprimer.SetToolTipString(u"Cliquez ici pour supprimer l'offre d'emploi sélectionnée dans la liste")
+            self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle offre d'emploi"))
+            self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier l'offre d'emploi sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
+            self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer l'offre d'emploi sélectionnée dans la liste"))
         else:
             self.listCtrl_emplois.Show(False)
         # Refresh
@@ -961,7 +963,7 @@ class BarreRecherche(wx.SearchCtrl):
         wx.SearchCtrl.__init__(self, parent, size=(-1,-1), style=wx.TE_PROCESS_ENTER)
         self.parent = parent
 
-        self.SetDescriptiveText(u"Rechercher une personne dans la liste")
+        self.SetDescriptiveText(_(u"Rechercher une personne dans la liste"))
         self.ShowSearchButton(True)
         
         self.listView = self.GetParent().GetGrandParent().listCtrl_candidats
@@ -1002,7 +1004,7 @@ class MyFrame(wx.Frame):
         panel = Panel(self)
         panel.InitPage()
         panel.MAJpanel() 
-        self.SetTitle(u"Panel Recrutement")
+        self.SetTitle(_(u"Panel Recrutement"))
         self.SetSize((800, 690))
         self.Centre()
 

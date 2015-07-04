@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 
@@ -17,22 +19,22 @@ class MyDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, id=-1, title=u"", size=(350, 250))
         
         # Paramètres personnalisables
-        self.nom_filtre = nom_filtre # u"les fonctions"
-        self.titre_frame = titre_frame # u"Filtre des fonctions"
+        self.nom_filtre = nom_filtre # _(u"les fonctions")
+        self.titre_frame = titre_frame # _(u"Filtre des fonctions")
         self.texte = texte #None
         
         # Label
-        self.label = wx.StaticText(self, -1, u"Veuillez définir un filtre pour %s :" % self.nom_filtre)
+        self.label = wx.StaticText(self, -1, _(u"Veuillez définir un filtre pour %s :") % self.nom_filtre)
         
         # Controles
         self.staticbox = wx.StaticBox(self, -1, self.nom_filtre.capitalize())
-        self.radio1 = wx.RadioButton(self, -1, u"Sans importance", style = wx.RB_GROUP )
-        self.radio2 = wx.RadioButton(self, -1, u"Comportant l'expression suivante :")
+        self.radio1 = wx.RadioButton(self, -1, _(u"Sans importance"), style = wx.RB_GROUP )
+        self.radio2 = wx.RadioButton(self, -1, _(u"Comportant l'expression suivante :"))
         self.ctrl_texte = wx.TextCtrl(self, -1, "")
                 
         # Boutons
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Ok_L72.png", wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = wx.BitmapButton(self, wx.ID_CANCEL, wx.Bitmap("Images/BoutonsImages/Annuler_L72.png", wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
         self.__set_properties()
         self.__do_layout()
         
@@ -93,7 +95,7 @@ class MyDialog(wx.Dialog):
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
         if self.radio2.GetValue() == True and self.ctrl_texte.GetValue() == "" :
-            dlg = wx.MessageDialog(self, u"Vous avez oublié de saisir une expression à trouver !", "Information", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, _(u"Vous avez oublié de saisir une expression à trouver !"), "Information", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
             return False
@@ -105,6 +107,6 @@ class MyDialog(wx.Dialog):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frm = MyDialog(None, nom_filtre=u"les offres", titre_frame = u"Filtre des offres", texte=None)
+    frm = MyDialog(None, nom_filtre=_(u"les offres"), titre_frame = _(u"Filtre des offres"), texte=None)
     frm.ShowModal()
     app.MainLoop()

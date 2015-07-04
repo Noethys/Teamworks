@@ -6,7 +6,9 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+from UTILS_Traduction import _
 import wx
+import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
@@ -16,8 +18,8 @@ class Page(wx.Panel):
         kwds["style"] = wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)       
 
-        self.label_titre = wx.StaticText(self, -1, u"Création d'un modèle de contrat")
-        self.label_intro = wx.StaticText(self, -1, u"Saisissez un nom et une description pour ce modèle :")
+        self.label_titre = wx.StaticText(self, -1, _(u"Création d'un modèle de contrat"))
+        self.label_intro = wx.StaticText(self, -1, _(u"Saisissez un nom et une description pour ce modèle :"))
         
         self.label_nom = wx.StaticText(self, -1, "Nom :")
         self.text_nom = wx.TextCtrl(self, -1, "")
@@ -62,7 +64,7 @@ class Page(wx.Panel):
         
         # Vérifie qu'un nom a été saisi
         if self.text_nom.GetValue() == "" :
-            dlg = wx.MessageDialog(self, u"Vous devez obligatoirement saisir un nom pour ce modèle !", "Erreur", wx.OK)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement saisir un nom pour ce modèle !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
             self.text_nom.SetFocus()
