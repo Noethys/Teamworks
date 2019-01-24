@@ -2,8 +2,9 @@ Version 2.1.0.0 :
 
 - Ajout du calcul automatique des jours fériés variables
 - Ajout de l'importation des périodes de vacances depuis Internet
-- Mise à jour de la librairie graphique (2.9.4.0.)
+- Mise à jour de la librairie graphique (3.0.1.0.)
 - Amélioration de la fenêtre d'ouverture des fichiers
+- Correction de divers bugs
 
 Version 2.0.0.4 :
 
@@ -22,10 +23,6 @@ Version 2.0.0.2 :
 - Prise en compte de la rupture des contrats dans l'état des dossiers
 
 Version 2.0.0.1 :
-
-ATTENTION : UN BUG PEUT APPARAITRE LORS DE L'INSTALLATION. 
-DANS CE CAS, FERMEZ TOUT SIMPLEMENT TEAMWORKS EN 
-ARRIERE-PLAN ET CLIQUEZ SUR 'RECOMMENCER'.
 
 - Ajout du questionnaire dans les fiches individuelles
 - Ajout du rattachement de documents aux pièces
