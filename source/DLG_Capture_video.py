@@ -60,7 +60,7 @@ class VideoCaptureThread(threading.Thread):
         while self.isRunning:
             buffer, width, height = CAMERA.getBuffer()
             im = Image.fromstring('RGB', (width, height), buffer, 'raw', 'BGR', 0, -1)
-            buff = im.tostring()
+            buff = im.tobytes()
             self.buffer = wx.BitmapFromBuffer(width, height, buff)
             x, y = (0, 0)
             try:

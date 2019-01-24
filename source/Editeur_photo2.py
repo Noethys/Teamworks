@@ -9,7 +9,7 @@
 from UTILS_Traduction import _
 import wx
 import CTRL_Bouton_image
-import Image
+from PIL import Image
 import cStringIO
 import GestionDB
 import FonctionsPerso
@@ -22,7 +22,7 @@ except: pass
 def pil2wx(image):
     """Convert a PIL image to wx image format"""
     imagewx=wx.EmptyImage(image.size[0], image.size[1])
-    imagewx.SetData(image.tostring('raw', 'RGB'))
+    imagewx.SetData(image.tobytes('raw', 'RGB'))
     return imagewx
 
 def load_image(fn):

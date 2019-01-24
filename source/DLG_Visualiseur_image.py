@@ -26,7 +26,7 @@ if not wx.USE_UNICODE:
 def pil2wx(image):
     """Convert a PIL image to wx image format"""
     imagewx=wx.EmptyImage(image.size[0], image.size[1])
-    imagewx.SetData(image.tostring('raw', 'RGB'))
+    imagewx.SetData(image.tobytes('raw', 'RGB'))
     return imagewx
 
 ##def pil2wx(image):

@@ -25,7 +25,7 @@ import Editeur_photo
 import os
 import CTRL_Photo
 
-import Image
+from PIL import Image
 
 try: import psyco; psyco.full()
 except: pass

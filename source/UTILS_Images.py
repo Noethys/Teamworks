@@ -9,7 +9,7 @@
 #------------------------------------------------------------------------
 
 from UTILS_Traduction import _
-import Image
+from PIL import Image
 import wx
 import CTRL_Bouton_image
 import os

@@ -902,6 +902,24 @@ class Calendrier(wx.ScrolledWindow):
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+class CTRL_Annee(wx.SpinCtrl):
+    def __init__(self, parent):
+        wx.SpinCtrl.__init__(self, parent, -1, min=1950, max=2999)
+        self.parent = parent
+        self.SetMinSize((60, -1))
+        self.SetToolTip(wx.ToolTip(_(u"Sélectionnez une année")))
+        annee_actuelle = datetime.date.today().year
+        self.SetAnnee(annee_actuelle)
+
+    def SetAnnee(self, annee=None):
+        self.SetValue(annee)
+
+    def GetAnnee(self):
+        return self.GetValue()
+
+
+
+
 class Panel(wx.Panel):
     def __init__(self, parent, ID=-1, afficheBoutonAnnuel=True, afficheAujourdhui=True, bordHaut=0, bordBas=0, bordLateral=0):
         wx.Panel.__init__(self, parent, ID, name="panel_calendrier")
@@ -928,18 +946,13 @@ class Panel(wx.Panel):
         self.spin = wx.SpinButton(self, -1, size=(25, 20),  style=wx.SP_HORIZONTAL)
         self.spin.SetRange(-1, 1)
         
-        self.listeAnnees = ["2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"]
-        if "linux" in sys.platform :
-            largeurMois = 75
-        else:
-            largeurMois = 50
-        self.combo_annee = wx.ComboBox(self, -1, "" , (-1, -1) , (largeurMois, -1), self.listeAnnees , wx.CB_READONLY)
+        self.ctrl_annee = CTRL_Annee(self)
         
         dateJour = datetime.datetime.today()
         numMois = dateJour.month
         numAnnee = dateJour.year
         self.combo_mois.SetSelection(numMois-1)
-        self.combo_annee.SetValue(str(numAnnee))
+        self.ctrl_annee.SetAnnee(numAnnee)
         
         self.MAJPeriodeCalendrier()
         
@@ -955,7 +968,7 @@ class Panel(wx.Panel):
         sizerOptions = wx.FlexGridSizer(rows=1, cols=8, vgap=0, hgap=5)
         sizerOptions.Add(self.bouton_CalendrierAnnuel, 0, wx.EXPAND, 0)
         sizerOptions.Add(self.combo_mois, 0, wx.EXPAND, 0)
-        sizerOptions.Add(self.combo_annee, 0, wx.EXPAND, 0)
+        sizerOptions.Add(self.ctrl_annee, 0, wx.EXPAND, 0)
         sizerOptions.Add(self.spin, 0, wx.EXPAND, 0)
         sizerOptions.AddGrowableCol(1)
 ##        
@@ -974,7 +987,7 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_SPIN, self.OnSpin, self.spin)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuel, self.bouton_CalendrierAnnuel)
         self.Bind(wx.EVT_COMBOBOX, self.OnComboMois, self.combo_mois)
-        self.Bind(wx.EVT_COMBOBOX, self.OnComboAnnee, self.combo_annee)
+        self.ctrl_annee.Bind(wx.EVT_SPINCTRL, self.OnCtrlAnnee)
         
         # Affiche ou non le bouton Annuel
         if self.afficheBoutonAnnuel == False : self.bouton_CalendrierAnnuel.Show(False)
@@ -991,7 +1004,7 @@ class Panel(wx.Panel):
         if self.combo_mois.IsEnabled() == True :
             # Changement du mois
             mois = self.combo_mois.GetSelection() + 1
-            annee = int(self.combo_annee.GetValue())
+            annee = self.ctrl_annee.GetAnnee()
             mois = mois + x
             if mois == 0 :
                 mois = 12
@@ -1000,11 +1013,11 @@ class Panel(wx.Panel):
                 mois = 1
                 annee = annee + 1
             self.combo_mois.SetSelection(mois-1)
-            self.combo_annee.SetValue(str(annee))
+            self.ctrl_annee.SetAnnee(annee)
         else:
             # Changement de l'année uniquement
-            annee = int(self.combo_annee.GetValue()) + x
-            self.combo_annee.SetValue(str(annee))
+            annee = self.ctrl_annee.GetAnnee() + x
+            self.ctrl_annee.SetAnnee(annee)
         self.spin.SetValue(0)
         self.MAJPeriodeCalendrier()
         
@@ -1040,13 +1053,13 @@ class Panel(wx.Panel):
     
     def MAJPeriodeCalendrier(self) :
         mois = self.combo_mois.GetSelection() + 1
-        annee = int(self.combo_annee.GetValue())
+        annee = int(self.ctrl_annee.GetValue())
         self.calendrier.SetMoisAnneeCalendrier(mois, annee)
         
     def OnComboMois(self, event) :
         self.MAJPeriodeCalendrier()
 
-    def OnComboAnnee(self, event) :
+    def OnCtrlAnnee(self, event) :
         self.MAJPeriodeCalendrier()
  
     def MAJpanel(self):
@@ -1054,7 +1067,7 @@ class Panel(wx.Panel):
         
     def MAJcontrolesNavigation(self, mois, annee):
         self.combo_mois.SetSelection(mois-1)
-        self.combo_annee.SetValue(str(annee))
+        self.ctrl_annee.SetAnnee(annee)
         
         
         

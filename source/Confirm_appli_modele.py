@@ -63,7 +63,7 @@ class Frm_confirm_appli(wx.Frame):
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
         sizer_base_2 = wx.BoxSizer(wx.VERTICAL)
-        grid_sizer_1 = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
+        grid_sizer_1 = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
         grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=5, vgap=10, hgap=10)
         grid_sizer_1.Add(self.label_confirmation, 0, 0, 0)
         grid_sizer_1.Add(self.gauge, 0, wx.EXPAND, 0)
