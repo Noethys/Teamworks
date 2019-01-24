@@ -124,7 +124,12 @@ class ToolBook(wx.Toolbook):
         self.panelContrats = OL_contrats.ListView(self, id=-1,  name="OL_contrats", activeCheckBoxes=True, activeDoubleClic=False, activeMenuContextuel=False, modeAffichage = "avec_nom", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
         self.panelCandidats = OL_candidats.ListView(self, id=-1,  name="OL_candidats", activeCheckBoxes=True, activePopup=False, activeDoubleClic=False, activeMenuContextuel=False, style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
         self.panelCandidatures = OL_candidatures.ListView(self, id=-1,  name="OL_candidatures", activeCheckBoxes=True, activePopup=False, activeDoubleClic=False, activeMenuContextuel=False, modeAffichage = "avec_nom", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
-        
+
+        self.panelPersonnes.SetMinSize((200, 50))
+        self.panelContrats.SetMinSize((200, 50))
+        self.panelCandidats.SetMinSize((200, 50))
+        self.panelCandidatures.SetMinSize((200, 50))
+
         self.panelContrats.MAJ() 
         self.panelCandidats.MAJ() 
         self.panelCandidatures.MAJ() 
@@ -292,6 +297,7 @@ class MyFrame(wx.Frame):
         
         # Panel
         self.toolBook = ToolBook(self.panel)
+        self.toolBook.SetMinSize((500, 400))
         
         # Commandes
         self.imgFiltrer = wx.StaticBitmap(self.panel, -1, wx.Bitmap("Images/16x16/Loupe.png", wx.BITMAP_TYPE_ANY))
@@ -322,7 +328,7 @@ class MyFrame(wx.Frame):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.SetMinSize((650, 500))
+        self.SetMinSize((750, 600))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)

@@ -176,7 +176,7 @@ class ListView(ObjectListView):
         
     def OnItemSelected(self, event):
         self.itemSelected = True
-        if True :
+        try :
             self.GetGrandParent().GetParent().bouton_modifier.Enable(True)
             self.GetGrandParent().GetParent().bouton_supprimer.Enable(True)
             if len(self.Selection()) == 0:
@@ -185,8 +185,8 @@ class ListView(ObjectListView):
             # Met à jour le cadre Résumé
             self.GetGrandParent().GetParent().panel_resume.OnSelectPersonne(IDpersonne=IDpersonne)
             self.GetGrandParent().GetParent().AffichePanelResume(True)
-##        except : 
-##            pass
+        except :
+            pass
         
     def OnItemDeselected(self, event):
         self.itemSelected = False

@@ -250,7 +250,7 @@ def Importation_candidature(IDcandidature=None):
     dictDonnees["DATEDEPOT"] = FonctionsPerso.DateEngFr(date_depot)
     
     # Type dépôt
-    listeTypes = [_(u"De vive voix"), _(u"Courrier"), _(u"Téléphone"), _(u"Main à main"), _(u"Email"), _(u"Pôle Emploi"), _(u"Organisateur") _(u"Fédération"), _(u"Autre")] 
+    listeTypes = [_(u"De vive voix"), _(u"Courrier"), _(u"Téléphone"), _(u"Main à main"), _(u"Email"), _(u"Pôle Emploi"), _(u"Organisateur"), _(u"Fédération"), _(u"Autre")]
     dictDonnees["TYPEDEPOT"] = listeTypes[IDtype]
     
     # Offre d'emploi
