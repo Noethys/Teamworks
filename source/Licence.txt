@@ -3,7 +3,7 @@ LICENCE ET CONDITIONS D'UTILISATION
 "TeamWorks - Gestion d'équipes", logiciel de gestion d'équipes pour 
 les centres de loisirs et de vacances.
 
-Copyright © 2008-2012 Ivan LUCAS
+Copyright © 2008-2019 Ivan LUCAS
 
 Ce programme est un logiciel libre ; vous pouvez le redistribuer 
 et/ou le modifier conformément aux dispositions de la Licence Publique
