@@ -33,7 +33,7 @@ class PanelDefilant(scrolled.ScrolledPanel):
             self.GetParent().label_intro.SetLabel(_(u"Vous pouvez maintenant remplir vos champs personnalisés :"))
         
         # Création des champs dans l'interface
-        grid_sizer = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
+        grid_sizer = wx.FlexGridSizer(rows=len(self.dicoChamps)+1, cols=1, vgap=10, hgap=10)
         
         for ID, valeurs in self.dicoChamps.iteritems() : 
             nom = "champ" + str(ID)
