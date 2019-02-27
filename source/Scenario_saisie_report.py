@@ -22,7 +22,7 @@ except: pass
 class MyDialog(wx.Dialog):
     """ Saisie d'une prévision pour un scénario """
     def __init__(self, parent, IDscenario=None, IDpersonne=0, IDcategorie=0, report=None, mode_heure=0):
-        wx.Dialog.__init__(self, parent, id=-1, title=_(u"Saisie d'un report"), size=(440, 420))
+        wx.Dialog.__init__(self, parent, id=-1, title=_(u"Saisie d'un report"), size=(440, 420), style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.IDscenario = IDscenario
         self.IDpersonne = IDpersonne
         self.report = report
@@ -62,6 +62,7 @@ class MyDialog(wx.Dialog):
         self.listview_scenarios = ListView(self, -1, IDscenario=self.IDscenario, IDpersonne=self.IDpersonne, style=wx.LC_REPORT|wx.SUNKEN_BORDER)
         self.bouton_apercu = wx.BitmapButton(self, -1, wx.Bitmap("Images/16x16/Loupe.png", wx.BITMAP_TYPE_ANY))
         self.bouton_apercu.Enable(False)
+        self.listview_scenarios.SetMinSize((50, 50))
         
         # Choix catégorie
         self.label_categorie = wx.StaticText(self, -1, _(u"Catégorie :"))
@@ -111,9 +112,9 @@ class MyDialog(wx.Dialog):
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        
         self.ctrl_temps_heures.SetToolTipString(_(u"Saisissez un nombre d'heures"))
         self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
+        self.SetMinSize((510, 460))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -121,7 +122,7 @@ class MyDialog(wx.Dialog):
 
         sizerStaticBox = wx.StaticBoxSizer(self.staticbox_periode, wx.HORIZONTAL)
         
-        grid_sizer_box = wx.FlexGridSizer(rows=5, cols=3, vgap=0, hgap=0)
+        grid_sizer_box = wx.FlexGridSizer(rows=10, cols=3, vgap=0, hgap=0)
         
         # Manuel
         grid_sizer_box.Add(self.radio_1, 0, wx.ALL, 5)
@@ -179,6 +180,7 @@ class MyDialog(wx.Dialog):
         grid_sizer_base.AddGrowableCol(0)
         grid_sizer_base.AddGrowableRow(1)
         self.Layout()
+        self.CenterOnScreen()
     
     def OnBoutonApercu(self, event):
         IDscenario = self.listview_scenarios.GetSelection()
@@ -582,7 +584,7 @@ class ListView(ObjectListView):
         if self.IDpersonne == None : return []
         DB = GestionDB.DB()
         if self.IDscenario != None :
-            req = "SELECT IDscenario, nom, description, date_debut, date_fin FROM scenarios WHERE IDpersonne=%d AND IDscenario!=%dORDER BY date_debut;" % (self.IDpersonne, self.IDscenario)
+            req = "SELECT IDscenario, nom, description, date_debut, date_fin FROM scenarios WHERE IDpersonne=%d AND IDscenario!=%d ORDER BY date_debut;" % (self.IDpersonne, self.IDscenario)
         else:
             req = "SELECT IDscenario, nom, description, date_debut, date_fin FROM scenarios WHERE IDpersonne=%d ORDER BY date_debut;" % self.IDpersonne
         DB.ExecuterReq(req)
