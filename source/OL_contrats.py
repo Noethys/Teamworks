@@ -18,16 +18,14 @@ import sys
 
 from ObjectListView import ObjectListView, ColumnDefn
 
-try: import psyco; psyco.full()
-except: pass
 
 
 # Liste sans nom du candidat
 LISTE_COLONNES_1 = [
             [_(u"ID"), "left", 0, "IDcontrat", "", _(u"ID du contrat"), True, 1 ],
             [_(u"Type"), "left", 180, "type", "", _(u"Type de contrat"), True, 2 ],
-            [_(u"Date de début"), "left", 90, _(u"date_debut"), "", _(u"Date de début de contrat"), True, 3 ],
-            [_(u"Date de fin"), "left", 90, _(u"date_fin"), "", _(u"Date de fin de contrat"), True, 4 ],
+            [_(u"Date de début"), "left", 90, _(u"date_debut"), "date", _(u"Date de début de contrat"), True, 3 ],
+            [_(u"Date de fin"), "left", 90, _(u"date_fin"), "date", _(u"Date de fin de contrat"), True, 4 ],
             [_(u"Classification"), "left", 100, _(u"classification"), "", _(u"Classification du contrat"), True, 5 ],
             ] # nom Colonne, alignement, largeur, nom Champ, Args pour OLV, Description, Affiché ?, Ordre
 
@@ -39,6 +37,16 @@ LISTE_COLONNES_2 = [
             [_(u"Date de début"), "left", 90, _(u"date_debut"), "date", _(u"Date de début de contrat"), True, 4 ],
             [_(u"Date de fin"), "left", 90, _(u"date_fin"), "date", _(u"Date de fin de contrat"), True, 5 ],
             [_(u"Classification"), "left", 100, _(u"classification"), "", _(u"Classification du contrat"), True, 6 ],
+            ] # nom Colonne, alignement, largeur, nom Champ, Args pour OLV, Description, Affiché ?, Ordre
+
+# Liste complète de tous les contrats
+LISTE_COLONNES_3 = [
+            [_(u"ID"), "left", 0, "IDcontrat", "", _(u"ID du contrat"), True, 1 ],
+            [_(u"Date de début"), "left", 90, _(u"date_debut"), "date", _(u"Date de début de contrat"), True, 2],
+            [_(u"Date de fin"), "left", 90, _(u"date_fin"), "date", _(u"Date de fin de contrat"), True, 3],
+            [_(u"Nom du salarié"), "left", 200, "nomPersonne", "", _(u"Nom du salarié"), True, 4],
+            [_(u"Type"), "left", 200, "type", "", _(u"Type de contrat"), True, 5],
+            [_(u"Classification"), "left", 200, _(u"classification"), "", _(u"Classification du contrat"), True, 6],
             ] # nom Colonne, alignement, largeur, nom Champ, Args pour OLV, Description, Affiché ?, Ordre
 
 
@@ -78,6 +86,9 @@ class ListView(ObjectListView):
             self.listeColonnes = LISTE_COLONNES_1
         if self.modeAffichage == "avec_nom" : 
             self.listeColonnes = LISTE_COLONNES_2
+        if self.modeAffichage == "liste_contrats" :
+            self.listeColonnes = LISTE_COLONNES_3
+
         self.listeColonnesOriginale = list(self.listeColonnes)
 ##        self.InitModel()
 ##        self.InitObjectListView()
@@ -319,8 +330,7 @@ class ListView(ObjectListView):
             noSelection = True
         else:
             noSelection = False
-            ID = self.Selection()[0].IDcandidature
-                
+
         # Création du menu contextuel
         menuPop = wx.Menu()
 
@@ -1073,7 +1083,7 @@ class MyFrame(wx.Frame):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         sizer_1.Add(panel, 1, wx.ALL|wx.EXPAND)
         self.SetSizer(sizer_1)
-        self.myOlv = ListView(panel, id=-1, modeAffichage="avec_nom", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
+        self.myOlv = ListView(panel, id=-1, modeAffichage="liste_contrats", style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
         self.myOlv.MAJ() 
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_2.Add(self.myOlv, 1, wx.ALL|wx.EXPAND, 4)

@@ -383,6 +383,10 @@ class MyFrame(wx.Frame):
         item.SetBitmap(wx.Bitmap("Images/16x16/Calculatrice.png", wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         menu3.AppendSeparator()
+        item = wx.MenuItem(menu3, 320, _(u"Liste des contrats"), _(u"Liste des contrats"))
+        item.SetBitmap(wx.Bitmap("Images/16x16/Contrat.png", wx.BITMAP_TYPE_PNG))
+        menu3.AppendItem(item)
+        menu3.AppendSeparator()
         item = wx.MenuItem(menu3, 301, _(u"Exporter les personnes dans MS Outlook"), _(u"Exporter les personnes dans MS Outlook"))
         item.SetBitmap(wx.Bitmap("Images/16x16/Outlook.png", wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
@@ -405,6 +409,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.MenuExportOutlook, id=301)
         self.Bind(wx.EVT_MENU, self.MenuEnvoiMailGroupe, id=303)
         self.Bind(wx.EVT_MENU, self.MenuGestionFrais, id=304)
+        self.Bind(wx.EVT_MENU, self.MenuListeContrats, id=320)
         self.Bind(wx.EVT_MENU, self.MenuImprimerPhotos, id=305)
         self.Bind(wx.EVT_MENU, self.MenuPublipostage, id=306)
         self.Bind(wx.EVT_MENU, self.MenuTeamword, id=307)
@@ -1376,7 +1381,13 @@ class MyFrame(wx.Frame):
         import Gestion_frais
         frm = Gestion_frais.MyFrame(self)
         frm.Show()
-        
+
+    def MenuListeContrats(self, event):
+        import DLG_Liste_contrats
+        dlg = DLG_Liste_contrats.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def MenuImprimerPhotos(self, event):
         """ Imprimer les photos des personnes """
         # Ouverture de la frame d'impression des photos  
