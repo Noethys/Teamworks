@@ -6,14 +6,15 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
-from UTILS_Traduction import _
+import Chemins
+from Utils.UTILS_Traduction import _
 import wx
-import CTRL_Bouton_image
+from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
 import  wx.calendar
 import GestionDB
 import datetime
-import Calendrier
+from Ctrl import CTRL_Calendrier_tw
 
 class PanelGadget(wx.Panel):
     def __init__(self, parent, couleurFondPanel, index, size=wx.DefaultSize):
@@ -52,8 +53,8 @@ class PanelGadget(wx.Panel):
 ##        titre.SetForegroundColour(self.couleurTexteTitre)
         
         # Boutons
-        self.img_config = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Gadget_config.png", wx.BITMAP_TYPE_ANY))
-        self.img_fermer = wx.StaticBitmap(self, -1, wx.Bitmap("Images/16x16/Gadget_fermer.png", wx.BITMAP_TYPE_ANY))
+        self.img_config = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Gadget_config.png"), wx.BITMAP_TYPE_ANY))
+        self.img_fermer = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Gadget_fermer.png"), wx.BITMAP_TYPE_ANY))
         self.img_config.SetToolTipString(_(u"Cliquez ici pour accéder aux options de ce gadget"))
         self.img_fermer.SetToolTipString(_(u"Cliquez ici pour fermer ce gadget"))
         if self.paramGadget["config"] == False : self.img_config.Show(False)
@@ -239,8 +240,8 @@ class Gadget_BlocNotes(wx.Panel):
         self.parent.SaveConfig(dictParametres)
 
     def Config(self):
-        import parametres_blocnotes
-        frame_config = parametres_blocnotes.MyFrame(None)
+        from Dlg import DLG_Parametres_blocnotes
+        frame_config = DLG_Parametres_blocnotes.MyFrame(None)
         frame_config.Show()
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -252,7 +253,7 @@ class Gadget_DossiersIncomplets(wx.Panel):
         dictParam = self.parent.paramGadget
         
         # Import
-        import Gadget_pb_personnes as pbPersonnes
+        from Ctrl import CTRL_Gadget_pb_personnes as pbPersonnes
                 
         # Widgets
         self.tree = pbPersonnes.TreeCtrl(self)
@@ -276,8 +277,8 @@ class Gadget_DossiersIncomplets(wx.Panel):
         self.SetAutoLayout(True)
                 
     def Config(self):
-        import parametres_dossiers
-        frame_config = parametres_dossiers.MyFrame(None)
+        from Dlg import DLG_Parametres_dossiers
+        frame_config = DLG_Parametres_dossiers.MyFrame(None)
         frame_config.Show()
                    
 
@@ -310,8 +311,8 @@ class Gadget_Horloge(wx.Panel):
         self.SetAutoLayout(True)
 
     def Config(self):
-        import parametres_horloge
-        frame_config = parametres_horloge.MyFrame(None)
+        from Dlg import DLG_Parametres_horloge
+        frame_config = DLG_Parametres_horloge.MyFrame(None)
         frame_config.Show()
 
 
@@ -330,7 +331,7 @@ class Gadget_Updater(wx.Panel):
         self.texte = wx.StaticText(self, -1, _(u"Une nouvelle version du logiciel est disponible !\n\nCliquez ci-dessous pour la télécharger et l'installer dès maintenant. Cette procédure est automatisée."))   
         self.SetBackgroundColour(couleurFondUpdater)
         
-        self.bouton_telecharger = wx.BitmapButton(self, -1, wx.Bitmap("Images/BoutonsImages/Telecharger_L140.png", wx.BITMAP_TYPE_ANY), size=(-1, 60))
+        self.bouton_telecharger = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Telecharger_L140.png"), wx.BITMAP_TYPE_ANY), size=(-1, 60))
         self.bouton_telecharger.SetToolTipString(_(u"Cliquez ici pour télécharger et installer\nla nouvelle version de TeamWorks"))
         
         #font = wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL) 
@@ -357,9 +358,9 @@ class Gadget_Updater(wx.Panel):
         
 # ----------------------------------------------------------------------------------------------------------------------------
 
-class Gadget_Calendrier(Calendrier.Panel):
+class Gadget_Calendrier(CTRL_Calendrier_tw.Panel):
     def __init__(self, parent, ID=-1):
-        Calendrier.Panel.__init__(self, parent, ID, afficheBoutonAnnuel=False, afficheAujourdhui=False)
+        CTRL_Calendrier_tw.Panel.__init__(self, parent, ID, afficheBoutonAnnuel=False, afficheAujourdhui=False)
         self.parent = parent
         
         #dictParam = { "colFond" : (255, 255, 255), "colNormal" : (214, 223, 247), "colWE" : (198, 211, 249), "colSelect" : (255, 162, 0), "colSurvol" : (0, 0, 0), "colFontJours" : (0, 0, 0), "colVacs" : (255, 255, 187), "colFontPresents" : (255, 0, 0), "colFeries" : (180, 180, 180) }
@@ -381,8 +382,8 @@ class Gadget_Calendrier(Calendrier.Panel):
         self.calendrier.couleurFerie = dictParam["colFeries"]
 
     def Config(self):
-        import parametres_calendrier
-        frame_config = parametres_calendrier.MyFrame(None)
+        from Dlg import DLG_Parametres_calendrier
+        frame_config = DLG_Parametres_calendrier.MyFrame(None)
         frame_config.Show()
      
 

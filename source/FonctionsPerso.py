@@ -6,19 +6,17 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
-from UTILS_Traduction import _
+import Chemins
+from Utils.UTILS_Traduction import _
 import wx
-import CTRL_Bouton_image
-
 import wx.html as  html
 import GestionDB
 import datetime
 import os
 import sys
-import UTILS_Config
-
-try: import psyco; psyco.full()
-except: pass
+import shutil
+from Utils import UTILS_Config
+from Utils import UTILS_Fichiers
 
 def DateEngFr(textDate):
     text = str(textDate[8:10]) + "/" + str(textDate[5:7]) + "/" + str(textDate[:4])
@@ -660,15 +658,7 @@ class FichierConfig():
         del db[key]
         db.close()
         
-    ## Exemple d'utilisation du fichier de config :    
-    ##Fconfig = FichierConfig("userconfig.dat")
-    ##x = Fconfig.GetDictConfig()
-    ##x["nomDB"] = _(u"CLSH Lannilis - Eté 2008")
-    ##Fconfig.SetDictConfig(x)
-    ##Fconfig = FichierConfig("config.dat")
-    ##print Fconfig.GetDictConfig()
-        
-        
+
 # -----------------------------------------  Affiche l'aide -----------------------------------------------------------------------------------
 
 
@@ -824,7 +814,7 @@ class Aide_archive():
     
     def Proprietes(self):
         _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
+        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.frameAide.SetIcon(_icon)
         self.frameAide.SetTitle(_(u"Aide de TeamWorks"))
         self.frameParente.frmAide.SetTitleFormat(_(u"Aide de TeamWorks"))
@@ -907,7 +897,7 @@ def CompareVersions(versionApp="", versionMaj=""):
 def GetListeCadresPhotos():
     """ Récupère la liste des noms des cadres photos dispo sur le DD """
     listeNomCadres = []
-    listeFichiers = os.listdir("Images/CadresPhotos")
+    listeFichiers = os.listdir(Chemins.GetStaticPath("Images/CadresPhotos"))
     for nomFichier in listeFichiers :
         if nomFichier.endswith(".png"):
             listeNomCadres.append(nomFichier[:-4])
@@ -956,7 +946,7 @@ def CreationPhotoPersonne(IDpersonne=0, nomFichierPhoto="", tailleFinale = None,
     # Dessin du cadre de décoration
     nomCadre = RecupNomCadrePersonne(IDpersonne)
     if nomCadre != None :
-        masque = wx.Bitmap("Images/CadresPhotos/" + nomCadre + ".png", wx.BITMAP_TYPE_PNG)
+        masque = wx.Bitmap(Chemins.GetStaticPath("Images/CadresPhotos/" + nomCadre + ".png"), wx.BITMAP_TYPE_PNG)
         dc.DrawBitmap(masque, 0, 0)
     # Redimensionne et retourne l'image bmp
     if tailleFinale != None :
@@ -978,28 +968,28 @@ def RecupIDfichier():
 
 def VideRepertoireTemp():
     """ Supprimer tous les fichiers du répertoire TEMP """
-    listeFichiers = os.listdir("Temp")
+    listeFichiers = os.listdir(UTILS_Fichiers.GetRepTemp())
     for nomFichier in listeFichiers :
-        os.remove("Temp/" + nomFichier)
+        os.remove(UTILS_Fichiers.GetRepTemp(nomFichier))
 
 def VideRepertoireUpdates(forcer=False):
     """ Supprimer les fichiers temporaires du répertoire Updates """
-    listeReps = os.listdir("Updates")
-    numVersionActuelle = GetVersionTeamworks()
-    import shutil
-    for nomRep in listeReps :
-        resultat = CompareVersions(versionApp=numVersionActuelle, versionMaj=nomRep)
-        if resultat == False or forcer == True :
-            # Le rep est pour une version égale ou plus ancienne
-            if numVersionActuelle != nomRep or forcer == True :
-                # La version est ancienne
-                print "Suppression du repertoire temporaire Updates %s" % nomRep
-                listeFichiersRep = os.listdir("Updates/%s" % nomRep)
-                # Suppression du répertoire
-                shutil.rmtree("Updates/%s" % nomRep)
-            else:
-                # La version est égale : on la laisse pour l'instant
-                pass
+    try :
+        listeReps = UTILS_Fichiers.GetRepUpdates()
+        numVersionActuelle = GetVersionTeamworks()
+        for nomRep in os.listdir(listeReps) :
+            resultat = CompareVersions(versionApp=numVersionActuelle, versionMaj=nomRep)
+            if resultat == False or forcer == True :
+                # Le rep est pour une version égale ou plus ancienne
+                if numVersionActuelle != nomRep or forcer == True :
+                    # Si la version est ancienne, suppression du répertoire
+                    shutil.rmtree(UTILS_Fichiers.GetRepUpdates(nomRep))
+                else:
+                    # La version est égale : on la laisse pour l'instant
+                    pass
+    except Exception as err:
+        print(err)
+        pass
         
 def ListeImprimantes():
     """ Recherche les imprimantes installées """
@@ -1101,7 +1091,7 @@ def GetNomDB():
         nom = topWindow.userConfig["nomFichier"]
     else:
         # Récupération du nom de la DB directement dans le fichier de config sur le disque dur
-        cfg = UTILS_Config.FichierConfig(nomFichier="Data/Config.dat")
+        cfg = UTILS_Config.FichierConfig(nomFichier=UTILS_Fichiers.GetRepUtilisateur("Config.dat"))
         nom = cfg.GetItemConfig("nomFichier")
     return nom
 
@@ -1239,7 +1229,7 @@ def RemplacerContenuFichier():
 
 def PreparationFichierDefaut(nomFichier=""):
     """ Prépare le fichier de données par défaut """
-    import DATA_Tables as Tables
+    from Data import DATA_Tables as Tables
     import sqlite3
     listeTablesObligatoires = []
     # Récupère les tables optionnelles

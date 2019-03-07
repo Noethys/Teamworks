@@ -4,10 +4,17 @@
 # Author:       Phillip Piper
 # Created:      29 February 2008
 # Copyright:    (c) 2008 Phillip Piper
-# SVN-ID:       $Id$
 # License:      wxWindows license
 #----------------------------------------------------------------------------
 # Change log:
+# 2009-06-09  JPP   - AutoSizeColumns() now updates space filling columns
+#                   - FastObjectListView.RepopulateList() now uses Freeze/Thaw
+#                   - Fixed bug with virtual lists being clearws when scrolled vertically
+# 2008-12-16  JPP   - Removed flicker from RefreshObject() on FastObjectListView and GroupListView
+# 2008-12-01  JPP   - Handle wierd toggle check box on selection when there is no selection
+#                   - Fixed bug in RefreshObjects() when the list is empty
+# 2008-11-30  JPP   - Fixed missing variable bug in CancelCellEdit()
+# v1.2
 # 2008/09/02  JPP   - Added BatchedUpdate adaptor
 #                   - Improved speed of selecting and refreshing by keeping a map
 #                     of objects to indicies
@@ -87,7 +94,6 @@ back into the model. See `ColumnDefn` for more information.
 
 __author__ = "Phillip Piper"
 __date__ = "18 June 2008"
-__version__ = "1.1"
 
 import wx
 import datetime
@@ -96,12 +102,26 @@ import locale
 import operator
 import string
 import time
+import six
+import unicodedata
 
-import CellEditor
-import OLVEvent
+from . import CellEditor
+from . import OLVEvent
+
+if six.PY3:
+    # python 3 lacks cmp:
+    def cmp(a, b):
+        # protect for unorderable types in Py3
+        if type(a) == type(b) and b is not None:
+            return (a > b) - (a < b)
+        else:
+            aS = str(a)
+            bS = str(b)
+            return (aS > bS) - (aS < bS)
 
 
 class ObjectListView(wx.ListCtrl):
+
     """
     An object list displays various aspects of a list of objects in a multi-column list control.
 
@@ -252,13 +272,17 @@ class ObjectListView(wx.ListCtrl):
         self.objectToIndexMap = None
 
         self.rowFormatter = kwargs.pop("rowFormatter", None)
-        self.useAlternateBackColors = kwargs.pop("useAlternateBackColors", True)
+        self.useAlternateBackColors = kwargs.pop(
+            "useAlternateBackColors",
+            True)
         self.sortable = kwargs.pop("sortable", True)
         self.cellEditMode = kwargs.pop("cellEditMode", self.CELLEDIT_NONE)
-        self.typingSearchesSortColumn = kwargs.pop("typingSearchesSortColumn", True)
+        self.typingSearchesSortColumn = kwargs.pop(
+            "typingSearchesSortColumn",
+            True)
 
-        self.evenRowsBackColor = wx.Colour(240, 248, 255) # ALICE BLUE
-        self.oddRowsBackColor = wx.Colour(255, 250, 205) # LEMON CHIFFON
+        self.evenRowsBackColor = wx.Colour(240, 248, 255)  # ALICE BLUE
+        self.oddRowsBackColor = wx.Colour(255, 250, 205)  # LEMON CHIFFON
 
         wx.ListCtrl.__init__(self, *args, **kwargs)
 
@@ -287,25 +311,23 @@ class ObjectListView(wx.ListCtrl):
         else:
             StaticText = wx.StaticText
 
-        self.stEmptyListMsg = StaticText(self, -1, "This list is empty",
-            wx.Point(0, 0), wx.Size(0, 0), wx.ALIGN_CENTER | wx.ST_NO_AUTORESIZE | wx.FULL_REPAINT_ON_RESIZE)
+        self.stEmptyListMsg = StaticText(
+            self, -1, "This list is empty", wx.Point(0, 0),
+            wx.Size(0, 0),
+            wx.ALIGN_CENTER | wx.ST_NO_AUTORESIZE | wx.FULL_REPAINT_ON_RESIZE)
         self.stEmptyListMsg.Hide()
         self.stEmptyListMsg.SetForegroundColour(wx.LIGHT_GREY)
-        self.couleurBackgroundDefaut = self.stEmptyListMsg.GetBackgroundColour()
         self.stEmptyListMsg.SetBackgroundColour(self.GetBackgroundColour())
-        self.stEmptyListMsg.SetFont(wx.Font(24, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
-    
-    def Activation(self, etat=True):
-        """ Active ou desactive l'etat du controle """
-        if etat == True :
-            self.Enable(True)
-            self.stEmptyListMsg.SetBackgroundColour(self.GetBackgroundColour())
-        else :
-            self.Enable(False)
-            self.stEmptyListMsg.SetBackgroundColour(self.couleurBackgroundDefaut)
-        self.stEmptyListMsg.Refresh() 
-        
-    #--------------------------------------------------------------#000000#FFFFFF
+        self.stEmptyListMsg.SetFont(
+            wx.Font(
+                24,
+                wx.DEFAULT,
+                wx.NORMAL,
+                wx.NORMAL,
+                0,
+                ""))
+
+    # --------------------------------------------------------------#000000#FFFFFF
     # Setup
 
     def SetColumns(self, columns, repopulate=True):
@@ -334,7 +356,6 @@ class ObjectListView(wx.ListCtrl):
         if repopulate:
             self.RepopulateList()
 
-
     def AddColumnDefn(self, defn):
         """
         Append the given ColumnDefn object to our list of active columns.
@@ -345,32 +366,52 @@ class ObjectListView(wx.ListCtrl):
         self.columns.append(defn)
 
         info = wx.ListItem()
-        info.m_mask = wx.LIST_MASK_TEXT | wx.LIST_MASK_FORMAT
-        if isinstance(defn.headerImage, basestring) and self.smallImageList is not None:
-            info.m_image = self.smallImageList.GetImageIndex(defn.headerImage)
+
+        if 'phoenix' in wx.PlatformInfo:
+            info.Mask = wx.LIST_MASK_TEXT | wx.LIST_MASK_FORMAT
+            if isinstance(defn.headerImage, six.string_types) and self.smallImageList is not None:
+                info.Image = self.smallImageList.GetImageIndex(defn.headerImage)
+            else:
+                pass#info.Image = defn.headerImage # MODIF PERSO ICI POUR EVITER ESPACE DANS HEADER
+            if info.Image != -1:
+                info.Mask = info.Mask | wx.LIST_MASK_IMAGE
+            info.Align = defn.GetAlignment()
+            info.Text = defn.title
+            info.Width = defn.width
+            self.InsertColumn(len(self.columns) - 1, info)
         else:
-            info.m_image = defn.headerImage
-        if info.m_image != -1:
-            info.m_mask = info.m_mask | wx.LIST_MASK_IMAGE
-        info.m_format = defn.GetAlignment()
-        info.m_text = defn.title
-        info.m_width = defn.width
-        self.InsertColumnInfo(len(self.columns)-1, info)
+            info.m_mask = wx.LIST_MASK_TEXT | wx.LIST_MASK_FORMAT
+            if isinstance(
+                    defn.headerImage,
+                    six.string_types) and self.smallImageList is not None:
+                info.m_image = self.smallImageList.GetImageIndex(
+                    defn.headerImage)
+            else:
+                info.m_image = defn.headerImage
+            if info.m_image != -1:
+                info.m_mask = info.m_mask | wx.LIST_MASK_IMAGE
+            info.m_format = defn.GetAlignment()
+            info.m_text = defn.title
+            info.m_width = defn.width
+            self.InsertColumnInfo(len(self.columns) - 1, info)
 
         # Under Linux, the width doesn't take effect without this call
-        self.SetColumnWidth(len(self.columns)-1, defn.width)
+        self.SetColumnWidth(len(self.columns) - 1, defn.width)
 
-        # The first checkbox column becomes the check state column for the control
+        # The first checkbox column becomes the check state column for the
+        # control
         if defn.HasCheckState() and self.checkStateColumn is None:
             self.InstallCheckStateColumn(defn)
-
 
     def _InitializeCheckBoxImages(self):
         """
         Initialize some checkbox images for use by this control.
         """
         def _makeBitmap(state, size):
-            bitmap = wx.EmptyBitmap(size, size)
+            if 'phoenix' in wx.PlatformInfo:
+                bitmap = wx.Bitmap(size, size)
+            else:
+                bitmap = wx.EmptyBitmap(size, size)
             dc = wx.MemoryDC(bitmap)
             dc.Clear()
 
@@ -379,12 +420,17 @@ class ObjectListView(wx.ListCtrl):
                 yOrigin = -1
             else:
                 yOrigin = 0
-            wx.RendererNative.Get().DrawCheckBox(self, dc, (0, yOrigin, size, size), state)
+            wx.RendererNative.Get().DrawCheckBox(
+                self, dc, (0, yOrigin, size, size),
+                state)
             dc.SelectObject(wx.NullBitmap)
             return bitmap
 
         def _makeBitmaps(name, state):
-            self.AddNamedImages(name, _makeBitmap(state, 16), _makeBitmap(state, 32))
+            self.AddNamedImages(
+                name, _makeBitmap(
+                    state, 16), _makeBitmap(
+                    state, 32))
 
         # If there isn't a small image list, make one
         if self.smallImageList is None:
@@ -392,8 +438,9 @@ class ObjectListView(wx.ListCtrl):
 
         _makeBitmaps(ObjectListView.NAME_CHECKED_IMAGE, wx.CONTROL_CHECKED)
         _makeBitmaps(ObjectListView.NAME_UNCHECKED_IMAGE, wx.CONTROL_CURRENT)
-        _makeBitmaps(ObjectListView.NAME_UNDETERMINED_IMAGE, wx.CONTROL_UNDETERMINED)
-
+        _makeBitmaps(
+            ObjectListView.NAME_UNDETERMINED_IMAGE,
+            wx.CONTROL_UNDETERMINED)
 
     def CreateCheckStateColumn(self, columnIndex=0):
         """
@@ -409,13 +456,15 @@ class ObjectListView(wx.ListCtrl):
         RepopulateList() or SetObjects() must be called after this.
         """
         col = ColumnDefn("", fixedWidth=24, isEditable=False)
-        col.valueGetter = col.GetCheckState # Install a value getter so sorting works
-        col.stringConverter = lambda x: "" # We don't want any string for the value
-        col.isInternal = True # This is an autocreated column
+        # Install a value getter so sorting works
+        col.valueGetter = col.GetCheckState
+        # We don't want any string for the value
+        col.stringConverter = lambda x: ""
+        col.isInternal = True  # This is an autocreated column
+        col._EventHandler = self
         self.columns.insert(columnIndex, col)
         self.SetColumns(self.columns, False)
         self.InstallCheckStateColumn(col)
-
 
     def InstallCheckStateColumn(self, column):
         """
@@ -434,7 +483,7 @@ class ObjectListView(wx.ListCtrl):
         if column is None:
             return
 
-        if self.smallImageList == None or \
+        if self.smallImageList is None or \
            not self.smallImageList.HasName(ObjectListView.NAME_CHECKED_IMAGE):
             self._InitializeCheckBoxImages()
 
@@ -446,8 +495,11 @@ class ObjectListView(wx.ListCtrl):
         # that will manage the state. This is useful when the checkedness is
         # related to the view and is not an attribute of the model.
         checkState = dict()
+
         def _handleGetCheckState(modelObject):
-            return checkState.get(modelObject, False) # objects are not checked by default
+            return checkState.get(
+                modelObject,
+                False)  # objects are not checked by default
 
         def _handleSetCheckState(modelObject, newValue):
             checkState[modelObject] = newValue
@@ -455,7 +507,6 @@ class ObjectListView(wx.ListCtrl):
 
         column.checkStateGetter = _handleGetCheckState
         column.checkStateSetter = _handleSetCheckState
-
 
     def RegisterSortIndicators(self, sortUp=None, sortDown=None):
         """
@@ -465,9 +516,12 @@ class ObjectListView(wx.ListCtrl):
 
         If no parameters are given, 16x16 default images will be registered
         """
-        self.AddNamedImages(ObjectListView.NAME_DOWN_IMAGE, sortDown or _getSmallDownArrowBitmap())
-        self.AddNamedImages(ObjectListView.NAME_UP_IMAGE, sortUp or _getSmallUpArrowBitmap())
-
+        self.AddNamedImages(
+            ObjectListView.NAME_DOWN_IMAGE,
+            sortDown or _getSmallDownArrowBitmap())
+        self.AddNamedImages(
+            ObjectListView.NAME_UP_IMAGE,
+            sortUp or _getSmallUpArrowBitmap())
 
     def SetImageLists(self, smallImageList=None, normalImageList=None):
         """
@@ -489,16 +543,14 @@ class ObjectListView(wx.ListCtrl):
             self.normalImageList = NamedImageList(normalImageList, 32)
         self.SetImageList(self.normalImageList.imageList, wx.IMAGE_LIST_NORMAL)
 
-
-    #--------------------------------------------------------------#000000#FFFFFF
+    # --------------------------------------------------------------#000000#FFFFFF
     # Commands
 
     def AddImages(self, smallImage=None, normalImage=None):
         """
-        Add the given images to the list of available images. Return the index of the image.
+        Add the given images (:class:`wx.Bitmap <wx:Bitmap>`) to the list of available images. Return the index of the image.
         """
         return self.AddNamedImages(None, smallImage, normalImage)
-
 
     def AddObject(self, modelObject):
         """
@@ -509,7 +561,6 @@ class ObjectListView(wx.ListCtrl):
         """
         self.AddObjects([modelObject])
 
-
     def AddObjects(self, modelObjects):
         """
         Add the given collections of objects to our collection of objects.
@@ -517,7 +568,7 @@ class ObjectListView(wx.ListCtrl):
         The objects will appear at their sorted locations, or at the end of the list if
         the list is unsorted
         """
-        if len(self.innerList) == 0:
+        if len(self.innerList) == 0 and len(self.modelObjects) == 0:
             return self.SetObjects(modelObjects)
 
         try:
@@ -529,22 +580,21 @@ class ObjectListView(wx.ListCtrl):
             item.SetColumn(0)
             for (i, x) in enumerate(self.innerList[originalSize:]):
                 item.Clear()
-                self._InsertUpdateItem(item, originalSize+i, x, True)
+                self._InsertUpdateItem(item, originalSize + i, x, True)
             self._SortItemsNow()
         finally:
             self.Thaw()
 
-
     def AddNamedImages(self, name, smallImage=None, normalImage=None):
         """
-        Add the given images to the list of available images. Return the index of the image.
+        Add the given images (:class:`wx.Bitmap <wx:Bitmap>`) to the list of available images. Return the index of the image.
 
         If a name is given, that name can later be used to refer to the images rather
         than having to use the returned index.
         """
-        if isinstance(smallImage, basestring):
+        if isinstance(smallImage, six.string_types):
             smallImage = wx.Bitmap(smallImage)
-        if isinstance(normalImage, basestring):
+        if isinstance(normalImage, six.string_types):
             normalImage = wx.Bitmap(normalImage)
 
         # We must have image lists for images to be added to them
@@ -552,13 +602,21 @@ class ObjectListView(wx.ListCtrl):
             self.SetImageLists()
 
         # There must always be the same number of small and normal bitmaps,
-        # so if we aren't given one, we have to make an empty one of the right size
-        smallImage = smallImage or wx.EmptyBitmap(*self.smallImageList.GetSize(0))
-        normalImage = normalImage or wx.EmptyBitmap(*self.normalImageList.GetSize(0))
+        # so if we aren't given one, we have to make an empty one of the right
+        # size
+        if 'phoenix' in wx.PlatformInfo:
+            smallImage = smallImage or wx.Bitmap(
+                *self.smallImageList.GetSize(0))
+            normalImage = normalImage or wx.Bitmap(
+                *self.normalImageList.GetSize(0))
+        else:
+            smallImage = smallImage or wx.EmptyBitmap(
+                *self.smallImageList.GetSize(0))
+            normalImage = normalImage or wx.EmptyBitmap(
+                *self.normalImageList.GetSize(0))
 
         self.smallImageList.AddNamedImage(name, smallImage)
         return self.normalImageList.AddNamedImage(name, normalImage)
-
 
     def AutoSizeColumns(self):
         """
@@ -574,6 +632,7 @@ class ObjectListView(wx.ListCtrl):
                 if colWidth != boundedWidth:
                     self.SetColumnWidth(iCol, boundedWidth)
 
+        self._ResizeSpaceFillingColumns()
 
     def Check(self, modelObject):
         """
@@ -581,14 +640,12 @@ class ObjectListView(wx.ListCtrl):
         """
         self.SetCheckState(modelObject, True)
 
-
     def ClearAll(self):
         """
         Remove all items and columns
         """
         wx.ListCtrl.ClearAll(self)
         self.SetObjects(list())
-
 
     def CopyObjectsToClipboard(self, objects):
         """
@@ -604,12 +661,12 @@ class ObjectListView(wx.ListCtrl):
         rows = self._GetValuesAsMultiList(objects)
 
         # Make a text version of the values
-        lines = [ "\t".join(x) for x in rows ]
+        lines = ["\t".join(x) for x in rows]
         txt = "\n".join(lines) + "\n"
 
         # Make a html version on Windows
         try:
-            lines = [ "<td>" + "</td><td>".join(x) + "</td>" for x in rows ]
+            lines = ["<td>" + "</td><td>".join(x) + "</td>" for x in rows]
             html = "<table><tr>" + "</tr><tr>".join(lines) + "</tr></table>"
             self._PutTextAndHtmlToClipboard(txt, html)
         except ImportError:
@@ -628,7 +685,6 @@ class ObjectListView(wx.ListCtrl):
             cols.remove(self.checkStateColumn)
         return [[column.GetStringValue(x) for column in cols] for x in objects]
 
-
     def _PutTextAndHtmlToClipboard(self, txt, fragment):
         """
         Put the given text and html into the windows clipboard.
@@ -639,7 +695,7 @@ class ObjectListView(wx.ListCtrl):
         import win32clipboard
 
         MARKER_BLOCK_OUTPUT = \
-            "Version:1.0\r\n" \
+            "Version:1.3\r\n" \
             "StartHTML:%09d\r\n" \
             "EndHTML:%09d\r\n" \
             "StartFragment:%09d\r\n" \
@@ -653,7 +709,7 @@ class ObjectListView(wx.ListCtrl):
             "<HTML><HEAD></HEAD><BODY><!--StartFragment-->%s<!--EndFragment--></BODY></HTML>"
 
         html = DEFAULT_HTML_BODY % fragment
-        source = "http://objectlistview.sourceforge.net/python"
+        source = "https://bitbucket.org/wbruhin/objectlistview/downloads"
 
         fragmentStart = selectionStart = html.index(fragment)
         fragmentEnd = selectionEnd = fragmentStart + len(fragment)
@@ -662,10 +718,10 @@ class ObjectListView(wx.ListCtrl):
         dummyPrefix = MARKER_BLOCK_OUTPUT % (0, 0, 0, 0, 0, 0, source)
         lenPrefix = len(dummyPrefix)
 
-        prefix = MARKER_BLOCK_OUTPUT % (lenPrefix, len(html)+lenPrefix,
-                        fragmentStart+lenPrefix, fragmentEnd+lenPrefix,
-                        selectionStart+lenPrefix, selectionEnd+lenPrefix,
-                        source)
+        prefix = MARKER_BLOCK_OUTPUT % (
+            lenPrefix, len(html) + lenPrefix, fragmentStart + lenPrefix,
+            fragmentEnd + lenPrefix, selectionStart + lenPrefix, selectionEnd +
+            lenPrefix, source)
         htmlForClipboard = (prefix + html)
 
         try:
@@ -678,13 +734,11 @@ class ObjectListView(wx.ListCtrl):
         finally:
             win32clipboard.CloseClipboard()
 
-
     def CopySelectionToClipboard(self):
         """
         Copy the selected objects to the clipboard
         """
         self.CopyObjectsToClipboard(self.GetSelectedObjects())
-
 
     def DeleteAllItems(self):
         """
@@ -692,7 +746,6 @@ class ObjectListView(wx.ListCtrl):
         """
         wx.ListCtrl.DeleteAllItems(self)
         self.SetObjects(list())
-
 
     def EnsureCellVisible(self, rowIndex, subItemIndex):
         """
@@ -704,20 +757,23 @@ class ObjectListView(wx.ListCtrl):
         If the cell is bigger than the ListView, the top left of the cell will be visible.
         """
         self.EnsureVisible(rowIndex)
-        bounds = self.GetSubItemRect(rowIndex, subItemIndex, wx.LIST_RECT_BOUNDS)
-        boundsRight = bounds[0]+bounds[2]
+        bounds = self.GetSubItemRect(
+            rowIndex,
+            subItemIndex,
+            wx.LIST_RECT_BOUNDS)
+        boundsRight = bounds[0] + bounds[2]
         if bounds[0] < 0 or boundsRight > self.GetSize()[0]:
             if bounds[0] < 0:
                 horizDelta = bounds[0] - (self.GetSize()[0] / 4)
             else:
-                horizDelta = boundsRight - self.GetSize()[0] + (self.GetSize()[0] / 4)
+                horizDelta = boundsRight - self.GetSize()[0] + (
+                    self.GetSize()[0] / 4)
             if wx.Platform == "__WXMSW__":
                 self.ScrollList(horizDelta, 0)
             else:
                 return None
 
         return self.GetSubItemRect(rowIndex, subItemIndex, wx.LIST_RECT_LABEL)
-
 
     def _FormatAllRows(self):
         """
@@ -727,7 +783,6 @@ class ObjectListView(wx.ListCtrl):
             item = self.GetItem(i)
             self._FormatOneItem(item, i, self.GetObjectAt(i))
             self.SetItem(item)
-
 
     def _FormatOneItem(self, item, index, model):
         """
@@ -741,7 +796,6 @@ class ObjectListView(wx.ListCtrl):
 
         if self.rowFormatter is not None:
             self.rowFormatter(item, model)
-
 
     def RepopulateList(self):
         """
@@ -762,22 +816,20 @@ class ObjectListView(wx.ListCtrl):
             # Insert all the rows
             item = wx.ListItem()
             item.SetColumn(0)
-            for (i, x) in enumerate(self.innerList):
+            for (index, model) in enumerate(self.innerList):
                 item.Clear()
-                self._InsertUpdateItem(item, i, x, True)
+                self._InsertUpdateItem(item, index, model, True)
 
             # Auto-resize once all the data has been added
             self.AutoSizeColumns()
         finally:
             self.Thaw()
 
-
     def RefreshIndex(self, index, modelObject):
         """
         Refresh the item at the given index with data associated with the given object
         """
         self._InsertUpdateItem(self.GetItem(index), index, modelObject, False)
-
 
     def _InsertUpdateItem(self, listItem, index, modelObject, isInsert):
         if isInsert:
@@ -794,9 +846,16 @@ class ObjectListView(wx.ListCtrl):
             self.SetItem(listItem)
 
         for iCol in range(1, len(self.columns)):
-            self.SetStringItem(index, iCol, self.GetStringValueAt(modelObject, iCol),
-                               self.GetImageAt(modelObject, iCol))
-
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItem(
+                    index, iCol, self.GetStringValueAt(
+                        modelObject, iCol), self.GetImageAt(
+                        modelObject, iCol))
+            else:
+                self.SetStringItem(
+                    index, iCol, self.GetStringValueAt(
+                        modelObject, iCol), self.GetImageAt(
+                        modelObject, iCol))
 
     def RefreshObject(self, modelObject):
         """
@@ -805,7 +864,6 @@ class ObjectListView(wx.ListCtrl):
         idx = self.GetIndexOf(modelObject)
         if idx != -1:
             self.RefreshIndex(self._MapModelIndexToListIndex(idx), modelObject)
-
 
     def RefreshObjects(self, aList):
         """
@@ -818,13 +876,11 @@ class ObjectListView(wx.ListCtrl):
         finally:
             self.Thaw()
 
-
     def RemoveObject(self, modelObject):
         """
         Remove the given object from our collection of objects.
         """
         self.RemoveObjects([modelObject])
-
 
     def RemoveObjects(self, modelObjects):
         """
@@ -851,13 +907,13 @@ class ObjectListView(wx.ListCtrl):
         self.RepopulateList()
         self.SelectObjects(selection)
 
-
     def _ResizeSpaceFillingColumns(self):
         """
         Change the width of space filling columns so that they fill the
         unoccupied width of the listview
         """
-        # If the list isn't in report view or there are no space filling columns, just return
+        # If the list isn't in report view or there are no space filling
+        # columns, just return
         if not self.InReportView():
             return
 
@@ -866,12 +922,24 @@ class ObjectListView(wx.ListCtrl):
             return
 
         # Calculate how much free space is available in the control
-        totalFixedWidth = sum(self.GetColumnWidth(i) for (i, x) in enumerate(self.columns)
-                              if not x.isSpaceFilling)
-        freeSpace = max(0, self.GetClientSizeTuple()[0] - totalFixedWidth)
+        totalFixedWidth = sum(
+            self.GetColumnWidth(i) for (
+                i, x) in enumerate(
+                self.columns) if not x.isSpaceFilling)
+        # if wx.Platform == "__WXGTK__":
+        #    clientSize = self.MainWindow.GetClientSizeTuple()[0]
+        # else:
+        #    clientSize = self.GetClientSizeTuple()[0]
+        #freeSpace = max(0, clientSize - totalFixedWidth)
+        if 'phoenix' in wx.PlatformInfo:
+            freeSpace = max(0, self.GetClientSize()[0] - totalFixedWidth)
+        else:
+            freeSpace = max(0, self.GetClientSizeTuple()[0] - totalFixedWidth)
 
-        # Calculate the total number of slices the free space will be divided into
-        totalProportion = sum(x.freeSpaceProportion for x in self.columns if x.isSpaceFilling)
+        # Calculate the total number of slices the free space will be divided
+        # into
+        totalProportion = sum(
+            x.freeSpaceProportion for x in self.columns if x.isSpaceFilling)
 
         # Space filling columns that would escape their boundary conditions
         # are treated as fixed size columns
@@ -888,13 +956,13 @@ class ObjectListView(wx.ListCtrl):
                     if self.GetColumnWidth(i) != boundedWidth:
                         self.SetColumnWidth(i, boundedWidth)
 
-        # Finally, give each remaining space filling column a proportion of the free space
+        # Finally, give each remaining space filling column a proportion of the
+        # free space
         for (i, col) in columnsToResize:
             newWidth = freeSpace * col.freeSpaceProportion / totalProportion
             boundedWidth = col.CalcBoundedWidth(newWidth)
             if self.GetColumnWidth(i) != boundedWidth:
                 self.SetColumnWidth(i, boundedWidth)
-
 
     def SetCheckState(self, modelObject, state):
         """
@@ -907,7 +975,6 @@ class ObjectListView(wx.ListCtrl):
         else:
             return self.checkStateColumn.SetCheckState(modelObject, state)
 
-
     def SetColumnFixedWidth(self, colIndex, width):
         """
         Make the given column to be fixed width
@@ -916,20 +983,17 @@ class ObjectListView(wx.ListCtrl):
             self.SetColumnWidth(colIndex, width)
             self.columns[colIndex].SetFixedWidth(width)
 
-
     def SetEmptyListMsg(self, msg):
         """
         When there are no objects in the list, show this message in the control
         """
         self.stEmptyListMsg.SetLabel(msg)
 
-
     def SetEmptyListMsgFont(self, font):
         """
         In what font should the empty list msg be rendered?
         """
         self.stEmptyListMsg.SetFont(font)
-
 
     def SetObjects(self, modelObjects, preserveSelection=False):
         """
@@ -948,10 +1012,8 @@ class ObjectListView(wx.ListCtrl):
         if preserveSelection:
             self.SelectObjects(selection)
 
-
     # Synonym as per many wxWindows widgets
     SetValue = SetObjects
-
 
     def _BuildInnerList(self):
         """
@@ -966,7 +1028,6 @@ class ObjectListView(wx.ListCtrl):
         # Our map isn't valid after doing this
         self.objectToIndexMap = None
 
-
     def ToggleCheck(self, modelObject):
         """
         Toggle the "checkedness" of the given model.
@@ -975,14 +1036,13 @@ class ObjectListView(wx.ListCtrl):
         """
         self.SetCheckState(modelObject, not self.IsChecked(modelObject))
 
-
     def Uncheck(self, modelObject):
         """
         Mark the given model object as unchecked.
         """
         self.SetCheckState(modelObject, False)
 
-    #--------------------------------------------------------------#000000#FFFFFF
+    # --------------------------------------------------------------#000000#FFFFFF
     # Accessing
 
     def GetCheckedObjects(self):
@@ -993,7 +1053,6 @@ class ObjectListView(wx.ListCtrl):
             return list()
         else:
             return [x for x in self.innerList if self.IsChecked(x)]
-
 
     def GetCheckState(self, modelObject):
         """
@@ -1006,13 +1065,11 @@ class ObjectListView(wx.ListCtrl):
         else:
             return self.checkStateColumn.GetCheckState(modelObject)
 
-
     def GetFilter(self):
         """
         Return the filter that is currently operating on this control.
         """
         return self.filter
-
 
     def GetFilteredObjects(self):
         """
@@ -1022,13 +1079,11 @@ class ObjectListView(wx.ListCtrl):
         """
         return self.innerList
 
-
     def GetFocusedRow(self):
         """
         Return the index of the row that has the focus. -1 means no focus
         """
         return self.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_FOCUSED)
-
 
     def GetIndexOf(self, modelObject):
         """
@@ -1057,7 +1112,6 @@ class ObjectListView(wx.ListCtrl):
             except ValueError:
                 return -1
 
-
     def GetImageAt(self, modelObject, columnIndex):
         """
         Return the index of the image that should be display at the given column of the given modelObject
@@ -1076,11 +1130,10 @@ class ObjectListView(wx.ListCtrl):
 
         # Not a checkbox column, so just return the image
         imageIndex = column.GetImage(modelObject)
-        if isinstance(imageIndex, basestring):
+        if isinstance(imageIndex, six.string_types):
             return self.smallImageList.GetImageIndex(imageIndex)
         else:
             return imageIndex
-
 
     def GetObjectAt(self, index):
         """
@@ -1090,13 +1143,11 @@ class ObjectListView(wx.ListCtrl):
         # why we set the item data to be the real index
         return self.innerList[self.GetItemData(index)]
 
-
     def __getitem__(self, index):
         """
         Synactic sugar over GetObjectAt()
         """
         return self.GetObjectAt(index)
-
 
     def GetObjects(self):
         """
@@ -1105,7 +1156,6 @@ class ObjectListView(wx.ListCtrl):
         If no filter is in effect, this is the same as GetFilteredObjects().
         """
         return self.modelObjects
-
 
     def GetPrimaryColumn(self):
         """
@@ -1120,7 +1170,6 @@ class ObjectListView(wx.ListCtrl):
         else:
             return self.columns[i]
 
-
     def GetPrimaryColumnIndex(self):
         """
         Return the index of the primary column. Returns -1 when there is no primary column.
@@ -1133,7 +1182,6 @@ class ObjectListView(wx.ListCtrl):
                 return i
 
         return -1
-
 
     def GetSelectedObject(self):
         """
@@ -1148,23 +1196,21 @@ class ObjectListView(wx.ListCtrl):
                 break
         return model
 
-
     def GetSelectedObjects(self):
         """
         Return a list of the selected modelObjects
         """
         return list(self.YieldSelectedObjects())
 
-
     def GetSortColumn(self):
         """
         Return the column by which the rows of this control should be sorted
         """
-        if self.sortColumnIndex < 0 or self.sortColumnIndex >= len(self.columns):
+        if self.sortColumnIndex < 0 or self.sortColumnIndex >= len(
+                self.columns):
             return None
         else:
             return self.columns[self.sortColumnIndex]
-
 
     def GetStringValueAt(self, modelObject, columnIndex):
         """
@@ -1173,7 +1219,6 @@ class ObjectListView(wx.ListCtrl):
         column = self.columns[columnIndex]
         return column.GetStringValue(modelObject)
 
-
     def GetValueAt(self, modelObject, columnIndex):
         """
         Return the value that should be display at the given column of the given modelObject
@@ -1181,27 +1226,23 @@ class ObjectListView(wx.ListCtrl):
         column = self.columns[columnIndex]
         return column.GetValue(modelObject)
 
-
     def IsCellEditing(self):
         """
         Is some cell currently being edited?
         """
         return self.cellEditor and self.cellEditor.IsShown()
 
-
     def IsChecked(self, modelObject):
         """
         Return a boolean indicating if the given modelObject is checked.
         """
-        return self.GetCheckState(modelObject) == True
-
+        return self.GetCheckState(modelObject)
 
     def IsObjectSelected(self, modelObject):
         """
         Is the given modelObject selected?
         """
         return modelObject in self.GetSelectedObjects()
-
 
     def SetFilter(self, filter):
         """
@@ -1217,7 +1258,6 @@ class ObjectListView(wx.ListCtrl):
         You must call RepopulateList() for changes to the filter to be visible.
         """
         self.filter = filter
-
 
     def SetSortColumn(self, column, resortNow=False):
         """
@@ -1240,7 +1280,6 @@ class ObjectListView(wx.ListCtrl):
         else:
             self._UpdateColumnSortIndicators()
 
-
     def YieldSelectedObjects(self):
         """
         Progressively yield the selected modelObjects
@@ -1250,8 +1289,7 @@ class ObjectListView(wx.ListCtrl):
             yield self.GetObjectAt(i)
             i = self.GetNextItem(i, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Calculating
 
     def GetSubItemRect(self, rowIndex, subItemIndex, flag):
@@ -1261,15 +1299,22 @@ class ObjectListView(wx.ListCtrl):
         The rect returned takes scroll position into account, so negative x and y are
         possible.
         """
-        #print "GetSubItemRect(self, %d, %d, %d):" % (rowIndex, subItemIndex, flag)
+        # print "GetSubItemRect(self, %d, %d, %d):" % (rowIndex, subItemIndex,
+        # flag)
 
         # Linux doesn't handle wx.LIST_RECT_LABEL flag. So we always get
         # the whole bounds then par it down to the cell we want
         rect = self.GetItemRect(rowIndex, wx.LIST_RECT_BOUNDS)
 
         if self.InReportView():
-            rect = [0-self.GetScrollPos(wx.HORIZONTAL), rect.Y, 0, rect.Height]
-            for i in range(subItemIndex+1):
+            rect = [
+                0 -
+                self.GetScrollPos(
+                    wx.HORIZONTAL),
+                rect.Y,
+                0,
+                rect.Height]
+            for i in range(subItemIndex + 1):
                 rect[0] += rect[2]
                 rect[2] = self.GetColumnWidth(i)
 
@@ -1287,9 +1332,8 @@ class ObjectListView(wx.ListCtrl):
                     rect[0] += imageWidth
                     rect[2] -= imageWidth
 
-        #print "rect=%s" % rect
+        # print "rect=%s" % rect
         return rect
-
 
     def HitTestSubItem(self, pt):
         """
@@ -1307,7 +1351,8 @@ class ObjectListView(wx.ListCtrl):
         if (flags & wx.LIST_HITTEST_ONITEM) == 0:
             return (-1, 0, -1)
 
-        # If it did hit an item and we are not in report mode, it must be the primary cell
+        # If it did hit an item and we are not in report mode, it must be the
+        # primary cell
         if not self.InReportView():
             return (rowIndex, wx.LIST_HITTEST_ONITEM, 0)
 
@@ -1327,36 +1372,58 @@ class ObjectListView(wx.ListCtrl):
         return (rowIndex, 0, -1)
 
 
-    #----------------------------------------------------------------------------
+    # ----------------------------------------------------------------------
+    # Utilities
+
+    def _IsPrintable(self, char):
+        """
+        Check if char is printable using unicodedata as string.isPrintable
+        is only available in Py3.
+        """
+        cat = unicodedata.category(char)
+        if cat[0] == "L":
+            return True
+        else:
+            return False
+
+
+    #-------------------------------------------------------------------------
     # Event handling
 
     def _HandleChar(self, evt):
         if evt.GetKeyCode() == wx.WXK_F2 and not self.IsCellEditing():
-            return self._PossibleStartCellEdit(self.GetFocusedRow(), self.GetPrimaryColumnIndex())
+            return self._PossibleStartCellEdit(
+                self.GetFocusedRow(),
+                self.GetPrimaryColumnIndex())
 
         # We have to catch Return/Enter/Escape here since some types of controls
         # (e.g. ComboBox, UserControl) don't trigger key events that we can listen for.
         # Treat Return or Enter as committing the current edit operation unless the control
         # is a multiline text control, in which case we treat it as data
-        if evt.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and self.IsCellEditing():
+        if evt.GetKeyCode() in (
+                wx.WXK_RETURN,
+                wx.WXK_NUMPAD_ENTER) and self.IsCellEditing():
             if self.cellEditor and self.cellEditor.HasFlag(wx.TE_MULTILINE):
                 return evt.Skip()
             else:
                 return self.FinishCellEdit()
 
         # Treat Escape as cancel the current edit operation
-        if evt.GetKeyCode() in (wx.WXK_ESCAPE, wx.WXK_CANCEL) and self.IsCellEditing():
+        if evt.GetKeyCode() in (
+                wx.WXK_ESCAPE,
+                wx.WXK_CANCEL) and self.IsCellEditing():
             return self.CancelCellEdit()
 
         # Tab to the next editable column
         if evt.GetKeyCode() == wx.WXK_TAB and self.IsCellEditing():
             return self._HandleTabKey(evt.ShiftDown())
 
-        # Space bar with a selection on a listview with checkboxes toggles the checkboxes
+        # Space bar with a selection on a listview with checkboxes toggles the
+        # checkboxes
         if (evt.GetKeyCode() == wx.WXK_SPACE and
-            not self.IsCellEditing() and
-            self.checkStateColumn is not None and
-            self.GetSelectedItemCount() > 0):
+                not self.IsCellEditing() and
+                self.checkStateColumn is not None and
+                self.GetSelectedItemCount() > 0):
             return self._ToggleCheckBoxForSelection()
 
         if not self.IsCellEditing():
@@ -1375,7 +1442,6 @@ class ObjectListView(wx.ListCtrl):
                 return
 
         evt.Skip()
-
 
     def _HandleTypingEvent(self, evt):
         """
@@ -1396,20 +1462,29 @@ class ObjectListView(wx.ListCtrl):
         # On which column are we going to compare values? If we should search on the
         # sorted column, and there is a sorted column and it is searchable, we use that
         # one, otherwise we fallback to the primary column
-        if self.typingSearchesSortColumn and self.GetSortColumn() and self.GetSortColumn().isSearchable:
+        if self.typingSearchesSortColumn and self.GetSortColumn(
+        ) and self.GetSortColumn().isSearchable:
             searchColumn = self.GetSortColumn()
         else:
             searchColumn = self.GetPrimaryColumn()
 
-        # On Linux, GetUnicodeKey() always returns 0 -- on my 2.8.7.1 (gtk2-unicode)
-        if evt.GetUnicodeKey() == 0:
-            uniChar = chr(evt.GetKeyCode())
+        # On Linux, GetUnicodeKey() always returns 0 -- on my 2.8.7.1
+        # (gtk2-unicode)
+        uniKey = evt.UnicodeKey
+        if uniKey == 0:
+            uniChar = six.unichr(evt.KeyCode)
         else:
-            uniChar = unichr(evt.GetUnicodeKey())
-        if uniChar not in string.printable:
+            # on some versions of wxPython UnicodeKey returns the character
+            # on others it is an integer
+            if isinstance(uniKey, int):
+                uniChar = six.unichr(uniKey)
+            else:
+                uniChar = uniKey
+        if not self._IsPrintable(uniChar):
             return False
 
-        # On Linux, evt.GetTimestamp() isn't reliable so use time.time() instead
+        # On Linux, evt.GetTimestamp() isn't reliable so use time.time()
+        # instead
         timeNow = time.time()
         if (timeNow - self.whenLastTypingEvent) > self.SEARCH_KEYSTROKE_DELAY:
             self.searchPrefix = uniChar
@@ -1419,7 +1494,8 @@ class ObjectListView(wx.ListCtrl):
 
         #self.__rows = 0
         self._FindByTyping(searchColumn, self.searchPrefix)
-        #print "Considered %d rows in %2f secs" % (self.__rows, time.time() - timeNow)
+        # print "Considered %d rows in %2f secs" % (self.__rows, time.time() -
+        # timeNow)
 
         return True
 
@@ -1430,13 +1506,18 @@ class ObjectListView(wx.ListCtrl):
         """
         start = max(self.GetFocusedRow(), 0)
 
-        # If the user is starting a new search, we don't want to consider the current row
+        # If the user is starting a new search, we don't want to consider the
+        # current row
         if len(prefix) == 1:
             start = (start + 1) % self.GetItemCount()
 
         # If we are searching on a sorted column, use a binary search
         if self._CanUseBisect(searchColumn):
-            if self._FindByBisect(searchColumn, prefix, start, self.GetItemCount()):
+            if self._FindByBisect(
+                    searchColumn,
+                    prefix,
+                    start,
+                    self.GetItemCount()):
                 return
             if self._FindByBisect(searchColumn, prefix, 0, start):
                 return
@@ -1466,7 +1547,8 @@ class ObjectListView(wx.ListCtrl):
         """
         Return True if we can use binary search on the given column
         """
-        # If the list isn't sorted or if it's sorted by some other column, we can't
+        # If the list isn't sorted or if it's sorted by some other column, we
+        # can't
         if self.GetSortColumn() != searchColumn:
             return False
 
@@ -1475,7 +1557,8 @@ class ObjectListView(wx.ListCtrl):
         # know that the list isn't empty.
         if searchColumn.useBinarySearch is None:
             aspect = searchColumn.GetValue(self.GetObjectAt(0))
-            searchColumn.useBinarySearch = isinstance(aspect, (basestring, bool))
+            searchColumn.useBinarySearch = isinstance(
+                aspect, (six.string_types, bool))
 
         return searchColumn.useBinarySearch
 
@@ -1506,7 +1589,7 @@ class ObjectListView(wx.ListCtrl):
             if cmpFunc(searchFor, strValue.lower()):
                 hi = mid
             else:
-                lo = mid+1
+                lo = mid + 1
 
         if lo < start or lo >= end:
             return False
@@ -1531,6 +1614,8 @@ class ObjectListView(wx.ListCtrl):
         Toggles the checkedness of the selected modelObjects.
         """
         selection = self.GetSelectedObjects()
+        if not selection:
+            return
         newValue = not self.IsChecked(selection[0])
         for x in selection:
             self.SetCheckState(x, newValue)
@@ -1551,7 +1636,6 @@ class ObjectListView(wx.ListCtrl):
             else:
                 evt.Skip()
 
-
     def _HandleColumnClick(self, evt):
         """
         The user has clicked on a column title
@@ -1566,8 +1650,6 @@ class ObjectListView(wx.ListCtrl):
             self.sortAscending = True
 
         self.SortBy(evt.GetColumn(), self.sortAscending)
-        self._FormatAllRows()
-
 
     def _HandleColumnDragging(self, evt):
         """
@@ -1577,7 +1659,6 @@ class ObjectListView(wx.ListCtrl):
 
         # The processing should be the same processing as Dragged
         evt.Skip()
-
 
     def _HandleColumnEndDrag(self, evt):
         """
@@ -1601,7 +1682,6 @@ class ObjectListView(wx.ListCtrl):
         self.SetColumnWidth(colIndex, newWidth)
         self._ResizeSpaceFillingColumns()
 
-
     def _HandleLeftDown(self, evt):
         """
         Handle a left down on the ListView
@@ -1618,7 +1698,6 @@ class ObjectListView(wx.ListCtrl):
         if flags == wx.LIST_HITTEST_ONITEMICON:
             self._HandleLeftDownOnImage(row, subitem)
 
-
     def _HandleLeftDownOnImage(self, rowIndex, subItemIndex):
         """
         Handle a left click on the image at the given cell
@@ -1630,33 +1709,38 @@ class ObjectListView(wx.ListCtrl):
         self._PossibleFinishCellEdit()
         modelObject = self.GetObjectAt(rowIndex)
         if modelObject is not None:
-            column.SetCheckState(modelObject, not column.GetCheckState(modelObject))
+            column.SetCheckState(
+                modelObject,
+                not column.GetCheckState(modelObject))
             self.RefreshIndex(rowIndex, modelObject)
-
 
     def _HandleLeftClickOrDoubleClick(self, evt):
         """
         Handle a left click or left double click on the ListView
         """
         evt.Skip()
-        
+
         # IF any modifiers are down, OR
         #    the listview isn't editable, OR
         #    we should edit on double click and this is a single click, OR
         #    we should edit on single click and this is a double click,
-        # THEN we don't try to start a cell edit operation        
-##        if evt.m_altDown or evt.m_controlDown or evt.m_shiftDown:
-##        if evt.AltDown or evt.ControlDown or evt.ShiftDown:
-##            return
+        # THEN we don't try to start a cell edit operation
+        if wx.VERSION > (2, 9, 1, 0):
+            if evt.altDown or evt.controlDown or evt.shiftDown:
+                return
+        else:
+            if evt.m_altDown or evt.m_controlDown or evt.m_shiftDown:
+                return
         if self.cellEditMode == self.CELLEDIT_NONE:
             return
         if evt.LeftUp() and self.cellEditMode == self.CELLEDIT_DOUBLECLICK:
             return
         if evt.LeftDClick() and self.cellEditMode == self.CELLEDIT_SINGLECLICK:
             return
-        
+
         # Which item did the user click?
-        (rowIndex, flags, subItemIndex) = self.HitTestSubItem(evt.GetPosition())
+        (rowIndex, flags, subItemIndex) = self.HitTestSubItem(
+            evt.GetPosition())
         if (flags & wx.LIST_HITTEST_ONITEM) == 0 or subItemIndex == -1:
             return
 
@@ -1666,7 +1750,6 @@ class ObjectListView(wx.ListCtrl):
 
         self._PossibleStartCellEdit(rowIndex, subItemIndex)
 
-
     def _HandleMouseWheel(self, evt):
         """
         The user spun the mouse wheel
@@ -1674,14 +1757,12 @@ class ObjectListView(wx.ListCtrl):
         self._PossibleFinishCellEdit()
         evt.Skip()
 
-
     def _HandleScroll(self, evt):
         """
         The ListView is being scrolled
         """
         self._PossibleFinishCellEdit()
         evt.Skip()
-
 
     def _HandleSize(self, evt):
         """
@@ -1692,9 +1773,15 @@ class ObjectListView(wx.ListCtrl):
         self._ResizeSpaceFillingColumns()
         # Make sure our empty msg is reasonably positioned
         sz = self.GetClientSize()
-        self.stEmptyListMsg.SetDimensions(0, sz.GetHeight()/3, sz.GetWidth(), sz.GetHeight())
-        #self.stEmptyListMsg.Wrap(sz.GetWidth())
-
+        if 'phoenix' in wx.PlatformInfo:
+            self.stEmptyListMsg.SetSize(0, sz.GetHeight() / 3,
+                                        sz.GetWidth(),
+                                        sz.GetHeight())
+        else:
+            self.stEmptyListMsg.SetDimensions(0, sz.GetHeight() / 3,
+                                              sz.GetWidth(),
+                                              sz.GetHeight())
+        # self.stEmptyListMsg.Wrap(sz.GetWidth())
 
     def _HandleTabKey(self, isShiftDown):
         """
@@ -1703,7 +1790,8 @@ class ObjectListView(wx.ListCtrl):
         (rowBeingEdited, subItem) = self.cellBeingEdited
 
         # Prevent a nasty flicker when tabbing between fields where the selected rows
-        # are restored at the end of one cell edit, and removed at the start of the next
+        # are restored at the end of one cell edit, and removed at the start of
+        # the next
         shadowSelection = self.selectionBeforeCellEdit
         self.selectionBeforeCellEdit = []
         self.FinishCellEdit()
@@ -1712,19 +1800,19 @@ class ObjectListView(wx.ListCtrl):
         # wrapping at the edges
         if self.HasFlag(wx.LC_REPORT):
             columnCount = self.GetColumnCount()
-            for ignored in range(columnCount-1):
+            for ignored in range(columnCount - 1):
                 if isShiftDown:
                     subItem = (columnCount + subItem - 1) % columnCount
                 else:
                     subItem = (subItem + 1) % columnCount
-                if self.columns[subItem].isEditable and self.GetColumnWidth(subItem) > 0:
+                if self.columns[subItem].isEditable and self.GetColumnWidth(
+                        subItem) > 0:
                     self.StartCellEdit(rowBeingEdited, subItem)
                     break
 
         self.selectionBeforeCellEdit = shadowSelection
 
-
-    #--------------------------------------------------------------#000000#FFFFFF
+    # --------------------------------------------------------------#000000#FFFFFF
     # Sorting
 
     def EnableSorting(self):
@@ -1737,9 +1825,8 @@ class ObjectListView(wx.ListCtrl):
         if self.smallImageList is None:
             self.SetImageLists()
         if (not self.smallImageList.HasName(ObjectListView.NAME_DOWN_IMAGE) and
-            self.smallImageList.GetSize(0) == (16,16)):
+                self.smallImageList.GetSize(0) == (16, 16)):
             self.RegisterSortIndicators()
-
 
     def SortBy(self, newColumnIndex, ascending=True):
         """
@@ -1749,8 +1836,13 @@ class ObjectListView(wx.ListCtrl):
         self.sortColumnIndex = newColumnIndex
         self.sortAscending = ascending
 
-        # Let the world have a chance to sort the items
-        evt = OLVEvent.SortEvent(self, self.sortColumnIndex, self.sortAscending, self.IsVirtual())
+        # fire a SortEvent that can be catched by a OLV-using developer
+        # who Bind() to this event
+        evt = OLVEvent.SortEvent(
+            self,
+            self.sortColumnIndex,
+            self.sortAscending,
+            self.IsVirtual())
         self.GetEventHandler().ProcessEvent(evt)
         if evt.IsVetoed():
             return
@@ -1758,8 +1850,12 @@ class ObjectListView(wx.ListCtrl):
         if not evt.wasHandled:
             self._SortItemsNow()
 
-        self._UpdateColumnSortIndicators(self.sortColumnIndex, oldSortColumnIndex)
+        self._UpdateColumnSortIndicators(
+            self.sortColumnIndex,
+            oldSortColumnIndex)
 
+        # set the row background colour
+        self._FormatAllRows()
 
     def _SortItemsNow(self):
         """
@@ -1769,7 +1865,7 @@ class ObjectListView(wx.ListCtrl):
         if not sortColumn:
             return
 
-        secondarySortColumn = None # self.GetSecondarySortColumn()
+        secondarySortColumn = None  # self.GetSecondarySortColumn()
 
         def _singleObjectComparer(col, object1, object2):
             value1 = col.GetValue(object1)
@@ -1782,11 +1878,13 @@ class ObjectListView(wx.ListCtrl):
         def _objectComparer(object1, object2):
             result = _singleObjectComparer(sortColumn, object1, object2)
             if secondarySortColumn and result == 0:
-                result = _singleObjectComparer(secondarySortColumn, object1, object2)
+                result = _singleObjectComparer(
+                    secondarySortColumn,
+                    object1,
+                    object2)
             return result
 
         self.SortListItemsBy(_objectComparer)
-
 
     def SortListItemsBy(self, cmpFunc, ascending=None):
         """
@@ -1809,8 +1907,11 @@ class ObjectListView(wx.ListCtrl):
 
         self.SortItems(_sorter)
 
-
-    def _SortObjects(self, modelObjects=None, sortColumn=None, secondarySortColumn=None):
+    def _SortObjects(
+            self,
+            modelObjects=None,
+            sortColumn=None,
+            secondarySortColumn=None):
         """
         Sort the given modelObjects in place.
 
@@ -1828,7 +1929,11 @@ class ObjectListView(wx.ListCtrl):
             return
 
         # Let the world have a chance to sort the model objects
-        evt = OLVEvent.SortEvent(self, self.sortColumnIndex, self.sortAscending, True)
+        evt = OLVEvent.SortEvent(
+            self,
+            self.sortColumnIndex,
+            self.sortAscending,
+            True)
         self.GetEventHandler().ProcessEvent(evt)
         if evt.IsVetoed() or evt.wasHandled:
             return
@@ -1857,8 +1962,11 @@ class ObjectListView(wx.ListCtrl):
         # Sorting invalidates our object map
         self.objectToIndexMap = None
 
-
-    def _UpdateColumnSortIndicators(self, sortColumnIndex=None, oldSortColumnIndex=-1):
+    def _UpdateColumnSortIndicators(
+            self,
+            sortColumnIndex=None,
+            oldSortColumnIndex=-
+            1):
         """
         Change the column that is showing a sort indicator
         """
@@ -1867,21 +1975,24 @@ class ObjectListView(wx.ListCtrl):
         # Remove the sort indicator from the old sort column
         if oldSortColumnIndex >= 0:
             headerImage = self.columns[oldSortColumnIndex].headerImage
-            if isinstance(headerImage, basestring) and self.smallImageList is not None:
+            if isinstance(
+                    headerImage,
+                    six.string_types) and self.smallImageList is not None:
                 headerImage = self.smallImageList.GetImageIndex(headerImage)
             self.SetColumnImage(oldSortColumnIndex, headerImage)
 
         if sortColumnIndex >= 0 and self.smallImageList is not None:
             if self.sortAscending:
-                imageIndex = self.smallImageList.GetImageIndex(ObjectListView.NAME_UP_IMAGE)
+                imageIndex = self.smallImageList.GetImageIndex(
+                    ObjectListView.NAME_UP_IMAGE)
             else:
-                imageIndex = self.smallImageList.GetImageIndex(ObjectListView.NAME_DOWN_IMAGE)
+                imageIndex = self.smallImageList.GetImageIndex(
+                    ObjectListView.NAME_DOWN_IMAGE)
 
             if imageIndex != -1:
                 self.SetColumnImage(sortColumnIndex, imageIndex)
 
-
-    #--------------------------------------------------------------#000000#FFFFFF
+    # --------------------------------------------------------------#000000#FFFFFF
     # Selecting
 
     def SelectAll(self):
@@ -1891,7 +2002,6 @@ class ObjectListView(wx.ListCtrl):
         # -1 indicates 'all items'
         self.SetItemState(-1, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
-
     def DeselectAll(self):
         """
         De-selected all rows in the control
@@ -1899,8 +2009,11 @@ class ObjectListView(wx.ListCtrl):
         # -1 indicates 'all items'
         self.SetItemState(-1, 0, wx.LIST_STATE_SELECTED)
 
-
-    def SelectObject(self, modelObject, deselectOthers=True, ensureVisible=False):
+    def SelectObject(
+            self,
+            modelObject,
+            deselectOthers=True,
+            ensureVisible=False):
         """
         Select the given modelObject. If deselectOthers is True, all other rows will be deselected
         """
@@ -1912,11 +2025,13 @@ class ObjectListView(wx.ListCtrl):
             self.DeselectAll()
 
         realIndex = self._MapModelIndexToListIndex(i)
-        self.SetItemState(realIndex, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+        self.SetItemState(
+            realIndex,
+            wx.LIST_STATE_SELECTED,
+            wx.LIST_STATE_SELECTED)
 
         if ensureVisible:
             self.EnsureVisible(realIndex)
-
 
     def SelectObjects(self, modelObjects, deselectOthers=True):
         """
@@ -1928,14 +2043,16 @@ class ObjectListView(wx.ListCtrl):
         for x in modelObjects:
             self.SelectObject(x, False)
 
-
     def _MapModelIndexToListIndex(self, modelIndex):
         """
         Return the index in the list where the given model index lives
         """
-        return self.FindItemData(-1, modelIndex)
+        if 'phoenix' in wx.PlatformInfo:
+            return self.FindItem(-1, modelIndex)
+        else:
+            return self.FindItemData(-1, modelIndex)
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Cell editing
 
     def _PossibleStartCellEdit(self, rowIndex, subItemIndex):
@@ -1959,7 +2076,6 @@ class ObjectListView(wx.ListCtrl):
 
         self.StartCellEdit(rowIndex, subItemIndex)
 
-
     def _PossibleFinishCellEdit(self):
         """
         If a cell is being edited, finish and commit an edit operation on the given cell.
@@ -1967,14 +2083,12 @@ class ObjectListView(wx.ListCtrl):
         if self.IsCellEditing():
             self.FinishCellEdit()
 
-
     def _PossibleCancelCellEdit(self):
         """
         If a cell is being edited, cancel the edit operation.
         """
         if self.IsCellEditing():
             self.CancelCellEdit()
-
 
     def StartCellEdit(self, rowIndex, subItemIndex):
         """
@@ -1994,10 +2108,20 @@ class ObjectListView(wx.ListCtrl):
             wx.Bell()
             return
 
-        # Give the world the chance to veto the edit, or to change its characteristics
-        defaultEditor = self._MakeDefaultCellEditor(rowIndex, subItemIndex, cellValue)
-        evt = OLVEvent.CellEditStartingEvent(self, rowIndex, subItemIndex, modelObject,
-                                             cellValue, cellBounds, defaultEditor)
+        # Give the world the chance to veto the edit, or to change its
+        # characteristics
+        defaultEditor = self._MakeDefaultCellEditor(
+            rowIndex,
+            subItemIndex,
+            cellValue)
+        evt = OLVEvent.CellEditStartingEvent(
+            self,
+            rowIndex,
+            subItemIndex,
+            modelObject,
+            cellValue,
+            cellBounds,
+            defaultEditor)
         self.GetEventHandler().ProcessEvent(evt)
         if evt.IsVetoed():
             defaultEditor.Destroy()
@@ -2017,22 +2141,34 @@ class ObjectListView(wx.ListCtrl):
         if evt.shouldConfigureEditor:
             self.cellEditor.SetFocus()
             self.cellEditor.SetValue(evt.cellValue)
-            self._ConfigureCellEditor(self.cellEditor, evt.cellBounds, rowIndex, subItemIndex)
+            self._ConfigureCellEditor(
+                self.cellEditor,
+                evt.cellBounds,
+                rowIndex,
+                subItemIndex)
 
         # Let the world know the cell editing has started
-        evt = OLVEvent.CellEditStartedEvent(self, rowIndex, subItemIndex, modelObject,
-                                             cellValue, cellBounds, defaultEditor)
+        evt = OLVEvent.CellEditStartedEvent(
+            self,
+            rowIndex,
+            subItemIndex,
+            modelObject,
+            cellValue,
+            cellBounds,
+            defaultEditor)
         self.GetEventHandler().ProcessEvent(evt)
 
         self.cellEditor.Show()
         self.cellEditor.Raise()
 
-
     def _ConfigureCellEditor(self, editor, bounds, rowIndex, subItemIndex):
         """
         Perform the normal configuration on the cell editor.
         """
-        editor.SetDimensions(*bounds)
+        if 'phoenix' in wx.PlatformInfo:
+            editor.SetSize(*bounds)
+        else:
+            editor.SetDimensions(*bounds)
 
         colour = self.GetItemBackgroundColour(rowIndex)
         if colour.IsOk():
@@ -2059,7 +2195,6 @@ class ObjectListView(wx.ListCtrl):
         editor.Bind(wx.EVT_COMMAND_ENTER, self._Editor_OnChar)
         editor.Bind(wx.EVT_KILL_FOCUS, self._Editor_KillFocus)
 
-
     def _MakeDefaultCellEditor(self, rowIndex, subItemIndex, value):
         """
         Return an editor that can edit the value of the given cell.
@@ -2073,11 +2208,12 @@ class ObjectListView(wx.ListCtrl):
         creatorFunction = self.columns[subItemIndex].cellEditorCreator
         if creatorFunction is None:
             value = value or self._CalcNonNullValue(subItemIndex)
-            creatorFunction = CellEditor.CellEditorRegistry().GetCreatorFunction(value)
+            creatorFunction = CellEditor.CellEditorRegistry().GetCreatorFunction(
+                value)
             if creatorFunction is None:
-                creatorFunction = CellEditor.CellEditorRegistry().GetCreatorFunction("")
+                creatorFunction = CellEditor.CellEditorRegistry().GetCreatorFunction(
+                    "")
         return creatorFunction(self, rowIndex, subItemIndex)
-
 
     def _CalcNonNullValue(self, colIndex, maxRows=1000):
         """
@@ -2093,23 +2229,20 @@ class ObjectListView(wx.ListCtrl):
                     return value
         return None
 
-
     def _Editor_OnChar(self, evt):
         """
         A character has been pressed in a cell editor
         """
         self._HandleChar(evt)
 
-
     def _Editor_KillFocus(self, evt):
         evt.Skip()
 
         # Some control trigger FocusLost events even when they still have focus
         focusWindow = wx.Window.FindFocus()
-        #if focusWindow is not None and self.cellEditor != focusWindow:
+        # if focusWindow is not None and self.cellEditor != focusWindow:
         if self.cellEditor != focusWindow:
             self._PossibleFinishCellEdit()
-
 
     def FinishCellEdit(self):
         """
@@ -2117,20 +2250,31 @@ class ObjectListView(wx.ListCtrl):
         """
         (rowIndex, subItemIndex) = self.cellBeingEdited
 
-        # Give the world the chance to veto the edit, or to change its characteristics
+        # Give the world the chance to veto the edit, or to change its
+        # characteristics
         rowModel = self.GetObjectAt(rowIndex)
-        evt = OLVEvent.CellEditFinishingEvent(self, rowIndex, subItemIndex, rowModel,
-                                              self.cellEditor.GetValue(), self.cellEditor, False)
+        evt = OLVEvent.CellEditFinishingEvent(
+            self,
+            rowIndex,
+            subItemIndex,
+            rowModel,
+            self.cellEditor.GetValue(),
+            self.cellEditor,
+            False)
         self.GetEventHandler().ProcessEvent(evt)
         if not evt.IsVetoed() and evt.cellValue is not None:
             self.columns[subItemIndex].SetValue(rowModel, evt.cellValue)
             self.RefreshIndex(rowIndex, rowModel)
 
-        evt = OLVEvent.CellEditFinishedEvent(self, rowIndex, subItemIndex, rowModel, False)
+        evt = OLVEvent.CellEditFinishedEvent(
+            self,
+            rowIndex,
+            subItemIndex,
+            rowModel,
+            False)
         self.GetEventHandler().ProcessEvent(evt)
 
         self._CleanupCellEdit()
-
 
     def CancelCellEdit(self):
         """
@@ -2138,18 +2282,23 @@ class ObjectListView(wx.ListCtrl):
         """
         # Tell the world that the user cancelled the edit
         (rowIndex, subItemIndex) = self.cellBeingEdited
+        rowModel = self.GetObjectAt(rowIndex)
         evt = OLVEvent.CellEditFinishingEvent(self, rowIndex, subItemIndex,
-                                              self.GetObjectAt(rowIndex),
+                                              rowModel,
                                               self.cellEditor.GetValue(),
                                               self.cellEditor,
                                               True)
         self.GetEventHandler().ProcessEvent(evt)
 
-        evt = OLVEvent.CellEditFinishedEvent(self, rowIndex, subItemIndex, rowModel, True)
+        evt = OLVEvent.CellEditFinishedEvent(
+            self,
+            rowIndex,
+            subItemIndex,
+            rowModel,
+            True)
         self.GetEventHandler().ProcessEvent(evt)
 
         self._CleanupCellEdit()
-
 
     def _CleanupCellEdit(self):
         """
@@ -2166,6 +2315,7 @@ class ObjectListView(wx.ListCtrl):
 ########################################################################
 
 class AbstractVirtualObjectListView(ObjectListView):
+
     """
     This class holds the behaviour that is common to all virtual lists.
 
@@ -2189,7 +2339,7 @@ class AbstractVirtualObjectListView(ObjectListView):
         self.listItemAttr = None
         #self.cacheHit = 0
         #self.cacheMiss = 0
-
+        print(1)
         self.SetObjectGetter(kwargs.pop("getter", None))
 
         # We have to set the item count after the list has been created
@@ -2201,8 +2351,7 @@ class AbstractVirtualObjectListView(ObjectListView):
 
         ObjectListView.__init__(self, *args, **kwargs)
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Commands
 
     def ClearAll(self):
@@ -2213,7 +2362,6 @@ class AbstractVirtualObjectListView(ObjectListView):
         self.lastGetObjectIndex = -1
         # Should this call SetItemCount()?
 
-
     def DeleteAllItems(self):
         """
         Remove all items
@@ -2222,7 +2370,6 @@ class AbstractVirtualObjectListView(ObjectListView):
         self.lastGetObjectIndex = -1
         # Should this call SetItemCount()?
 
-
     def RefreshIndex(self, index, modelObject):
         """
         Refresh the item at the given index with data associated with the given modelObject
@@ -2230,14 +2377,12 @@ class AbstractVirtualObjectListView(ObjectListView):
         self.lastGetObjectIndex = -1
         self.RefreshItem(index)
 
-
     def RefreshObject(self, modelObject):
         """
         Refresh the display of the given modelObject
         """
         # We only have a hammer so everything looks like a nail
-        self.RefreshObjects()
-
+        self.RefreshObjects([modelObject])
 
     def RefreshObjects(self, aList=None):
         """
@@ -2245,9 +2390,8 @@ class AbstractVirtualObjectListView(ObjectListView):
         """
         # We can only refresh everything
         self.lastGetObjectIndex = -1
-        self.RefreshItems(0, self.GetItemCount()-1)
-        #self.Refresh()
-
+        self.RefreshItems(0, max(0, self.GetItemCount() - 1))
+        # self.Refresh()
 
     def RepopulateList(self):
         """
@@ -2255,7 +2399,6 @@ class AbstractVirtualObjectListView(ObjectListView):
         """
         # Virtual lists never need to rebuild -- they simply redraw
         self.RefreshObjects()
-
 
     def SetItemCount(self, count):
         """
@@ -2265,14 +2408,12 @@ class AbstractVirtualObjectListView(ObjectListView):
         self.stEmptyListMsg.Show(count == 0)
         self.lastGetObjectIndex = -1
 
-
     def SetObjectGetter(self, aCallable):
         """
         Remember the callback that will be used to fetch the objects being displayed in
         this list
         """
         self.objectGetter = aCallable
-
 
     def _FormatAllRows(self):
         """
@@ -2281,7 +2422,7 @@ class AbstractVirtualObjectListView(ObjectListView):
         # This is handled within OnGetItemAttr()
         pass
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Virtual list callbacks.
     # These are called a lot! Keep them efficient
 
@@ -2291,20 +2432,17 @@ class AbstractVirtualObjectListView(ObjectListView):
         """
         return self.GetStringValueAt(self.GetObjectAt(itemIdx), colIdx)
 
-
     def OnGetItemImage(self, itemIdx):
         """
         Return the image index that should be shown on the primary column of the given item
         """
         return self.GetImageAt(self.GetObjectAt(itemIdx), 0)
 
-
     def OnGetItemColumnImage(self, itemIdx, colIdx):
         """
         Return the image index at should be shown at the given cell
         """
         return self.GetImageAt(self.GetObjectAt(itemIdx), colIdx)
-
 
     def OnGetItemAttr(self, itemIdx):
         """
@@ -2314,14 +2452,17 @@ class AbstractVirtualObjectListView(ObjectListView):
             return None
 
         # We have to keep a reference to the ListItemAttr or the garbage collector
-        # will clear it up immeditately, before the ListCtrl has time to process it.
+        # will clear it up immeditately, before the ListCtrl has time to
+        # process it.
         self.listItemAttr = wx.ListItemAttr()
-        self._FormatOneItem(self.listItemAttr, itemIdx, self.GetObjectAt(itemIdx))
+        self._FormatOneItem(
+            self.listItemAttr,
+            itemIdx,
+            self.GetObjectAt(itemIdx))
 
         return self.listItemAttr
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Accessing
 
     def GetObjectAt(self, index):
@@ -2336,13 +2477,14 @@ class AbstractVirtualObjectListView(ObjectListView):
         if self.objectGetter is None:
             return None
 
-        #if index == self.lastGetObjectIndex:
+        # if index == self.lastGetObjectIndex:
         #    self.cacheHit += 1
-        #else:
+        # else:
         #    self.cacheMiss += 1
-        #print "hit: %d / miss: %d" % (self.cacheHit, self.cacheMiss)
+        # print "hit: %d / miss: %d" % (self.cacheHit, self.cacheMiss)
 
-        # Cache the last result (the hit rate is normally good: 5-10 hits to 1 miss)
+        # Cache the last result (the hit rate is normally good: 5-10 hits to 1
+        # miss)
         if index != self.lastGetObjectIndex:
             self.lastGetObjectIndex = index
             self.lastGetObject = self.objectGetter(index)
@@ -2350,10 +2492,10 @@ class AbstractVirtualObjectListView(ObjectListView):
         return self.lastGetObject
 
 
-
 ########################################################################
 
 class VirtualObjectListView(AbstractVirtualObjectListView):
+
     """
     A virtual object list displays various aspects of an unlimited numbers of objects in a
     multi-column list control.
@@ -2379,7 +2521,7 @@ class VirtualObjectListView(AbstractVirtualObjectListView):
 
         AbstractVirtualObjectListView.__init__(self, *args, **kwargs)
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Commands
 
     def AddObjects(self, modelObjects):
@@ -2391,7 +2533,6 @@ class VirtualObjectListView(AbstractVirtualObjectListView):
         """
         pass
 
-
     def RemoveObjects(self, modelObjects):
         """
         Remove the given collections of objects from our collection of objects.
@@ -2400,7 +2541,6 @@ class VirtualObjectListView(AbstractVirtualObjectListView):
         under the control of the VirtualObjectListView.
         """
         pass
-
 
     def SelectObject(self, modelObject, deselectOthers=True):
         """
@@ -2411,7 +2551,6 @@ class VirtualObjectListView(AbstractVirtualObjectListView):
         """
         pass
 
-
     def SelectObjects(self, modelObjects, deselectOthers=True):
         """
         Select all of the given modelObjects. If deselectOthers is True, all other modelObjects will be deselected
@@ -2421,8 +2560,7 @@ class VirtualObjectListView(AbstractVirtualObjectListView):
         """
         pass
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     #  Sorting
 
     def _SortItemsNow(self):
@@ -2435,7 +2573,9 @@ class VirtualObjectListView(AbstractVirtualObjectListView):
 
 ########################################################################
 
+
 class FastObjectListView(AbstractVirtualObjectListView):
+
     """
     A fast object list view is a nice compromise between the functionality of an ObjectListView
     and the speed of a VirtualObjectListView.
@@ -2450,7 +2590,7 @@ class FastObjectListView(AbstractVirtualObjectListView):
 
         self.SetObjectGetter(lambda index: self.innerList[index])
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Commands
 
     def AddObjects(self, modelObjects):
@@ -2480,20 +2620,23 @@ class FastObjectListView(AbstractVirtualObjectListView):
         if first < self.GetItemCount():
             self.RefreshItems(first, self.GetItemCount() - 1)
 
-
     def RepopulateList(self):
         """
         Completely rebuild the contents of the list control
         """
         self.lastGetObjectIndex = -1
-        self._SortObjects()
-        self._BuildInnerList()
-        self.SetItemCount(len(self.innerList))
-        self.RefreshObjects()
+        self.Freeze()
+        try:
+            self._SortObjects()
+            self._BuildInnerList()
+            wx.ListCtrl.DeleteAllItems(self)
+            self.SetItemCount(len(self.innerList))
+            self.RefreshObjects()
 
-        # Auto-resize once all the data has been added
-        self.AutoSizeColumns()
-
+            # Auto-resize once all the data has been added
+            self.AutoSizeColumns()
+        finally:
+            self.Thaw()
 
     def RefreshObjects(self, aList=None):
         """
@@ -2507,9 +2650,11 @@ class FastObjectListView(AbstractVirtualObjectListView):
                 if idx != -1:
                     self.RefreshItem(idx)
         else:
-            self.RefreshItems(0, self.GetItemCount() - 1)
+            if self.GetItemCount():
+                # only do this if list has items
+                self.RefreshItems(0, self.GetItemCount() - 1)
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     #  Accessing
 
     def _MapModelIndexToListIndex(self, modelIndex):
@@ -2520,7 +2665,7 @@ class FastObjectListView(AbstractVirtualObjectListView):
         # In a FastListView, the model index is the same as the list index
         return modelIndex
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     #  Sorting
 
     def _SortItemsNow(self):
@@ -2539,6 +2684,7 @@ class FastObjectListView(AbstractVirtualObjectListView):
 #######################################################################
 
 class GroupListView(FastObjectListView):
+
     """
     An ObjectListView that allows model objects to be organised into collapsable groups.
 
@@ -2562,7 +2708,7 @@ class GroupListView(FastObjectListView):
 
     """
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Creation
 
     def __init__(self, *args, **kwargs):
@@ -2593,27 +2739,36 @@ class GroupListView(FastObjectListView):
 
         # Setup default group characteristics
         font = self.GetFont()
-        self.groupFont = wx.FFont(font.GetPointSize(), font.GetFamily(), wx.FONTFLAG_BOLD, font.GetFaceName())
+        self.groupFont = wx.FFont(
+            font.GetPointSize(),
+            font.GetFamily(),
+            wx.FONTFLAG_BOLD,
+            font.GetFaceName())
         self.groupTextColour = wx.Colour(33, 33, 33, 255)
         self.groupBackgroundColour = wx.Colour(159, 185, 250, 249)
 
         self._InitializeImages()
-
 
     def _InitializeImages(self):
         """
         Initialize the images used to indicate expanded/collapsed state of groups.
         """
         def _makeBitmap(state, size):
-            bitmap = wx.EmptyBitmap(size, size)
+            if 'phoenix' in wx.PlatformInfo:
+                bitmap = wx.Bitmap(size, size)
+            else:
+                bitmap = wx.EmptyBitmap(size, size)
             dc = wx.MemoryDC(bitmap)
             dc.SetBackground(wx.Brush(self.groupBackgroundColour))
             dc.Clear()
             (x, y) = (0, 0)
-            # The image under Linux is smaller and needs to be offset somewhat to look reasonable
+            # The image under Linux is smaller and needs to be offset somewhat
+            # to look reasonable
             if wx.Platform == "__WXGTK__":
                 (x, y) = (4, 4)
-            wx.RendererNative.Get().DrawTreeItemButton(self, dc, (x, y, size, size), state)
+            wx.RendererNative.Get().DrawTreeItemButton(
+                self, dc, (x, y, size, size),
+                state)
             dc.SelectObject(wx.NullBitmap)
             return bitmap
 
@@ -2622,11 +2777,18 @@ class GroupListView(FastObjectListView):
             self.SetImageLists()
 
         size = self.smallImageList.GetSize()[0]
-        self.AddNamedImages(ObjectListView.NAME_EXPANDED_IMAGE, _makeBitmap(wx.CONTROL_EXPANDED, size))
-        self.AddNamedImages(ObjectListView.NAME_COLLAPSED_IMAGE, _makeBitmap(0, size))
+        self.AddNamedImages(
+            ObjectListView.NAME_EXPANDED_IMAGE,
+            _makeBitmap(
+                wx.CONTROL_EXPANDED,
+                size))
+        self.AddNamedImages(
+            ObjectListView.NAME_COLLAPSED_IMAGE,
+            _makeBitmap(
+                0,
+                size))
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Accessing
 
     def GetShowGroups(self):
@@ -2634,7 +2796,6 @@ class GroupListView(FastObjectListView):
         Return whether or not this control is showing groups of objects or a straight list
         """
         return self.showGroups
-
 
     def SetShowGroups(self, showGroups=True):
         """
@@ -2655,13 +2816,11 @@ class GroupListView(FastObjectListView):
 
         self.SetObjects(self.modelObjects)
 
-
     def GetShowItemCounts(self):
         """
         Return whether or not the number of items in a groups should be included in the title
         """
         return self.showItemCounts
-
 
     def SetShowItemCounts(self, showItemCounts=True):
         """
@@ -2671,7 +2830,6 @@ class GroupListView(FastObjectListView):
             self.showItemCounts = showItemCounts
             self._BuildGroupTitles(self.groups, self.GetGroupByColumn())
             self._SetGroups(self.groups)
-
 
     def GetGroupByColumn(self):
         """
@@ -2684,7 +2842,6 @@ class GroupListView(FastObjectListView):
         else:
             return self.GetSortColumn()
 
-
     def GetAlwaysGroupByColumn(self):
         """
         Get the column by which the rows should be always be grouped.
@@ -2693,7 +2850,6 @@ class GroupListView(FastObjectListView):
             return self.columns[self.alwaysGroupByColumnIndex]
         except IndexError:
             return None
-
 
     def SetAlwaysGroupByColumn(self, column):
         """
@@ -2712,8 +2868,7 @@ class GroupListView(FastObjectListView):
         else:
             self.alwaysGroupByColumnIndex = column
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Commands
 
     def AddObjects(self, modelObjects):
@@ -2722,7 +2877,6 @@ class GroupListView(FastObjectListView):
         """
         self.groups = None
         FastObjectListView.AddObjects(self, modelObjects)
-
 
     def CreateCheckStateColumn(self, columnIndex=0):
         """
@@ -2735,7 +2889,6 @@ class GroupListView(FastObjectListView):
             columnIndex = 1
         FastObjectListView.CreateCheckStateColumn(self, columnIndex)
 
-
     def RemoveObjects(self, modelObjects):
         """
         Remove the given collections of objects from our collection of objects.
@@ -2743,19 +2896,21 @@ class GroupListView(FastObjectListView):
         self.groups = None
         FastObjectListView.RemoveObjects(self, modelObjects)
 
-
     def SetColumns(self, columns, repopulate=True):
         """
         Set the columns for this control.
         """
         newColumns = columns[:]
-        # Insert the column used for expansion and contraction (if one isn't already there)
+        # Insert the column used for expansion and contraction (if one isn't
+        # already there)
         if self.showGroups and self.useExpansionColumn and len(newColumns) > 0:
             if not isinstance(newColumns[0], ColumnDefn) or not newColumns[0].isInternal:
-                newColumns.insert(0, ColumnDefn("", fixedWidth=24, isEditable=False))
+                newColumns.insert(0, ColumnDefn("",
+                        fixedWidth=24,
+                        isEditable=False))
                 newColumns[0].isInternal = True
-        FastObjectListView.SetColumns(self, newColumns, repopulate)
 
+        FastObjectListView.SetColumns(self, newColumns, repopulate)
 
     def SetGroups(self, groups):
         """
@@ -2766,7 +2921,6 @@ class GroupListView(FastObjectListView):
         self.modelObjects = list()
         self.SetShowGroups(True)
         self._SetGroups(groups)
-
 
     def SetObjects(self, modelObjects, preserveSelection=False):
         """
@@ -2779,8 +2933,7 @@ class GroupListView(FastObjectListView):
             self.groups = list()
         FastObjectListView.SetObjects(self, modelObjects, preserveSelection)
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Building
 
     def _SetGroups(self, groups):
@@ -2789,7 +2942,6 @@ class GroupListView(FastObjectListView):
         """
         self.groups = groups
         self.RepopulateList()
-
 
     def RebuildGroups(self):
         """
@@ -2801,7 +2953,6 @@ class GroupListView(FastObjectListView):
         groups = self._BuildGroups()
         self.SortGroups(groups)
         self._SetGroups(groups)
-
 
     def _BuildGroups(self, modelObjects=None):
         """
@@ -2821,10 +2972,12 @@ class GroupListView(FastObjectListView):
             key = groupingColumn.GetGroupKey(model)
             group = groupMap.get(key)
             if group is None:
-                groupMap[key] = group = ListGroup(key, groupingColumn.GetGroupKeyAsString(key))
+                groupMap[key] = group = ListGroup(
+                    key,
+                    groupingColumn.GetGroupKeyAsString(key))
             group.Add(model)
 
-        groups = groupMap.values()
+        groups = list(groupMap.values())
 
         if self.GetShowItemCounts():
             self._BuildGroupTitles(groups, groupingColumn)
@@ -2835,14 +2988,12 @@ class GroupListView(FastObjectListView):
 
         return evt.groups
 
-
     def _BuildGroupTitles(self, groups, groupingColumn):
         """
         Rebuild the titles of the given groups
         """
         for x in groups:
             x.title = groupingColumn.GetGroupTitle(x, self.GetShowItemCounts())
-
 
     def _BuildInnerList(self):
         """
@@ -2872,7 +3023,7 @@ class GroupListView(FastObjectListView):
             if grp.isExpanded:
                 self.innerList.extend(grp.modelObjects)
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Virtual list callbacks.
     # These are called a lot! Keep them efficient
 
@@ -2893,7 +3044,6 @@ class GroupListView(FastObjectListView):
 
         return self.GetStringValueAt(modelObject, colIdx)
 
-
     def OnGetItemImage(self, itemIdx):
         """
         Return the image index that should be shown on the primary column of the given item
@@ -2912,7 +3062,6 @@ class GroupListView(FastObjectListView):
             return self.smallImageList.GetImageIndex(imageKey)
 
         return self.GetImageAt(modelObject, 0)
-
 
     def OnGetItemColumnImage(self, itemIdx, colIdx):
         """
@@ -2935,7 +3084,6 @@ class GroupListView(FastObjectListView):
 
         return self.GetImageAt(modelObject, colIdx)
 
-
     def OnGetItemAttr(self, itemIdx):
         """
         Return the display attributes that should be used for the given row
@@ -2949,18 +3097,20 @@ class GroupListView(FastObjectListView):
 
         if isinstance(modelObject, ListGroup):
             # We have to keep a reference to the ListItemAttr or the garbage collector
-            # will clear it up immeditately, before the ListCtrl has time to process it.
+            # will clear it up immeditately, before the ListCtrl has time to
+            # process it.
             if self.groupFont is not None:
                 self.listItemAttr.SetFont(self.groupFont)
             if self.groupTextColour is not None:
                 self.listItemAttr.SetTextColour(self.groupTextColour)
             if self.groupBackgroundColour is not None:
-                self.listItemAttr.SetBackgroundColour(self.groupBackgroundColour)
+                self.listItemAttr.SetBackgroundColour(
+                    self.groupBackgroundColour)
             return self.listItemAttr
 
         return FastObjectListView.OnGetItemAttr(self, itemIdx)
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Commands
 
     def ToggleExpansion(self, group):
@@ -2969,20 +3119,17 @@ class GroupListView(FastObjectListView):
         """
         self._DoExpandCollapse([group], not group.isExpanded)
 
-
     def Expand(self, group):
         """
         Expand the given group and redisplay the list
         """
         self._DoExpandCollapse([group], True)
 
-
     def Collapse(self, group):
         """
         Collapse the given group and redisplay the list
         """
         self._DoExpandCollapse([group], False)
-
 
     def ExpandAll(self, groups=None):
         """
@@ -2992,7 +3139,6 @@ class GroupListView(FastObjectListView):
             groups = self.groups
         self._DoExpandCollapse(groups, True)
 
-
     def CollapseAll(self, groups=None):
         """
         Collapse the given groups (or all groups) and redisplay the list
@@ -3000,7 +3146,6 @@ class GroupListView(FastObjectListView):
         if groups is None:
             groups = self.groups
         self._DoExpandCollapse(groups, False)
-
 
     def _DoExpandCollapse(self, groups, isExpanding):
         """
@@ -3011,7 +3156,8 @@ class GroupListView(FastObjectListView):
         if not groups:
             return
 
-        # Let the world know that the given groups are about to be expanded/collapsed
+        # Let the world know that the given groups are about to be
+        # expanded/collapsed
         evt = OLVEvent.ExpandingCollapsingEvent(self, groups, isExpanding)
         self.GetEventHandler().ProcessEvent(evt)
         if evt.IsVetoed():
@@ -3025,12 +3171,11 @@ class GroupListView(FastObjectListView):
 
         # Refresh eveything from the first group down
         i = min([self.GetIndexOf(x) for x in evt.groups])
-        self.RefreshItems(i, len(self.innerList)-1)
+        self.RefreshItems(i, len(self.innerList) - 1)
 
         # Let the world know that the given groups have been expanded/collapsed
         evt = OLVEvent.ExpandedCollapsedEvent(self, evt.groups, isExpanding)
         self.GetEventHandler().ProcessEvent(evt)
-
 
     def Reveal(self, modelObject):
         """
@@ -3052,7 +3197,6 @@ class GroupListView(FastObjectListView):
 
         return False
 
-
     def SelectAll(self):
         """
         Selected all model objects in the control.
@@ -3069,8 +3213,7 @@ class GroupListView(FastObjectListView):
     SelectGroup = ObjectListView.SelectObject
     SelectGroups = ObjectListView.SelectObjects
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Accessing
 
     def FindGroupFor(self, modelObject):
@@ -3082,7 +3225,6 @@ class GroupListView(FastObjectListView):
             if modelObject in group.modelObjects:
                 return group
         return None
-
 
     def GetSelectedGroups(self):
         """
@@ -3097,7 +3239,6 @@ class GroupListView(FastObjectListView):
             i = self.GetNextItem(i, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
         return selectedGroups
 
-
     def GetFilteredObjects(self):
         """
         Return the model objects that are actually displayed in the control.
@@ -3106,7 +3247,6 @@ class GroupListView(FastObjectListView):
         for x in self.groups:
             objects.extend(x.modelObjects)
         return objects
-
 
     def GetObjectAt(self, index):
         """
@@ -3125,7 +3265,6 @@ class GroupListView(FastObjectListView):
 
         return model
 
-
     def YieldSelectedObjects(self):
         """
         Progressively yield the selected modelObjects.
@@ -3139,7 +3278,6 @@ class GroupListView(FastObjectListView):
                 yield model
             i = self.GetNextItem(i, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
 
-
     def _CanUseBisect(self, searchColumn):
         """
         Return True if we can use binary search on the given column.
@@ -3148,17 +3286,19 @@ class GroupListView(FastObjectListView):
         """
         return not self.showGroups
 
-
     def _GetValuesAsMultiList(self, objects):
         """
         Return a list of lists of the string of the aspects of the given objects
         """
-        cols = self.columns[self.GetPrimaryColumnIndex():] # We don't want to copy the expand icon columns
-        objects = [x for x in objects if x is not None and not isinstance(x, ListGroup)]
+        cols = self.columns[
+            self.GetPrimaryColumnIndex():]  # We don't want to copy the expand icon columns
+        objects = [
+            x for x in objects if x is not None and not isinstance(
+                x,
+                ListGroup)]
         return [[column.GetStringValue(x) for column in cols] for x in objects]
 
-
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Event handlers
 
     def _HandleChar(self, evt):
@@ -3173,7 +3313,6 @@ class GroupListView(FastObjectListView):
 
         FastObjectListView._HandleChar(self, evt)
 
-
     def _HandleColumnClick(self, evt):
         """
         The user has clicked on a column title
@@ -3185,7 +3324,6 @@ class GroupListView(FastObjectListView):
 
         FastObjectListView._HandleColumnClick(self, evt)
 
-
     def _HandleLeftDownOnImage(self, rowIndex, subItemIndex):
         """
         Handle a left click on the image at the given cell
@@ -3196,10 +3334,12 @@ class GroupListView(FastObjectListView):
         if subItemIndex == 0 and isinstance(listObject, ListGroup):
             self.ToggleExpansion(listObject)
         else:
-            FastObjectListView._HandleLeftDownOnImage(self, rowIndex, subItemIndex)
+            FastObjectListView._HandleLeftDownOnImage(
+                self,
+                rowIndex,
+                subItemIndex)
 
-
-    #---Sorting-------------------------------------------------------#000000#FFFFFF
+    # ---Sorting-------------------------------------------------------#000000#FFFFFF
 
     def SortGroups(self, groups=None, ascending=None):
         """
@@ -3232,12 +3372,17 @@ class GroupListView(FastObjectListView):
             except:
                 return group.key
 
-        groups.sort(key=_getLowerCaseKey, reverse=(not ascending))
+        if six.PY2:
+            groups.sort(key=_getLowerCaseKey, reverse=(not ascending))
+        else:
+            groups = sorted(groups, key=_getLowerCaseKey,
+                            reverse=(not ascending))
+            # update self.groups which is used e.g. in _SetGroups
+            self.groups = groups
 
         # Sort the model objects within each group.
         for x in groups:
             self._SortObjects(x.modelObjects, sortCol, self.GetPrimaryColumn())
-
 
     def _SortItemsNow(self):
         """
@@ -3254,18 +3399,17 @@ class GroupListView(FastObjectListView):
         self.SortGroups(self.groups)
         self._SetGroups(self.groups)
 
-
-    #def _FormatAllRows(self):
+    # def _FormatAllRows(self):
     #    """
     #    GroupListViews don't need this method.
     #    """
     #    pass
 
 
-
 #######################################################################
 
 class ListGroup(object):
+
     """
     A ListGroup is a partition of model objects that can be presented
     under a collapsible heading in a GroupListView.
@@ -3278,7 +3422,6 @@ class ListGroup(object):
         self.isExpanded = isExpanded
         self.modelObjects = list()
 
-
     def Add(self, model):
         """
         Add the given model to those that belong to this group.
@@ -3289,6 +3432,7 @@ class ListGroup(object):
 #######################################################################
 
 class ColumnDefn(object):
+
     """
     A ColumnDefn controls how one column of information is sourced and formatted.
 
@@ -3486,14 +3630,33 @@ class ColumnDefn(object):
     BUG: Double-clicking on a divider (under Windows) can resize a column beyond its minimum and maximum widths.
     """
 
-    def __init__(self, title="title", align="left", width=-1,
-                 valueGetter=None, imageGetter=None, stringConverter=None, valueSetter=None, isEditable=True,
-                 fixedWidth=None, minimumWidth=-1, maximumWidth=-1, isSpaceFilling=False,
-                 cellEditorCreator=None, autoCompleteCellEditor=False, autoCompleteComboBoxCellEditor=False,
-                 checkStateGetter=None, checkStateSetter=None,
-                 isSearchable=True, useBinarySearch=None, headerImage=-1,
-                 groupKeyGetter=None, groupKeyConverter=None, useInitialLetterForGroupKey=False,
-                 groupTitleSingleItem=None, groupTitlePluralItems=None):
+    def __init__(
+            self,
+            title="title",
+            align="left",
+            width=-1,
+            valueGetter=None,
+            imageGetter=None,
+            stringConverter=None,
+            valueSetter=None,
+            isEditable=True,
+            fixedWidth=None,
+            minimumWidth=-1,
+            maximumWidth=-1,
+            isSpaceFilling=False,
+            cellEditorCreator=None,
+            autoCompleteCellEditor=False,
+            autoCompleteComboBoxCellEditor=False,
+            checkStateGetter=None,
+            checkStateSetter=None,
+            isSearchable=True,
+            useBinarySearch=None,
+            headerImage=-1,
+            groupKeyGetter=None,
+            groupKeyConverter=None,
+            useInitialLetterForGroupKey=False,
+            groupTitleSingleItem=None,
+            groupTitlePluralItems=None):
         """
         Create a new ColumnDefn using the given attributes.
 
@@ -3530,7 +3693,9 @@ class ColumnDefn(object):
         self.useInitialLetterForGroupKey = useInitialLetterForGroupKey
         self.groupTitleSingleItem = groupTitleSingleItem or "%(title)s (%(count)d item)"
         self.groupTitlePluralItems = groupTitlePluralItems or "%(title)s (%(count)d items)"
-        self.isInternal = False # was this column created internally by ObjectListView?
+        # was this column created internally by ObjectListView?
+        self.isInternal = False
+        self._EventHandler = None
 
         self.minimumWidth = minimumWidth
         self.maximumWidth = maximumWidth
@@ -3540,15 +3705,17 @@ class ColumnDefn(object):
             self.SetFixedWidth(fixedWidth)
 
         if autoCompleteCellEditor:
-            self.cellEditorCreator = lambda olv, row, col: CellEditor.MakeAutoCompleteTextBox(olv, col)
+            self.cellEditorCreator = lambda olv, row, col: CellEditor.MakeAutoCompleteTextBox(
+                olv, col)
 
         if autoCompleteComboBoxCellEditor:
-            self.cellEditorCreator = lambda olv, row, col: CellEditor.MakeAutoCompleteComboBox(olv, col)
+            self.cellEditorCreator = lambda olv, row, col: CellEditor.MakeAutoCompleteComboBox(
+                olv, col)
 
         self.checkStateGetter = checkStateGetter
         self.checkStateSetter = checkStateSetter
 
-    #-------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Column properties
 
     def GetAlignment(self):
@@ -3574,7 +3741,7 @@ class ColumnDefn(object):
             "r": wx.TE_RIGHT,
         }.get(self.align[:1], wx.TE_LEFT)
 
-    #-------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Value accessing
 
     def GetValue(self, modelObject):
@@ -3583,14 +3750,12 @@ class ColumnDefn(object):
         """
         return self._Munge(modelObject, self.valueGetter)
 
-
     def GetStringValue(self, modelObject):
         """
         Return a string representation of the value for this column from the given modelObject
         """
         value = self.GetValue(modelObject)
         return self._StringToValue(value, self.stringConverter)
-
 
     def _StringToValue(self, value, converter):
         """
@@ -3601,8 +3766,15 @@ class ColumnDefn(object):
         except TypeError:
             pass
 
-        if converter and isinstance(value, (datetime.datetime, datetime.date, datetime.time)):
+        if converter and isinstance(
+            value,
+            (datetime.datetime,
+             datetime.date,
+             datetime.time)):
             return value.strftime(self.stringConverter)
+
+        if converter and isinstance(value, wx.DateTime):
+            return value.Format(self.stringConverter)
 
         # By default, None is changed to an empty string.
         if not converter and not value:
@@ -3613,7 +3785,6 @@ class ColumnDefn(object):
             return fmt % value
         except UnicodeError:
             return unicode(fmt) % value
-
 
     def GetGroupKey(self, modelObject):
         """
@@ -3631,18 +3802,17 @@ class ColumnDefn(object):
         else:
             return key
 
-
     def GetGroupKeyAsString(self, groupKey):
         """
         Return the given group key as a human readable string
         """
         # If there is no group key getter, we must have the normal aspect value. So if
-        # there isn't a special key converter, use the normal aspect to string converter.
+        # there isn't a special key converter, use the normal aspect to string
+        # converter.
         if self.groupKeyGetter is None and self.groupKeyConverter is None:
             return self._StringToValue(groupKey, self.stringConverter)
         else:
             return self._StringToValue(groupKey, self.groupKeyConverter)
-
 
     def GetGroupTitle(self, group, useItemCount):
         """
@@ -3655,9 +3825,8 @@ class ColumnDefn(object):
                 fmt = self.groupTitleSingleItem
             else:
                 fmt = self.groupTitlePluralItems
-            title = fmt % {"title":title, "count":objectCount}
+            title = fmt % {"title": title, "count": objectCount}
         return title
-
 
     def GetImage(self, modelObject):
         """
@@ -3675,18 +3844,29 @@ class ColumnDefn(object):
         else:
             return idx
 
-
     def SetValue(self, modelObject, value):
         """
         Set this columns aspect of the given modelObject to have the given value.
         """
         if self.valueSetter is None:
-            return self._SetValueUsingMunger(modelObject, value, self.valueGetter, False)
+            return self._SetValueUsingMunger(
+                modelObject,
+                value,
+                self.valueGetter,
+                False)
         else:
-            return self._SetValueUsingMunger(modelObject, value, self.valueSetter, True)
+            return self._SetValueUsingMunger(
+                modelObject,
+                value,
+                self.valueSetter,
+                True)
 
-
-    def _SetValueUsingMunger(self, modelObject, value, munger, shouldInvokeCallable):
+    def _SetValueUsingMunger(
+            self,
+            modelObject,
+            value,
+            munger,
+            shouldInvokeCallable):
         """
         Look for ways to update modelObject with value using munger. If munger finds a
         callable, it will be called if shouldInvokeCallable == True.
@@ -3723,12 +3903,12 @@ class ColumnDefn(object):
             return
 
         # If we get to here, it seems that munger is the name of an attribute or
-        # property on modelObject. Try to set, realising that many things could still go wrong.
+        # property on modelObject. Try to set, realising that many things could
+        # still go wrong.
         try:
             setattr(modelObject, munger, value)
         except:
             pass
-
 
     def _Munge(self, modelObject, munger):
         """
@@ -3779,7 +3959,7 @@ class ColumnDefn(object):
         except:
             return None
 
-    #-------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Width management
 
     def CalcBoundedWidth(self, width):
@@ -3795,15 +3975,13 @@ class ColumnDefn(object):
             width = min(self.maximumWidth, width)
         return max(self.minimumWidth, width)
 
-
     def IsFixedWidth(self):
         """
         Is this column fixed width?
         """
         return self.minimumWidth != -1 and \
-               self.maximumWidth != -1 and \
-               (self.minimumWidth >= self.maximumWidth)
-
+            self.maximumWidth != -1 and \
+            (self.minimumWidth >= self.maximumWidth)
 
     def SetFixedWidth(self, width):
         """
@@ -3811,7 +3989,7 @@ class ColumnDefn(object):
         """
         self.width = self.minimumWidth = self.maximumWidth = width
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Check state
 
     def HasCheckState(self):
@@ -3819,7 +3997,6 @@ class ColumnDefn(object):
         Return if this column is showing a check box?
         """
         return self.checkStateGetter is not None
-
 
     def GetCheckState(self, modelObject):
         """
@@ -3830,21 +4007,38 @@ class ColumnDefn(object):
         else:
             return self._Munge(modelObject, self.checkStateGetter)
 
-
     def SetCheckState(self, modelObject, state):
         """
         Set the check state of the given model object
         """
-        if self.checkStateSetter is None:
-            return self._SetValueUsingMunger(modelObject, state, self.checkStateGetter, False)
+        # Let the world know the check state
+        evt = OLVEvent.ItemCheckedEvent(self, modelObject, state)
+        # Is there a shorter way to get at the EventHandler?
+        if self._EventHandler:
+            wx.CallAfter(self._EventHandler.ProcessEvent, evt)
         else:
-            return self._SetValueUsingMunger(modelObject, state, self.checkStateSetter, True)
+            wx.CallAfter(wx.GetApp().GetTopWindow().GetEventHandler().ProcessEvent, evt)
+
+        if self.checkStateSetter is None:
+            return self._SetValueUsingMunger(
+                modelObject,
+                state,
+                self.checkStateGetter,
+                False)
+        else:
+            return self._SetValueUsingMunger(
+                modelObject,
+                state,
+                self.checkStateSetter,
+                True)
 
 #======================================================================
 
+
 class NamedImageList(object):
+
     """
-    A named image list is an Adaptor that gives a normal image list
+    A named image list is an Adaptor that gives a normal image list (:class:`wx.ImageList <wx:ImageList>`)
     the ability to reference images by name, rather than just index
     """
 
@@ -3854,7 +4048,6 @@ class NamedImageList(object):
         self.imageList = imageList or wx.ImageList(imageSize, imageSize)
         self.imageSize = imageSize
         self.nameToImageIndexMap = {}
-
 
     def GetSize(self, ignored=None):
         """
@@ -3866,10 +4059,9 @@ class NamedImageList(object):
         else:
             return self.imageList.GetSize(0)
 
-
     def AddNamedImage(self, name, image):
         """
-        Add the given image to our list, and remember its name.
+        Add the given image (:class:`wx.Bitmap <wx:Bitmap>`) to our list, and remember its name.
         Returns the images index.
         """
         imageIndex = self.imageList.Add(image)
@@ -3877,13 +4069,11 @@ class NamedImageList(object):
             self.nameToImageIndexMap[name] = imageIndex
         return imageIndex
 
-
     def HasName(self, name):
         """
         Does this list have an image with the given name?"
         """
         return name in self.nameToImageIndexMap
-
 
     def GetImageIndex(self, name):
         """
@@ -3893,7 +4083,9 @@ class NamedImageList(object):
 
 #======================================================================
 
+
 class BatchedUpdate(object):
+
     """
     This class is an *Adapter* around an ``ObjectListView`` which ensure that the list is updated, at most,
     once every *N* seconds.
@@ -3953,7 +4145,7 @@ class BatchedUpdate(object):
     NOT_SET = -1
 
     def __init__(self, objectListView, updatePeriod=0):
-        self.objectListView = objectListView # Must not be None
+        self.objectListView = objectListView  # Must not be None
         self.updatePeriod = updatePeriod
 
         self.objectListView.Bind(wx.EVT_IDLE, self._HandleIdle)
@@ -3964,7 +4156,6 @@ class BatchedUpdate(object):
         self.objectsToRemove = list()
         self.freezeUntil = 0
 
-
     def __getattr__(self, name):
         """
         Forward any unknown references to the original objectListView.
@@ -3972,7 +4163,6 @@ class BatchedUpdate(object):
         This is what allows us to pretend to be an ObjectListView.
         """
         return getattr(self.objectListView, name)
-
 
     def RepopulateList(self):
         """
@@ -3986,8 +4176,8 @@ class BatchedUpdate(object):
         self.newModelObjects = self.objectListView.modelObjects
         self.objectsToRefresh = list()
 
-        # Unlike SetObjects(), refreshing the list does NOT invalidate the objects to be added/removed
-
+        # Unlike SetObjects(), refreshing the list does NOT invalidate the
+        # objects to be added/removed
 
     def SetObjects(self, modelObjects):
         """
@@ -3999,11 +4189,11 @@ class BatchedUpdate(object):
             return
 
         self.newModelObjects = modelObjects
-        # Explicitly setting the objects to be shown renders void any previous Add/Refresh/Remove commands
+        # Explicitly setting the objects to be shown renders void any previous
+        # Add/Refresh/Remove commands
         self.objectsToAdd = list()
         self.objectsToRefresh = list()
         self.objectsToRemove = list()
-
 
     def AddObject(self, modelObject):
         """
@@ -4014,7 +4204,6 @@ class BatchedUpdate(object):
         """
         self.AddObjects([modelObject])
 
-
     def AddObjects(self, modelObjects):
         """
         Remember the given model objects so that they can be added when the next update cycle occurs
@@ -4024,7 +4213,8 @@ class BatchedUpdate(object):
             self.freezeUntil = time.clock() + self.updatePeriod
             return
 
-        # TODO: We should check that none of the model objects is already in the list
+        # TODO: We should check that none of the model objects is already in
+        # the list
         self.objectsToAdd.extend(modelObjects)
 
         # Since we are adding these objects, we must no longer remove them
@@ -4032,13 +4222,11 @@ class BatchedUpdate(object):
             for x in modelObjects:
                 self.objectsToRemove.remove(x)
 
-
     def RefreshObject(self, modelObject):
         """
         Refresh the display of the given model
         """
         self.RefreshObjects([modelObject])
-
 
     def RefreshObjects(self, modelObjects):
         """
@@ -4051,13 +4239,11 @@ class BatchedUpdate(object):
 
         self.objectsToRefresh.extend(modelObjects)
 
-
     def RemoveObject(self, modelObjects):
         """
         Remember the given model objects so that they can be removed when the next update cycle occurs
         """
         self.RemoveObjects([modelObject])
-
 
     def RemoveObjects(self, modelObjects):
         """
@@ -4075,7 +4261,7 @@ class BatchedUpdate(object):
             for x in modelObjects:
                 self.objectsToAdd.remove(x)
 
-    #----------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     # Event processing
 
     def _HandleIdle(self, evt):
@@ -4083,9 +4269,9 @@ class BatchedUpdate(object):
         The app is idle. Process any outstanding requests
         """
         if (self.newModelObjects != BatchedUpdate.NOT_SET or
-            self.objectsToAdd or
-            self.objectsToRefresh or
-            self.objectsToRemove):
+                self.objectsToAdd or
+                self.objectsToRefresh or
+                self.objectsToRemove):
             if self.freezeUntil < time.clock():
                 self._ApplyChanges()
             else:
@@ -4116,32 +4302,43 @@ class BatchedUpdate(object):
 #----------------------------------------------------------------------------
 # Built in images so clients don't have to do the same
 
-import cStringIO, zlib
+from six import BytesIO
+import zlib
+
 
 def _getSmallUpArrowData():
     return zlib.decompress(
-'x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\x02 \xcc\xc1\
+        b'x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\x02 \xcc\xc1\
 \x06$\xe5?\xffO\x04R,\xc5N\x9e!\x1c@P\xc3\x91\xd2\x01\xe4[z\xba8\x86X\xf4&\
 \xa7\xa4$\xa5-`1\x08\\R\xcd"\x11\x10\x1f\xfe{~\x0es\xc2,N\xc9\xa6\xab\x0c%\
 \xbe?x\x0e\x1a0LO\x8ay\xe4sD\xe3\x90\xfay\x8bYB\xec\x8d\x8c\x0c\xc1\x01b9\
-\xe1\xbc\x8fw\x01\ra\xf0t\xf5sY\xe7\x94\xd0\x04\x00\xb7\x89#\xbb' )
+\xe1\xbc\x8fw\x01\ra\xf0t\xf5sY\xe7\x94\xd0\x04\x00\xb7\x89#\xbb')
+
 
 def _getSmallUpArrowBitmap():
-    stream = cStringIO.StringIO(_getSmallUpArrowData())
-    return wx.BitmapFromImage(wx.ImageFromStream(stream))
+    stream = BytesIO(_getSmallUpArrowData())
+    if 'phoenix' in wx.PlatformInfo:
+        return wx.Bitmap(wx.Image(stream))
+    else:
+        return wx.BitmapFromImage(wx.ImageFromStream(stream))
+
 
 def _getSmallDownArrowData():
     return zlib.decompress(
-'x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\x02 \xcc\xc1\
+        b'x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\x02 \xcc\xc1\
 \x06$\xe5?\xffO\x04R,\xc5N\x9e!\x1c@P\xc3\x91\xd2\x01\xe4\x07x\xba8\x86X\xf4\
 &\xa7\xa4$\xa5-`1\x08\\R}\x85\x81\r\x04\xc4R\xfcjc\xdf\xd6;II\xcd\x9e%Y\xb8\
 \x8b!v\xd2\x844\x1e\xe6\x0f\x92M\xde2\xd9\x12\x0b\xb4\x8f\xbd6rSK\x9b\xb3c\
 \xe1\xc2\x87\xf6v\x95@&\xdb\xb1\x8bK|v22,W\x12\xd0\xdb-\xc4\xe4\x044\x9b\xc1\
-\xd3\xd5\xcfe\x9dSB\x13\x00$1+:' )
+\xd3\xd5\xcfe\x9dSB\x13\x00$1+:')
+
 
 def _getSmallDownArrowBitmap():
-    stream = cStringIO.StringIO(_getSmallDownArrowData())
-    return wx.BitmapFromImage(wx.ImageFromStream(stream))
+    stream = BytesIO(_getSmallDownArrowData())
+    if 'phoenix' in wx.PlatformInfo:
+        return wx.Bitmap(wx.Image(stream))
+    else:
+        return wx.BitmapFromImage(wx.ImageFromStream(stream))
 
 
 #

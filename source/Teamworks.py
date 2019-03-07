@@ -6,36 +6,41 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
-from UTILS_Traduction import _
-import UTILS_Traduction
+import Chemins
+from Utils.UTILS_Traduction import _
+from Utils import UTILS_Traduction
 
 from time import strftime
 import time
 HEUREDEBUT = time.time()
 
-
+import six
 import wx
-import CTRL_Bouton_image
 
-import UTILS_Config
-import UTILS_Parametres
+from Ctrl import CTRL_Bouton_image
 
-import Accueil
-import Personnes
-import Presences
-import Recrutement
-import Configuration
-import Calendrier
+from Utils import UTILS_Config
+from Utils import UTILS_Parametres
+from Utils import UTILS_Fichiers
+from Utils import UTILS_Customize
+
+from Ctrl import CTRL_Accueil
+from Ctrl import CTRL_Personnes
+from Ctrl import CTRL_Presences
+from Ctrl import CTRL_Recrutement
+from Ctrl import CTRL_Configuration
+
+from Dlg import DLG_Config_sauvegarde
+
 import FonctionsPerso
 import GestionDB
 import os
 import datetime
-import Config_Sauvegarde
 import locale
 import urllib
 import random
 import sys
-import Attente
+import platform
 
 import shelve
 import dbhash
@@ -44,7 +49,6 @@ import anydbm
 import threading
 
 import wx.lib.agw.advancedsplash as AS
-import wx.lib.agw.toasterbox as Toaster
 import wx.lib.agw.pybusyinfo as PBI
 
    
@@ -65,19 +69,19 @@ class Toolbook(wx.Toolbook):
         """ Construit les pages du toolbook """
         # Images du ToolBook
         il = wx.ImageList(32, 32)
-        self.img_accueil  = il.Add(wx.Bitmap("Images/32x32/Maison.png", wx.BITMAP_TYPE_PNG))
-        self.img_personnes  = il.Add(wx.Bitmap("Images/32x32/Personnes.png", wx.BITMAP_TYPE_PNG))
-        self.img_presences  = il.Add(wx.Bitmap("Images/32x32/Horloge.png", wx.BITMAP_TYPE_PNG))
-        self.img_recrutement  = il.Add(wx.Bitmap("Images/32x32/Recrutement.png", wx.BITMAP_TYPE_PNG))
-        self.img_configuration  = il.Add(wx.Bitmap("Images/32x32/Configuration.png", wx.BITMAP_TYPE_PNG))
+        self.img_accueil  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Maison.png"), wx.BITMAP_TYPE_PNG))
+        self.img_personnes  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Personnes.png"), wx.BITMAP_TYPE_PNG))
+        self.img_presences  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Horloge.png"), wx.BITMAP_TYPE_PNG))
+        self.img_recrutement  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Recrutement.png"), wx.BITMAP_TYPE_PNG))
+        self.img_configuration  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Configuration.png"), wx.BITMAP_TYPE_PNG))
         self.AssignImageList(il)
         
         # Création des pages
-        self.AddPage(Accueil.Panel(self), _(u"Accueil"), imageId=self.img_accueil)
-        self.AddPage(Personnes.PanelPersonnes(self), _(u"Personnes"), imageId=self.img_personnes)
-        self.AddPage(Presences.PanelPresences(self), _(u"Présences"), imageId=self.img_presences)
-        self.AddPage(Recrutement.Panel(self), _(u"Recrutement"), imageId=self.img_recrutement)
-        self.AddPage(Configuration.Panel(self), _(u"Configuration"), imageId=self.img_configuration)
+        self.AddPage(CTRL_Accueil.Panel(self), _(u"Accueil"), imageId=self.img_accueil)
+        self.AddPage(CTRL_Personnes.PanelPersonnes(self), _(u"Personnes"), imageId=self.img_personnes)
+        self.AddPage(CTRL_Presences.PanelPresences(self), _(u"Présences"), imageId=self.img_presences)
+        self.AddPage(CTRL_Recrutement.Panel(self), _(u"Recrutement"), imageId=self.img_recrutement)
+        self.AddPage(CTRL_Configuration.Panel(self), _(u"Configuration"), imageId=self.img_configuration)
         
         # Met le texte à droite dans la toolbar
         tb = self.GetToolBar()        
@@ -133,11 +137,17 @@ class Toolbook(wx.Toolbook):
 class MyFrame(wx.Frame):
     def __init__(self, parent, ID=-1, title=""):
         wx.Frame.__init__(self, parent, ID, title, style=wx.DEFAULT_FRAME_STYLE, name="general")
+
+        theme = CUSTOMIZE.GetValeur("interface", "theme", "Bleu")
         
         # Ecrit la date et l'heure dans le journal.log
-        dateDuJour = datetime.datetime.now().strftime("%A %d %B %Y %H:%M:%S")
-        nomSysteme = sys.platform
-        print "------------ " + dateDuJour + " | v:%s | sys:%s ------------" % (VERSION_APPLICATION, nomSysteme)
+        dateDuJour = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        systeme = u"%s %s %s %s " % (sys.platform, platform.system(), platform.release(), platform.machine())
+        if six.PY2:
+            version_python = "2"
+        else :
+            version_python = "3"
+        print("-------- %s | %s | Python %s | wxPython %s | %s --------" % (dateDuJour, VERSION_APPLICATION, version_python, wx.version(), systeme))
         
         try : locale.setlocale(locale.LC_ALL, 'FR')
         except : pass
@@ -152,7 +162,7 @@ class MyFrame(wx.Frame):
         self.MAJexiste = self.RechercheMAJinternet()
         
         # Vérifie que le fichier de configuration existe bien
-        self.nomFichierConfig = "Data/Config.dat"
+        self.nomFichierConfig = UTILS_Fichiers.GetRepUtilisateur("Config.dat")
         test = os.path.isfile(self.nomFichierConfig) 
         if test == False :
             # Déplacement du userconfig vers le répertoire Data pour TW2
@@ -204,12 +214,10 @@ class MyFrame(wx.Frame):
         self.menubar.EnableTop(1, False)
         self.menubar.EnableTop(2, False)
         self.toolBook.ActiveToolBook(False)
-        
-            
 
     def __do_layout(self):
         _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
+        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.SetMinSize((800, 600))
         sizer_base = wx.BoxSizer(wx.HORIZONTAL)
@@ -229,7 +237,8 @@ class MyFrame(wx.Frame):
             self.SetSize(taille_fenetre)
         self.Centre()
 
-
+    def GetCustomize(self):
+        return CUSTOMIZE
 
     def Verif_Password(self, nomFichier):
         """ Vérifie s'il n'y a pas un mot de passe à saisir """
@@ -279,45 +288,45 @@ class MyFrame(wx.Frame):
         menu1 = wx.Menu()
         
         item = wx.MenuItem(menu1, 100, _(u"Assistant Démarrage"), _(u"Ouvrir l'assistant démarrage"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Assistant.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Assistant.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         
         menu1.AppendSeparator()
         
         item = wx.MenuItem(menu1, 101, _(u"Créer un nouveau fichier\tCtrl+N"), _(u"Créer un nouveau fichier"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Ajouter.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         item = wx.MenuItem(menu1, 102, _(u"Ouvrir un fichier\tCtrl+O"), _(u"Ouvrir un fichier existant"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Modifier.png", wx.BITMAP_TYPE_PNG)) 
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Modifier.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         item = wx.MenuItem(menu1, 103, _(u"Fermer le fichier\tCtrl+F"), _(u"Fermer le fichier ouvert"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Supprimer.png", wx.BITMAP_TYPE_PNG)) 
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Supprimer.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         
         menu1.AppendSeparator()
         
         item = wx.MenuItem(menu1, 104, _(u"Créer une sauvegarde\tCtrl+S"), _(u"Créer une sauvegarde globale des données"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Sauvegarder.png", wx.BITMAP_TYPE_PNG)) 
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Sauvegarder.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         item = wx.MenuItem(menu1, 105, _(u"Restaurer une sauvegarde\tCtrl+R"), _(u"Restaurer une sauvegarde"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Restaurer.png", wx.BITMAP_TYPE_PNG)) 
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Restaurer.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
 
         menu1.AppendSeparator()
 
         item = wx.MenuItem(menu1, 107, _(u"Convertir en fichier réseau"), _(u"Convertir le fichier ouvert en fichier réseau"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Conversion_reseau.png", wx.BITMAP_TYPE_PNG)) 
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Conversion_reseau.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         item.Enable(False)
         item = wx.MenuItem(menu1, 108, _(u"Convertir en fichier local"), _(u"Convertir le fichier ouvert en fichier local"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Conversion_local.png", wx.BITMAP_TYPE_PNG)) 
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Conversion_local.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         item.Enable(False)
         
         menu1.AppendSeparator()
         
         item = wx.MenuItem(menu1, 106, _(u"Quitter\tCtrl+Q"), _(u"Quitter l'application"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Quitter.png", wx.BITMAP_TYPE_PNG)) 
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Quitter.png"), wx.BITMAP_TYPE_PNG))
         menu1.AppendItem(item)
         
         menu1.AppendSeparator()
@@ -334,7 +343,7 @@ class MyFrame(wx.Frame):
                 listeDerniersFichiers.append(nomFichier)
             else:
                 # VERSION LOCAL
-                fichier = "Data/" + nomFichier + "_TDATA.dat"
+                fichier = UTILS_Fichiers.GetRepData(nomFichier + "_TDATA.dat")
                 test = os.path.isfile(fichier)
                 if test == True : 
                     listeDerniersFichiers.append(nomFichier)
@@ -366,7 +375,7 @@ class MyFrame(wx.Frame):
         menu2 = wx.Menu()
         
         item = wx.MenuItem(menu2, 201, _(u"Gestion des Gadgets de la page d'accueil"), _(u"Gestion des Gadgets de la page d'accueil"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Calendrier_ajout.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calendrier_ajout.png"), wx.BITMAP_TYPE_PNG))
         menu2.AppendItem(item)
         
         menubar.Append(menu2, "Affichage")
@@ -377,31 +386,31 @@ class MyFrame(wx.Frame):
         menu3 = wx.Menu()
         
         item = wx.MenuItem(menu3, 305, _(u"Imprimer des photos de personnes"), _(u"Imprimer des photos de personnes"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Personnes.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Personnes.png"), wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         item = wx.MenuItem(menu3, 304, _(u"Gestion des frais de déplacements"), _(u"Gestion des frais de déplacements"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Calculatrice.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calculatrice.png"), wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         menu3.AppendSeparator()
-        item = wx.MenuItem(menu3, 320, _(u"Liste des contrats"), _(u"Liste des contrats"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Contrat.png", wx.BITMAP_TYPE_PNG))
+        item = wx.MenuItem(menu3, 320, _(u"Registre unique du personnel"), _(u"Registre unique du personnel"))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Contrat.png"), wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         menu3.AppendSeparator()
         item = wx.MenuItem(menu3, 301, _(u"Exporter les personnes dans MS Outlook"), _(u"Exporter les personnes dans MS Outlook"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Outlook.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Outlook.png"), wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         if "linux" in sys.platform :
             item.Enable(False)
         menu3.AppendSeparator()
         item = wx.MenuItem(menu3, 303, _(u"Envoyer un mail groupé avec votre client de messagerie"), _(u"Envoyer un mail groupé à un panel de personnes"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         item = wx.MenuItem(menu3, 306, _(u"Créer des courriers ou des emails par publipostage"), _(u"Créer des courriers ou des emails par publipostage"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
         menu3.AppendSeparator()
         item = wx.MenuItem(menu3, 307, _(u"Lancer Teamword, l'éditeur de texte"), _(u"Lancer Teamword, l'éditeur de texte"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
         menu3.AppendItem(item)
                 
         menubar.Append(menu3, "Outils")
@@ -418,7 +427,7 @@ class MyFrame(wx.Frame):
         menu6 = wx.Menu()
         
         item = wx.MenuItem(menu6, 601, _(u"Rechercher des mises à jour du logiciel"), _(u"Rechercher des mises à jour du logiciel"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Updater.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Updater.png"), wx.BITMAP_TYPE_PNG))
         menu6.AppendItem(item)
         
         menubar.Append(menu6, _(u"Internet"))
@@ -429,21 +438,21 @@ class MyFrame(wx.Frame):
         menu4 = wx.Menu()
         
         item = wx.MenuItem(menu4, 401, _(u"Consulter l'aide intégrée\tCtrl+A"), _(u"Consulter l'aide de TeamWorks"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Aide.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_PNG))
         menu4.AppendItem(item)
         
         item = wx.MenuItem(menu4, 404, _(u"Télécharger le guide de l'utilisateur (248 pages - PDF)"), _(u"Télécharger le guide de l'utilisateur (248 pages - PDF)"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Guide.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Guide.png"), wx.BITMAP_TYPE_PNG))
         menu4.AppendItem(item)
         
         item = wx.MenuItem(menu4, 403, _(u"Accéder au forum TeamWorks"), _(u"Accéder au forum TeamWorks"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Planete.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Planete.png"), wx.BITMAP_TYPE_PNG))
         menu4.AppendItem(item)
         
         menu4.AppendSeparator()
         
         item = wx.MenuItem(menu4, 402, _(u"Envoyer un mail à l'auteur"), _(u"Envoyer un mail à l'auteur de Teamworks"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Mail.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG))
         menu4.AppendItem(item)
         
         menubar.Append(menu4, "Aide")
@@ -457,7 +466,7 @@ class MyFrame(wx.Frame):
         menu7 = wx.Menu()
         
         item = wx.MenuItem(menu7, 701, _(u"Pourquoi et comment faire un don de soutien ?"), _(u"Pourquoi et comment faire un don de soutien ?"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Smile.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Smile.png"), wx.BITMAP_TYPE_PNG))
         menu7.AppendItem(item)
         
         self.Bind(wx.EVT_MENU, self.MenuDons, id=701)
@@ -468,14 +477,14 @@ class MyFrame(wx.Frame):
         menu5 = wx.Menu()
         
         item = wx.MenuItem(menu5, 501, _(u"Notes de versions"), _(u"Notes de versions"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
         menu5.AppendItem(item)
         item = wx.MenuItem(menu5, 502, _(u"Licence"), _(u"Licence du logiciel"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
         menu5.AppendItem(item)
         menu5.AppendSeparator()
         item = wx.MenuItem(menu5, 503, _(u"A propos"), _(u"A propos"))
-        item.SetBitmap(wx.Bitmap("Images/16x16/Document.png", wx.BITMAP_TYPE_PNG))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
         menu5.AppendItem(item)
         
         self.Bind(wx.EVT_MENU, self.MenuVersions, id=501)
@@ -526,7 +535,7 @@ class MyFrame(wx.Frame):
 ##            if save_active[0][0] == 1 :
 ##                # Sauvegarde automatique
 ##                self.SetStatusText(_(u"Veuillez patienter pendant la sauvegarde automatique des données..."))
-##                saveAuto = Config_Sauvegarde.Sauvegarde_auto()
+##                saveAuto = DLG_Config_sauvegarde.Sauvegarde_auto()
 ##                saveAuto.Save()
 ##                self.SetStatusText("")
 ##                # Enregistre la date du jour comme date de dernière sauvegarde
@@ -560,7 +569,7 @@ class MyFrame(wx.Frame):
 ##            dlg.Destroy()
 ##            return
         nomFichier = self.userConfig["nomFichier"]
-        import UTILS_Conversion_fichier
+        from Utils import UTILS_Conversion_fichier
         resultat = UTILS_Conversion_fichier.ConversionLocalReseau(self, nomFichier)
         print "Succes de la procedure : ", resultat
 
@@ -571,18 +580,18 @@ class MyFrame(wx.Frame):
 ##            dlg.Destroy()
 ##            return
         nomFichier = self.userConfig["nomFichier"]
-        import UTILS_Conversion_fichier
+        from Utils import UTILS_Conversion_fichier
         resultat = UTILS_Conversion_fichier.ConversionReseauLocal(self, nomFichier)
         print "Succes de la procedure : ", resultat
 
         
     def MenuNouveau(self, event):
         """ Créé une nouvelle base de données """
-        import DATA_Tables as Tables
+        from Data import DATA_Tables as Tables
         
         # Demande le nom du fichier
-        import Saisie_nouveau_fichier
-        dlg = Saisie_nouveau_fichier.MyDialog(self)
+        from Dlg import DLG_Saisie_nouveau_fichier
+        dlg = DLG_Saisie_nouveau_fichier.MyDialog(self)
         if dlg.ShowModal() == wx.ID_OK:
             nomFichier = dlg.GetNomFichier()
             listeTables = dlg.GetListeTables()
@@ -593,7 +602,7 @@ class MyFrame(wx.Frame):
         
         # Affiche d'une fenêtre d'attente
         message = _(u"Création du nouveau fichier en cours... Veuillez patientez...")
-        dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Création d'un fichier"), icon=wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
+        dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Création d'un fichier"), icon=wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         wx.Yield() 
             
         if "[RESEAU]" in nomFichier :
@@ -616,7 +625,7 @@ class MyFrame(wx.Frame):
             # Version LOCAL
             
             # Vérifie si un fichier ne porte pas déjà ce nom :
-            fichier = "Data/" + nomFichier + "_TDATA.dat"
+            fichier = UTILS_Fichiers.GetRepData(nomFichier + "_TDATA.dat")
             test = os.path.isfile(fichier) 
             if test == True :
                 del dlgAttente
@@ -693,67 +702,7 @@ class MyFrame(wx.Frame):
         self.SetStatusText(_(u"Création de la table de données des documents..."))
         DB.CreationTables(Tables.DB_DOCUMENTS)
         DB.Close()
-        
-##        # Vérification de validité du fichier
-##        if nomFichier == "" :
-##            dlg = wx.MessageDialog(self, _(u"Le nom que vous avez saisi n'est pas valide !"), "Erreur", wx.OK | wx.ICON_ERROR)
-##            dlg.ShowModal()
-##            dlg.Destroy()
-##            if "[RESEAU]" in nomFichier :
-##                nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-##            self.SetStatusText(_(u"Echec de la création du fichier '%s' : nom du fichier non valide.") % nomFichier)
-##            return False
-##        
-##        if "[RESEAU]" not in nomFichier :
-##            # Version LOCAL
-##            
-##            # Vérifie si un fichier ne porte pas déjà ce nom :
-##            fichier = "Data/" + nomFichier + "_DATA.dat"
-##            test = os.path.isfile(fichier) 
-##            if test == True :
-##                dlg = wx.MessageDialog(self, _(u"Vous possédez déjà un fichier qui porte le nom '") + nomFichier + _(u"'.\n\nVeuillez saisir un autre nom."), "Erreur", wx.OK | wx.ICON_ERROR)
-##                dlg.ShowModal()
-##                dlg.Destroy()
-##                self.SetStatusText(_(u"Echec de la création du fichier '%s' : Le nom existe déjà.") % nomFichier)
-##                return False
-##        
-##        else:
-##            # Version RESEAU
-##            dictResultats = GestionDB.TestConnexionMySQL(typeTest="fichier", nomFichier=nomFichier)
-##            
-##            # Vérifie la connexion au réseau
-##            if dictResultats["connexion"][0] == False :
-##                erreur = dictResultats["connexion"][1]
-##                dlg = wx.MessageDialog(self, _(u"La connexion au réseau MySQL est impossible. \n\nErreur : %s") % erreur, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
-##                dlg.ShowModal()
-##                dlg.Destroy()
-##                return False
-##            
-##            # Vérifie que le fichier n'est pas déjà utilisé
-##            if dictResultats["fichier"][0] == True :
-##                dlg = wx.MessageDialog(self, _(u"Le fichier existe déjà."), _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
-##                dlg.ShowModal()
-##                dlg.Destroy()
-##                return False
-##        
-##        # Création de la base de données
-##        ancienFichier = self.userConfig["nomFichier"]
-##        self.userConfig["nomFichier"] = nomFichier 
-##        db = GestionDB.DB(modeCreation=True)
-##        if db.echec == 1 :
-##            erreur = db.erreur
-##            dlg = wx.MessageDialog(self, _(u"Erreur dans la création du fichier.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
-##            dlg.ShowModal()
-##            dlg.Destroy()
-##            self.userConfig["nomFichier"] = ancienFichier 
-##            return False
-##        
-##        db.CreationTables()
-##        db.Importation_valeurs_defaut(listeTables)
-        
-##        # Obtient la version de la DB de l'application
-##        versionDBApplication = self.GetVersionDBApplication()
-        
+
         # Créé un identifiant unique pour ce fichier
         d = datetime.datetime.now()
         IDfichier = d.strftime("%Y%m%d%H%M%S")
@@ -782,7 +731,7 @@ class MyFrame(wx.Frame):
         save_conservation = 3
         standardPath = wx.StandardPaths.Get()
         save_destination = standardPath.GetDocumentsDir()
-        save_elements = Config_Sauvegarde.GetListeSourcesStr()
+        save_elements = DLG_Config_sauvegarde.GetListeSourcesStr()
         listeDonnees = [("date_derniere_ouverture",  date_jour),
                                 ("date_creation_fichier",  date_jour),
                                 ("save_active",  save_active),
@@ -845,7 +794,7 @@ class MyFrame(wx.Frame):
     def MenuOuvrir(self, event):
         """ Ouvrir un fichier présent dur le disque dur """    
         # Boîte de dialogue pour demander le nom du fichier à ouvrir
-        import DLG_Ouvrir_fichier
+        from Dlg import DLG_Ouvrir_fichier
         dlg = DLG_Ouvrir_fichier.MyDialog(self)
         if dlg.ShowModal() == wx.ID_OK:
             nomFichier = dlg.GetNomFichier()
@@ -1004,22 +953,22 @@ class MyFrame(wx.Frame):
         
     def MenuSauvegarder(self, event):
         """ Sauvegarder occasionnelle """
-        import DLG_Sauvegarde
+        from Dlg import DLG_Sauvegarde
         dlg = DLG_Sauvegarde.Dialog(self)
         dlg.ShowModal() 
         dlg.Destroy()
         # Version TW1
-##        frameSave = Config_Sauvegarde.Saisie_sauvegarde_occasionnelle(self)
+##        frameSave = DLG_Config_sauvegarde.Saisie_sauvegarde_occasionnelle(self)
 ##        frameSave.Show()
         
     def MenuRestaurer(self, event):
         """ Restaurer une sauvegarde """
-        import DLG_Restauration
+        from Dlg import DLG_Restauration
         fichier = DLG_Restauration.SelectionFichier()
         if fichier != None :
             if fichier.endswith(".twz") == True :
                 # Version TW1
-                frameResto = Config_Sauvegarde.Restauration(self, fichier)
+                frameResto = DLG_Config_sauvegarde.Restauration(self, fichier)
                 frameResto.Show()
             else:
                 # Version TW2
@@ -1046,7 +995,7 @@ class MyFrame(wx.Frame):
 ##            return
 ##        
 ##        # Lance la restauration
-##        frameResto = Config_Sauvegarde.Restauration(self, fichier)
+##        frameResto = DLG_Config_sauvegarde.Restauration(self, fichier)
 ##        frameResto.Show()
          
     def MenuDerniersFichiers(self, event):
@@ -1175,14 +1124,14 @@ class MyFrame(wx.Frame):
         else:
             # Test de validité du fichier SQLITE :
             valide = False
-            if os.path.isfile(_(u"Data/%s_TDATA.dat") % nomFichier)  :
+            if os.path.isfile(UTILS_Fichiers.GetRepData(u"%s_TDATA.dat" % nomFichier)):
                 valide = True
             else :
-                cheminFichier = _(u"Data/%s.twk") % nomFichier
+                cheminFichier = UTILS_Fichiers.GetRepData(u"%s.twk" % nomFichier)
                 if os.path.isfile(cheminFichier) :
                     valide = True
                     # Si c'est une version TW1 : Renommage du fichier DATA pour TW2
-                    os.rename(cheminFichier, _(u"Data/%s_TDATA.dat") % nomFichier)
+                    os.rename(cheminFichier, UTILS_Fichiers.GetRepData(u"%s_TDATA.dat" % nomFichier))
             
             if valide == False :
                 dlg = wx.MessageDialog(self, _(u"Il est impossible d'ouvrir le fichier demandé !"), "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
@@ -1256,7 +1205,7 @@ class MyFrame(wx.Frame):
             
             # Affiche d'une fenêtre d'attente
             message = _(u"Mise à jour de la base de données en cours... Veuillez patientez...")
-            dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Mise à jour"), icon=wx.Bitmap("Images/16x16/Logo.png", wx.BITMAP_TYPE_ANY))
+            dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Mise à jour"), icon=wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
             wx.Yield() 
             
             DB = GestionDB.DB(nomFichier = nomFichier)        
@@ -1308,8 +1257,8 @@ class MyFrame(wx.Frame):
             dlg.Destroy()
             return
     
-        import Export_outlook
-        outlook = Export_outlook.LibOutlook()
+        from Dlg import DLG_Export_outlook
+        outlook = DLG_Export_outlook.LibOutlook()
         # Recherche si Outlook peut être ouvert
         dlg = wx.MessageDialog(self, _(u"Un test va être effectué pour vérifier que Outlook est bien accessible sur votre ordinateur.\n\nSi c'est bien le cas, Outlook va vous demander si vous acceptez que cet accès ait bien lieu.\n\nCochez la case 'Autoriser l'accès' et sélectionnez un temps de 10 minutes..."), _(u"Information"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
@@ -1330,7 +1279,7 @@ class MyFrame(wx.Frame):
             return
 
         # Ouverture de la frame exportation
-        frameExport = Export_outlook.MyFrame(None)
+        frameExport = DLG_Export_outlook.MyFrame(None)
         frameExport.Show()
 
     def MenuGadgets(self, event):
@@ -1343,18 +1292,15 @@ class MyFrame(wx.Frame):
             dlg.Destroy()
             return
         
-        import Config_Gadgets
-        frame_config = Config_Gadgets.MyFrame(None)
+        from Dlg import DLG_Config_gadgets
+        frame_config = DLG_Config_gadgets.MyFrame(None)
         frame_config.Show()
 
         
 
     def MenuUpdater(self, event):
         """Mises à jour internet """
-##        import Updater
-##        frameUpdater = Updater.MyFrame(self)
-##        frameUpdater.Show()
-        import DLG_Updater
+        from Dlg import DLG_Updater
         dlg = DLG_Updater.Dialog(self)
         dlg.ShowModal() 
         installation = dlg.GetEtat() 
@@ -1365,8 +1311,8 @@ class MyFrame(wx.Frame):
         
     def MenuEnvoiMailGroupe(self, event):
         """ Envoi d'un mail groupé """
-        import Envoi_email_groupe
-        dlg = Envoi_email_groupe.MyDialog(self)
+        from Dlg import DLG_Envoi_email_groupe
+        dlg = DLG_Envoi_email_groupe.MyDialog(self)
         if dlg.ShowModal() == wx.ID_OK:
             listeAdresses = dlg.GetAdresses()
             dlg.Destroy()
@@ -1378,12 +1324,12 @@ class MyFrame(wx.Frame):
 
     def MenuGestionFrais(self, event):
         """ Gestion globale des frais de déplacements """
-        import Gestion_frais
-        frm = Gestion_frais.MyFrame(self)
+        from Dlg import DLG_Gestion_frais
+        frm = DLG_Gestion_frais.MyFrame(self)
         frm.Show()
 
     def MenuListeContrats(self, event):
-        import DLG_Liste_contrats
+        from Dlg import DLG_Liste_contrats
         dlg = DLG_Liste_contrats.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
@@ -1391,20 +1337,20 @@ class MyFrame(wx.Frame):
     def MenuImprimerPhotos(self, event):
         """ Imprimer les photos des personnes """
         # Ouverture de la frame d'impression des photos  
-        import Impression_photo
-        frame = Impression_photo.FrameSelectionPersonnes(None)
+        from Dlg import DLG_Impression_photo
+        frame = DLG_Impression_photo.FrameSelectionPersonnes(None)
         frame.Show()
 
     def MenuPublipostage(self, event):
         """ Imprimer par publipostage """
-        import Publiposteur_Choix
-        frame = Publiposteur_Choix.MyFrame(None)
+        from Dlg import DLG_Publiposteur_Choix
+        frame = DLG_Publiposteur_Choix.MyFrame(None)
         frame.Show()
 
     def MenuTeamword(self, event):
         """ Lancer Teamword """
-        import Teamword
-        frame = Teamword.MyFrame(None)
+        from Dlg import DLG_Teamword
+        frame = DLG_Teamword.MyFrame(None)
         frame.Show()
         
     def MenuVersions(self, event):
@@ -1511,7 +1457,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
             versionAnnonce = self.GetVersionAnnonce()
             versionLogiciel = self.ConvertVersionTuple(VERSION_APPLICATION)
             if versionAnnonce < versionLogiciel :
-                import DLG_Message_accueil
+                from Dlg import DLG_Message_accueil
                 dlg = DLG_Message_accueil.Dialog(self)
                 dlg.ShowModal()
                 dlg.Destroy()
@@ -1536,8 +1482,8 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
             afficherDernierFichier = True
         
         # Charge la boîte de dialogue
-        import Assistant_demarrage
-        dlg = Assistant_demarrage.MyFrame(None, checkAffichage=checkAffichage, afficherDernierFichier=afficherDernierFichier, nomDernierFichier=self.nomDernierFichier)
+        from Dlg import DLG_Assistant_demarrage
+        dlg = DLG_Assistant_demarrage.MyFrame(None, checkAffichage=checkAffichage, afficherDernierFichier=afficherDernierFichier, nomDernierFichier=self.nomDernierFichier)
         dlg.ShowModal()
         choix = dlg.GetChoix()
         checkAffichage = dlg.GetCheckAffichage()
@@ -1576,8 +1522,8 @@ class SaisiePassword(wx.Dialog):
         self.label_2 = wx.StaticText(self, -1, _(u"Le fichier '") + self.FormateNomFichier(nomFichierTmp) + _(u"' est protégé."))
         self.label_password = wx.StaticText(self, -1, "Mot de passe :")
         self.text_password = wx.TextCtrl(self, -1, "", size=(200, -1), style=wx.TE_PASSWORD)
-        self.bouton_ok = CTRL_Bouton_image.CTRL(self, id=wx.ID_OK, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
-        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, id=wx.ID_OK, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
         self.__set_properties()
         self.__do_layout()
         
@@ -1628,14 +1574,14 @@ class MyApp(wx.App):
         heure_debut = time.time()
         wx.Locale(wx.LANGUAGE_FRENCH)
 
-        # Vérifie l'existence des répertoires
-        for rep in ("Aide", "Temp", "Updates", "Data", "Lang", "Documents/Editions") :
-            if os.path.isdir(rep) == False :
-                os.makedirs(rep)
-                print "Creation du repertoire : ", rep
+        # # Vérifie l'existence des répertoires
+        # for rep in ("Aide", "Temp", "Updates", "Data", "Lang", "Documents/Editions") :
+        #     if os.path.isdir(rep) == False :
+        #         os.makedirs(rep)
+        #         print "Creation du repertoire : ", rep
 
         # AdvancedSplashScreen
-        bmp = wx.Bitmap("Images/Special/Logo_splash.png", wx.BITMAP_TYPE_PNG)
+        bmp = wx.Bitmap(Chemins.GetStaticPath("Images/Special/Logo_splash.png"), wx.BITMAP_TYPE_PNG)
         frame = AS.AdvancedSplash(None, bitmap=bmp, timeout=1000, agwStyle=AS.AS_TIMEOUT | AS.AS_CENTER_ON_SCREEN)
         frame.Refresh()
         frame.Update()
@@ -1657,20 +1603,54 @@ class MyApp(wx.App):
 
         # Affiche le temps de démarrage de TW
         duree = time.time()-heure_debut
-##        print "Temps de demarrage = %s secondes." % duree
-        
+
         return True
 
 
         
-        
-        
+class Redirect(object):
+    def __init__(self, nomJournal=""):
+        self.filename = open(nomJournal, "a")
+
+    def write(self, text):
+        if self.filename.closed:
+            pass
+        else:
+            self.filename.write(text)
+            self.filename.flush()
+
+
+
 if __name__ == "__main__":
+    # Vérifie l'existence des répertoires dans le répertoire Utilisateur
+    for rep in ("Temp", "Updates", "Sync", "Lang") :
+        rep = UTILS_Fichiers.GetRepUtilisateur(rep)
+        if os.path.isdir(rep) == False :
+            os.makedirs(rep)
+
+    # Vérifie si des fichiers du répertoire Data sont à déplacer vers le répertoire Utilisateur
+    UTILS_Fichiers.DeplaceFichiers()
+
+    # Initialisation du fichier de customisation
+    CUSTOMIZE = UTILS_Customize.Customize()
+
+    # Log
+    nomJournal = UTILS_Fichiers.GetRepUtilisateur(CUSTOMIZE.GetValeur("journal", "nom", "journal.log"))
+
+    # Supprime le journal.log si supérieur à 10 Mo
+    if os.path.isfile(nomJournal) :
+        taille = os.path.getsize(nomJournal)
+        if taille > 5000000 :
+            os.remove(nomJournal)
+
+    # Redirection vers un fichier
     nomFichier = sys.executable
-    if nomFichier.endswith("python.exe") :
-        app = MyApp(redirect=False)
-    else :
-        app = MyApp(redirect=True, filename="journal.log")
+    if nomFichier.endswith("python.exe") == False and CUSTOMIZE.GetValeur("journal", "actif", "1") != "0" and os.path.isfile("nolog.txt") == False :
+        sys.stdout = Redirect(nomJournal)
+
+    # Lancement de l'application
+    app = MyApp(redirect=False)
+
     app.MainLoop()
 
     

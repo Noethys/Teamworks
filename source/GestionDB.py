@@ -8,18 +8,16 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
-from UTILS_Traduction import _
+import Chemins
+from Utils.UTILS_Traduction import _
 import sys
 import sqlite3
 import wx
-import CTRL_Bouton_image
+from Utils import UTILS_Fichiers
 import os
 import MySQLdb
 
-import DATA_Tables as Tables
-
-try: import psyco; psyco.full()
-except: pass
+from Data import DATA_Tables as Tables
 
 
 class DB:
@@ -47,7 +45,7 @@ class DB:
         else:
             self.isNetwork = False
             if suffixe != None :
-                self.nomFichier = _(u"Data/%s.dat") % self.nomFichier
+                self.nomFichier = UTILS_Fichiers.GetRepData(u"%s.dat" % self.nomFichier)
         
         # Ouverture de la base de données
         if self.isNetwork == True :
@@ -62,7 +60,7 @@ class DB:
         if self.modeCreation == False :
             if os.path.isfile(nomFichier)  == False :
                 # Teste si c'est une ancienne version de fichier
-                if os.path.isfile(_(u"Data/%s.twk") % self.nomFichierCourt)  == False :
+                if os.path.isfile(UTILS_Fichiers.GetRepData(u"%s.twk" % self.nomFichierCourt))  == False :
                     print "Le fichier SQLITE demande n'est pas present sur le disque dur."
                     self.echec = 1
                     return
@@ -137,8 +135,8 @@ class DB:
             nomFichier = topWindow.userConfig["nomFichier"]
         else:
             # Récupération du nom de la DB directement dans le fichier de config sur le disque dur
-            import UTILS_Config
-            nomFichierConfig = "Data/Config.dat"
+            from Utils import UTILS_Config
+            nomFichierConfig = UTILS_Fichiers.GetRepUtilisateur("Config.dat")
             cfg = UTILS_Config.FichierConfig(nomFichierConfig)
             nomFichier = cfg.GetItemConfig("nomFichier")
         return nomFichier
@@ -768,7 +766,7 @@ class DB:
         versionFiltre = (2, 0, 0, 0)
         if versionFichier < versionFiltre :   
             try :
-                import UTILS_Procedures
+                from Utils import UTILS_Procedures
                 UTILS_Procedures.A2000(nomFichier=self.nomFichierCourt)
             except Exception, err :
                 return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
@@ -782,16 +780,24 @@ class DB:
                 if self.IsTableExists("questionnaire_categories") == False : self.CreationTable("questionnaire_categories", Tables.DB_DATA)
                 if self.IsTableExists("questionnaire_choix") == False : self.CreationTable("questionnaire_choix", Tables.DB_DATA)
                 if self.IsTableExists("questionnaire_reponses") == False : self.CreationTable("questionnaire_reponses", Tables.DB_DATA)
-                import UTILS_Procedures
+                from Utils import UTILS_Procedures
                 UTILS_Procedures.D1051(nomFichier=self.nomFichierCourt)
             except Exception, err :
                 return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
         
         # =============================================================
-        
-        
-        
-        
+
+        versionFiltre = (2, 1, 0, 1)
+        if versionFichier < versionFiltre:
+            try:
+                if self.IsTableExists("profils") == False: self.CreationTable("profils", Tables.DB_DATA)
+                if self.IsTableExists("profils_parametres") == False: self.CreationTable("profils_parametres", Tables.DB_DATA)
+            except Exception, err:
+                return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
+
+        # =============================================================
+
+
         return True
 
 def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None):
@@ -800,7 +806,7 @@ def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None)
     
     for suffixe, dictTables in ( ("TDATA", Tables.DB_DATA), ("TPHOTOS", Tables.DB_PHOTOS), ("TDOCUMENTS", Tables.DB_DOCUMENTS) ) :
         
-        nomFichierActif = _(u"Data/%s_%s.dat") % (nomFichier, suffixe)
+        nomFichierActif = UTILS_Fichiers.GetRepData(u"%s_%s.dat" % (nomFichier, suffixe))
         nouveauNom = nouveauFichier[nouveauFichier.index("[RESEAU]"):].replace("[RESEAU]", "")
         
         dictResultats = TestConnexionMySQL(typeTest="fichier", nomFichier=u"%s_%s" % (nouveauFichier, suffixe) )
@@ -858,7 +864,7 @@ def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None)
     for suffixe, dictTables in ( ("TDATA", Tables.DB_DATA), ("TPHOTOS", Tables.DB_PHOTOS), ("TDOCUMENTS", Tables.DB_DOCUMENTS) ) :
         
         nomFichierActif = nomFichier[nomFichier.index("[RESEAU]"):].replace("[RESEAU]", "") 
-        nouveauNom = _(u"Data/%s_%s.dat") % (nomFichier, suffixe)
+        nouveauNom = UTILS_Fichiers.GetRepData(u"%s_%s.dat" % (nomFichier, suffixe))
         
         # Vérifie que le fichier n'est pas déjà utilisé
         if os.path.isfile(nouveauNom)  == True :
