@@ -7,6 +7,7 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
@@ -17,7 +18,7 @@ import FonctionsPerso
 VERSION_LOGICIEL = FonctionsPerso.GetVersionTeamworks()
 
 TEXTE_ACCUEIL = u"""
-<CENTER><IMG SRC="Images/80x80/Logo_tw.png">
+<CENTER><IMG SRC="%s">
 <BR>
 <FONT SIZE=2>
 <B>Bienvenue dans Teamworks</B><BR>
@@ -37,7 +38,7 @@ sur le forum dédié :
 <A HREF="Saisie">Cliquez ici pour accéder au forum</A>.
 </FONT>
 </CENTER>
-""" % VERSION_LOGICIEL
+""" % Chemins.GetStaticPath(u"Images/80x80/Logo_tw.png", VERSION_LOGICIEL)
 
 
 

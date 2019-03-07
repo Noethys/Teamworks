@@ -15,7 +15,7 @@ import FonctionsPerso
 
 
 TEXTE_ACCUEIL = u"""
-<CENTER><IMG SRC="Images/80x80/Logo_tw.png">
+<CENTER><IMG SRC="%s">
 <BR>
 <FONT SIZE=2>
 <B>Bienvenue dans TeamWorks</B>
@@ -30,7 +30,7 @@ votre soutien financier au projet :
 <A HREF="Saisie">Cliquez ici pour en savoir plus sur les dons</A>.
 </FONT>
 </CENTER>
-"""
+""" % Chemins.GetStaticPath(u"Images/80x80/Logo_tw.png")
 
 
 class MyHtml(html.HtmlWindow):
