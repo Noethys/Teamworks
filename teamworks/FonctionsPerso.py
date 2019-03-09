@@ -1091,7 +1091,7 @@ def GetNomDB():
         nom = topWindow.userConfig["nomFichier"]
     else:
         # Récupération du nom de la DB directement dans le fichier de config sur le disque dur
-        cfg = UTILS_Config.FichierConfig(nomFichier=UTILS_Fichiers.GetRepUtilisateur("Config.dat"))
+        cfg = UTILS_Config.FichierConfig()
         nom = cfg.GetItemConfig("nomFichier")
     return nom
 

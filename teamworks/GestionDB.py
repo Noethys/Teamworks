@@ -122,7 +122,7 @@ class DB:
             self.echec = 1
         else:
             self.echec = 0
-                    
+
     def GetNomFichierDefaut(self):
         nomFichier = ""
         try :
@@ -130,17 +130,16 @@ class DB:
             nomWindow = topWindow.GetName()
         except :
             nomWindow = None
-        if nomWindow == "general" : 
+        if nomWindow == "general" :
             # Si la frame 'General' est chargée, on y récupère le dict de config
             nomFichier = topWindow.userConfig["nomFichier"]
         else:
             # Récupération du nom de la DB directement dans le fichier de config sur le disque dur
             from Utils import UTILS_Config
-            nomFichierConfig = UTILS_Fichiers.GetRepUtilisateur("Config.dat")
-            cfg = UTILS_Config.FichierConfig(nomFichierConfig)
+            cfg = UTILS_Config.FichierConfig()
             nomFichier = cfg.GetItemConfig("nomFichier")
         return nomFichier
-    
+
     def GetListeDatabasesMySQL(self):
         # Récupère la liste des databases présentes
         listeDatabases = []

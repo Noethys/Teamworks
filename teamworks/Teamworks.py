@@ -160,30 +160,20 @@ class MyFrame(wx.Frame):
         
         # Recherche si une mise à jour internet existe
         self.MAJexiste = self.RechercheMAJinternet()
-        
+
         # Vérifie que le fichier de configuration existe bien
-        self.nomFichierConfig = UTILS_Fichiers.GetRepUtilisateur("Config.dat")
-        test = os.path.isfile(self.nomFichierConfig) 
-        if test == False :
-            # Déplacement du userconfig vers le répertoire Data pour TW2
-            if os.path.isfile("userconfig.dat") :
-                import shutil
-                shutil.move("userconfig.dat", "Data/Config.dat")
-            else :
-                # Création du fichier de configuration
-                cfg = UTILS_Config.FichierConfig(nomFichier=self.nomFichierConfig)
-                cfg.SetDictConfig(dictConfig={ "nomFichier" : "", "derniersFichiers" : [], "taille_fenetre" : (0, 0) } )
-                self.nouveauFichierConfig = True
-        else:
-            self.nouveauFichierConfig = False
+        self.nouveauFichierConfig = False
+        if UTILS_Config.IsFichierExists() == False :
+            print("Generation d'un nouveau fichier de config")
+            self.nouveauFichierConfig = UTILS_Config.GenerationFichierConfig()
+
+        # Récupération des fichiers de configuration
+        self.userConfig = self.GetFichierConfig()
 
         # Suppression du fichier Exemple ancien de TW1
         if os.path.isfile("Data/Exemple.twk") :
             os.remove("Data/Exemple.twk")
 
-        # Récupération des fichiers de configuration
-        self.userConfig = self.GetFichierConfig(nomFichier=self.nomFichierConfig) # Fichier de config de l'utilisateur
-        
         # Récupération du nom du dernier fichier chargé
         self.nomDernierFichier = self.userConfig["nomFichier"]
         self.userConfig["nomFichier"] = ""
@@ -507,15 +497,15 @@ class MyFrame(wx.Frame):
     def OnSize(self, event):
         #self.SetTitle(_(u"Taille de la fenêtre : %s") % event.GetSize())
         event.Skip()      
-       
-    def GetFichierConfig(self, nomFichier=""):
+
+    def GetFichierConfig(self):
         """ Récupère le dictionnaire du fichier de config """
-        cfg = FonctionsPerso.FichierConfig(nomFichier)
+        cfg = UTILS_Config.FichierConfig()
         return cfg.GetDictConfig()
 
-    def SaveFichierConfig(self, nomFichier):
+    def SaveFichierConfig(self):
         """ Sauvegarde le dictionnaire du fichier de config """
-        cfg = FonctionsPerso.FichierConfig(nomFichier)
+        cfg = UTILS_Config.FichierConfig()
         cfg.SetDictConfig(dictConfig=self.userConfig )
 
     def OnClose(self, event):
@@ -524,27 +514,6 @@ class MyFrame(wx.Frame):
         
     def Quitter(self, videRepertoiresTemp=True):
         """ Fin de l'application """
-        
-##        if self.userConfig["nomFichier"] != "" :
-##            # Vérifie si une Sauvegarde automatique est demandée
-##            DB = GestionDB.DB()        
-##            req = "SELECT save_active FROM divers WHERE IDdivers=1;"
-##            DB.ExecuterReq(req)
-##            save_active = DB.ResultatReq()
-##            DB.Close()
-##            if save_active[0][0] == 1 :
-##                # Sauvegarde automatique
-##                self.SetStatusText(_(u"Veuillez patienter pendant la sauvegarde automatique des données..."))
-##                saveAuto = DLG_Config_sauvegarde.Sauvegarde_auto()
-##                saveAuto.Save()
-##                self.SetStatusText("")
-##                # Enregistre la date du jour comme date de dernière sauvegarde
-##                date_jour =  str(datetime.date.today())  
-##                listeDonnees = [("save_date_derniere",  date_jour),]
-##                db = GestionDB.DB()
-##                db.ReqMAJ("divers", listeDonnees, "IDdivers", 1)
-##                db.Close()
-                
         # Mémorisation du paramètre de la taille d'écran
         if self.IsMaximized() == True :
             taille_fenetre = (0, 0)
@@ -553,7 +522,7 @@ class MyFrame(wx.Frame):
         self.userConfig["taille_fenetre"] = taille_fenetre
         
         # Sauvegarde du fichier de configuration
-        self.SaveFichierConfig(nomFichier=self.nomFichierConfig)
+        self.SaveFichierConfig()
         
         # Vidage du répertoire Temp
         if videRepertoiresTemp == True :
@@ -884,7 +853,7 @@ class MyFrame(wx.Frame):
             menuBar.FindItemById(108).Enable(False)
 
         # Sauvegarde du fichier de configuration
-        self.SaveFichierConfig(nomFichier=self.nomFichierConfig)
+        self.SaveFichierConfig()
         
         # Active les items du toolbook et sélectionne la page accueil
         self.toolBook.ActiveToolBook(True)
