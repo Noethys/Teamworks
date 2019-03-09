@@ -563,28 +563,17 @@ class MyFrame(wx.Frame):
         FonctionsPerso.VideRepertoireUpdates()
 
     def On_fichier_Convertir_reseau(self, event):
-##        if self.dictUtilisateur["profil"] != "administrateur" :
-##            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement avoir un profil Administrateur\npour accéder aux fonctions de conversion de fichier !"), _(u"Accès non autorisé"), wx.OK | wx.ICON_ERROR)
-##            dlg.ShowModal()
-##            dlg.Destroy()
-##            return
         nomFichier = self.userConfig["nomFichier"]
         from Utils import UTILS_Conversion_fichier
         resultat = UTILS_Conversion_fichier.ConversionLocalReseau(self, nomFichier)
         print "Succes de la procedure : ", resultat
 
     def On_fichier_Convertir_local(self, event):
-##        if self.dictUtilisateur["profil"] != "administrateur" :
-##            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement avoir un profil Administrateur\npour accéder aux fonctions de conversion de fichier !"), _(u"Accès non autorisé"), wx.OK | wx.ICON_ERROR)
-##            dlg.ShowModal()
-##            dlg.Destroy()
-##            return
         nomFichier = self.userConfig["nomFichier"]
         from Utils import UTILS_Conversion_fichier
         resultat = UTILS_Conversion_fichier.ConversionReseauLocal(self, nomFichier)
         print "Succes de la procedure : ", resultat
 
-        
     def MenuNouveau(self, event):
         """ Créé une nouvelle base de données """
         from Data import DATA_Tables as Tables
