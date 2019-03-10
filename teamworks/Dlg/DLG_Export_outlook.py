@@ -28,7 +28,7 @@ class LibOutlook() :
             self.Outlook = win32com.client.Dispatch("Outlook.Application")
             self.echec = False
         except :
-            print "pas de outlook"
+            print("pas de outlook")
             self.echec = True
         
     def Test(self):
@@ -36,7 +36,7 @@ class LibOutlook() :
         try :
             # Test de lecture des contacts
             MAPI = self.Outlook.GetNamespace("MAPI")
-            print "win32com.client.constants:", win32com.client.constants
+            print("win32com.client.constants:", win32com.client.constants)
             dossierContacts = MAPI.GetDefaultFolder(10)  # win32com.client.constants.olFolderContacts
             nbreContacts = len(dossierContacts.Items)
             for i in range(nbreContacts):
@@ -135,9 +135,9 @@ class LibOutlook() :
 class PanelContacts(scrolled.ScrolledPanel):
     def __init__(self, parent):
         scrolled.ScrolledPanel.__init__(self, parent, -1)
-        print "1"
+        print("1")
         self.outlook = LibOutlook()
-        print self.outlook
+        print(self.outlook)
         self.dictContacts = self.outlook.Lecture()
         
         self.listeContacts = self.Import_Donnees()
@@ -167,10 +167,10 @@ class PanelContacts(scrolled.ScrolledPanel):
             # Création des contrôles
             exec("self.bouton_synchro_" + str(IDpersonne) + " = wx.BitmapButton(self, 10000+IDpersonne, wx.Bitmap('Images/16x16/Ok_2.png', wx.BITMAP_TYPE_ANY))")
             exec("self.bouton_synchro_" + str(IDpersonne) + ".SetBitmapDisabled(wx.Bitmap('Images/16x16/Ok_3.png', wx.BITMAP_TYPE_ANY))")
-            exec("self.bouton_synchro_" + str(IDpersonne) + ".SetToolTipString(u'Cliquez ici pour synchroniser la fiche de ' + prenom + ' ' + nom + '.')")
+            exec("self.bouton_synchro_" + str(IDpersonne) + ".SetToolTip(wx.ToolTip(u'Cliquez ici pour synchroniser la fiche de ' + prenom + ' ' + nom + '.'))")
             exec("self.bouton_suppr_" + str(IDpersonne) + " = wx.BitmapButton(self, 20000+IDpersonne, wx.Bitmap('Images/16x16/Supprimer_2.png', wx.BITMAP_TYPE_ANY))")
             exec("self.bouton_suppr_" + str(IDpersonne) + ".SetBitmapDisabled(wx.Bitmap('Images/16x16/Supprimer_3.png', wx.BITMAP_TYPE_ANY))")
-            exec("self.bouton_suppr_" + str(IDpersonne) + ".SetToolTipString(u'Cliquez ici pour supprimer la fiche de ' + prenom + ' ' + nom + ' de Outlook.')")
+            exec("self.bouton_suppr_" + str(IDpersonne) + ".SetToolTip(wx.ToolTip(u'Cliquez ici pour supprimer la fiche de ' + prenom + ' ' + nom + ' de Outlook.'))")
             
             coords = []
             texte_coords = ""
@@ -189,7 +189,7 @@ class PanelContacts(scrolled.ScrolledPanel):
             
             # Définition de l'état
             etat = "non synchro"
-            for key, valeurs in self.dictContacts.iteritems():
+            for key, valeurs in self.dictContacts.items():
                 if valeurs["nom et prenom"] == nom + ", " + prenom :
                     # Ce contact est déjà dans Outlook
                     etat = "synchro"
@@ -409,12 +409,15 @@ class MyFrame(wx.Frame):
                 
     def __set_properties(self):
         self.SetTitle(_(u"Exportation des contacts vers Outlook"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler et fermer")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):

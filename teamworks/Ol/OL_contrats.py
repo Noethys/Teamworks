@@ -85,7 +85,7 @@ class Track(object):
         self.nomPersonne = u"%s %s" % (self.nom, self.prenom)
 
     def GetQualifications(self, IDcandidat):
-        if self.parent.dict_qualifications.has_key(IDcandidat) == False :
+        if (IDcandidat in self.parent.dict_qualifications) == False :
             return ""
         listeQualifications = self.parent.dict_qualifications[IDcandidat]
         txtQualifications = ""
@@ -202,7 +202,7 @@ class ListView(FastObjectListView):
         # Transforme liste en dict
         self.dict_qualifications = {}
         for IDdiplome, IDpersonne, IDtype_diplome in listeDonnees:
-            if self.dict_qualifications.has_key(IDpersonne):
+            if IDpersonne in self.dict_qualifications:
                 self.dict_qualifications[IDpersonne].append(IDtype_diplome)
             else:
                 self.dict_qualifications[IDpersonne] = [IDtype_diplome, ]
@@ -275,7 +275,7 @@ class ListView(FastObjectListView):
         self.SetColumns(liste_Colonnes)
         
         self.SetEmptyListMsg(_(u"Aucun contrat"))
-        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         if self.activeCheckBoxes == True :
             self.CreateCheckStateColumn(1)
             self.SetSortColumn(self.columns[2])
@@ -345,7 +345,7 @@ class ListView(FastObjectListView):
             noSelection = False
 
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Ajouter
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -582,7 +582,7 @@ class ListView(FastObjectListView):
                 
         # Demande de confirmation
         date_depot = self.Selection()[0].depot
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer la candidature du %s ?") % date_depot))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer la candidature du %s ?") % date_depot))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()

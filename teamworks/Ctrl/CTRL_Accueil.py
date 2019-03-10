@@ -41,14 +41,14 @@ def ImportListeGadgets():
         dictTmp = {}
         dictTmp["nom"] = nom
         dictTmp["label"] = label
-        exec("dictTmp['taille'] = " + taille )
-        exec("dictTmp['affichage'] = " + affichage )
+        dictTmp['taille'] = eval(taille)
+        dictTmp['affichage'] = eval(affichage)
         dictTmp['ordre'] = ordre
-        exec("dictTmp['config'] = " + config )
+        dictTmp['config'] = eval(config)
         if parametres != None and parametres != "" :
             # Rajout du dictionnaire de parametres
-            exec("dictTmpParam = " + parametres )
-            for key, valeur in dictTmpParam.iteritems() :
+            dictTmpParam = eval(parametres)
+            for key, valeur in dictTmpParam.items() :
                 dictTmp[key] = valeur
         listeGadgets.append( [nom, dictTmp] )
     # Renvoie la liste
@@ -59,7 +59,7 @@ def MajTableGadgets(nomGadget="", parametres={}):
     listeDonnees = []
     dictParametres = {}
     
-    for key, valeur in parametres.iteritems() :
+    for key, valeur in parametres.items() :
         # Paramètres de base
         if key == "label" : listeDonnees.append( ("label", valeur) )
         elif key == "taille" : listeDonnees.append( ("taille", str(valeur)) )
@@ -70,7 +70,7 @@ def MajTableGadgets(nomGadget="", parametres={}):
             # Autres paramètres :
             dictParametres[key] = valeur
         
-    listeDonnees.append( ("parametres", str(dictParametres.values()[0])) )
+    listeDonnees.append( ("parametres", str(list(dictParametres.values())[0])) )
 
     # Initialisation de la connexion avec la Base de données
     DB = GestionDB.DB()

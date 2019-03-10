@@ -439,7 +439,7 @@ class ReportFormat(object):
                     1),
                 space=3))
 
-        fmt.Row.Font = wx.FFont(12, wx.FONTFAMILY_DEFAULT, face=fontName)
+        fmt.Row.Font = wx.FFont(12, wx.FONTFAMILY_DEFAULT, False, fontName)
         # fmt.ColumnHeader.CellPadding=25
         fmt.ColumnHeader.GridPen = wx.Pen(wx.RED, 1)
         fmt.Row.CellPadding = (10, 10, 0, 10)
@@ -465,7 +465,7 @@ class BlockFormat(object):
         """
         self.padding = None
         self.decorations = list()
-        self.font = wx.FFont(14, wx.FONTFAMILY_SWISS, face="Gill Sans")
+        self.font = wx.FFont(14, wx.FONTFAMILY_SWISS, False, "Gill Sans")
         self.textColor = None
         self.textAlignment = wx.ALIGN_LEFT
         self.cellPadding = None

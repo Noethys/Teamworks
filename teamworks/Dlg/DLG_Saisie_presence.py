@@ -9,6 +9,7 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
@@ -119,14 +120,14 @@ class Panel(wx.Panel):
         self.text_heure_fin.SetMinSize((65, -1))
         self.text_heure_fin.SetFont(wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.text_heure_fin.SetCtrlParameters(invalidBackgroundColour = "PINK")
-        self.text_intitule.SetToolTipString(_(u"Saisissez ici une légende (optionnel)"))
-        self.bouton_aide.SetToolTipString(_(u"Bouton Aide"))
-        self.treeCtrl_categories.SetToolTipString(_(u"Sélectionnez ici une catégorie"))
-        self.listCtrl_donnees.SetToolTipString(_(u"Vous pouvez désélectionner ici une ou plusieurs tâches\nque vous ne souhaitez finalement pas enregistrer."))
+        self.text_intitule.SetToolTip(wx.ToolTip(_(u"Saisissez ici une légende (optionnel)")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Bouton Aide")))
+        self.treeCtrl_categories.SetToolTip(wx.ToolTip(_(u"Sélectionnez ici une catégorie")))
+        self.listCtrl_donnees.SetToolTip(wx.ToolTip(_(u"Vous pouvez désélectionner ici une ou plusieurs tâches\nque vous ne souhaitez finalement pas enregistrer.")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Bouton Ok"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Bouton Ok")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Bouton annuler"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Bouton annuler")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -230,7 +231,7 @@ class Panel(wx.Panel):
                     self.GetGrandParent().MAJafterModif()
                 # Si appellée à partir de la fiche individuelle
                 if self.GetGrandParent().GetName() == "frm_saisiePresences_FicheInd" :
-                    print "ok"
+                    print("ok")
         
         if self.mode == "modele" :
             etat = self.SauvegardeModele()
@@ -247,7 +248,7 @@ class Panel(wx.Panel):
         # Vérifie qu'au moins une tâche a été sélectionnée dans le listeCtrl
         if self.mode == "planning" :
             selection = False
-            for key, valeurs in self.dictDonnees.iteritems() :
+            for key, valeurs in self.dictDonnees.items() :
                 if valeurs[2] == True : selection = True
             if selection == False:
                 message = _(u"Vous devez sélectionner au moins une date.")
@@ -465,7 +466,7 @@ class Panel(wx.Panel):
         # Initialisation de la connexion avec la Base de données
         DB = GestionDB.DB()
         
-        for key, valeurs in self.dictDonnees.iteritems() :
+        for key, valeurs in self.dictDonnees.items() :
             if valeurs[2] == True :
 
                 IDpersonne = valeurs[0]
@@ -483,7 +484,7 @@ class Panel(wx.Panel):
                 DB.ExecuterReq(req)
                 listePresences = DB.ResultatReq()
                 nbreResultats = len(listePresences)
-                print nbreResultats
+                print(nbreResultats)
                 if nbreResultats != 0 :
 
                     # Un ou des présences existent à ce moment, donc pas d'enregistrement
@@ -646,12 +647,12 @@ class ListCtrl_donnees(wx.ListCtrl, CheckListCtrlMixin):
     def Remplissage(self):
         # Création d'une liste temporaire
         listeDonnees = []
-        for ID, valeurs in self.dictDonnees.iteritems() :
+        for ID, valeurs in self.dictDonnees.items() :
             listeDonnees.append((ID, valeurs[0], valeurs[1], valeurs[2]))
         listeDonnees.sort()
         # Remplissage
         for ID, IDpersonne, date, selection in listeDonnees:
-            index = self.InsertStringItem(sys.maxint, "")
+            index = self.InsertStringItem(six.MAXSIZE, "")
             nomPersonne = self.dictPersonnes[IDpersonne][0] + " " + self.dictPersonnes[IDpersonne][1]
             self.SetStringItem(index, 1, nomPersonne)
             self.SetStringItem(index, 2, "> " + DatetimeDateEnStr(date))
@@ -695,8 +696,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.il = il
 
         self.root = self.AddRoot(_(u"Catégories"))
-        self.SetPyData(self.root, None)
-
+        if 'phoenix' in wx.PlatformInfo:
+            self.SetItemData(self.root, None)
+        else:
+            self.SetPyData(self.root, None)
         self.Remplissage()
         
         self.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.OnItemExpanded, self)
@@ -714,9 +717,14 @@ class TreeCtrlCategories(wx.TreeCtrl):
     
     def CreationImage(self, tailleImages, r, v, b):
         """ Création des images pour le TreeCtrl """
-        bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
-        bmp.SetRGBRect((0, 0, 16, 16), 255, 255, 255)
-        bmp.SetRGBRect((6, 4, 8, 8), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGB((0, 0, 16, 16), 255, 255, 255)
+            bmp.SetRGB((6, 4, 8, 8), r, v, b)
+        else:
+            bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGBRect((0, 0, 16, 16), 255, 255, 255)
+            bmp.SetRGBRect((6, 4, 8, 8), r, v, b)
         return bmp.ConvertToBitmap()
 
     def Remplissage(self):
@@ -734,7 +742,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
                 # Création de la branche
                 newItem = self.AppendItem(itemParent, item[1])
-                self.SetPyData(newItem, item[0])
+                if 'phoenix' in wx.PlatformInfo:
+                    self.SetItemData(newItem, item[0])
+                else:
+                    self.SetPyData(newItem, item[0])
                 exec("self.SetItemImage(newItem, self.img" + str(item[0]) + ", wx.TreeItemIcon_Normal)") 
                 self.nbreBranches += 1
                 
@@ -780,7 +791,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
     def OnSelChanged(self, event):
         self.item = event.GetItem()
         textItem = self.GetItemText(self.item)
-        data = self.GetPyData(self.item)
+        if 'phoenix' in wx.PlatformInfo:
+            data = self.GetItemData(self.item)
+        else:
+            data = self.GetPyData(self.item)
         self.selection = data
         event.Skip()
 
@@ -803,7 +817,10 @@ class Frm_SaisiePresences(wx.Frame):
             self.SetTitle(_(u"Saisie d'une tâche"))
         else:
             self.SetTitle(_(u"Modification d'une tâche"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_PNG))
         self.SetIcon(_icon)
         self.SetMinSize((440, 445))
@@ -833,8 +850,8 @@ if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
     listeDonnees = [
-            ( 2, datetime.date(2008, 01, 01)),
-            ( 2, datetime.date(2008, 01, 15)),
+            ( 2, datetime.date(2008, 1, 1)),
+            ( 2, datetime.date(2008, 1, 15)),
             ]
     frame_1 = Frm_SaisiePresences(None, listeDonnees)
     app.SetTopWindow(frame_1)

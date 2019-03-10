@@ -16,6 +16,10 @@ import datetime
 import wx.lib.masked as masked
 import sqlite3
 import sys
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN
 
 import decimal
 decimal.getcontext().prec = 2
@@ -50,7 +54,7 @@ class SaisieDeplacement(wx.Dialog):
         self.staticbox_generalites = wx.StaticBox(self, -1, _(u"Généralités"))
         
         self.label_date = wx.StaticText(self, -1, _(u"Date :"), size=(95, -1), style=wx.ALIGN_RIGHT)
-        self.ctrl_date = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         
         self.label_utilisateur = wx.StaticText(self, -1, _(u"Utilisateur :"), size=(95, -1), style=wx.ALIGN_RIGHT)
         self.ImportationPersonnes()
@@ -143,21 +147,21 @@ class SaisieDeplacement(wx.Dialog):
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
-        self.ctrl_date.SetToolTipString(_(u"Sélectionnez ici la date du déplacement"))
-        self.ctrl_utilisateur.SetToolTipString(_(u"Sélectionnez ici l'utilisateur pour ce déplacement"))
-        self.ctrl_objet.SetToolTipString(_(u"Saisissez ici l'objet du déplacement. Ex : réunion, formation, etc..."))
-        self.ctrl_cp_depart.SetToolTipString(_(u"Saisissez ici le code postal de la ville de départ"))
-        self.ctrl_ville_depart.SetToolTipString(_(u"Saisissez ici le nom de la ville de départ"))
-        self.ctrl_cp_arrivee.SetToolTipString(_(u"Saisissez ici le code postal de la ville d'arrivée"))
-        self.ctrl_ville_arrivee.SetToolTipString(_(u"Saisissez ici le nom de la ville d'arrivée"))
-        self.ctrl_distance.SetToolTipString(_(u"Saisissez ici la distance en Km entre les 2 villes sélectionnées.\nSi Teamworks la connait, il l'indiquera automatiquement."))
-        self.ctrl_aller_retour.SetToolTipString(_(u"Cochez cette case si le déplacement a fait l'objet d'un aller/retour.\nLa distance sera ainsi doublée."))
-        self.ctrl_tarif.SetToolTipString(_(u"Saisissez ici le montant du tarif du Km pour permettre calculer le montant du remboursement pour ce déplacement."))
-        self.bouton_options_depart.SetToolTipString(_(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel"))
-        self.bouton_options_arrivee.SetToolTipString(_(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler la saisie")))
+        self.ctrl_date.SetToolTip(wx.ToolTip(_(u"Sélectionnez ici la date du déplacement")))
+        self.ctrl_utilisateur.SetToolTip(wx.ToolTip(_(u"Sélectionnez ici l'utilisateur pour ce déplacement")))
+        self.ctrl_objet.SetToolTip(wx.ToolTip(_(u"Saisissez ici l'objet du déplacement. Ex : réunion, formation, etc...")))
+        self.ctrl_cp_depart.SetToolTip(wx.ToolTip(_(u"Saisissez ici le code postal de la ville de départ")))
+        self.ctrl_ville_depart.SetToolTip(wx.ToolTip(_(u"Saisissez ici le nom de la ville de départ")))
+        self.ctrl_cp_arrivee.SetToolTip(wx.ToolTip(_(u"Saisissez ici le code postal de la ville d'arrivée")))
+        self.ctrl_ville_arrivee.SetToolTip(wx.ToolTip(_(u"Saisissez ici le nom de la ville d'arrivée")))
+        self.ctrl_distance.SetToolTip(wx.ToolTip(_(u"Saisissez ici la distance en Km entre les 2 villes sélectionnées.\nSi Teamworks la connait, il l'indiquera automatiquement.")))
+        self.ctrl_aller_retour.SetToolTip(wx.ToolTip(_(u"Cochez cette case si le déplacement a fait l'objet d'un aller/retour.\nLa distance sera ainsi doublée.")))
+        self.ctrl_tarif.SetToolTip(wx.ToolTip(_(u"Saisissez ici le montant du tarif du Km pour permettre calculer le montant du remboursement pour ce déplacement.")))
+        self.bouton_options_depart.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel")))
+        self.bouton_options_arrivee.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour rechercher une ville ou pour saisir manuellement une ville non présente dans la base de données du logiciel")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
@@ -268,10 +272,10 @@ class SaisieDeplacement(wx.Dialog):
         
 
     def OnBoutonOptionsDepart(self, event):
-        print "options ville depart"
+        print("options ville depart")
 
     def OnBoutonOptionsArrivee(self, event):
-        print "options ville arrivee"
+        print("options ville arrivee")
                 
     def ImportationPersonnes(self):
         """ Importation de la liste des personnes """
@@ -455,7 +459,7 @@ class SaisieDeplacement(wx.Dialog):
     
     def SetPersonne(self, IDpersonne=None):
         # Recherche de l'index dans le dictPersonnes
-        for index, IDpers in self.dictPersonnes.iteritems() :
+        for index, IDpers in self.dictPersonnes.items() :
             if IDpersonne == IDpers :
                 self.ctrl_utilisateur.Select(index)
                 break

@@ -16,7 +16,7 @@ import time
 import FonctionsPerso
 import wx.grid as gridlib
 import calendar
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 import wx.lib.scrolledpanel as scrolled
 import os
 import sys
@@ -25,6 +25,10 @@ from Dlg import DLG_Scenario_select_categories
 from Dlg import DLG_Scenario_select_periode
 from Dlg import DLG_Scenario_saisie_prevision
 from Dlg import DLG_Scenario_saisie_report
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN, EVT_DATE_CHANGED
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN, EVT_DATE_CHANGED
 
 
 def DateEngFr(textDate):
@@ -43,11 +47,9 @@ def DatetimeDateEnStr(date):
     return dateStr
 
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, IDscenario=None, IDpersonne=None):
-        wx.Frame.__init__(self, parent, -1, title=_(u"Scénario"), style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-        
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDscenario = IDscenario
         self.panel = wx.Panel(self, -1)
@@ -75,9 +77,9 @@ class MyFrame(wx.Frame):
             
         # Période
         self.label_date_debut = wx.StaticText(self.panel, -1, _(u"Période du :"))
-        self.ctrl_date_debut = wx.DatePickerCtrl(self.panel, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_debut = DatePickerCtrl(self.panel, -1, style=DP_DROPDOWN)
         self.label_date_fin = wx.StaticText(self.panel, -1, "au")
-        self.ctrl_date_fin = wx.DatePickerCtrl(self.panel, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_fin = DatePickerCtrl(self.panel, -1, style=DP_DROPDOWN)
         
         # Coche toutes catégories
         self.ctrl_toutes_categories = wx.CheckBox(self.panel, -1, _(u"Inclure toutes les catégories utilisées"))
@@ -126,8 +128,8 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CHOICE, self.OnChoicePersonne, self.ctrl_personne)
         self.Bind(wx.EVT_CHOICE, self.OnChoiceDetail, self.ctrl_detail)
         self.Bind(wx.EVT_CHOICE, self.OnChoiceModeHeure, self.ctrl_modeHeure)
-        self.Bind(wx.EVT_DATE_CHANGED, self.OnDateDebut, self.ctrl_date_debut)
-        self.Bind(wx.EVT_DATE_CHANGED, self.OnDateFin, self.ctrl_date_fin)
+        self.Bind(EVT_DATE_CHANGED, self.OnDateDebut, self.ctrl_date_debut)
+        self.Bind(EVT_DATE_CHANGED, self.OnDateFin, self.ctrl_date_fin)
         
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonExcel, self.bouton_excel)
@@ -138,31 +140,33 @@ class MyFrame(wx.Frame):
         
         
     def __set_properties(self):
-        self.MakeModal(True)
         if self.IDscenario == 0 :
             self.SetTitle(_(u"Création d'un scénario"))
         else:
             self.SetTitle(_(u"Modification d'un scénario"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.ctrl_nom.SetToolTipString(_(u"Saisissez ici un nom pour le scénario"))
-        self.ctrl_description.SetToolTipString(_(u"Saisissez ici une description claire du scénario (optionnel)"))
-        self.ctrl_personne.SetToolTipString(_(u"Sélectionnez une personne dans la liste proposée"))
-        self.ctrl_date_debut.SetToolTipString(_(u"Saisissez la date de début de période"))
-        self.ctrl_date_fin.SetToolTipString(_(u"Saisissez la date de fin de période"))
-        self.ctrl_toutes_categories.SetToolTipString(_(u"Cochez cette option pour inclure dans le scénario \ntoutes les catégories pour lesquelles des présences \nont été enregistrées sur la période du scénario."))
-        self.ctrl_detail.SetToolTipString(_(u"Cette option vous permet de sélectionner le niveau de détail souhaité dans l'affichage des heure réalisées"))
-        self.ctrl_modeHeure.SetToolTipString(_(u"Sélectionnez le mode d'affichage des minutes : normal ou décimal"))
+        self.ctrl_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom pour le scénario")))
+        self.ctrl_description.SetToolTip(wx.ToolTip(_(u"Saisissez ici une description claire du scénario (optionnel)")))
+        self.ctrl_personne.SetToolTip(wx.ToolTip(_(u"Sélectionnez une personne dans la liste proposée")))
+        self.ctrl_date_debut.SetToolTip(wx.ToolTip(_(u"Saisissez la date de début de période")))
+        self.ctrl_date_fin.SetToolTip(wx.ToolTip(_(u"Saisissez la date de fin de période")))
+        self.ctrl_toutes_categories.SetToolTip(wx.ToolTip(_(u"Cochez cette option pour inclure dans le scénario \ntoutes les catégories pour lesquelles des présences \nont été enregistrées sur la période du scénario.")))
+        self.ctrl_detail.SetToolTip(wx.ToolTip(_(u"Cette option vous permet de sélectionner le niveau de détail souhaité dans l'affichage des heure réalisées")))
+        self.ctrl_modeHeure.SetToolTip(wx.ToolTip(_(u"Sélectionnez le mode d'affichage des minutes : normal ou décimal")))
         
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.bouton_excel.SetToolTipString(_(u"Cliquez ici pour exporter les données des scénarios au format Excel"))
-        self.bouton_imprimer_tableau.SetToolTipString(_(u"Cliquez ici pour publier le tableau au format PDF"))
+        self.bouton_excel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour exporter les données des scénarios au format Excel")))
+        self.bouton_imprimer_tableau.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour publier le tableau au format PDF")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -303,17 +307,7 @@ class MyFrame(wx.Frame):
 
         # MAJ tableau
         self.ctrl_tableau.MAJ()
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
-        
     def GetListePersonnes(self):
         DB = GestionDB.DB()
         req = "SELECT IDpersonne, nom, prenom FROM personnes ORDER BY nom, prenom;"
@@ -359,7 +353,7 @@ class MyFrame(wx.Frame):
     def SetPersonne(self, IDpersonne=None):
         """ Sélectionne une personne à partir de son ID dans la liste des personnes """
         if IDpersonne == None : return
-        for index, valeurs in self.dictPersonnes.iteritems() :
+        for index, valeurs in self.dictPersonnes.items() :
             ID = valeurs[0]
             if IDpersonne == ID :
                 self.ctrl_personne.SetSelection(index)
@@ -399,15 +393,13 @@ class MyFrame(wx.Frame):
         FonctionsPerso.Aide(58)
 
     def OnBoutonAnnuler(self, event):
-        txtMessage = unicode((_(u"Voulez-vous vraiment annuler ? \n\nSi vous avez effectué des modifications dans ce scénario, elles seront annulées.")))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment annuler ? \n\nSi vous avez effectué des modifications dans ce scénario, elles seront annulées.")))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation d'annulation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
         if reponse == wx.ID_NO:
             return
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def OnBoutonOk(self, event) :
         # Vérifie que des valeurs ont été saisies
@@ -446,9 +438,7 @@ class MyFrame(wx.Frame):
             self.GetParent().MAJ_ListCtrl(IDscenario)
             
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     def Sauvegarde(self):
         DB = GestionDB.DB()     
@@ -488,7 +478,7 @@ class MyFrame(wx.Frame):
         
         # Ajout ou modification de catégories
         listeIDTraites = []
-        for IDcategorie, valeurs in dictVirtualDB.iteritems() :
+        for IDcategorie, valeurs in dictVirtualDB.items() :
             etat = valeurs["etat"]
             date_debut_realise = valeurs["date_debut_realise"]
             date_fin_realise = valeurs["date_fin_realise"]
@@ -769,7 +759,7 @@ class Tableau(gridlib.Grid):
 
         # Récupération des labels des lignes de détail
         listeLabelsDetails = []
-        for IDscenario_cat, dictDonneesColonne in dictColonnes.iteritems() :
+        for IDscenario_cat, dictDonneesColonne in dictColonnes.items() :
             listeLabels = dictDonneesColonne["listeLabelsDetails"]
             for label in listeLabels :
                 if label not in listeLabelsDetails :
@@ -816,7 +806,7 @@ class Tableau(gridlib.Grid):
                 if IDcategorie in self.listeCategoriesNonPrevues :
                     nom_colonne += "*"
                 couleur_colonne = self.dictCategories[IDcategorie][3]
-                exec("couleur_colonne=" + couleur_colonne)
+                couleur_colonne = eval(couleur_colonne)
                 self.SetCellBackgroundColour(0, index_col, couleur_colonne)
             self.SetCellValue(0, index_col, nom_colonne)
             self.SetReadOnly(0, index_col, True)
@@ -892,7 +882,7 @@ class Tableau(gridlib.Grid):
                     self.SetReadOnly(index_ligne, index_col, True)
                     self.SetCellBackgroundColour(index_ligne, index_col, couleur_fond_case)
                     
-                    if dictDonneesColonne.has_key(code) :
+                    if code in dictDonneesColonne :
                         valeur = dictDonneesColonne[code]
                         if valeur == None : valeur = ""
                         self.SetCellValue(index_ligne, index_col, self.FormateLabelCase(valeur, code))
@@ -935,7 +925,7 @@ class Tableau(gridlib.Grid):
             couleur_fond_case = dictLigne["couleur_fond_case"]
             
             if type == "ligne" :
-                if dictColonneTotal.has_key(code) :
+                if code in dictColonneTotal :
                     valeur = dictColonneTotal[code]
                     if valeur == None : valeur = ""
                     self.SetCellValue(index_ligne, index_col, self.FormateLabelCase(valeur, code))
@@ -1054,7 +1044,7 @@ class Tableau(gridlib.Grid):
                 self.CommandeSaisieReport(IDcategorie)
 
     def CommandeSelectionPeriode(self, IDcategorie):
-        if self.dictVirtualDB.has_key(IDcategorie) :
+        if IDcategorie in self.dictVirtualDB :
             date_debut_defaut = self.dictVirtualDB[IDcategorie]["date_debut_realise"]
             if date_debut_defaut != None : date_debut_defaut = DateEngEnDateDD(date_debut_defaut)
             date_fin_defaut = self.dictVirtualDB[IDcategorie]["date_fin_realise"]
@@ -1071,7 +1061,7 @@ class Tableau(gridlib.Grid):
             return False
         if date_debut != None : date_debut = str(date_debut)
         if date_fin != None : date_fin = str(date_fin)
-        if self.dictVirtualDB.has_key(IDcategorie) :
+        if IDcategorie in self.dictVirtualDB :
             # Modification d'une catégorie
             self.dictVirtualDB[IDcategorie]["date_debut_realise"] = date_debut
             self.dictVirtualDB[IDcategorie]["date_fin_realise"] = date_fin
@@ -1084,7 +1074,7 @@ class Tableau(gridlib.Grid):
         self.MAJ()
         
     def CommandeSaisiePrevision(self, IDcategorie):
-        if self.dictVirtualDB.has_key(IDcategorie) :
+        if IDcategorie in self.dictVirtualDB :
             prevision = self.dictVirtualDB[IDcategorie]["prevision"]
         else:
             prevision = "+00:00"
@@ -1095,7 +1085,7 @@ class Tableau(gridlib.Grid):
         else:
             dlg.Destroy()
             return False
-        if self.dictVirtualDB.has_key(IDcategorie) :
+        if IDcategorie in self.dictVirtualDB :
             # Modification d'une catégorie
             self.dictVirtualDB[IDcategorie]["prevision"] = prevision
         else:
@@ -1106,7 +1096,7 @@ class Tableau(gridlib.Grid):
         self.MAJ()
 
     def CommandeSaisieReport(self, IDcategorie):
-        if self.dictVirtualDB.has_key(IDcategorie) :
+        if IDcategorie in self.dictVirtualDB :
             report = self.dictVirtualDB[IDcategorie]["report"]
         else:
             report = None
@@ -1117,7 +1107,7 @@ class Tableau(gridlib.Grid):
         else:
             dlg.Destroy()
             return False
-        if self.dictVirtualDB.has_key(IDcategorie) :
+        if IDcategorie in self.dictVirtualDB :
             # Modification d'une catégorie
             self.dictVirtualDB[IDcategorie]["report"] = report
         else:
@@ -1130,8 +1120,8 @@ class Tableau(gridlib.Grid):
     def GetColonneTotal(self, dictColonnes):
         listeLignesExceptions = ["date_debut_realise", "date_fin_realise", "IDscenario_cat", "periode_realise", "listeLabelsDetails", "IDcategorie"]
         dictTotauxLignes = {}
-        for IDcategorie, dictDonneesColonne in dictColonnes.iteritems() :
-            for codeLigne, valeur in dictDonneesColonne.iteritems() :
+        for IDcategorie, dictDonneesColonne in dictColonnes.items() :
+            for codeLigne, valeur in dictDonneesColonne.items() :
                 if codeLigne not in listeLignesExceptions :
                     # Particularité de la ligne report
                     if codeLigne == "report" :
@@ -1142,7 +1132,7 @@ class Tableau(gridlib.Grid):
                             report_IDscenario, report_IDcategorie, report_heures, nomScenario, descriptionScenario = valeur.split(";")
                             valeur = report_heures
                     # Addition des colonnes
-                    if dictTotauxLignes.has_key(codeLigne) :
+                    if codeLigne in dictTotauxLignes :
                         dictTotauxLignes[codeLigne] = self.OperationHeures(dictTotauxLignes[codeLigne], valeur, "addition")
                     else:
                         dictTotauxLignes[codeLigne] = valeur
@@ -1152,7 +1142,7 @@ class Tableau(gridlib.Grid):
     def GetCategoriesPrevues(self):
         """ Recherche des catégories incluses dans le scénario chargé """
         self.IDscenario = self.parent.IDscenario    
-        listeCategories = self.dictVirtualDB.keys()
+        listeCategories = list(self.dictVirtualDB.keys())
         listeCategories.sort()
         return listeCategories
     
@@ -1285,7 +1275,7 @@ class Tableau(gridlib.Grid):
             else:
                 
                 # Lecture de la VirtualDB
-                if self.dictVirtualDB.has_key(IDcategorie) :
+                if IDcategorie in self.dictVirtualDB :
                     dictDonnees["IDscenario_cat"] = self.dictVirtualDB[IDcategorie]["IDscenario_cat"]
                     dictDonnees["IDcategorie"] = IDcategorie
                     dictDonnees["prevision"] = self.dictVirtualDB[IDcategorie]["prevision"]
@@ -1300,7 +1290,7 @@ class Tableau(gridlib.Grid):
         else:
             
             # Lecture de la VirtualDB
-            if self.dictVirtualDB.has_key(IDcategorie) :
+            if IDcategorie in self.dictVirtualDB :
                 dictDonnees["IDscenario_cat"] = self.dictVirtualDB[IDcategorie]["IDscenario_cat"]
                 dictDonnees["IDcategorie"] = IDcategorie
                 dictDonnees["prevision"] = self.dictVirtualDB[IDcategorie]["prevision"]
@@ -1366,7 +1356,7 @@ class Tableau(gridlib.Grid):
         else:
             signeA = heureA[0]
             hrA, mnA = heureA[1:].split(":")
-            hrA, mnA = int(hrA), int(mnA)
+            hrA, mnA = int(float(hrA)), int(float(mnA))
             totalMinutesA = (hrA*60) + mnA
             if signeA == "-" : totalMinutesA = -totalMinutesA
         # Préparation heure B
@@ -1375,7 +1365,7 @@ class Tableau(gridlib.Grid):
         else:
             signeB = heureB[0]
             hrB, mnB = heureB[1:].split(":")
-            hrB, mnB = int(hrB), int(mnB)
+            hrB, mnB = int(float(hrB)), int(float(mnB))
             totalMinutesB = (hrB*60) + mnB
             if signeB == "-" : totalMinutesB = -totalMinutesB
         # Opération
@@ -1455,21 +1445,21 @@ class Tableau(gridlib.Grid):
             # Détail
             if mode_detail == 1 :
                 codeJour = str(dateDD)
-                if dictHeuresRealisees.has_key(codeJour) :
+                if codeJour in dictHeuresRealisees :
                     dictHeuresRealisees[codeJour] = self.OperationHeures(dictHeuresRealisees[codeJour], duree, "addition")
                 else:
                     dictHeuresRealisees[codeJour] = duree
                 if codeJour not in listeLabelsDetails : listeLabelsDetails.append(codeJour)
             if mode_detail == 2 :
                 codeMois = "%d-%02d" % (dateDD.year, dateDD.month)
-                if dictHeuresRealisees.has_key(codeMois) :
+                if codeMois in dictHeuresRealisees :
                     dictHeuresRealisees[codeMois] = self.OperationHeures(dictHeuresRealisees[codeMois], duree, "addition")
                 else:
                     dictHeuresRealisees[codeMois] = duree
                 if codeMois not in listeLabelsDetails : listeLabelsDetails.append(codeMois)
             if mode_detail == 3 :
                 codeAnnee = str(dateDD.year)
-                if dictHeuresRealisees.has_key(codeAnnee) :
+                if codeAnnee in dictHeuresRealisees :
                     dictHeuresRealisees[codeAnnee] = self.OperationHeures(dictHeuresRealisees[codeAnnee], duree, "addition")
                 else:
                     dictHeuresRealisees[codeAnnee] = duree
@@ -1614,7 +1604,7 @@ class GetDictColonnes():
             else:
                 
                 # Lecture de la VirtualDB
-                if self.dictVirtualDB.has_key(IDcategorie) :
+                if IDcategorie in self.dictVirtualDB :
                     dictDonnees["IDscenario_cat"] = self.dictVirtualDB[IDcategorie]["IDscenario_cat"]
                     dictDonnees["IDcategorie"] = IDcategorie
                     dictDonnees["prevision"] = self.dictVirtualDB[IDcategorie]["prevision"]
@@ -1676,8 +1666,8 @@ class GetDictColonnes():
     def GetColonneTotal(self, dictColonnes):
         listeLignesExceptions = ["date_debut_realise", "date_fin_realise", "IDscenario_cat", "periode_realise", "listeLabelsDetails", "IDcategorie"]
         dictTotauxLignes = {}
-        for IDcategorie, dictDonneesColonne in dictColonnes.iteritems() :
-            for codeLigne, valeur in dictDonneesColonne.iteritems() :
+        for IDcategorie, dictDonneesColonne in dictColonnes.items() :
+            for codeLigne, valeur in dictDonneesColonne.items() :
                 if codeLigne not in listeLignesExceptions :
                     # Particularité de la ligne report
                     if codeLigne == "report" :
@@ -1688,7 +1678,7 @@ class GetDictColonnes():
                             report_IDscenario, report_IDcategorie, report_heures, nomScenario, descriptionScenario = valeur.split(";")
                             valeur = report_heures
                     # Addition des colonnes
-                    if dictTotauxLignes.has_key(codeLigne) :
+                    if codeLigne in dictTotauxLignes :
                         dictTotauxLignes[codeLigne] = self.OperationHeures(dictTotauxLignes[codeLigne], valeur, "addition")
                     else:
                         dictTotauxLignes[codeLigne] = valeur
@@ -1771,14 +1761,14 @@ class GetDictColonnes():
             # Détail
             if mode_detail == 1 :
                 codeMois = "%s-%s" % (dateDD.year, dateDD.month)
-                if dictHeuresRealisees.has_key(codeMois) :
+                if codeMois in dictHeuresRealisees :
                     dictHeuresRealisees[codeMois] = self.OperationHeures(dictHeuresRealisees[codeMois], duree, "addition")
                 else:
                     dictHeuresRealisees[codeMois] = duree
                 if codeMois not in listeLabelsDetails : listeLabelsDetails.append(codeMois)
             if mode_detail == 2 :
                 codeJour = str(dateDD)
-                if dictHeuresRealisees.has_key(codeJour) :
+                if codeJour in dictHeuresRealisees :
                     dictHeuresRealisees[codeJour] = self.OperationHeures(dictHeuresRealisees[codeJour], duree, "addition")
                 else:
                     dictHeuresRealisees[codeJour] = duree
@@ -1851,8 +1841,8 @@ class PanelLegende(scrolled.ScrolledPanel):
             grid_sizer.Add(controle1, 0, wx.ALIGN_CENTRE|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 0)
             grid_sizer.Add(controle2, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 0)
             # Infobulle
-            controle1.SetToolTipString(infobulle)
-            controle2.SetToolTipString(infobulle)
+            controle1.SetToolTip(wx.ToolTip(infobulle))
+            controle2.SetToolTip(wx.ToolTip(infobulle))
             index += 1
         
         self.SetSizer(grid_sizer)
@@ -1862,10 +1852,15 @@ class PanelLegende(scrolled.ScrolledPanel):
     def CreationImage(self, couleur):
         """ Création des images pour le TreeCtrl """
         l, h = (8, 8)
-        bmp = wx.EmptyImage(l, h, True)
         r, v, b = couleur
-        bmp.SetRGBRect((0, 0, l, h), 0, 0, 0)
-        bmp.SetRGBRect((1, 1, l-2, h-2), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(l, h, True)
+            bmp.SetRGB((0, 0, l, h), 0, 0, 0)
+            bmp.SetRGB((1, 1, l-2, h-2), r, v, b)
+        else:
+            bmp = wx.EmptyImage(l, h, True)
+            bmp.SetRGBRect((0, 0, l, h), 0, 0, 0)
+            bmp.SetRGBRect((1, 1, l-2, h-2), r, v, b)
         return bmp.ConvertToBitmap()
         
     def Build_Hyperlink(self, id=-1, label="", infobulle="") :

@@ -27,7 +27,7 @@ class Panel(wx.Panel):
         self.checkBox = wx.CheckBox(self, -1, _(u"Activer la protection par mot de passe"))
         
         self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_ANY))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         if parent.GetName() != "treebook_configuration" :
             self.bouton_aide.Show(False)
 
@@ -125,8 +125,11 @@ class SaisiePassword(wx.Dialog):
 
         self.bouton_ok = wx.BitmapButton(self, wx.ID_OK, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Ok_L72.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
-        self.text_password.SetToolTipString(_(u"Saisissez votre mot de passe ici"))
-        _icon = wx.EmptyIcon()
+        self.text_password.SetToolTip(wx.ToolTip(_(u"Saisissez votre mot de passe ici")))
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Cadenas.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.__do_layout()
@@ -184,12 +187,15 @@ class MyFrame(wx.Frame):
 
     def __set_properties(self):
         self.SetTitle(_(u"Verrouillage des informations des entretiens"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)

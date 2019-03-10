@@ -14,12 +14,14 @@ import GestionDB
 import FonctionsPerso
 import os
 from Dlg import DLG_Selection_periode
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 from Utils import UTILS_Fichiers
-import wx.combo
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import BitmapComboBox
+else :
+    from wx.combo import BitmapComboBox
 import sys
 from Ctrl import CTRL_Photo
-import StringIO
 
 
 
@@ -168,53 +170,37 @@ class ListBookPhotos(wx.Listbook):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, listePersonnes=[]):
-        wx.Frame.__init__(self, parent, -1, title=_(u"Impression de photos"), name="frm_impression_photos", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.listePersonnes = listePersonnes
-        self.MakeModal(True)
-        
-##        # Paramètres par défaut
-##        self.nom_police = "Arial" #FonctionsPerso.Parametres(mode="get", categorie="impression_photos", nom="nom_police", valeur="Arial")
-##        self.nom_style = wx.FONTWEIGHT_BOLD #FonctionsPerso.Parametres(mode="get", categorie="impression_photos", nom="nom_taille", valeur=10)
-##        self.nom_taille = 10 #FonctionsPerso.Parametres(mode="get", categorie="impression_photos", nom="nom_taille", valeur=10)
-##        self.nom_couleur = (255, 0, 0) #FonctionsPerso.Parametres(mode="get", categorie="impression_photos", nom="nom_couleur", valeur=None)
-##        self.type_nom = 0 #FonctionsPerso.Parametres(mode="get", categorie="impression_photos", nom="nom_police", valeur=0)
-##        
-##        self.texte_perso_police = "Arial"
-##        self.texte_perso_style = wx.NORMAL
-##        self.texte_perso_taille = 10
-##        self.texte_perso_couleur = (255, 0, 0)
 
         self.dictAffichage = {
-        
-                    "nom_police" : "Arial",
-                    "nom_style" : wx.FONTWEIGHT_BOLD,
-                    "nom_taille" : 10,
-                    "nom_couleur" : (255, 0, 0),
-                    "type_nom" : 0,
-                    
-                    "texte_perso_police" : "Arial",
-                    "texte_perso_style" : wx.NORMAL,
-                    "texte_perso_taille" : 10,
-                    "texte_perso_couleur" : (255, 0, 0),
-                    
-                    "disposition_page" : 0,
-                    "nbre_copies" : 1,
-                    "bordure" : True,
-                    #"couleur_fond" : None,
-                    
-                    }
+            "nom_police" : "Arial",
+            "nom_style" : wx.FONTWEIGHT_BOLD,
+            "nom_taille" : 10,
+            "nom_couleur" : (255, 0, 0),
+            "type_nom" : 0,
+
+            "texte_perso_police" : "Arial",
+            "texte_perso_style" : wx.NORMAL,
+            "texte_perso_taille" : 10,
+            "texte_perso_couleur" : (255, 0, 0),
+
+            "disposition_page" : 0,
+            "nbre_copies" : 1,
+            "bordure" : True,
+            #"couleur_fond" : None,
+            }
 
         # Données
         self.ImportationDonnees()
         
         # Paramètres de la page
         self.staticbox_page = wx.StaticBox(self.panel_base, -1, _(u"Paramètres de la page"))
-        self.ctrl_disposition = wx.combo.BitmapComboBox(self.panel_base, size=(320,-1), style=wx.CB_READONLY)
+        self.ctrl_disposition = BitmapComboBox(self.panel_base, size=(320,-1), style=wx.CB_READONLY)
         
         # Images pour le bitmapComboBox
         listePhotos = [ (0, _(u"Pleine page (15.9cm x 15.9cm)")), (1, _(u"2 photos par page (10.9cm x 10.9cm)")), (2, _(u"4 photos par page (8.1cm x 8.1cm)")), (3, _(u"12 photos par page (5.3cm x 5.3cm)")), (4, _(u"20 photos par page (3.8cm x 3.8cm)")), (5, _(u"35 photos par page (3.1cm x 3.1cm)"))]
@@ -225,20 +211,7 @@ class MyFrame(wx.Frame):
         
         # Paramètres de l'impression
         self.staticbox_param = wx.StaticBox(self.panel_base, -1, _(u"Paramètres de l'impression"))
-        
-##        self.label_nom = wx.StaticText(self.panel_base, -1, _(u"Affichage du nom :"), style=wx.ALIGN_RIGHT)
-##        self.bouton_nom_police = wx.Button(self.panel_base, -1, "", size=(120, -1))
-##        self.bouton_nom_couleur = csel.ColourSelect(self.panel_base, -1, "", self.dictAffichage["nom_couleur"], size = (40, 23))
-##        self.MajBoutonPoliceNom()
-##        typesNoms = [_(u"Prénom"), _(u"Nom et prénom"), _(u"Prénom et nom")]
-##        self.combobox_type_nom = wx.Choice(self.panel_base, -1, choices=typesNoms)
-##        self.combobox_type_nom.SetSelection(self.dictAffichage["type_nom"])
-##        
-##        self.label_texte_perso = wx.StaticText(self.panel_base, -1, _(u"Affichage du texte perso. :"), style=wx.ALIGN_RIGHT)
-##        self.bouton_texte_perso_police = wx.Button(self.panel_base, -1, "", size=(120, -1))
-##        self.bouton_texte_perso_couleur = csel.ColourSelect(self.panel_base, -1, "", self.dictAffichage["texte_perso_couleur"], size = (40, 23))
-##        self.MajBoutonPoliceTextePerso()
-        
+
         self.label_bordure = wx.StaticText(self.panel_base, -1, _(u"Bordures :"), style=wx.ALIGN_RIGHT)
         self.bordure = wx.CheckBox(self.panel_base, -1, u"")
         self.bordure.SetValue(self.dictAffichage["bordure"])
@@ -265,25 +238,23 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-##        self.bouton_nom_couleur.Bind(csel.EVT_COLOURSELECT, self.OnBoutonCouleurNom)
-##        self.Bind(wx.EVT_BUTTON, self.OnBoutonPoliceNom, self.bouton_nom_police)
-##        self.bouton_texte_perso_couleur.Bind(csel.EVT_COLOURSELECT, self.OnBoutonCouleurTextePerso)
-##        self.Bind(wx.EVT_BUTTON, self.OnBoutonPoliceTextePerso, self.bouton_texte_perso_police)
+
         self.Bind(wx.EVT_COMBOBOX, self.OnComboDisposition, self.ctrl_disposition)
 
             
     def __set_properties(self):
         self.SetTitle(_(u"Impression des photos"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour visualiser le document au format PDF")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour visualiser le document au format PDF"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler et fermer")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -296,7 +267,6 @@ class MyFrame(wx.Frame):
         # Liste des personnes
         sizer_page = wx.StaticBoxSizer(self.staticbox_page, wx.VERTICAL)
         sizer_page.Add(self.ctrl_disposition, 1, wx.ALL|wx.EXPAND, 5) 
-##        sizer_personnes.Add(self.hyperlink_presents, 0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 5) 
         grid_sizer_haut.Add(sizer_page, 1, wx.LEFT|wx.RIGHT|wx.EXPAND, 0)
         
         # Paramètres de l'impression
@@ -307,29 +277,7 @@ class MyFrame(wx.Frame):
         grid_sizer_param.Add(self.bordure, 0, wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_param.Add(self.label_nbre_copies, 0, wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_param.Add(self.nbre_copies, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
-        
-##        # Sizer Nom
-##        sizer_nom = wx.FlexGridSizer(rows=1, cols=2, vgap=5, hgap=5)
-##        sizer_nom.Add(self.bouton_nom_police, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-##        sizer_nom.Add(self.bouton_nom_couleur, 1, wx.ALIGN_CENTER_VERTICAL, 0)
-##        sizer_nom.AddGrowableCol(1)
-##        grid_sizer_param.Add(self.label_nom, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
-##        grid_sizer_param.Add(sizer_nom, 1, wx.EXPAND, 0)
-##        
-##        grid_sizer_param.Add( (0, 0), 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
-##        grid_sizer_param.Add(self.combobox_type_nom, 1, wx.EXPAND, 0) 
-##        
-##        grid_sizer_param.Add( (0, 0), 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
-##        grid_sizer_param.Add( (5, 5), 1, wx.EXPAND, 0) 
-##        
-##        # Sizer Texte perso
-##        sizer_texte = wx.FlexGridSizer(rows=1, cols=2, vgap=5, hgap=5)
-##        sizer_texte.Add(self.bouton_texte_perso_police, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-##        sizer_texte.Add(self.bouton_texte_perso_couleur, 1, wx.ALIGN_CENTER_VERTICAL, 0)
-##        sizer_texte.AddGrowableCol(1)
-##        grid_sizer_param.Add(self.label_texte_perso, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
-##        grid_sizer_param.Add(sizer_texte, 1, wx.EXPAND, 0)
-        
+
         grid_sizer_haut.AddGrowableCol(1)
         sizer_param.Add(grid_sizer_param, 1, wx.ALL|wx.EXPAND, 5) 
         grid_sizer_haut.Add(sizer_param, 1, wx.LEFT|wx.RIGHT|wx.EXPAND, 0)
@@ -456,7 +404,7 @@ class MyFrame(wx.Frame):
             dlg.Destroy()
             return False
         # Sélection dans la listBox
-        for index, valeurs in self.dictDonnees.iteritems():
+        for index, valeurs in self.dictDonnees.items():
             IDpersonne = valeurs[0]
             if IDpersonne in listePersonnesPresentes :
                 self.checkListBox.Check(index, True)
@@ -473,24 +421,12 @@ class MyFrame(wx.Frame):
         FonctionsPerso.Aide(30)
 
     def Onbouton_annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-            
     def Onbouton_ok(self, event):
         """ Affichage du PDF """
-##        self.frmAttente = Attente.MyFrame(None, label=_(u"Création du document PDF en cours..."))
-##        self.frmAttente.Show()
-##        self.frmAttente.MakeModal(True)
-        
         self.dictAffichage["nbre_copies"] = self.nbre_copies.GetValue()
         self.dictAffichage["bordure"] = self.bordure.GetValue()
-
         pdf = CreationPDF(self.listePersonnes, self.dictAffichage)
 
 
@@ -500,10 +436,9 @@ class MyFrame(wx.Frame):
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class FrameSelectionPersonnes(wx.Frame):
-    def __init__(self, parent, title=""):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+class DialogSelectionPersonnes(wx.Dialog):
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         
         self.panel_base = wx.Panel(self, -1)
@@ -528,18 +463,20 @@ class FrameSelectionPersonnes(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         self.SetTitle(_(u"Impression de photos"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((420, 380))
 
@@ -612,7 +549,7 @@ class FrameSelectionPersonnes(wx.Frame):
             dlg.Destroy()
             return False
         # Sélection dans la listBox
-        for index, valeurs in self.dictDonnees.iteritems():
+        for index, valeurs in self.dictDonnees.items():
             IDpersonne = valeurs[0]
             if IDpersonne in listePersonnesPresentes :
                 self.checkListBox.Check(index, True)
@@ -625,20 +562,18 @@ class FrameSelectionPersonnes(wx.Frame):
             dlg.Destroy()
             return
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(30)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
-        selections = self.checkListBox.GetChecked()
+        if 'phoenix' in wx.PlatformInfo:
+            selections = self.checkListBox.GetCheckedItems()
+        else:
+            selections = self.checkListBox.GetChecked()
         
         # Validation de la sélection
         if len(selections) == 0 :
@@ -654,12 +589,12 @@ class FrameSelectionPersonnes(wx.Frame):
             listePersonnes.append([IDpersonne, nom, prenom, None])
 
         # Ouverture de la frame des paramètres d'impression des photos
-        frame_2 = MyFrame(None, listePersonnes=listePersonnes)
-        frame_2.Show()
+        dlg = Dialog(None, listePersonnes=listePersonnes)
+        dlg.ShowModal()
+        dlg.Destroy()
         
         # Fermeture
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
 
 
@@ -817,7 +752,7 @@ class CreationPDF():
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = FrameSelectionPersonnes(None)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = DialogSelectionPersonnes(None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

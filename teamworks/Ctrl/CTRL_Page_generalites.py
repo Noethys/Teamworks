@@ -9,7 +9,7 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import wx.lib.masked as masked
 import sqlite3
 import datetime
@@ -19,6 +19,7 @@ from Dlg import DLG_Config_situations
 from Dlg import DLG_Config_pays
 import FonctionsPerso
 import sys
+from Utils import UTILS_Adaptations
 
 
 class Panel_general(wx.Panel):
@@ -201,40 +202,40 @@ class Panel_general(wx.Panel):
         
     def __set_properties(self):
         self.SetSize((962, 660))
-        self.combo_box_civilite.SetToolTipString(_(u"Choisissez la civilité"))
+        self.combo_box_civilite.SetToolTip(wx.ToolTip(_(u"Choisissez la civilité")))
         self.label_nomjf.Enable(False)
-        self.text_ctrl_nomjf.SetToolTipString("Saisissez un nom de jeune fille")
+        self.text_ctrl_nomjf.SetToolTip(wx.ToolTip("Saisissez un nom de jeune fille"))
         self.text_ctrl_nomjf.Enable(False)
-        self.text_nom.SetToolTipString("Saisissez le nom de famille")
-        self.text_prenom.SetToolTipString(_(u"Saisissez le prénom"))
+        self.text_nom.SetToolTip(wx.ToolTip("Saisissez le nom de famille"))
+        self.text_prenom.SetToolTip(wx.ToolTip(_(u"Saisissez le prénom")))
         self.text_date_naiss.SetMinSize((95, -1))
-        self.text_date_naiss.SetToolTipString("Saissez la date de naissance")       
+        self.text_date_naiss.SetToolTip(wx.ToolTip("Saissez la date de naissance"))       
         self.text_numsecu.SetMinSize((170, -1))
-        self.text_adresse.SetToolTipString("Saisissez l'adresse")
+        self.text_adresse.SetToolTip(wx.ToolTip("Saisissez l'adresse"))
 ##        self.label_age.Enable(False)
         self.text_age.Enable(False)
         self.text_cp_naiss.SetMinSize((50, -1))
-        self.text_cp_naiss.SetToolTipString("Saisissez le code postal")
+        self.text_cp_naiss.SetToolTip(wx.ToolTip("Saisissez le code postal"))
         self.text_cp.SetMinSize((50, -1))
-        self.text_cp.SetToolTipString("Saisissez le code postal")
-        self.text_ville_naiss.SetToolTipString(_(u"Choisissez une ville dans la liste proposée"))
-        self.text_ville.SetToolTipString(_(u"Choisissez une ville dans la liste proposée"))
-        self.bouton_options_ville_naiss.SetToolTipString("Cliquez ici pour configurer la liste des villes")
-        self.bouton_options_ville.SetToolTipString("Cliquez ici pour configurer la liste des villes")
-        self.button_coords_ajout.SetToolTipString(_(u"Cliquez ici pour créer un numéro de téléphone"))
+        self.text_cp.SetToolTip(wx.ToolTip("Saisissez le code postal"))
+        self.text_ville_naiss.SetToolTip(wx.ToolTip(_(u"Choisissez une ville dans la liste proposée")))
+        self.text_ville.SetToolTip(wx.ToolTip(_(u"Choisissez une ville dans la liste proposée")))
+        self.bouton_options_ville_naiss.SetToolTip(wx.ToolTip("Cliquez ici pour configurer la liste des villes"))
+        self.bouton_options_ville.SetToolTip(wx.ToolTip("Cliquez ici pour configurer la liste des villes"))
+        self.button_coords_ajout.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un numéro de téléphone")))
         self.button_coords_ajout.SetSize(self.button_coords_ajout.GetBestSize())
-        self.button_coords_modif.SetToolTipString(_(u"Cliquez ici pour modifier un numéro de téléphone"))
+        self.button_coords_modif.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier un numéro de téléphone")))
         self.button_coords_modif.SetSize(self.button_coords_modif.GetBestSize())
-        self.button_coords_suppr.SetToolTipString(_(u"Cliquez ici pour supprimer le numéro de téléphone sélectionné"))
+        self.button_coords_suppr.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le numéro de téléphone sélectionné")))
         self.button_coords_suppr.SetSize(self.button_coords_suppr.GetBestSize())
-        self.bouton_situations.SetToolTipString(_(u"Cliquez ici pour créer, modifier ou supprimer une situation sociale"))
+        self.bouton_situations.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer, modifier ou supprimer une situation sociale")))
         self.bouton_pays.SetSize(self.bouton_pays.GetBestSize())
-        self.bouton_pays.SetToolTipString(_(u"Cliquez ici sélectionner un autre pays de naissance"))
+        self.bouton_pays.SetToolTip(wx.ToolTip(_(u"Cliquez ici sélectionner un autre pays de naissance")))
         self.bouton_nation.SetSize(self.bouton_nation.GetBestSize())
-        self.bouton_nation.SetToolTipString(_(u"Cliquez ici sélectionner une autre nationalité"))
-        self.image_pays.SetToolTipString(_(u"Pays de naissance : France"))
-        self.image_nation.SetToolTipString(_(u"Nationalité : Française"))
-        self.image_numsecu.SetToolTipString(_(u"Etat du numéro de sécurité sociale\n\nCliquez sur cette image pour obtenir des informations \nsur la constitution d'un numéro de sécurité sociale"))
+        self.bouton_nation.SetToolTip(wx.ToolTip(_(u"Cliquez ici sélectionner une autre nationalité")))
+        self.image_pays.SetToolTip(wx.ToolTip(_(u"Pays de naissance : France")))
+        self.image_nation.SetToolTip(wx.ToolTip(_(u"Nationalité : Française")))
+        self.image_numsecu.SetToolTip(wx.ToolTip(_(u"Etat du numéro de sécurité sociale\n\nCliquez sur cette image pour obtenir des informations \nsur la constitution d'un numéro de sécurité sociale")))
         
         texteNumSecu = u"""
         Numéro de sécurité sociale : A BB CC DD EEE FFF GG
@@ -247,7 +248,7 @@ class Panel_general(wx.Panel):
         FFF : Numéro d'ordre INSEE
         GG : Clé
         """
-        self.text_numsecu.SetToolTipString(texteNumSecu)
+        self.text_numsecu.SetToolTip(wx.ToolTip(texteNumSecu))
         
         # Changement de couleur pour les champs text et combo
 ##        self.CouleurSiVide(self.combo_box_civilite, "combo")
@@ -416,7 +417,7 @@ class Panel_general(wx.Panel):
         frame_situations.Show()
 
     def OnActivate(self, event):
-        print "YAAAAAAAAAAAAAAAAAAAA... ", str(event.GetActive())
+        print("YAAAAAAAAAAAAAAAAAAAA... ", str(event.GetActive()))
         event.Skip()
 
     def OnOptionsVilleNaiss(self, event): 
@@ -474,7 +475,7 @@ class Panel_general(wx.Panel):
 
         # Demande de confirmation
         texteCoord = self.list_ctrl_coords.GetItemText(index)
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette coordonnée ? \n\n> ") + texteCoord))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette coordonnée ? \n\n> ") + texteCoord))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -736,21 +737,21 @@ class Panel_general(wx.Panel):
         
         if cp == "" or cp == "     " :
             if nomControle == "cp" or nomControle == "cp_naiss" :
-                controle.SetToolTipString(_(u"Saisissez un code postal"))
+                controle.SetToolTip(wx.ToolTip(_(u"Saisissez un code postal")))
             else :
-                controle.SetToolTipString(_(u"Saisissez un nom de ville"))
+                controle.SetToolTip(wx.ToolTip(_(u"Saisissez un nom de ville")))
         else:
             try :
                 num_dep = cp[:2]
                 nomDepartement, num_region = self.dictDepartements[num_dep]
                 nomRegion = self.dictRegions[num_region]
                 texte = _(u"Département : %s (%s)\nRégion : %s") % (nomDepartement, num_dep, nomRegion)
-                controle.SetToolTipString(texte)
+                controle.SetToolTip(wx.ToolTip(texte))
             except :
                 if nomControle == "cp" or nomControle == "cp_naiss" :
-                    controle.SetToolTipString(_(u"Le code postal saisi ne figure pas dans la base de données de TeamWorks"))
+                    controle.SetToolTip(wx.ToolTip(_(u"Le code postal saisi ne figure pas dans la base de données de TeamWorks")))
                 else :
-                    controle.SetToolTipString(_(u"Le nom de ville saisi ne figure pas dans la base de données de TeamWorks"))
+                    controle.SetToolTip(wx.ToolTip(_(u"Le nom de ville saisi ne figure pas dans la base de données de TeamWorks")))
         
         
 # Fonctions pour l'autocomplete des cp et villes NAISS---------------------------------------------------------------
@@ -1213,10 +1214,10 @@ class Panel_general(wx.Panel):
         self.text_numsecu.SetValue(num_secu)
         try :
             if cp_resid != "" and cp_resid != None and cp_resid != "     " :
-                if type(cp_resid) == unicode : cp_resid = int(cp_resid)
+                if type(cp_resid) == six.text_type : cp_resid = int(cp_resid)
                 self.text_cp.SetValue("%05d" % cp_resid)
             if cp_naiss != "" and cp_naiss != None and cp_naiss != "     " :
-                if type(cp_naiss) == unicode : cp_naiss = int(cp_naiss)
+                if type(cp_naiss) == six.text_type : cp_naiss = int(cp_naiss)
                 self.text_cp_naiss.SetValue("%05d" % cp_naiss)
         except :
             dlg = wx.MessageDialog(self, _(u"Erreur dans l'importation des codes postaux."), "Erreur", wx.OK | wx.ICON_ERROR)
@@ -1260,13 +1261,13 @@ class Panel_general(wx.Panel):
     def SetPaysNaiss(self, IDpays) :
         pays = self.Recherche_Pays(IDpays=IDpays) 
         self.image_pays.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/Drapeaux/" + pays[1] + ".png"), wx.BITMAP_TYPE_PNG))
-        self.image_pays.SetToolTipString(_(u"Pays de naissance : ") + pays[2])
+        self.image_pays.SetToolTip(wx.ToolTip(_(u"Pays de naissance : %s" % pays[2])))
         self.IDpays_naiss = IDpays
         
     def SetNationalite(self, IDpays) :
         pays = self.Recherche_Pays(IDpays=IDpays)
         self.image_nation.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/Drapeaux/" + pays[1] + ".png"), wx.BITMAP_TYPE_PNG))
-        self.image_nation.SetToolTipString(_(u"Nationalité : ") + pays[3])
+        self.image_nation.SetToolTip(wx.ToolTip(_(u"Nationalité : %s" % pays[3])))
         self.IDpays_nation = IDpays
 
     def ImportListeSituations(self):
@@ -1484,7 +1485,7 @@ class ListCtrlCoords(wx.ListCtrl):
             
         # Création des items
         index = 0
-        for key, valeurs in self.DictCoords.iteritems():
+        for key, valeurs in self.DictCoords.items():
             categorie = valeurs[2]
             texte = valeurs[3]
             # Création de l'item
@@ -1601,7 +1602,7 @@ class ListCtrlCoords(wx.ListCtrl):
         key = self.GetItemData(index)
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -1650,7 +1651,7 @@ class ListCtrlCoords(wx.ListCtrl):
 
     def Menu_Envoyer_Email(self, event):
         """ Envoyer un mail """
-        print "Envoi d'un mail perso."
+        print("Envoi d'un mail perso.")
         index = self.GetFirstSelected()
         key = self.GetItemData(index)
         FonctionsPerso.EnvoyerMail(adresses = (self.DictCoords[key][3],))

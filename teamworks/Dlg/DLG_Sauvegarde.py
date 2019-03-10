@@ -138,7 +138,7 @@ class CTRL_Donnees(CT.CustomTreeCtrl):
 
 class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE)#|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE)#|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
 
         intro = _(u"Vous pouvez créer ici une sauvegarde des données afin d'en la conservation ou de les transférer sur un autre ordinateur. Il est possible de crypter le fichier de sauvegarde et de l'enregistrer sur le disque dur ou une clé USB et de l'expédier par Email.")
@@ -234,21 +234,21 @@ class Dialog(wx.Dialog):
         self.ctrl_donnees.MAJ() 
 
     def __set_properties(self):
-        self.check_cryptage.SetToolTipString(_(u"Cochez cette case pour crypter le fichier de sauvegarde (utile pour un stockage en ligne)"))
-        self.ctrl_nom.SetToolTipString(_(u"Saisissez ici le nom du fichier de sauvegarde"))
-        self.ctrl_mdp.SetToolTipString(_(u"Si vous souhaitez protéger le fichier de sauvegarde avec un mot de passe, tapez-le ici"))
-        self.ctrl_confirmation.SetToolTipString(_(u"Confirmez le mot de passe"))
-        self.check_repertoire.SetToolTipString(_(u"Cliquez ici pour enregistrer le fichier de sauvegarde dans le répertoire donné"))
+        self.check_cryptage.SetToolTip(wx.ToolTip(_(u"Cochez cette case pour crypter le fichier de sauvegarde (utile pour un stockage en ligne)")))
+        self.ctrl_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici le nom du fichier de sauvegarde")))
+        self.ctrl_mdp.SetToolTip(wx.ToolTip(_(u"Si vous souhaitez protéger le fichier de sauvegarde avec un mot de passe, tapez-le ici")))
+        self.ctrl_confirmation.SetToolTip(wx.ToolTip(_(u"Confirmez le mot de passe")))
+        self.check_repertoire.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour enregistrer le fichier de sauvegarde dans le répertoire donné")))
         self.ctrl_repertoire.SetMinSize((180, -1))
-        self.ctrl_repertoire.SetToolTipString(_(u"Saisissez ici le répertoire de destination"))
-        self.bouton_repertoire.SetToolTipString(_(u"Cliquez ici pour selectionner un répertoire de destination"))
-        self.check_email.SetToolTipString(_(u"Cochez cette case pour envoyer la sauvegarde par Email"))
-        self.ctrl_email.SetToolTipString(_(u"Saisissez ici une ou plusieurs adresses Email (separées par des points-virgules)"))
-        self.check_locaux.SetToolTipString(_(u"Cochez cette case pour afficher les fichiers locaux"))
-        self.check_reseau.SetToolTipString(_(u"Cochez cette case pour afficher les fichiers réseau"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour lancer la sauvegarde"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.ctrl_repertoire.SetToolTip(wx.ToolTip(_(u"Saisissez ici le répertoire de destination")))
+        self.bouton_repertoire.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour selectionner un répertoire de destination")))
+        self.check_email.SetToolTip(wx.ToolTip(_(u"Cochez cette case pour envoyer la sauvegarde par Email")))
+        self.ctrl_email.SetToolTip(wx.ToolTip(_(u"Saisissez ici une ou plusieurs adresses Email (separées par des points-virgules)")))
+        self.check_locaux.SetToolTip(wx.ToolTip(_(u"Cochez cette case pour afficher les fichiers locaux")))
+        self.check_reseau.SetToolTip(wx.ToolTip(_(u"Cochez cette case pour afficher les fichiers réseau")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour lancer la sauvegarde")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -373,7 +373,7 @@ class Dialog(wx.Dialog):
         self.ctrl_donnees.MAJ() 
 
     def OnBoutonAide(self, event): 
-        print "Aide..."
+        print("Aide...")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)
@@ -441,11 +441,11 @@ class Dialog(wx.Dialog):
         
         # Données à sauver
         dictDonnees = self.ctrl_donnees.GetCoches() 
-        if dictDonnees.has_key("locaux") :
+        if "locaux" in dictDonnees :
             listeFichiersLocaux = dictDonnees["locaux"]
         else:
             listeFichiersLocaux = []
-        if dictDonnees.has_key("reseau") :
+        if "reseau" in dictDonnees :
             listeFichiersReseau = dictDonnees["reseau"]
         else:
             listeFichiersReseau = []

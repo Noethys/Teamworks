@@ -22,7 +22,7 @@ from Utils.UTILS_Traduction import _
 
 """
 import wx
-from Ctrl import CTRL_Bouton_image
+from Utils import UTILS_Adaptations
 import wx.aui
 import wx.richtext as rt
 from wx.html import HtmlEasyPrinting
@@ -218,7 +218,10 @@ class MyFrame(wx.Frame):
         self.nb.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.OnPageChanged) 
         self.nb.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.OnPageClose)
 
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.CenterOnScreen()
@@ -530,7 +533,7 @@ class MyFrame(wx.Frame):
         # Impression
         preview = wx.PrintPreview(printout1, printout2, data)
         if not preview.Ok():
-            print "Probleme dans le preview du richTextCtrl."
+            print("Probleme dans le preview du richTextCtrl.")
             return
         pfrm = wx.PreviewFrame(preview, self, _(u"Aperçu avant impression"))
         pfrm.Initialize()
@@ -1199,7 +1202,7 @@ class MyFrame(wx.Frame):
             if updateUI is not None:
                 self.Bind(wx.EVT_UPDATE_UI, updateUI, item)
         
-        fileMenu = wx.Menu()
+        fileMenu = UTILS_Adaptations.Menu()
         doBind( fileMenu.Append(400, _(u"Nouveau\tCtrl+N"), _(u"Créer un nouveau document")), self.OnFileCreate )
         doBind( fileMenu.Append(401, _(u"Ouvrir\tCtrl+O"), _(u"Ouvrir un document")), self.OnFileOpen )
         doBind( fileMenu.Append(322, _(u"Fermer"), _(u"Fermer le document")), self.OnFileClose )
@@ -1213,7 +1216,7 @@ class MyFrame(wx.Frame):
         fileMenu.AppendSeparator()
         doBind( fileMenu.Append(403, _(u"Quitter\tCtrl+Q"), _(u"Quitter Teamword")), self.OnFileExit )
         
-        editMenu = wx.Menu()
+        editMenu = UTILS_Adaptations.Menu()
         doBind( editMenu.Append(wx.ID_UNDO, _(u"Annuler\tCtrl+Z")), self.ForwardEvent, self.ForwardEvent)
         doBind( editMenu.Append(wx.ID_REDO, _(u"Répéter\tCtrl+Y")), self.ForwardEvent, self.ForwardEvent )
         editMenu.AppendSeparator()
@@ -1231,7 +1234,7 @@ class MyFrame(wx.Frame):
         #doBind( editMenu.Append(-1, "&Find...\tCtrl+F"),  )
         #doBind( editMenu.Append(-1, "&Replace...\tCtrl+R"),  )
 
-        formatMenu = wx.Menu()
+        formatMenu = UTILS_Adaptations.Menu()
         doBind( formatMenu.Append(306, _(u"Police...")), self.OnFont)
         formatMenu.AppendSeparator()
         doBind( formatMenu.AppendCheckItem(307, _(u"Gras\tCtrl+B")), self.OnBold, self.OnUpdateBold)
@@ -1252,11 +1255,11 @@ class MyFrame(wx.Frame):
         doBind( formatMenu.Append(318, _(u"Interligne 1.5")), self.OnLineSpacingHalf)
         doBind( formatMenu.Append(319, _(u"Interligne double")), self.OnLineSpacingDouble)
         
-        insertionMenu = wx.Menu()
+        insertionMenu = UTILS_Adaptations.Menu()
         doBind( insertionMenu.Append(320, _(u"Insérer une URL")), self.OnInsererURL)
         doBind( insertionMenu.Append(321, _(u"Insérer une image")), self.OnImporterImage)
                 
-        aideMenu = wx.Menu()
+        aideMenu = UTILS_Adaptations.Menu()
         doBind( aideMenu.Append(404, _(u"Aide\tF1")), self.OnAide)
         
         mb = wx.MenuBar()
@@ -1369,8 +1372,8 @@ class Publipostage_Teamword():
         try : 
             self.Twd = MyFrame(None)
 ##            self.Twd.Show() 
-        except Exception, err :
-            print "Erreur dans l'ouverture de Teamword : %s" % err
+        except Exception as err :
+            print("Erreur dans l'ouverture de Teamword : %s" % err)
             self.erreur = _(u"Impossible d'ouvrir Teamword")
             self.QuitterLogiciel()
         
@@ -1380,8 +1383,8 @@ class Publipostage_Teamword():
             # Création d'un nouveau document
             self.Twd.CreateNewFile(cheminModele)
             #self.doc = self.Word.ActiveDocument
-        except Exception, err :
-            print "Erreur dans creation du nouveau du document : %s" % err
+        except Exception as err :
+            print("Erreur dans creation du nouveau du document : %s" % err)
             self.erreur = _(u"Impossible de créer un nouveau du document")
             self.QuitterLogiciel()
     
@@ -1389,8 +1392,8 @@ class Publipostage_Teamword():
         """ Remplacements des mots-clés par les valeurs """
         try :
             self.Twd.RemplaceMotscles(listeValeurs)
-        except Exception, err :
-            print "Erreur dans le remplacement des valeurs du document : %s" % err
+        except Exception as err :
+            print("Erreur dans le remplacement des valeurs du document : %s" % err)
             self.erreur = _(u"Impossible de remplacer les valeurs")
             self.QuitterLogiciel()
             
@@ -1398,8 +1401,8 @@ class Publipostage_Teamword():
         """ Sauvegarde du document """
         try :
             self.Twd.FileSaveAs(cheminDoc)
-        except Exception, err :
-            print "Erreur dans la sauvegarde du document : %s" % err
+        except Exception as err :
+            print("Erreur dans la sauvegarde du document : %s" % err)
             self.erreur = _(u"Impossible de sauvegarder le document")
             self.QuitterLogiciel()
             
@@ -1408,8 +1411,8 @@ class Publipostage_Teamword():
         try :
             # Impression
             Publipostage_impression(nbre_exemplaires, nom_imprimante)
-        except Exception, err :
-            print "Erreur dans l'impression du document : %s" % err
+        except Exception as err :
+            print("Erreur dans l'impression du document : %s" % err)
             self.erreur = _(u"Impossible d'imprimer le document")
             self.QuitterLogiciel()
             
@@ -1418,8 +1421,8 @@ class Publipostage_Teamword():
         try :
 ##            self.Twd.Show()
             pass
-        except Exception, err :
-            print "Erreur dans la creation de l'apercu du document : %s" % err
+        except Exception as err :
+            print("Erreur dans la creation de l'apercu du document : %s" % err)
             self.erreur = _(u"Impossible de créer un aperçu du document")
             self.QuitterLogiciel()
     
@@ -1427,8 +1430,8 @@ class Publipostage_Teamword():
         """ Fermeture du document """
         try : 
             self.Twd.CloseFile()
-        except Exception, err :
-            print "Erreur dans la fermeture du document : %s" % err
+        except Exception as err :
+            print("Erreur dans la fermeture du document : %s" % err)
             self.erreur = _(u"Impossible de fermer le document")
             self.QuitterLogiciel()
             
@@ -1436,8 +1439,8 @@ class Publipostage_Teamword():
         """ Quitter Word """
         try :
             self.Twd.Quitter()
-        except Exception, err :
-            print "Erreur dans la fermeture de Teamword : %s" % err
+        except Exception as err :
+            print("Erreur dans la fermeture de Teamword : %s" % err)
             self.erreur = _(u"Impossible de quitter Teamword")            
 
 

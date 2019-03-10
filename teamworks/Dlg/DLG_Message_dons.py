@@ -50,7 +50,7 @@ class MyHtml(html.HtmlWindow):
         
 class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id=-1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, id=-1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
             
         # Txt HTML
         texte = TEXTE_ACCUEIL
@@ -68,7 +68,7 @@ class Dialog(wx.Dialog):
 
     def __set_properties(self):
         self.SetTitle(_(u"Bienvenue"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour fermer cette fenêtre et utiliser Teamworks"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour fermer cette fenêtre et utiliser Teamworks")))
         self.SetMinSize((300, 370))
 
     def __do_layout(self):

@@ -11,16 +11,15 @@ from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
-import os
+import six
 import GestionDB
 from Ctrl import CTRL_Page_frais
 import wx.lib.mixins.listctrl  as  listmix
 
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, -1, name="frm_gestion_frais", style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDpersonne = None
         self.nomPersonne = None
@@ -50,8 +49,7 @@ class MyFrame(wx.Frame):
         
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.Bind(wx.EVT_RADIOBUTTON, self.OnCheckTous, self.ctrl_check_tous )
         self.Bind(wx.EVT_RADIOBUTTON, self.OnCheckNonRembourses, self.ctrl_check_nonRembourses )
         
@@ -59,16 +57,18 @@ class MyFrame(wx.Frame):
         if len(self.ctrl_personnes.donnees) == 0 :
             self.ctrl_check_tous.SetValue(True)
             self.ctrl_personnes.MAJListeCtrl()
-        
-        
+
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des frais de déplacement"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour fermer")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour fermer"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.SetMinSize((760, 600))
 
@@ -138,17 +138,11 @@ class MyFrame(wx.Frame):
         self.panel_pageFrais.ctrl_deplacements.MAJListeCtrl()
         self.panel_pageFrais.ctrl_remboursements.MAJListeCtrl()
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(25)
 
     def OnBoutonOk(self, event):        
-        # Fermeture
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
 
 
@@ -200,7 +194,7 @@ class ListCtrl_personnes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Co
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -253,7 +247,7 @@ class ListCtrl_personnes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Co
 
         self.donnees = {}
         index = 0
-        for key,  valeurs in dictDonnees.iteritems() :
+        for key,  valeurs in dictDonnees.items() :
             IDpersonne = key
             nom = valeurs[1]
             nbreRembourses = valeurs[2]
@@ -292,11 +286,7 @@ class ListCtrl_personnes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Co
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
-        # Reformate une valeur date en version française
-##        if col == 1 :
-##            if valeur[4:5]=="-" and valeur[7:8]=="-":
-##                valeur = str(valeur[8:10])+"/"+str(valeur[5:7])+"/"+str(valeur[0:4])
+        valeur = six.text_type(self.itemDataMap[index][col])
         return valeur
 
     def OnGetItemImage(self, item):
@@ -319,9 +309,9 @@ class ListCtrl_personnes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Co
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    def SortItems(self,sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
         # redraw the list
         self.Refresh()
@@ -340,7 +330,7 @@ class ListCtrl_personnes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Co
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

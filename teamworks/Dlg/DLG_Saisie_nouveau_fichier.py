@@ -12,9 +12,7 @@ import wx
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
-import wx.lib.hyperlink as hl
-import sys
-
+import wx.lib.agw.hyperlink as hl
 from Data import DATA_Tables
 
 
@@ -60,10 +58,10 @@ class PanelReseau(wx.Panel):
         grid_sizer_base.Fit(self)
         self.Layout()
         
-        self.ctrl_port.SetToolTipString(_(u"Le numéro de port est 3306 par défaut."))
-        self.ctrl_hote.SetToolTipString(_(u"Indiquez ici le nom du serveur hôte."))
-        self.ctrl_user.SetToolTipString(_(u"Indiquez ici le nom de l'utilisateur. Ce nom doit avoir été validé par le créateur du fichier."))
-        self.ctrl_mdp.SetToolTipString(_(u"Indiquez ici le mot de passe nécessaire à la connexion à MySQL"))
+        self.ctrl_port.SetToolTip(wx.ToolTip(_(u"Le numéro de port est 3306 par défaut.")))
+        self.ctrl_hote.SetToolTip(wx.ToolTip(_(u"Indiquez ici le nom du serveur hôte.")))
+        self.ctrl_user.SetToolTip(wx.ToolTip(_(u"Indiquez ici le nom de l'utilisateur. Ce nom doit avoir été validé par le créateur du fichier.")))
+        self.ctrl_mdp.SetToolTip(wx.ToolTip(_(u"Indiquez ici le mot de passe nécessaire à la connexion à MySQL")))
 
 
 class MyDialog(wx.Dialog):
@@ -114,19 +112,22 @@ class MyDialog(wx.Dialog):
         self.Bind(wx.EVT_RADIOBUTTON, self.OnRadioReseau, self.radio_reseau)
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.checkbox_details.SetToolTipString(_(u"Il est recommandé de conserver cette case\n cochée afin d'importer les données par défaut"))
-        self.text_nom.SetToolTipString(_(u"Saisissez ici le nom de votre nouveau fichier.\nExemples : 'CLSH Lannilis', 'Colo Auvergne' ou 'Mon fichier à moi'..."))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.checkbox_details.SetToolTip(wx.ToolTip(_(u"Il est recommandé de conserver cette case\n cochée afin d'importer les données par défaut")))
+        self.text_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici le nom de votre nouveau fichier.\nExemples : 'CLSH Lannilis', 'Colo Auvergne' ou 'Mon fichier à moi'...")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler la saisie")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.radio_local.SetToolTipString(_(u"Le mode local est utilisé pour une utilisation mono-poste"))
-        self.radio_reseau.SetToolTipString(_(u"Le mode réseau est utilisateur pour une utilisation multipostes. \nMySQL doit être obligatoirement installé et configuré avant utilisation."))
+        self.radio_local.SetToolTip(wx.ToolTip(_(u"Le mode local est utilisé pour une utilisation mono-poste")))
+        self.radio_reseau.SetToolTip(wx.ToolTip(_(u"Le mode réseau est utilisateur pour une utilisation multipostes. \nMySQL doit être obligatoirement installé et configuré avant utilisation.")))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -279,7 +280,7 @@ class MyDialog(wx.Dialog):
             
             try :
                 port = int(port)
-            except Exception, err:
+            except Exception as err:
                 dlg = wx.MessageDialog(self, _(u"Le numéro de port n'est pas valide. \n\nErreur : %s") % err, _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()

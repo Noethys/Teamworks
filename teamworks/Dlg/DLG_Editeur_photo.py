@@ -11,11 +11,9 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 from PIL import Image
-import cStringIO
-import GestionDB
-
 import FonctionsPerso
 
 
@@ -29,7 +27,7 @@ def pil2wx(image):
 
 def load_image(fn):
     """Read a file into PIL Image object. Return the image and file size"""
-    buf=cStringIO.StringIO()
+    buf = six.BytesIO()
     f=open(fn,"rb")
     while 1:
         rdbuf=f.read(8192)
@@ -44,7 +42,7 @@ def save_image_buf(image,q=90):
     """Save a PIL Image into a byte buffer as a JPEG with the given quality.
     Return the buffer and file size.
     """
-    buf=cStringIO.StringIO()
+    buf = six.BytesIO()
     image.save(buf, format='JPEG',quality=q)
     buf.seek(0)
     return buf,len(buf.getvalue())
@@ -258,14 +256,14 @@ class ImgBox(wx.Window):
     def evt_key(self, event):
         """ Touches clavier """
         keyCode = event.GetKeyCode()
-        print keyCode
+        print(keyCode)
 
     def GetBuffer(self, qualite=80):
         # Récupération de l'image dans le cadre de sélection
         tailleImg = self.selection.GetSize()
         imgTemp = self.selection.GetSubBitmap( (0, 0, tailleImg[0], tailleImg[1]) ) 
         imgFinale = wxtopil(imgTemp.ConvertToImage())
-        buffer = cStringIO.StringIO()
+        buffer = six.BytesIO()
         imgFinale.save(buffer, format="JPEG", quality=qualite)
         buffer.seek(0)
         return buffer
@@ -321,14 +319,14 @@ class Dialog(wx.Dialog):
         
     def __set_properties(self):
         self.SetTitle(_(u"Editeur de photo"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider l'image"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider l'image")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         
-        self.bouton_rotation_gauche.SetToolTipString(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens inverse des aiguilles d'une montre"))
-        self.bouton_rotation_droite.SetToolTipString(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens des aiguilles d'une montre"))
-        self.slider_zoom.SetToolTipString(_(u"Ajustez avec cette fonction zoom\nla taille de la photo"))
-        self.bouton_reinit.SetToolTipString(_(u"Cliquez ici pour réinitialiser la position\net la taille de la photo initiale"))
+        self.bouton_rotation_gauche.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens inverse des aiguilles d'une montre")))
+        self.bouton_rotation_droite.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens des aiguilles d'une montre")))
+        self.slider_zoom.SetToolTip(wx.ToolTip(_(u"Ajustez avec cette fonction zoom\nla taille de la photo")))
+        self.bouton_reinit.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour réinitialiser la position\net la taille de la photo initiale")))
         
         self.SetMinSize((700, 600))
 
@@ -394,7 +392,7 @@ class Dialog(wx.Dialog):
         self.Centre()
                         
     def OnBoutonAide(self, event):
-        print "Aide"
+        print("Aide")
 
     def GetBmp(self):
         return self.imgbox.bmp

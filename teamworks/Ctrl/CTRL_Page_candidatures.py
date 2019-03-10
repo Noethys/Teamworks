@@ -54,12 +54,12 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonSupprEntretien, self.bouton_entretiens_supprimer)
 
     def __set_properties(self):
-        self.bouton_candidatures_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir uune nouvelle candidature"))
-        self.bouton_candidatures_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste"))
-        self.bouton_candidatures_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste"))
-        self.bouton_entretiens_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir un nouvel entretien"))
-        self.bouton_entretiens_modifier.SetToolTipString(_(u"Cliquez ici pour modifier l'entretien sélectionné dans la liste"))
-        self.bouton_entretiens_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer l'entretien sélectionné dans la liste"))
+        self.bouton_candidatures_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour saisir uune nouvelle candidature")))
+        self.bouton_candidatures_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste")))
+        self.bouton_candidatures_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste")))
+        self.bouton_entretiens_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour saisir un nouvel entretien")))
+        self.bouton_entretiens_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier l'entretien sélectionné dans la liste")))
+        self.bouton_entretiens_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer l'entretien sélectionné dans la liste")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=2, cols=1, vgap=10, hgap=10)

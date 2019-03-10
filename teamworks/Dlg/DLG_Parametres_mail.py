@@ -63,17 +63,17 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnboutonEnvoyer, self.bouton_envoyer)
 
     def __set_properties(self):
-        self.ctrl_exp.SetToolTipString(_(u"Selectionnez votre adresse mail d'expéditeur"))
-        self.bouton_exp.SetToolTipString(_(u"Cliquez ici pour acceder à la gestion des adresses d'expéditeur"))
-        self.ctrl_a.SetToolTipString(_(u"Saisissez ici les adresses des destinataires espacées par des points-virgules"))
-        self.bouton_a.SetToolTipString(_(u"Cliquez ici sélectionner des adresses mail de salariés ou de candidats"))
-        self.ctrl_cci.SetToolTipString(_(u"Saisissez ici les adresses des destinataires CCi (les destinataires n'ont pas connaissance des adresses des autres destinataires) espacées par des points-virgules"))
-        self.bouton_cci.SetToolTipString(_(u"Cliquez ici sélectionner des adresses mail de salariés ou de candidats"))
-        self.ctrl_objet.SetToolTipString(_(u"Saisissez l'objet du message"))
-        self.ctrl_joindre.SetToolTipString(_(u"Liste des pièces à joindre"))
-        self.bouton_joindre_ajouter.SetToolTipString(_(u"Cliquez sur pour ajouter une pièce jointe"))
-        self.bouton_joindre_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la piece jointe sélectionnée dans la liste"))
-        self.bouton_envoyer.SetToolTipString(_(u"Cliquez ici pour envoyer le mail"))
+        self.ctrl_exp.SetToolTip(wx.ToolTip(_(u"Selectionnez votre adresse mail d'expéditeur")))
+        self.bouton_exp.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour acceder à la gestion des adresses d'expéditeur")))
+        self.ctrl_a.SetToolTip(wx.ToolTip(_(u"Saisissez ici les adresses des destinataires espacées par des points-virgules")))
+        self.bouton_a.SetToolTip(wx.ToolTip(_(u"Cliquez ici sélectionner des adresses mail de salariés ou de candidats")))
+        self.ctrl_cci.SetToolTip(wx.ToolTip(_(u"Saisissez ici les adresses des destinataires CCi (les destinataires n'ont pas connaissance des adresses des autres destinataires) espacées par des points-virgules")))
+        self.bouton_cci.SetToolTip(wx.ToolTip(_(u"Cliquez ici sélectionner des adresses mail de salariés ou de candidats")))
+        self.ctrl_objet.SetToolTip(wx.ToolTip(_(u"Saisissez l'objet du message")))
+        self.ctrl_joindre.SetToolTip(wx.ToolTip(_(u"Liste des pièces à joindre")))
+        self.bouton_joindre_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez sur pour ajouter une pièce jointe")))
+        self.bouton_joindre_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la piece jointe sélectionnée dans la liste")))
+        self.bouton_envoyer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour envoyer le mail")))
 
 
     def __do_layout(self):

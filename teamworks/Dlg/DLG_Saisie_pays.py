@@ -43,16 +43,19 @@ class MyFrame(wx.Frame):
         
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des pays"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_nom.SetToolTipString(_(u"Saisissez ici le nom du pays"))
-        self.text_nation.SetToolTipString(_(u"Saisissez ici la nationalité du pays"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.text_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici le nom du pays")))
+        self.text_nation.SetToolTip(wx.ToolTip(_(u"Saisissez ici la nationalité du pays")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler la saisie")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((326, 195))
 

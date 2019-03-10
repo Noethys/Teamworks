@@ -13,7 +13,7 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import  wx.lib.colourselect as  csel
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 
 
 class MyFrame(wx.Frame):
@@ -87,22 +87,25 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBouton_Police, self.bouton_police)
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.largeur_texte.SetToolTipString(_(u"Saisissez ici une valeur pour la largeur du gadget"))
-        self.largeur_slider.SetToolTipString(_(u"Vous pouvez aussi utiliser cette glissière pour régler la largeur"))
-        self.hauteur_texte.SetToolTipString(_(u"Saisissez ici une valeur pour la hauteur du gadget"))
-        self.hauteur_slider.SetToolTipString(_(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur"))
-        self.bouton_couleurFond.SetToolTipString(_(u"Cliquez ici pour modifier la couleur de fond du gadget"))
-        self.bouton_couleurPolice.SetToolTipString(_(u"Cliquez ici pour modifier la couleur de police du gadget"))
-        self.bouton_police.SetToolTipString(_(u"Cliquez ici pour modifier la police d'affichage"))
-        self.checkbox_multipages.SetToolTipString(_(u"Cochez cette case pour permettre la saisie de plusieurs pages de texte dans le bloc-notes"))
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.largeur_texte.SetToolTip(wx.ToolTip(_(u"Saisissez ici une valeur pour la largeur du gadget")))
+        self.largeur_slider.SetToolTip(wx.ToolTip(_(u"Vous pouvez aussi utiliser cette glissière pour régler la largeur")))
+        self.hauteur_texte.SetToolTip(wx.ToolTip(_(u"Saisissez ici une valeur pour la hauteur du gadget")))
+        self.hauteur_slider.SetToolTip(wx.ToolTip(_(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur")))
+        self.bouton_couleurFond.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur de fond du gadget")))
+        self.bouton_couleurPolice.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur de police du gadget")))
+        self.bouton_police.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la police d'affichage")))
+        self.checkbox_multipages.SetToolTip(wx.ToolTip(_(u"Cochez cette case pour permettre la saisie de plusieurs pages de texte dans le bloc-notes")))
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((400, 362))
 
@@ -351,7 +354,7 @@ class MyFrame(wx.Frame):
         event.Skip()
         
     def OnBoutonAide(self, event):
-        print "Aide"
+        print("Aide")
 
     def OnBoutonAnnuler(self, event):
         self.MakeModal(False)

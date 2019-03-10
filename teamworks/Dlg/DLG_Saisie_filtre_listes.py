@@ -1054,6 +1054,6 @@ if __name__ == "__main__":
     #dlg.SetValeur("CONTIENT", _(u"Ceci est un test  !"))
 
     if dlg.ShowModal() == wx.ID_OK :
-        print("Code =", dlg.GetCode())
-        print("Valeur =", dlg.GetValeur())
+        print(("Code =", dlg.GetCode()))
+        print(("Valeur =", dlg.GetValeur()))
     app.MainLoop()

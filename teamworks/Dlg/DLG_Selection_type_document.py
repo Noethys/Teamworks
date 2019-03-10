@@ -30,7 +30,7 @@ class MyFrame(wx.Dialog):
         index = 1
         for image, infobulle in self.listeBoutons :
             exec("self.bouton_" + str(index) + " = wx.BitmapButton(self, " + str(index) + ", wx.Bitmap(image, wx.BITMAP_TYPE_ANY))")
-            exec("self.bouton_" + str(index) + ".SetToolTipString(infobulle)")
+            exec("self.bouton_" + str(index) + ".SetToolTip(wx.ToolTip(infobulle))")
             exec("self.Bind(wx.EVT_BUTTON, self.OnBoutonClic, self.bouton_" + str(index) + ")")
             index += 1
         
@@ -46,7 +46,7 @@ class MyFrame(wx.Dialog):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler"))
         self.SetMinSize((500, -1))
 
     def __do_layout(self):

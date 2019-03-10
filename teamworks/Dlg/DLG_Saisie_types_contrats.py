@@ -51,20 +51,23 @@ class MyFrame(wx.Frame):
         
     def __set_properties(self):
         self.SetTitle(_(u"Saisie d'un type de contrat"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.text_nom_abrege.SetMinSize((50, -1))
-        self.text_nom_abrege.SetToolTipString(_(u"Saisissez un nom abrégé. Par ex: 'CDD', 'CDI'..."))
+        self.text_nom_abrege.SetToolTip(wx.ToolTip(_(u"Saisissez un nom abrégé. Par ex: 'CDD', 'CDI'...")))
         self.label_nom_abrege_aide.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
-        self.text_nom.SetToolTipString(_(u"Saisissez le nom complet. Par ex: 'Contrat à durée indéterminée'..."))
-        self.radio_oui.SetToolTipString(_(u"Cochez 'Oui' si le type de contrat est à durée indéterminée."))
-        self.radio_non.SetToolTipString(_(u"Cochez 'Oui' si le type de contrat est à durée déterminée."))
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.text_nom.SetToolTip(wx.ToolTip(_(u"Saisissez le nom complet. Par ex: 'Contrat à durée indéterminée'...")))
+        self.radio_oui.SetToolTip(wx.ToolTip(_(u"Cochez 'Oui' si le type de contrat est à durée indéterminée.")))
+        self.radio_non.SetToolTip(wx.ToolTip(_(u"Cochez 'Oui' si le type de contrat est à durée déterminée.")))
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie et fermer")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):

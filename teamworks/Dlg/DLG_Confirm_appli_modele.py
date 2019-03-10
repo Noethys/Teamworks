@@ -53,7 +53,10 @@ class Frm_confirm_appli(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.MakeModal(True)
@@ -298,7 +301,7 @@ class threadAction(Thread):
     def run(self): 
         try: 
             self.parent.EnregistrementTaches(self.listeCreationsTaches) 
-        except Abort, KeyBoardInterrupt: 
+        except Abort as KeyBoardInterrupt: 
             pass
             
         except: 
@@ -345,7 +348,7 @@ class TreeCtrlTaches(wx.TreeCtrl):
         self.SetItemImage(self.root, self.imgRacine, wx.TreeItemIcon_Normal)
         
         # Création des noeux noms de personnes
-        for key in self.dictTaches.keys():
+        for key in list(self.dictTaches.keys()):
             IDpersonne = key[0]
             nomPersonne = key[1]
             itemPersonne = self.AppendItem(self.root, nomPersonne)

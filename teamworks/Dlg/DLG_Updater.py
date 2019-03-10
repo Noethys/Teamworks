@@ -150,7 +150,7 @@ class Download(Thread):
             if "linux" in sys.platform :
                 self.zoneTexte.SetLabel(_(u"Téléchargement en cours..."))
             urllib.urlretrieve(self.fichierURL, self.fichierDest, self._hook) 
-        except Abort, KeyBoardInterrupt: 
+        except Abort as KeyBoardInterrupt: 
             #print 'Aborted ici !' 
             if self.succes == True :
                 # Téléchargement réussi
@@ -209,9 +209,9 @@ class Page_recherche(wx.Panel):
         self.gauge.Pulse()
         
     def __set_properties(self):
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
 
     def __do_layout(self):        
         # Sizer Boutons
@@ -383,9 +383,9 @@ class Page_disponible(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
 
     def __set_properties(self):
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
 
     def __do_layout(self):        
         # Sizer Boutons
@@ -453,9 +453,9 @@ class Page_telechargement(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
 
     def __set_properties(self):
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour lancer le téléchargement"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour lancer le téléchargement")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
 
     def __do_layout(self):        
         # Sizer Boutons
@@ -605,9 +605,9 @@ class Page_fin_telechargement(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
 
     def __set_properties(self):
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
 
     def __do_layout(self):        
         # Sizer Boutons
@@ -672,9 +672,9 @@ class Page_installation(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
 
     def __set_properties(self):
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
 
     def __do_layout(self):        
         # Sizer Boutons
@@ -703,7 +703,7 @@ class Page_installation(wx.Panel):
         
     def Onbouton_ok(self, event):
         # Fermeture
-        print "ok"
+        print("ok")
 
     def Activation(self):
         # Pour contrer bug de Layout
@@ -766,7 +766,7 @@ class Page_installation(wx.Panel):
 
 class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.installation = False
         

@@ -9,12 +9,16 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import wx.lib.mixins.listctrl  as  listmix
 import datetime
-import  wx.lib.masked as masked
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN
 import calendar
 
 
@@ -46,9 +50,9 @@ class SelectionPeriode(wx.Dialog):
         # Dates
         self.staticbox_dates = wx.StaticBox(self, -1, _(u"Dates"))
         self.label_date_debut = wx.StaticText(self, -1, "Du :", size=(50, -1), style=wx.ALIGN_RIGHT)
-        self.ctrl_date_debut = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_debut = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.label_date_fin = wx.StaticText(self, -1, "Au :", style=wx.ALIGN_RIGHT)
-        self.ctrl_date_fin =wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_fin = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         
         # Boutons
         self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
@@ -282,7 +286,7 @@ class ListCtrl_vacances(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -329,7 +333,7 @@ class ListCtrl_vacances(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
+        valeur = six.text_type(self.itemDataMap[index][col])
         # Formatage de la colonne dates
         if col == 1 : 
             date_debut, date_fin = valeur.split("_")
@@ -354,9 +358,9 @@ class ListCtrl_vacances(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    def SortItems(self,sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
         # redraw the list
         self.Refresh()
@@ -371,7 +375,7 @@ class ListCtrl_vacances(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
     def OnItemSelected(self, event):
         """ Item selectionné """
         index = self.GetFirstSelected()
-        valeur = unicode(self.itemDataMap[index][1])
+        valeur = six.text_type(self.itemDataMap[index][1])
         date_debut, date_fin = valeur.split("_")
         date_debut = datetime.date(year=int(date_debut[:4]), month=int(date_debut[5:7]), day=int(date_debut[8:10]))
         date_fin = datetime.date(year=int(date_fin[:4]), month=int(date_fin[5:7]), day=int(date_fin[8:10]))

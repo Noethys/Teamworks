@@ -341,10 +341,10 @@ class ObjectListView(OLV.ObjectListView):
     def AjouteLigneTotal(self, listeNomsColonnes=[]):
         return
         for (iCol, col) in enumerate(self.columns):
-            print(col, col.__dict__)
+            print((col, col.__dict__))
             colWidth = self.GetColumnWidth(iCol)
             boundedWidth = col.CalcBoundedWidth(colWidth)
-            print(colWidth, boundedWidth)
+            print((colWidth, boundedWidth))
 
 
         # Récupération des totaux des colonnes souhaitées
@@ -717,7 +717,7 @@ class ObjectListView(OLV.ObjectListView):
 
 class Track():
     def __init__(self, dictTotaux):
-        for nomColonne, total in dictTotaux.items() :
+        for nomColonne, total in list(dictTotaux.items()) :
             setattr(self, nomColonne, total)
 
 

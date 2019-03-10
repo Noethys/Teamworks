@@ -13,7 +13,7 @@ from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
 import GestionDB
 import datetime
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 
 from Dlg import DLG_Filtre_coches
 from Dlg import DLG_Filtre_choice
@@ -151,11 +151,12 @@ class MyDialog(wx.Dialog):
             ctrl_label = wx.StaticText(self, -1, u"%s :" % label)
             grid_sizer_contenu.Add(ctrl_label, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 0)
             if listeChoix != None :
-                exec("self.ctrl_%s = %s(self, valeur=valeur, nomFiltre=label, listeChoix=listeChoix, motSQL=motSQL)" % (nomControle, typeControle))
+                typeControle = eval(typeControle)
+                setattr(self, "ctrl_%s" % nomControle, typeControle(self, valeur=valeur, nomFiltre=label, listeChoix=listeChoix, motSQL=motSQL))
             else:
-                exec("self.ctrl_%s = %s(self, valeur=valeur, nomFiltre=label, motSQL=motSQL)" % (nomControle, typeControle))
-            exec("grid_sizer_contenu.Add(self.ctrl_%s, 0, wx.EXPAND|wx.ALL, 0)" % nomControle)
-        
+                setattr(self, "ctrl_%s" % nomControle, typeControle(self, valeur=valeur, nomFiltre=label, motSQL=motSQL))
+            grid_sizer_contenu.Add(getattr(self, "ctrl_%s" % nomControle, 0, wx.EXPAND|wx.ALL, 0)
+
         sizerStaticBox.Add(grid_sizer_contenu, 0, wx.EXPAND|wx.ALL, 10)
         grid_sizer_base.Add(sizerStaticBox, 1, wx.ALL|wx.EXPAND, 10)
         
@@ -193,18 +194,19 @@ class MyDialog(wx.Dialog):
         index = 0
         for item in self.dictControles[self.categorie] :
             nomControle = item[1]
-            exec("self.ctrl_%s.valeur = None" % nomControle)
-            exec("self.ctrl_%s.SetLabel(self.ctrl_%s.GetLabel())" % (nomControle, nomControle))
+            getattr(self, "ctrl_%s" % nomControle).valeur = None
+            nomControle = eval(nomControle)
+            getattr(self, "ctrl_%s" % nomControle).SetLabel(nomControle.GetLabel())
             index += 1
             
                     
     def GetListeFiltres(self):
         listeFiltres = []
         for labelTemp, nomControle, typeControle, listeChoix, motSQL, valeurTemp in self.dictControles[self.categorie] :
-            exec("valeur = self.ctrl_%s.valeur" % nomControle)
-            exec("sql = self.ctrl_%s.GetSQL()" % nomControle)
-            exec("label = self.ctrl_%s.GetLabel()" % nomControle)
-            exec("labelControle = self.ctrl_%s.nomFiltre" % nomControle)
+            valeur = getattr(self, "ctrl_%s" % nomControle).valeur
+            sql = getattr(self, "ctrl_%s" % nomControle).GetSQL()
+            label = getattr(self, "ctrl_%s" % nomControle).GetLabel()
+            labelControle = getattr(self, "ctrl_%s" % nomControle).nomFiltre
             if valeur != None : 
                 dict = { "nomControle" : nomControle,
                             "label" : label,

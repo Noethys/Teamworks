@@ -65,4 +65,4 @@ def GetValeur(cle="", defaut="", theme=None):
 
 
 if __name__ == '__main__':
-    print(GetValeur("couleur_tres_fonce", wx.Colour(255, 0, 0)))
+    print((GetValeur("couleur_tres_fonce", wx.Colour(255, 0, 0))))

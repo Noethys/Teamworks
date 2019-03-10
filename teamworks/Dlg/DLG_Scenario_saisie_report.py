@@ -14,7 +14,10 @@ import FonctionsPerso
 import GestionDB
 import datetime
 from ObjectListView import ObjectListView, ColumnDefn
-import wx.combo
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import BitmapComboBox
+else :
+    from wx.combo import BitmapComboBox
 from Utils import UTILS_Adaptations
 DLG_Scenario = UTILS_Adaptations.Import("Dlg.DLG_Scenario")
 
@@ -65,7 +68,7 @@ class MyDialog(wx.Dialog):
         
         # Choix catégorie
         self.label_categorie = wx.StaticText(self, -1, _(u"Catégorie :"))
-        self.ctrl_categorie = wx.combo.BitmapComboBox(self, style=wx.CB_READONLY)
+        self.ctrl_categorie = BitmapComboBox(self, style=wx.CB_READONLY)
         self.InitCombo(IDscenario=None)
         
         # Boutons
@@ -103,7 +106,7 @@ class MyDialog(wx.Dialog):
         if self.mode_heure == 1 :
             self.ConvertModeHeure(self.ctrl_temps_minutes.GetValue(), 1)
             self.ctrl_modeHeure.SetSelection(1)
-            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)"))
+            self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")))
         
         if self.IDpersonne == None :
             self.radio_2.Enable(False)
@@ -111,8 +114,8 @@ class MyDialog(wx.Dialog):
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.ctrl_temps_heures.SetToolTipString(_(u"Saisissez un nombre d'heures"))
-        self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
+        self.ctrl_temps_heures.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre d'heures")))
+        self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes (entre 0 et 59)")))
         self.SetMinSize((510, 460))
 
     def __do_layout(self):
@@ -197,8 +200,12 @@ class MyDialog(wx.Dialog):
 
     def CreationImage(self, tailleImages, r, v, b):
         """ Création des images pour le TreeCtrl """
-        bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
-        bmp.SetRGBRect((0, 0, 16, 16), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGB((0, 0, 16, 16), r, v, b)
+        else:
+            bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGBRect((0, 0, 16, 16), r, v, b)
         return bmp.ConvertToBitmap()
     
     def InitCombo(self, IDscenario=None, IDcategorieSelection=None):
@@ -266,7 +273,7 @@ class MyDialog(wx.Dialog):
                 bmp = self.CreationImage( tailleImages, r, v, b)
                 # Ajout du nbre d'heures :
                 if IDscenario != None :
-                    if dictColonnes.has_key(IDcategorie) :
+                    if IDcategorie in dictColonnes :
                         nom_categorie = u"%s (%s)" % (nom_categorie, self.FormateHeure(dictColonnes[IDcategorie]["total_reste_heures"]))
                     if IDcategorie == 1000 :
                         nom_categorie = u"%s (%s)" % (nom_categorie, self.FormateHeure(dictColonneTotal["total_reste_heures"]))
@@ -450,12 +457,12 @@ class MyDialog(wx.Dialog):
             resultat = min * 60 / 100
             self.label_temps_signe.SetLabel(u"h")
             self.ctrl_temps_minutes.SetValue( "%02d" % resultat)
-            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
+            self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes (entre 0 et 59)")))
         if mode == 1 :
             resultat = min * 100 / 60 
             self.label_temps_signe.SetLabel(u".")
             self.ctrl_temps_minutes.SetValue(str(resultat))
-            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)"))
+            self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")))
         self.mode_heure = mode
 
     def GetReport(self):
@@ -631,7 +638,7 @@ class ListView(ObjectListView):
         ])
         self.SetSortColumn(self.columns[4])
         self.SetEmptyListMsg(_(u"Aucun scénario enregistré"))
-        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         self.SetObjects(self.donnees)
         self.useAlternateBackColors = False
         

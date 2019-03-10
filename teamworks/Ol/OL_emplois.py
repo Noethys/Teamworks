@@ -10,7 +10,7 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import datetime
 import wx
-from Ctrl import CTRL_Bouton_image
+from Utils import UTILS_Adaptations
 import GestionDB
 import operator
 import FonctionsPerso
@@ -50,7 +50,7 @@ def Importation_disponibilites():
     for IDdisponibilite, IDemploi, date_debut, date_fin in listeDonnees :
         date_debut = datetime.date(year=int(date_debut[:4]), month=int(date_debut[5:7]), day=int(date_debut[8:10]))
         date_fin = datetime.date(year=int(date_fin[:4]), month=int(date_fin[5:7]), day=int(date_fin[8:10]))
-        if DICT_DISPONIBILITES.has_key(IDemploi) :
+        if IDemploi in DICT_DISPONIBILITES :
             DICT_DISPONIBILITES[IDemploi].append((IDdisponibilite, date_debut, date_fin))
         else:
             DICT_DISPONIBILITES[IDemploi] = [(IDdisponibilite, date_debut, date_fin),]
@@ -67,7 +67,7 @@ def Importation_emplois_fonctions():
     # Transforme liste en dict
     DICT_EMPLOIS_FONCTIONS = {}
     for IDemploi_fonction, IDemploi, IDfonction in listeDonnees :
-        if DICT_EMPLOIS_FONCTIONS.has_key(IDemploi) :
+        if IDemploi in DICT_EMPLOIS_FONCTIONS :
             DICT_EMPLOIS_FONCTIONS[IDemploi].append(IDfonction)
         else:
             DICT_EMPLOIS_FONCTIONS[IDemploi] = [IDfonction,]
@@ -84,7 +84,7 @@ def Importation_emplois_affectations():
     # Transforme liste en dict
     DICT_EMPLOIS_AFFECTATIONS = {}
     for IDemploi_affectation, IDemploi, IDaffectation in listeDonnees :
-        if DICT_EMPLOIS_AFFECTATIONS.has_key(IDemploi) :
+        if IDemploi in DICT_EMPLOIS_AFFECTATIONS :
             DICT_EMPLOIS_AFFECTATIONS[IDemploi].append(IDaffectation)
         else:
             DICT_EMPLOIS_AFFECTATIONS[IDemploi] = [IDaffectation,]
@@ -101,7 +101,7 @@ def Importation_diffuseurs():
     # Transforme liste en dict
     DICT_DIFFUSEURS = {}
     for IDemploi_diffuseur, IDemploi, IDdiffuseur in listeDonnees :
-        if DICT_DIFFUSEURS.has_key(IDemploi) :
+        if IDemploi in DICT_DIFFUSEURS :
             DICT_DIFFUSEURS[IDemploi].append(IDdiffuseur)
         else:
             DICT_DIFFUSEURS[IDemploi] = [IDdiffuseur,]
@@ -119,7 +119,7 @@ class Track(object):
         self.intitule = donnees[3]
         self.detail = donnees[4]
         # Nbre candidatures rattachées
-        if DICT_CANDIDATURES.has_key(self.IDemploi) :
+        if self.IDemploi in DICT_CANDIDATURES :
             self.nbre_candidatures = DICT_CANDIDATURES[self.IDemploi]
         else:
             self.nbre_candidatures = 0
@@ -190,7 +190,7 @@ class ListView(ObjectListView):
         def GetListeDisponibilites(dictFiltres):
             """ Recherche des disponibilités """
             listeTemp = []
-            for IDemploi, disponibilites in Importation_disponibilites().iteritems() :
+            for IDemploi, disponibilites in Importation_disponibilites().items() :
                 for IDdisponibilite, date_debut, date_fin in disponibilites :
                     if date_fin>=dictFiltres["valeur"][0] and date_debut<=dictFiltres["valeur"][1] :
                         listeTemp.append(IDemploi)
@@ -199,7 +199,7 @@ class ListView(ObjectListView):
         def GetListeFonctions(dictFiltres):
             """ Recherche des fonctions """
             listeTemp = []
-            for IDemploi, listeFonctions in Importation_emplois_fonctions().iteritems() :
+            for IDemploi, listeFonctions in Importation_emplois_fonctions().items() :
                 for ID, label in dictFiltres["valeur"] :
                     if ID in listeFonctions :
                         if IDemploi not in listeTemp :
@@ -209,7 +209,7 @@ class ListView(ObjectListView):
         def GetListeAffectations(dictFiltres):
             """ Recherche des affectations """
             listeTemp = []
-            for IDemploi, listeAffectations in Importation_emplois_affectations().iteritems() :
+            for IDemploi, listeAffectations in Importation_emplois_affectations().items() :
                 for ID, label in dictFiltres["valeur"] :
                     if ID in listeAffectations :
                         if IDemploi not in listeTemp :
@@ -219,7 +219,7 @@ class ListView(ObjectListView):
         def GetListeDiffuseurs(dictFiltres):
             """ Recherche des diffuseurs """
             listeTemp = []
-            for IDemploi, listeDiffuseurs in Importation_diffuseurs().iteritems() :
+            for IDemploi, listeDiffuseurs in Importation_diffuseurs().items() :
                 for ID, label in dictFiltres["valeur"] :
                     if ID in listeDiffuseurs :
                         if IDemploi not in listeTemp :
@@ -352,7 +352,7 @@ class ListView(ObjectListView):
 
         self.SetSortColumn(self.columns[1])
         self.SetEmptyListMsg(_(u"Aucune offre d'emploi"))
-        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         self.SetObjects(self.donnees)
        
     def MAJ(self, IDemploi=None, presents=None):
@@ -393,7 +393,7 @@ class ListView(ObjectListView):
             ID = self.Selection()[0].IDemploi
                 
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -615,7 +615,7 @@ class ListView(ObjectListView):
             return
 
         # Demande de confirmation
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette offre d'emploi ? \n\n> ") + nom))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette offre d'emploi ? \n\n> ") + nom))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()

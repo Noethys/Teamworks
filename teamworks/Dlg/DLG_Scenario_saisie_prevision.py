@@ -59,14 +59,14 @@ class MyDialog(wx.Dialog):
         if self.mode_heure == 1 :
             self.ConvertModeHeure(self.ctrl_temps_minutes.GetValue(), 1)
             self.ctrl_modeHeure.SetSelection(1)
-            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)"))
+            self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")))
 
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
-        self.ctrl_temps_heures.SetToolTipString(_(u"Saisissez un nombre d'heures"))
-        self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
+        self.ctrl_temps_heures.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre d'heures")))
+        self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes (entre 0 et 59)")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -179,12 +179,12 @@ class MyDialog(wx.Dialog):
             resultat = min * 60 / 100
             self.label_temps_signe.SetLabel(u"h")
             self.ctrl_temps_minutes.SetValue( "%02d" % resultat)
-            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes (entre 0 et 59)"))
+            self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes (entre 0 et 59)")))
         if mode == 1 :
             resultat = min * 100 / 60 
             self.label_temps_signe.SetLabel(u".")
             self.ctrl_temps_minutes.SetValue(str(resultat))
-            self.ctrl_temps_minutes.SetToolTipString(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)"))
+            self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")))
         self.mode_heure = mode
 
     def GetPrevision(self):

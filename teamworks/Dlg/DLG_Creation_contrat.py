@@ -21,10 +21,9 @@ from Ctrl.CTRL_Creation_contrat_p5 import Page as Page5
 from Ctrl.CTRL_Creation_contrat_p6 import Page as Page6
 
 
-class MyWizard(wx.Frame):
-    def __init__(self, parent, title="", IDcontrat=0, IDpersonne=0 ):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_creation_contrats", style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+class Dialog(wx.Dialog):
+    def __init__(self, parent, title="", IDcontrat=0, IDpersonne=0):
+        wx.Dialog.__init__(self, parent, -1, name="frm_creation_contrats",style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.listePages = ("Page1", "Page2", "Page3", "Page4", "Page5", "Page6")
         
@@ -41,8 +40,7 @@ class MyWizard(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_retour, self.bouton_retour)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_suite, self.bouton_suite)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.bouton_retour.Enable(False)
         self.nbrePages = len(self.listePages)    
         self.pageVisible = 1
@@ -108,16 +106,19 @@ class MyWizard(wx.Frame):
 
     def __set_properties(self):
         self.SetTitle(_(u"Création d'un contrat"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_retour.SetToolTipString(_(u"Cliquez ici pour revenir à la page précédente"))
+        self.bouton_retour.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour revenir à la page précédente")))
         self.bouton_retour.SetSize(self.bouton_retour.GetBestSize())
-        self.bouton_suite.SetToolTipString(_(u"Cliquez ici pour passer à l'étape suivante"))
+        self.bouton_suite.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour passer à l'étape suivante")))
         self.bouton_suite.SetSize(self.bouton_suite.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler la création du contrat"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler la création du contrat")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((500, 460))
 
@@ -188,31 +189,22 @@ class MyWizard(wx.Frame):
         if self.pageVisible > 1 :
             self.bouton_retour.Enable(True)
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def Onbouton_annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def ValidationPages(self) :
         """ Validation des données avant changement de pages """
-        exec( "validation = self.page" + str(self.pageVisible) + ".Validation()" )
+        validation = getattr(self, "page%s" % self.pageVisible).Validation()
         return validation
     
     def Terminer(self):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
         
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = MyWizard(None, "", IDcontrat=0, IDpersonne=0 )
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "", IDcontrat=0, IDpersonne=0 )
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

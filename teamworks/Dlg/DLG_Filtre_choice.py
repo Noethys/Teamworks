@@ -126,7 +126,7 @@ class MyChoice(wx.Choice):
         return self.dictIndexes[index], self.GetStringSelection()
     
     def SetIDselection(self, ID):
-        for index, IDtemp in self.dictIndexes.iteritems():
+        for index, IDtemp in self.dictIndexes.items():
             if ID == IDtemp :
                 self.Select(index)
                 return        

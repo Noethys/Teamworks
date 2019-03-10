@@ -60,7 +60,7 @@ class CTRL_Choix_profil(wx.Choice):
         return listeItems
 
     def SetID(self, ID=None):
-        for index, IDprofil in self.dictDonnees.items():
+        for index, IDprofil in list(self.dictDonnees.items()):
             if IDprofil != None and IDprofil == ID:
                 self.SetSelection(index)
                 return
@@ -222,7 +222,7 @@ def SetParametres(categorie="", dictParametres={}, IDprofil=None):
     # On boucle sur chaque valeur
     listeAjouts = []
     listeModifications = []
-    for nom, valeur in dictParametres.items():
+    for nom, valeur in list(dictParametres.items()):
         type_donnee = type(valeur)
         if type_donnee in (str, six.text_type) :
             type_donnee = "texte"

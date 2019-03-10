@@ -83,20 +83,23 @@ class FrameCoords(wx.Frame):
 
     def __set_properties(self):
         # begin wxGlade: FrameCoords.__set_properties
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_fixe.SetSize(self.bouton_fixe.GetBestSize())
         self.bouton_mobile.SetSize(self.bouton_mobile.GetBestSize())
         self.bouton_fax.SetSize(self.bouton_fax.GetBestSize())
         self.bouton_email.SetSize(self.bouton_email.GetBestSize())
-        self.bouton_Ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_Ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_Ok.SetSize(self.bouton_Ok.GetBestSize())
-        self.bouton_Annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.bouton_Annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         self.bouton_Annuler.SetSize(self.bouton_Annuler.GetBestSize())
-        self.text_info_tel.SetToolTipString(_(u"Saisissez ici un numéro de téléphone"))
-        self.text_info_mail.SetToolTipString(_(u"Saisissez ici une adresse Mail valide"))
-        self.text_intitule.SetToolTipString(_(u"Vous pouvez, si vous le souhaitez, saisir ici un intitulé. Ex : 'Contact à Rennes' ou 'Domicile des parents'..."))
+        self.text_info_tel.SetToolTip(wx.ToolTip(_(u"Saisissez ici un numéro de téléphone")))
+        self.text_info_mail.SetToolTip(wx.ToolTip(_(u"Saisissez ici une adresse Mail valide")))
+        self.text_intitule.SetToolTip(wx.ToolTip(_(u"Vous pouvez, si vous le souhaitez, saisir ici un intitulé. Ex : 'Contact à Rennes' ou 'Domicile des parents'...")))
         # end wxGlade
 
     def __do_layout(self):
@@ -263,7 +266,7 @@ class FrameCoords(wx.Frame):
         lettre = text[-1]
         pos = taille-1
         chaineFormat = "  .  .  .  .  ."
-        print  text, lettre, pos
+        print(text, lettre, pos)
         
  
         # Validation du caractère

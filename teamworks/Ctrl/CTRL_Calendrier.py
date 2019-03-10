@@ -11,15 +11,13 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import wx.lib.newevent
 import calendar
 import datetime
-import time
 import GestionDB
-import FonctionsPerso
 import sys
-
+from Utils import UTILS_Adaptations
 
 SelectDatesEvent, EVT_SELECT_DATES = wx.lib.newevent.NewEvent()
 
@@ -600,7 +598,7 @@ class Calendrier(wx.ScrolledWindow):
 
 
         # Dessin texte
-        if unicode(texteDate) in self.listeJoursAvecPresents :
+        if six.text_type(texteDate) in self.listeJoursAvecPresents :
             dc.SetTextForeground(self.couleurFontJoursAvecPresents)
         else:
             dc.SetTextForeground(self.couleurFontJours)
@@ -741,7 +739,7 @@ class Calendrier(wx.ScrolledWindow):
             return
         
         # Création du menu
-        menu = wx.Menu()
+        menu = UTILS_Adaptations.Menu()
         
         if self.multiSelections == True :
             
@@ -778,7 +776,7 @@ class Calendrier(wx.ScrolledWindow):
             # Choisir une période de vacances
             self.popupID3 = wx.NewId()
             if len(self.listePeriodesVacs) != 0 :
-                sm = wx.Menu()
+                sm = UTILS_Adaptations.Menu()
                 index = 0
                 self.listePeriodesVacs.reverse()
                 # Seules les 20 dernières périodes sont retenues
@@ -848,7 +846,7 @@ class Calendrier(wx.ScrolledWindow):
 
     def OnPopup2(self, event):
         """ Aide sur le calendrier """
-        print "Aide..."
+        print("Aide...")
         # FonctionsPerso.Aide(51)
 
 
@@ -980,7 +978,7 @@ class CTRL(wx.Panel):
             self.calendrier.SelectJours( [datetime.date.today(),] )
             
         self.bouton_CalendrierAnnuel = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calendrier_jour.png"), wx.BITMAP_TYPE_PNG), size=(28, 21))
-        self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
+        self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
         
         # Layout
         sizer =  wx.BoxSizer(wx.VERTICAL)
@@ -1019,11 +1017,11 @@ class CTRL(wx.Panel):
         if self.typeCalendrier == "annuel" :
             self.combo_mois.Enable(False)
             self.spin.Enable(False)
-            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier mensuel"))
+            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier mensuel")))
         else:
             self.combo_mois.Enable(True)
             self.spin.Enable(True)
-            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
+            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
     
     def SetMultiSelection(self, etat=False):
         self.multiSelections = etat
@@ -1075,12 +1073,12 @@ class CTRL(wx.Panel):
             self.calendrier.SetTypeCalendrier("annuel")
             self.combo_mois.Enable(False)
             self.spin.Enable(False)
-            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier mensuel"))
+            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier mensuel")))
         else:
             self.calendrier.SetTypeCalendrier("mensuel")
             self.combo_mois.Enable(True)
             self.spin.Enable(True)
-            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
+            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
     
     def MAJPeriodeCalendrier(self) :
         mois = self.combo_mois.GetSelection() + 1

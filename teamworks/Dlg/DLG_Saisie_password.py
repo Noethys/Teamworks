@@ -36,16 +36,19 @@ class MyFrame(wx.Frame):
         
     def __set_properties(self):
         self.SetTitle(_(u"Saisie d'un mot de passe"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Cadenas.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_password1.SetToolTipString(_(u"Saisissez ici votre mot de passe"))
-        self.text_password2.SetToolTipString(_(u"Saisissez ici une deuxième fois votre mot de passe pour confirmation"))
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.text_password1.SetToolTip(wx.ToolTip(_(u"Saisissez ici votre mot de passe")))
+        self.text_password2.SetToolTip(wx.ToolTip(_(u"Saisissez ici une deuxième fois votre mot de passe pour confirmation")))
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler la saisie")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):

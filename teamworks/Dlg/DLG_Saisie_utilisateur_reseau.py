@@ -7,8 +7,10 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 
@@ -17,7 +19,7 @@ LISTE_SUFFIXES = ("tdata", "tphotos", "tdocuments")
 
 class Dialog(wx.Dialog):
     def __init__(self, parent,  nomUtilisateur="", nomHote="", nomBase=""):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent      
 
         self.nomUtilisateur = nomUtilisateur
@@ -84,14 +86,14 @@ class Dialog(wx.Dialog):
 
 
     def __set_properties(self):
-        self.ctrl_nom.SetToolTipString(_(u"Saisissez ici un nom pour l'utilisateur. \nIl est fortement conseillé de n'inclure aucun caractères spéciaux (accents, symboles...)"))
-        self.radio_1.SetToolTipString(_(u"L'utilisateur ne peut se connecter à la base de données\n qu'à partir du serveur sur lequel se trouve la base de données."))
-        self.radio_2.SetToolTipString(_(u"L'utilisateur ne peut se connecter à la base de données\n qu'à partir des ordinateurs dont les adresses locales ou\n distantes sont cochées dans la liste suivante."))
-        self.radio_3.SetToolTipString(_(u"L'utilisateur ne peut se connecter à la base de données\n qu'à partir des ordinateurs dont les adresses locales ou\n distantes sont cochées dans la liste suivante."))
-        self.ctrl_mdp_1.SetToolTipString(_(u"Saisissez un mot de passe pour cet utilisateur"))
-        self.ctrl_mdp_2.SetToolTipString(_(u"Confirmez le mot de passe en le tapant une seconde fois..."))
-        self.ctrl_autorisation.SetToolTipString(_(u"Cochez cette case pour autoriser l'utilisateur à se connecter \nau fichier à partir de l'hôte indiqué ci-dessus."))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.ctrl_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom pour l'utilisateur. \nIl est fortement conseillé de n'inclure aucun caractères spéciaux (accents, symboles...)")))
+        self.radio_1.SetToolTip(wx.ToolTip(_(u"L'utilisateur ne peut se connecter à la base de données\n qu'à partir du serveur sur lequel se trouve la base de données.")))
+        self.radio_2.SetToolTip(wx.ToolTip(_(u"L'utilisateur ne peut se connecter à la base de données\n qu'à partir des ordinateurs dont les adresses locales ou\n distantes sont cochées dans la liste suivante.")))
+        self.radio_3.SetToolTip(wx.ToolTip(_(u"L'utilisateur ne peut se connecter à la base de données\n qu'à partir des ordinateurs dont les adresses locales ou\n distantes sont cochées dans la liste suivante.")))
+        self.ctrl_mdp_1.SetToolTip(wx.ToolTip(_(u"Saisissez un mot de passe pour cet utilisateur")))
+        self.ctrl_mdp_2.SetToolTip(wx.ToolTip(_(u"Confirmez le mot de passe en le tapant une seconde fois...")))
+        self.ctrl_autorisation.SetToolTip(wx.ToolTip(_(u"Cochez cette case pour autoriser l'utilisateur à se connecter \nau fichier à partir de l'hôte indiqué ci-dessus.")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
@@ -218,7 +220,7 @@ class Dialog(wx.Dialog):
             index += 1
         
     def OnBoutonAide(self, event):
-        print "Aide..."
+        print("Aide...")
 
     def OnBoutonOk(self, event):
 
@@ -254,7 +256,7 @@ class Dialog(wx.Dialog):
         
         # Si pas de mot de passe
         if mdp1 == "" :
-            txtMessage = unicode(_(u"Attention, vous n'avez saisi aucun mot de passe pour cet utilisateur.\nCela peut être risqué pour la sécurité des données.\n\nVoulez-vous quand même valider la création de cet utilisateur sans mot de passe ?\n\n(Cliquez sur Non ou sur Annuler pour saisir un mot de de passe)"))
+            txtMessage = six.text_type(_(u"Attention, vous n'avez saisi aucun mot de passe pour cet utilisateur.\nCela peut être risqué pour la sécurité des données.\n\nVoulez-vous quand même valider la création de cet utilisateur sans mot de passe ?\n\n(Cliquez sur Non ou sur Annuler pour saisir un mot de de passe)"))
             dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.CANCEL|wx.NO_DEFAULT|wx.ICON_QUESTION)
             reponse = dlgConfirm.ShowModal()
             dlgConfirm.Destroy()

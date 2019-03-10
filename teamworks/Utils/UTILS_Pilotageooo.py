@@ -42,7 +42,7 @@ class Pilotage():
         print('Lancement du pilotage...')
         try:
             self.ctx = self.start_client()
-        except Exception, exc:
+        except Exception as exc:
             print('... Serveur non actif. Lancement du serveur ...')
             status = os.system("/usr/bin/soffice '-accept=socket,host=localhost,port=2002;urp;StarOffice.ServiceManager' -nodefault -nofirststartwizard") # -noheadless pour rendre invisible, -nologo  pour pas afficher le splash screen de ooo
             time.sleep(2)
@@ -120,7 +120,7 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
                 txtPublipostage += "{" + item[0] + "}, "
             txtPublipostage = txtPublipostage[:-2] + "."
         
-        print "Remplacement valeurs fini..."
+        print("Remplacement valeurs fini...")
         return txtPublipostage
     
     def Sauvegarder_doc(self, cheminDoc=""):
@@ -129,7 +129,7 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
         args = ()
         self.document.storeAsURL(dest, args)
         txtSave = _(u"\n\n> Document sauvegardé sur votre ordinateur.")
-        print "Sauvegarde doc..."
+        print("Sauvegarde doc...")
         return txtSave
 
 
@@ -168,7 +168,7 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
             args = ()
             for x in range(nbreExemplaires) :
                 uno.invoke(self.document, "print", (args, ))
-                print "Impression..."
+                print("Impression...")
                 time.sleep(2) # Attend 2 secondes que le doc soit envoyé à l'imprimante, sinon bug !
             txtImpress = _(u"\n\n> Document imprimé en ") + str(nbreExemplaires) + " exemplaire(s)."
         except :

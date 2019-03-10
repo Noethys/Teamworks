@@ -53,18 +53,21 @@ class MyFrame(wx.Frame):
         
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des périodes de vacances"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.choice_nom.SetToolTipString(_(u"Choisissez ici le nom de la période"))
-        self.text_annee.SetToolTipString(_(u"Saisissez ici l'année de la période. Ex. : '2008'"))
-        self.datepicker_dateDebut.SetToolTipString(_(u"Saisissez ici la date de début de la période"))
-        self.datepicker_dateFin.SetToolTipString(_(u"Saisissez ici la date de fin de la période"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.choice_nom.SetToolTip(wx.ToolTip(_(u"Choisissez ici le nom de la période")))
+        self.text_annee.SetToolTip(wx.ToolTip(_(u"Saisissez ici l'année de la période. Ex. : '2008'")))
+        self.datepicker_dateDebut.SetToolTip(wx.ToolTip(_(u"Saisissez ici la date de début de la période")))
+        self.datepicker_dateFin.SetToolTip(wx.ToolTip(_(u"Saisissez ici la date de fin de la période")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler la saisie")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):

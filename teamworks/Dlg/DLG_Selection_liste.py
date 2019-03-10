@@ -11,12 +11,10 @@ from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
-import os
-import wx.lib.hyperlink as hl
-import GestionDB
+import six
+import wx.lib.agw.hyperlink as hl
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
-import sys
-import datetime
+
 
 
 class MyFrame(wx.Dialog):
@@ -50,11 +48,11 @@ class MyFrame(wx.Dialog):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((710, 380))
 
@@ -190,7 +188,7 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.remplissage = True
         for valeurs in self.listeValeurs :
             ID = int(valeurs[0])
-            index = self.InsertStringItem(sys.maxint, str(ID))
+            index = self.InsertStringItem(six.MAXSIZE, str(ID))
             x = 1
             for valeur in valeurs[1:] :
                 self.SetStringItem(index, x, valeur)

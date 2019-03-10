@@ -47,10 +47,10 @@ class MyDialog(wx.Dialog):
         
         
     def __set_properties(self):
-        self.ctrl_heure_min.SetToolTipString(_(u"Saisissez ici l'heure minimale"))
-        self.ctrl_heure_max.SetToolTipString(_(u"Saisissez ici l'heure maximale"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.ctrl_heure_min.SetToolTip(wx.ToolTip(_(u"Saisissez ici l'heure minimale")))
+        self.ctrl_heure_max.SetToolTip(wx.ToolTip(_(u"Saisissez ici l'heure maximale")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         self.ctrl_heure_min.SetMinSize((65, -1))
         self.ctrl_heure_min.SetFont(wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.ctrl_heure_min.SetCtrlParameters(invalidBackgroundColour = "PINK")

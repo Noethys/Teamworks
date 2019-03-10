@@ -29,7 +29,7 @@ class CTRL_profil_perso(CTRL_Profil.CTRL):
         """ Envoi des paramètres du profil sélectionné à la fenêtre """
         listeFiltres = []
         if dictParametres != None :
-            for index, dictFiltreStr in dictParametres.items() :
+            for index, dictFiltreStr in list(dictParametres.items()) :
                 dictFiltre = eval(dictFiltreStr)
                 listeFiltres.append(dictFiltre)
         self.dlg.SetDonnees(listeFiltres)

@@ -62,15 +62,18 @@ class Frm_SaisieCatPresences(wx.Frame):
         self.text_nom.SetFocus()
 
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.treeCtrl_categories.SetToolTipString(_(u"Sélectionnez une catégorie PARENTE. Votre nouvelle catégorie sera placée comment enfant de cette catégorie."))
-        self.bouton_aide.SetToolTipString("Bouton Aide")
+        self.treeCtrl_categories.SetToolTip(wx.ToolTip(_(u"Sélectionnez une catégorie PARENTE. Votre nouvelle catégorie sera placée comment enfant de cette catégorie.")))
+        self.bouton_aide.SetToolTip(wx.ToolTip("Bouton Aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Bouton Ok")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Bouton Ok"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Bouton annuler")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Bouton annuler"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         # end wxGlade
 
@@ -151,7 +154,7 @@ class Frm_SaisieCatPresences(wx.Frame):
         listeDonnees = [    ("nom_categorie",   self.nom_categorie),
                             ("IDcat_parent",    self.IDcat_parent),
                             ("ordre",           ordreMax+1),
-                            ("couleur",         unicode(self.couleur)),
+                            ("couleur",         six.text_type(self.couleur)),
                         ]
 
         if self.IDcategorie == 0:

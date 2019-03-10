@@ -14,7 +14,10 @@ import GestionDB
 import datetime
 import FonctionsPerso
 import wx.lib.masked as masked
-import wx.combo
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import BitmapComboBox
+else :
+    from wx.combo import BitmapComboBox
 
 
 class MyFrame(wx.Frame):
@@ -64,16 +67,19 @@ class MyFrame(wx.Frame):
             self.SetTitle(_(u"%s d'un entretien") % type)
         else:
             self.SetTitle(_(u"%s d'un entretien pour %s") % (type, nom_complet))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.ctrl_date.SetToolTipString(_(u"Saisissez la date de l'entretien"))
-        self.ctrl_heure.SetToolTipString(_(u"Saisissez l'heure de l'entretien"))
-        self.ctrl_avis.SetToolTipString(_(u"Sélectionnez une appréciation de l'entretien"))
-        self.ctrl_remarques.SetToolTipString(_(u"Saisissez l'avis complet émis après l'entretien"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider la saisie des données"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.ctrl_date.SetToolTip(wx.ToolTip(_(u"Saisissez la date de l'entretien")))
+        self.ctrl_heure.SetToolTip(wx.ToolTip(_(u"Saisissez l'heure de l'entretien")))
+        self.ctrl_avis.SetToolTip(wx.ToolTip(_(u"Sélectionnez une appréciation de l'entretien")))
+        self.ctrl_remarques.SetToolTip(wx.ToolTip(_(u"Saisissez l'avis complet émis après l'entretien")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider la saisie des données")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         self.SetMinSize((450, 330))
 
     def __do_layout(self):
@@ -254,9 +260,9 @@ class MyFrame(wx.Frame):
         return u"%s %s" % (nom, prenom)
     
 
-class BitmapComboBox(wx.combo.BitmapComboBox):
+class BitmapComboBox(BitmapComboBox):
     def __init__(self, parent, listeImages=[], size=(-1,  -1) ):
-        wx.combo.BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
+        BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
         # Remplissage des items avec les images
         for texte, nomImage in listeImages :
             img = wx.Bitmap(Chemins.GetStaticPath("Images/22x22/%s" % nomImage), wx.BITMAP_TYPE_ANY)

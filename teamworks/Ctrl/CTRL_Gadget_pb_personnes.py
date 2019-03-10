@@ -8,8 +8,7 @@
 
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
-import GestionDB
+import six
 import FonctionsPerso
 import wx.lib.agw.customtreectrl as CT
 import sys
@@ -119,7 +118,7 @@ class TreeCtrl(CT.CustomTreeCtrl):
 
     def AddTreeNodes(self, parentItem, items, img=None):
         for item in items:
-            if type(item) == str or type(item) == unicode:
+            if type(item) == str or type(item) == six.text_type:
                 # Label problème
                 newItem = self.AppendItem(parentItem, item)
                 self.SetPyData(newItem, None)
@@ -154,11 +153,12 @@ class TreeCtrl(CT.CustomTreeCtrl):
         # Transforme le dict en liste
         listeProblemes = []
         index1 = 0
-        for IDpersonne, dictCategories in dictProblemes.iteritems() :
-            listeProblemes.append( [dictNoms[IDpersonne], []] )
-            for nomCategorie, valeurs in dictCategories.iteritems() :
-                listeProblemes[index1][1].append( [nomCategorie, valeurs] )
-            index1 += 1
+        for IDpersonne, dictCategories in dictProblemes.items() :
+            if IDpersonne in dictNoms:
+                listeProblemes.append( [dictNoms[IDpersonne], []] )
+                for nomCategorie, valeurs in dictCategories.items() :
+                    listeProblemes[index1][1].append( [nomCategorie, valeurs] )
+                index1 += 1
         return listeProblemes
            
             

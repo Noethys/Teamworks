@@ -16,13 +16,9 @@ import datetime
 import FonctionsPerso
 from Ctrl import CTRL_Vignettes_documents
 
-
-class SaisiePieces(wx.Frame):
-    def __init__(self, parent, ID, title=_(u"Saisie des pièces"), IDpiece=0, IDpersonne=0, IDtypePiece=None):
-        # begin wxGlade: SaisiePieces.__init__
-        wx.Frame.__init__(self, parent, ID, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-        
+class Dialog(wx.Dialog):
+    def __init__(self, parent, title=_(u"Saisie des pièces"), IDpiece=0, IDpersonne=0, IDtypePiece=None):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDpersonne = IDpersonne
         self.IDpiece = IDpiece
@@ -85,7 +81,6 @@ class SaisiePieces(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
         self.Bind(wx.EVT_TEXT, self.OnDateDebut, self.text_date_debut)
         self.Bind(wx.EVT_COMBOBOX, self.OnComboBoxAutres, self.combo_box_autres)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         self.Bind(wx.EVT_BUTTON, self.AjouterPage, self.bouton_ajouter_page)
         self.Bind(wx.EVT_BUTTON, self.SupprimerPage, self.bouton_supprimer_page)
@@ -96,29 +91,30 @@ class SaisiePieces(wx.Frame):
         # Si c'est une saisie de pièce à partir du listeCtrl des pièces à fournir de la fiche individuelle
         if IDtypePiece != None :
             self.list_ctrl_pieces.SetIDtypePieceDefaut(IDtypePiece)
-            
-            
 
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.radio_pieces_1.SetValue(1)
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.radio_pieces_2.SetToolTipString(_(u"Cliquez ici si la pièce que vous souhaitez enregistrer n'est pas dans la liste des pièces obligatoires à fournir"))
-        self.list_ctrl_pieces.SetToolTipString(_(u"Sélectionnez un type de pièce en cliquant sur son nom"))
-        self.text_date_debut.SetToolTipString(_(u"Saisissez la date de début de validité.\nRemarque : Il s'agit bien de la date d'emission de la pièce \n(par exemple, la date d'obtention d'un diplôme) et non la date à laquelle vous avez reçue la pièce"))
-        self.text_date_fin.SetToolTipString(_(u"Saisissez la date d'expiration de la pièce"))
-        self.radio_date_fin_1.SetToolTipString(_(u"Cliquez ici si la pièce a une durée de validité limitée dans le temps"))
-        self.radio_date_fin_2.SetToolTipString(_(u"Cliquez ici si la pièce que vous souhaitez enregistrer a une durée de validité illimitée"))
+        self.radio_pieces_2.SetToolTip(wx.ToolTip(_(u"Cliquez ici si la pièce que vous souhaitez enregistrer n'est pas dans la liste des pièces obligatoires à fournir")))
+        self.list_ctrl_pieces.SetToolTip(wx.ToolTip(_(u"Sélectionnez un type de pièce en cliquant sur son nom")))
+        self.text_date_debut.SetToolTip(wx.ToolTip(_(u"Saisissez la date de début de validité.\nRemarque : Il s'agit bien de la date d'emission de la pièce \n(par exemple, la date d'obtention d'un diplôme) et non la date à laquelle vous avez reçue la pièce")))
+        self.text_date_fin.SetToolTip(wx.ToolTip(_(u"Saisissez la date d'expiration de la pièce")))
+        self.radio_date_fin_1.SetToolTip(wx.ToolTip(_(u"Cliquez ici si la pièce a une durée de validité limitée dans le temps")))
+        self.radio_date_fin_2.SetToolTip(wx.ToolTip(_(u"Cliquez ici si la pièce que vous souhaitez enregistrer a une durée de validité illimitée")))
 
-        self.bouton_ajouter_page.SetToolTipString(_(u"Cliquez ici pour ajouter un document"))
-        self.bouton_supprimer_page.SetToolTipString(_(u"Cliquez ici pour supprimer le document sélectionné"))
-        self.bouton_visualiser_page.SetToolTipString(_(u"Cliquez ici pour visualiser le document sélectionné"))
-        self.bouton_zoom_plus.SetToolTipString(_(u"Cliquez ici pour agrandir les vignettes"))
-        self.bouton_zoom_moins.SetToolTipString(_(u"Cliquez ici pour réduire les vignettes"))
+        self.bouton_ajouter_page.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter un document")))
+        self.bouton_supprimer_page.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le document sélectionné")))
+        self.bouton_visualiser_page.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour visualiser le document sélectionné")))
+        self.bouton_zoom_plus.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour agrandir les vignettes")))
+        self.bouton_zoom_moins.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour réduire les vignettes")))
         self.SetMinSize((640, 500)) 
 
     def __do_layout(self):
@@ -230,7 +226,7 @@ class SaisiePieces(wx.Frame):
             self.DictTypesPieces[key] = duree
 
             # Création d'une liste pour remplir le comboBox des autres types
-            if key not in self.list_ctrl_pieces.DictPieces.keys():
+            if key not in list(self.list_ctrl_pieces.DictPieces.keys()):
                 self.ListeAutresPieces.append((key, nom, duree))
                 self.ListeAutresPourCombo.append(nom)
 
@@ -261,19 +257,11 @@ class SaisiePieces(wx.Frame):
         else:
             self.text_date_fin.Enable(False)
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(29)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        event.Skip()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Bouton Ok """
@@ -345,9 +333,7 @@ class SaisiePieces(wx.Frame):
         self.parent.MAJ_barre_problemes()
 
         # Fermeture de la fenêtre
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
         
 
     def OnDateDebut(self, event):
@@ -459,7 +445,7 @@ class SaisiePieces(wx.Frame):
 
         # Date_Fin
         if self.radio_date_fin_2.GetValue() == True:
-            varDateFin = datetime.date(2999, 01, 01)
+            varDateFin = datetime.date(2999, 1, 1)
         else:
             textDate = self.text_date_fin.GetValue()
             varDateFin = datetime.date(int(textDate[6:10]), int(textDate[3:5]), int(textDate[:2]))
@@ -487,7 +473,7 @@ class SaisiePieces(wx.Frame):
 
         # Initialisation de la connexion avec la Base de données
         DB = GestionDB.DB()
-        req = "SELECT * FROM pieces WHERE IDpiece = %d" % self.IDpiece
+        req = "SELECT * FROM pieces WHERE IDpiece = %s" % self.IDpiece
         DB.ExecuterReq(req)
         donnees = DB.ResultatReq()[0]
         DB.Close()
@@ -498,13 +484,16 @@ class SaisiePieces(wx.Frame):
         varDateFin = donnees[4]
 
         # Placement du type de pièce
-        if varIDtypePiece in self.list_ctrl_pieces.DictPieces.keys():
+        if varIDtypePiece in list(self.list_ctrl_pieces.DictPieces.keys()):
             # Ce type de pièce est dans le ListCtrl
             self.radio_pieces_1.SetValue(1)
             self.radio_pieces_2.SetValue(0)
             self.list_ctrl_pieces.Enable(True)
             self.combo_box_autres.Enable(False)
-            index = self.list_ctrl_pieces.FindItemData(-1, varIDtypePiece)
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.list_ctrl_pieces.FindItem(-1, varIDtypePiece)
+            else:
+                index = self.list_ctrl_pieces.FindItemData(-1, varIDtypePiece)
             self.selection1 = (index, varIDtypePiece)
             item = self.list_ctrl_pieces.GetItem(index)
             font = item.GetFont()
@@ -596,11 +585,14 @@ class ListCtrl_Pieces(wx.ListCtrl):
             
         # Création des items
         index = 0
-        for key, valeurs in self.DictPieces.iteritems():
+        for key, valeurs in self.DictPieces.items():
             etat = valeurs[0]
             nomPiece = valeurs[1]
             # Création de l'item
-            self.InsertStringItem(index, nomPiece)
+            if 'phoenix' in wx.PlatformInfo:
+                self.InsertItem(index, nomPiece)
+            else:
+                self.InsertStringItem(index, nomPiece)
             # Intégration de l'image
             if etat == "Ok":
                 self.SetItemImage(index, self.imgOk)
@@ -672,7 +664,7 @@ class ListCtrl_Pieces(wx.ListCtrl):
         # Passe en revue toutes les pièces à fournir et regarde si la personne possède les pièces correspondantes
         self.DictPieces = {}
         for IDtype_piece, nom_piece in listePiecesAFournir :
-            if dictTmpPieces.has_key(IDtype_piece) == True :
+            if (IDtype_piece in dictTmpPieces) == True :
                 date_debut = dictTmpPieces[IDtype_piece][0]
                 date_fin = dictTmpPieces[IDtype_piece][1]
                 # Recherche la validité
@@ -905,7 +897,7 @@ def ValideDate(texte, date_min="01/01/1900", date_max="01/01/2090"):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_saisiePieces = SaisiePieces(None, -1, "", IDpersonne=10)
-    app.SetTopWindow(frame_saisiePieces)
-    frame_saisiePieces.Show()
+    dlg = Dialog(None, -1, "", IDpersonne=10)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

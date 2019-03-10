@@ -6,6 +6,7 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
@@ -58,20 +59,20 @@ class MyFrame(wx.Frame):
         
     def __set_properties(self):
         self.SetTitle(_(u"Saisie d'un champ personnalisé"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_nom.SetToolTipString(_(u"Saisissez ici le nom complet du champ. Il doit être explicite."))
-        self.text_description.SetToolTipString(_(u"[Optionnel] Vous pouvez saisir une description détaillée du champ qui facilitera la saisie."))
-        self.text_defaut.SetToolTipString(_(u"[Optionnel] Saisissez ici la valeur qui apparaîtra par défaut lors d'un saisie"))
-        self.text_motCle.SetToolTipString(_(u"Saisissez ici un mot-clé qui sera utilisé pour le publipostage lors de l'impression des documents \nCe mot-clé doit être unique, en majuscule et sans caractères spéciaux (accents ou symboles...)"))
+        self.text_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici le nom complet du champ. Il doit être explicite.")))
+        self.text_description.SetToolTip(wx.ToolTip(_(u"[Optionnel] Vous pouvez saisir une description détaillée du champ qui facilitera la saisie.")))
+        self.text_defaut.SetToolTip(wx.ToolTip(_(u"[Optionnel] Saisissez ici la valeur qui apparaîtra par défaut lors d'un saisie")))
+        self.text_motCle.SetToolTip(wx.ToolTip(_(u"Saisissez ici un mot-clé qui sera utilisé pour le publipostage lors de l'impression des documents \nCe mot-clé doit être unique, en majuscule et sans caractères spéciaux (accents ou symboles...)")))
         self.label_motCle_aide.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
-        self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider la saisie")
-        self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
-        self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider la saisie"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)

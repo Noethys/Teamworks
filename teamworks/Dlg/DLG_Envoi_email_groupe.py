@@ -12,7 +12,7 @@ import wx
 from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
 import os
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 import GestionDB
 from Dlg import DLG_Selection_periode
 
@@ -51,14 +51,17 @@ class MyDialog(wx.Dialog):
         
     def __set_properties(self):
         self.SetTitle(_(u"Envoi d'un mail groupé"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((500, 500))
 
@@ -181,7 +184,7 @@ class MyDialog(wx.Dialog):
             dlg.Destroy()
             return False
         # Sélection dans la listBox
-        for index, valeurs in self.dictDonnees.iteritems():
+        for index, valeurs in self.dictDonnees.items():
             IDpersonne = valeurs[0]
             if IDpersonne in listePersonnesPresentes :
                 self.checkListBox.Check(index, True)

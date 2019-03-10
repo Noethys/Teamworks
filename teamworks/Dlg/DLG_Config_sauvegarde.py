@@ -125,7 +125,7 @@ class Panel(wx.Panel):
         self.bouton_parametres = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Parametres_sauvegarde.png"), wx.BITMAP_TYPE_ANY))
         
         self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_ANY))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         if parent.GetName() != "treebook_configuration" :
             self.bouton_aide.Show(False)
 
@@ -290,14 +290,17 @@ class MyFrame(wx.Frame):
 
     def __set_properties(self):
         self.SetTitle(_(u"Sauvegarde automatique"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 
@@ -401,15 +404,18 @@ class Saisie_sauvegarde_auto(wx.Frame):
 
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Sauvegarder_param.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.SetTitle(_(u"Paramètres de la sauvegarde automatique"))
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -621,19 +627,22 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
 
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Sauvegarder.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.SetTitle(_(u"Paramètres de la sauvegarde occasionnelle"))
-        self.textctrl_nomFichier.SetToolTipString(_(u"Saisissez ici un nom pour votre fichier de sauvegarde \nou laissez celui donné par défaut"))
-        #self.treeCtrl.SetToolTipString(_(u"Cochez les éléments que vous souhaitez sauvegarder"))
-        self.textctrl_destination.SetToolTipString(_(u"Vous pouvez saisir ici le répertoire de destination pour votre fichier de sauvegarde \nou cliquez sur le bouton pour choisir un emplacement"))
-        self.bouton_destination.SetToolTipString(_(u"Cliquez ici pour sélectionner un répertoire de destination"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.textctrl_nomFichier.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom pour votre fichier de sauvegarde \nou laissez celui donné par défaut")))
+        #self.treeCtrl.SetToolTip(wx.ToolTip(_(u"Cochez les éléments que vous souhaitez sauvegarder")))
+        self.textctrl_destination.SetToolTip(wx.ToolTip(_(u"Vous pouvez saisir ici le répertoire de destination pour votre fichier de sauvegarde \nou cliquez sur le bouton pour choisir un emplacement")))
+        self.bouton_destination.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner un répertoire de destination")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler la saisie")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -870,7 +879,7 @@ class Sauvegarde_auto():
         
         # On vérifie que le répertoire de destination existe bien
         if os.path.isdir(self.destination) == False :
-            print "Le repertoire de destination de sauvegarde auto n'existe pas."
+            print("Le repertoire de destination de sauvegarde auto n'existe pas.")
             return False
             
         # Vérifie que la conservation n'impose pas la suppression d'un vieux fichier de sauvegarde
@@ -950,15 +959,18 @@ class Restauration(wx.Frame):
 
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Restaurer.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.SetTitle(_(u"Restauration d'une sauvegarde"))
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -1097,7 +1109,7 @@ class TreeCtrl_Restauration(CT.CustomTreeCtrl):
         
         # Affiche les types de sources
         for typeSource, rep, extensionSource in LISTE_SOURCES :
-            if listeTypesSources.has_key(extensionSource) == True :
+            if (extensionSource in listeTypesSources) == True :
                 item = self.AppendItem(self.root,  typeSource, ct_type=1)
                 self.SetPyData(item, None)
                 

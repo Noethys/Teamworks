@@ -6,16 +6,16 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import GestionDB
 from Dlg import DLG_Config_classifications
 from Dlg import DLG_Config_types_contrats
-import FonctionsPerso
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
-import sys
 from Dlg import DLG_Config_champs_contrats
+from Utils import UTILS_Adaptations
 
 
 class Page(wx.Panel):
@@ -57,10 +57,10 @@ class Page(wx.Panel):
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.bouton_type.SetMinSize((20, 20))
-        self.bouton_type.SetToolTipString("Cliquez ici pour ajouter, modifier ou supprimer des types de contrat")
+        self.bouton_type.SetToolTip(wx.ToolTip("Cliquez ici pour ajouter, modifier ou supprimer des types de contrat"))
         self.bouton_class.SetMinSize((20, 20))
-        self.bouton_class.SetToolTipString("Cliquez ici pour ajouter, modifier ou supprimer des classifications")
-        self.bouton_champs.SetToolTipString(_(u"Cliquez ici pour créer, modifier ou supprimer des champs personnalisés."))
+        self.bouton_class.SetToolTip(wx.ToolTip("Cliquez ici pour ajouter, modifier ou supprimer des classifications"))
+        self.bouton_champs.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer, modifier ou supprimer des champs personnalisés.")))
         self.bouton_champs.SetMinSize((20, 20))
 
     def __do_layout(self):
@@ -237,7 +237,7 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
         CheckListCtrlMixin.__init__(self)
         self.parent = parent
         
-        listeIDchamps = self.GetGrandParent().GetParent().dictChamps.keys()
+        listeIDchamps = list(self.GetGrandParent().GetParent().dictChamps.keys())
         if len(listeIDchamps) != 0 :
             self.selections = listeIDchamps
         else:
@@ -258,8 +258,8 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
 ##        self.InsertColumn(1, "Description")
 
         # Remplissage avec les valeurs
-        for key, valeurs in self.dictChamps.iteritems():
-                index = self.InsertStringItem(sys.maxint, valeurs[1])
+        for key, valeurs in self.dictChamps.items():
+                index = self.InsertStringItem(six.MAXSIZE, valeurs[1])
 ##                self.SetStringItem(index, 1, valeurs[1])
                 self.SetItemData(index, key)
                 # Sélection
@@ -331,7 +331,7 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
             mode = "deselected"
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
         
         # Item Ajouter
         item = wx.MenuItem(menuPop, 10, _(u"Créer un nouveau champ"))

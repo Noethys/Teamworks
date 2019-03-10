@@ -10,7 +10,7 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 import FonctionsPerso
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 
 # Import des panels
 from Dlg import DLG_Config_types_pieces
@@ -151,7 +151,7 @@ class Panel_rubrique(wx.Panel):
         grid_sizer_base.Fit(self)
         grid_sizer_base.AddGrowableRow(2)
         grid_sizer_base.AddGrowableCol(0)
-        grid_sizer_hyperlinks.AddGrowableCol(01)
+        grid_sizer_hyperlinks.AddGrowableCol(1)
         self.SetAutoLayout(True)
         self.Layout()
         self.grid_sizer_hyperlinks = grid_sizer_hyperlinks
@@ -240,7 +240,10 @@ class MyFrame(wx.Frame):
         self.SetTitle("Configuration")
         self.SetSize(size=(800, 600))
         self.Centre()
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
 

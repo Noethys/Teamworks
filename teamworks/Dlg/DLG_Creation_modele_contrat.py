@@ -95,16 +95,19 @@ class MyWizard(wx.Frame):
 
     def __set_properties(self):
         self.SetTitle(_(u"Création d'un modèle de contrat"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_retour.SetToolTipString(_(u"Cliquez ici pour revenir à la page précédente"))
+        self.bouton_retour.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour revenir à la page précédente")))
         self.bouton_retour.SetSize(self.bouton_retour.GetBestSize())
-        self.bouton_suite.SetToolTipString(_(u"Cliquez ici pour passer à l'étape suivante"))
+        self.bouton_suite.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour passer à l'étape suivante")))
         self.bouton_suite.SetSize(self.bouton_suite.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler la création du contrat"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler la création du contrat")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((470, 380))
 

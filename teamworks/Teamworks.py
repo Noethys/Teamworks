@@ -23,6 +23,7 @@ from Utils import UTILS_Config
 from Utils import UTILS_Parametres
 from Utils import UTILS_Fichiers
 from Utils import UTILS_Customize
+from Utils import UTILS_Adaptations
 
 from Ctrl import CTRL_Accueil
 from Ctrl import CTRL_Personnes
@@ -36,17 +37,16 @@ import FonctionsPerso
 import GestionDB
 import os
 import datetime
-import locale
+#import locale
 import urllib
 import random
 import sys
 import platform
 
-import shelve
-import dbhash
-import anydbm
-
-import threading
+if six.PY2:
+    import shelve
+    import dbhash
+    import anydbm
 
 import wx.lib.agw.advancedsplash as AS
 import wx.lib.agw.pybusyinfo as PBI
@@ -86,7 +86,7 @@ class Toolbook(wx.Toolbook):
         # Met le texte à droite dans la toolbar
         tb = self.GetToolBar()        
         tb.SetWindowStyleFlag(wx.TB_HORZ_TEXT)
-        self.SetInternalBorder(0)
+        # self.SetInternalBorder(0)
         
         self.Bind(wx.EVT_TOOLBOOK_PAGE_CHANGED, self.OnPageChanged)
         self.Bind(wx.EVT_TOOLBOOK_PAGE_CHANGING, self.OnPageChanging)
@@ -95,10 +95,7 @@ class Toolbook(wx.Toolbook):
     def MAJ_panel(self, numPage=0):
         """ Test de MAJ des panels lors d'un changement d'onglet """
         self.Freeze() # Gèle l'affichage pour éviter des clignements
-        try : 
-            self.GetPage(numPage).MAJpanel() 
-        except :
-            pass
+        self.GetPage(numPage).MAJpanel()
         self.Thaw() # Dégèle l'affichage
 
     def ActiveToolBook(self, etat=True):
@@ -147,10 +144,10 @@ class MyFrame(wx.Frame):
             version_python = "2"
         else :
             version_python = "3"
-        print("-------- %s | %s | Python %s | wxPython %s | %s --------" % (dateDuJour, VERSION_APPLICATION, version_python, wx.version(), systeme))
+        print(("-------- %s | %s | Python %s | wxPython %s | %s --------" % (dateDuJour, VERSION_APPLICATION, version_python, wx.version(), systeme)))
         
-        try : locale.setlocale(locale.LC_ALL, 'FR')
-        except : pass
+        # try : locale.setlocale(locale.LC_ALL, 'FR')
+        # except : pass
         
         # Diminution de la taille de la police sous linux
         if "linux" in sys.platform :
@@ -178,7 +175,7 @@ class MyFrame(wx.Frame):
         self.nomDernierFichier = self.userConfig["nomFichier"]
         self.userConfig["nomFichier"] = ""
                 
-        if self.userConfig.has_key("assistant_demarrage") :
+        if "assistant_demarrage" in self.userConfig :
             if self.userConfig["assistant_demarrage"] == True :
                 self.afficherAssistant = False
             else: self.afficherAssistant = True
@@ -206,7 +203,10 @@ class MyFrame(wx.Frame):
         self.toolBook.ActiveToolBook(False)
 
     def __do_layout(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else:
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.SetMinSize((800, 600))
@@ -217,7 +217,7 @@ class MyFrame(wx.Frame):
         self.SetSize((800, 600))
 
         # Détermine la taille de la fenêtre
-        if self.userConfig.has_key("taille_fenetre") == False :
+        if ("taille_fenetre" in self.userConfig) == False :
             self.userConfig["taille_fenetre"] = (0, 0)
         
         taille_fenetre = self.userConfig["taille_fenetre"]
@@ -275,7 +275,7 @@ class MyFrame(wx.Frame):
         menubar = wx.MenuBar()
         
         # Menu Fichier
-        menu1 = wx.Menu()
+        menu1 = UTILS_Adaptations.Menu()
         
         item = wx.MenuItem(menu1, 100, _(u"Assistant Démarrage"), _(u"Ouvrir l'assistant démarrage"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Assistant.png"), wx.BITMAP_TYPE_PNG))
@@ -362,7 +362,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.On_fichier_Convertir_local, id=108)
         
         # Menu Affichage
-        menu2 = wx.Menu()
+        menu2 = UTILS_Adaptations.Menu()
         
         item = wx.MenuItem(menu2, 201, _(u"Gestion des Gadgets de la page d'accueil"), _(u"Gestion des Gadgets de la page d'accueil"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calendrier_ajout.png"), wx.BITMAP_TYPE_PNG))
@@ -373,7 +373,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.MenuGadgets, id=201)
         
         # Menu Outils
-        menu3 = wx.Menu()
+        menu3 = UTILS_Adaptations.Menu()
         
         item = wx.MenuItem(menu3, 305, _(u"Imprimer des photos de personnes"), _(u"Imprimer des photos de personnes"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Personnes.png"), wx.BITMAP_TYPE_PNG))
@@ -414,7 +414,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.MenuTeamword, id=307)
         
         # Menu Internet
-        menu6 = wx.Menu()
+        menu6 = UTILS_Adaptations.Menu()
         
         item = wx.MenuItem(menu6, 601, _(u"Rechercher des mises à jour du logiciel"), _(u"Rechercher des mises à jour du logiciel"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Updater.png"), wx.BITMAP_TYPE_PNG))
@@ -425,7 +425,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.MenuUpdater, id=601)
         
         # Menu Aide
-        menu4 = wx.Menu()
+        menu4 = UTILS_Adaptations.Menu()
         
         item = wx.MenuItem(menu4, 401, _(u"Consulter l'aide intégrée\tCtrl+A"), _(u"Consulter l'aide de TeamWorks"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_PNG))
@@ -453,7 +453,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.MenuTelechargerGuide, id=404)
         
         # Menu A Propos
-        menu7 = wx.Menu()
+        menu7 = UTILS_Adaptations.Menu()
         
         item = wx.MenuItem(menu7, 701, _(u"Pourquoi et comment faire un don de soutien ?"), _(u"Pourquoi et comment faire un don de soutien ?"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Smile.png"), wx.BITMAP_TYPE_PNG))
@@ -464,7 +464,7 @@ class MyFrame(wx.Frame):
         menubar.Append(menu7, _(u"Soutenir Teamworks"))
         
         # Menu A Propos
-        menu5 = wx.Menu()
+        menu5 = UTILS_Adaptations.Menu()
         
         item = wx.MenuItem(menu5, 501, _(u"Notes de versions"), _(u"Notes de versions"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
@@ -535,13 +535,13 @@ class MyFrame(wx.Frame):
         nomFichier = self.userConfig["nomFichier"]
         from Utils import UTILS_Conversion_fichier
         resultat = UTILS_Conversion_fichier.ConversionLocalReseau(self, nomFichier)
-        print "Succes de la procedure : ", resultat
+        print("Succes de la procedure : ", resultat)
 
     def On_fichier_Convertir_local(self, event):
         nomFichier = self.userConfig["nomFichier"]
         from Utils import UTILS_Conversion_fichier
         resultat = UTILS_Conversion_fichier.ConversionReseauLocal(self, nomFichier)
-        print "Succes de la procedure : ", resultat
+        print("Succes de la procedure : ", resultat)
 
     def MenuNouveau(self, event):
         """ Créé une nouvelle base de données """
@@ -765,7 +765,7 @@ class MyFrame(wx.Frame):
     
     def OuvrirDernierFichier(self):
         # Chargement du dernier fichier chargé si assistant non affiché
-        if self.userConfig.has_key("assistant_demarrage") :
+        if "assistant_demarrage" in self.userConfig :
             nePasAfficherAssistant = self.userConfig["assistant_demarrage"]
             if nePasAfficherAssistant == True :
                 if self.nomDernierFichier != "" :
@@ -884,7 +884,7 @@ class MyFrame(wx.Frame):
                     DB.ReqMAJ("divers", listeDonnees, "IDdivers", 1)
             DB.Close()
         except :
-            print "pb dans la fonction verifDestinationSaveAuto de teamworks.py"
+            print("pb dans la fonction verifDestinationSaveAuto de teamworks.py")
 
     def MenuFermer(self, event) :
         """ Fermer le fichier ouvert """
@@ -974,7 +974,10 @@ class MyFrame(wx.Frame):
             if item == None : 
                 break
             else:
-                menu.RemoveItem(menuBar.FindItemById(index)) 
+                if 'phoenix' in wx.PlatformInfo:
+                    menu.Remove(menuBar.FindItemById(index))
+                else:
+                    menu.RemoveItem(menuBar.FindItemById(index))
                 self.Disconnect(index, -1, 10014) # Annule le Bind
         
         # Ré-intégration des derniers fichiers ouverts :
@@ -1159,7 +1162,7 @@ class MyFrame(wx.Frame):
             # Fait la conversion à la nouvelle version
             info = "Lancement de la conversion %s -> %s..." %(".".join([str(x) for x in versionFichier]), ".".join([str(x) for x in versionLogiciel]))
             self.SetStatusText(info)
-            print info
+            print(info)
             
             # Affiche d'une fenêtre d'attente
             message = _(u"Mise à jour de la base de données en cours... Veuillez patientez...")
@@ -1174,7 +1177,7 @@ class MyFrame(wx.Frame):
             del dlgAttente
             
             if resultat != True :
-                print resultat
+                print(resultat)
                 dlg = wx.MessageDialog(self, _(u"Le logiciel n'arrive pas à convertir le fichier '") + nomFichier + _(u":\n\nErreur : ") + resultat + _(u"\n\nVeuillez contacter le développeur du logiciel..."), _(u"Erreur de conversion de fichier"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
@@ -1184,7 +1187,7 @@ class MyFrame(wx.Frame):
             UTILS_Parametres.Parametres(mode="set", categorie="fichier", nom="version", valeur=".".join([str(x) for x in versionLogiciel]), nomFichier=nomFichier)
             info = "Conversion %s -> %s reussie." %(".".join([str(x) for x in versionFichier]), ".".join([str(x) for x in versionLogiciel]))
             self.SetStatusText(info)
-            print info
+            print(info)
             
         return True
 
@@ -1251,8 +1254,10 @@ class MyFrame(wx.Frame):
             return
         
         from Dlg import DLG_Config_gadgets
-        frame_config = DLG_Config_gadgets.MyFrame(None)
-        frame_config.Show()
+        dlg = DLG_Config_gadgets.Dialog(None)
+        if dlg.ShowModal() == wx.ID_YES :
+            self.toolBook.GetPage(0).MAJpanel()
+        dlg.Destroy()
 
         
 
@@ -1283,8 +1288,9 @@ class MyFrame(wx.Frame):
     def MenuGestionFrais(self, event):
         """ Gestion globale des frais de déplacements """
         from Dlg import DLG_Gestion_frais
-        frm = DLG_Gestion_frais.MyFrame(self)
-        frm.Show()
+        dlg = DLG_Gestion_frais.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MenuListeContrats(self, event):
         from Dlg import DLG_Liste_contrats
@@ -1296,8 +1302,9 @@ class MyFrame(wx.Frame):
         """ Imprimer les photos des personnes """
         # Ouverture de la frame d'impression des photos  
         from Dlg import DLG_Impression_photo
-        frame = DLG_Impression_photo.FrameSelectionPersonnes(None)
-        frame.Show()
+        dlg = DLG_Impression_photo.DialogSelectionPersonnes(None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MenuPublipostage(self, event):
         """ Imprimer par publipostage """
@@ -1395,14 +1402,14 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
                 pos_fin_numVersion = texteNouveautes.find(":")
             versionMaj = texteNouveautes[pos_debut_numVersion+1:pos_fin_numVersion].strip()
         except :
-            print "Pb dans la recuperation du num de version de la MAJ sur internet"
+            print("Pb dans la recuperation du num de version de la MAJ sur internet")
             versionMaj = "0.0.0.0"
         # Compare les deux versions et renvois le résultat
         resultat = FonctionsPerso.CompareVersions(versionApp=versionApplication, versionMaj=versionMaj)
         return resultat
 
     def GetVersionAnnonce(self):
-        if self.userConfig.has_key("annonce") :
+        if "annonce" in self.userConfig :
             versionAnnonce = self.userConfig["annonce"]
             if versionAnnonce != None :
                 return versionAnnonce
@@ -1425,7 +1432,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
     def Assistant_demarrage(self, mode="ouverture"):
         """ Charge l'assistant démarrage """
         # Récupère l'état du checkBox affichage
-        if self.userConfig.has_key("assistant_demarrage") :
+        if "assistant_demarrage" in self.userConfig :
             checkAffichage = self.userConfig["assistant_demarrage"]
         else:
             checkAffichage = False
@@ -1530,7 +1537,7 @@ class MyApp(wx.App):
     def OnInit(self):
         #wx.InitAllImageHandlers()
         heure_debut = time.time()
-        wx.Locale(wx.LANGUAGE_FRENCH)
+        # wx.Locale(wx.LANGUAGE_FRENCH)
 
         # # Vérifie l'existence des répertoires
         # for rep in ("Aide", "Temp", "Updates", "Data", "Lang", "Documents/Editions") :
@@ -1543,7 +1550,8 @@ class MyApp(wx.App):
         frame = AS.AdvancedSplash(None, bitmap=bmp, timeout=1000, agwStyle=AS.AS_TIMEOUT | AS.AS_CENTER_ON_SCREEN)
         frame.Refresh()
         frame.Update()
-        wx.Yield()
+        if six.PY2:
+            wx.Yield()
 
         # Création de la frame principale
         frame = MyFrame(None)

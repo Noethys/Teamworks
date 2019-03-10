@@ -134,13 +134,13 @@ Version 0.9
 #----------------------------------------------------------------------
 
 import wx
-from Ctrl import CTRL_Bouton_image
 import os
-import time
-import cStringIO
+import six
 import zlib
-
-import thread
+if six.PY3:
+    import _thread as thread
+else:
+    import thread
 from math import pi
 
 import PIL.Image as Image
@@ -153,7 +153,7 @@ import PIL.Image as Image
 
 def GetMondrianData():
     return \
-'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\
+b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\
 \x00\x00szz\xf4\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00qID\
 ATX\x85\xed\xd6;\n\x800\x10E\xd1{\xc5\x8d\xb9r\x97\x16\x0b\xad$\x8a\x82:\x16\
 o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\
@@ -165,13 +165,13 @@ def GetMondrianBitmap():
     return wx.BitmapFromImage(GetMondrianImage())
 
 def GetMondrianImage():
-    stream = cStringIO.StringIO(GetMondrianData())
+    stream = six.BytesIO(GetMondrianData())
     return wx.ImageFromStream(stream)
 
 
 def getDataSH():
     return zlib.decompress(
-'x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2_A\x98\x83\rHvl\
+b'x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2_A\x98\x83\rHvl\
 \xdc\x9c\n\xa4X\x8a\x9d<C8\x80\xa0\x86#\xa5\x83\x81\x81y\x96\xa7\x8bcH\xc5\
 \x9c\xb7\xd7\xd7\xf6\x85D2\xb4^\xbc\x1b\xd0\xd0p\xa6\x85\x9d\xa1\xf1\xc0\xc7\
 \x7f\xef\x8d\x98\xf89_:p]\xaew\x0c\xe9\x16[\xbc\x8bSt\xdf\x9aT\xad\xef\xcb\
@@ -190,7 +190,7 @@ Y\xcb\xbd\x8b\xdfs\xe3[\xd6\xed\xe5\x9b}\x99\xe6=:\xbd\xed\xfc\xedu|\xfcq\
 
 def getDataBL():
     return zlib.decompress(
-"x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\xac \xcc\xc1\
+b"x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\xac \xcc\xc1\
 \x06${\xf3\xd5\x9e\x02)\x96b'\xcf\x10\x0e \xa8\xe1H\xe9\x00\xf2\xed=]\x1cC8f\
 \xea\x9e\xde\xcb\xd9` \xc2\xf0P\xdf~\xc9y\xaeu\x0f\xfe1\xdf\xcc\x14\x1482A\
 \xe9\xfd\x83\x1d\xaf\x84\xac\xf8\xe6\\\x8c3\xfc\x98\xf8\xa0\xb1\xa9K\xec\x9f\
@@ -199,7 +199,7 @@ def getDataBL():
 
 def getDataTR():
     return zlib.decompress(
-'x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\xac \xcc\xc1\
+b'x\xda\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\xac \xcc\xc1\
 \x06${\xf3\xd5\x9e\x02)\x96b\'\xcf\x10\x0e \xa8\xe1H\xe9\x00\xf2m=]\x1cC8f\
 \xe6\x9e\xd9\xc8\xd9` \xc2p\x91\xbd\xaei\xeeL\x85\xdcUo\xf6\xf7\xd6\xb2\x88\
 \x0bp\x9a\x89i\x16=-\x94\xe16\x93\xb9!\xb8y\xcd\t\x0f\x89\n\xe6\xb7\xfcV~6\
@@ -207,11 +207,14 @@ def getDataTR():
 \xce)\xa1\t\x00"\xf9$\x83' )
 
 def getShadow():
-    sh_tr = wx.ImageFromStream(cStringIO.StringIO(getDataTR())).ConvertToBitmap()
-    sh_bl = wx.ImageFromStream(cStringIO.StringIO(getDataBL())).ConvertToBitmap()
-    sh_sh = wx.ImageFromStream(cStringIO.StringIO(getDataSH())).Rescale(500, 500, wx.IMAGE_QUALITY_HIGH)
+    if 'phoenix' in wx.PlatformInfo:
+        fonction = wx.Image
+    else :
+        fonction = wx.ImageFromStream
+    sh_tr = fonction(six.BytesIO(getDataTR())).ConvertToBitmap()
+    sh_bl = fonction(six.BytesIO(getDataBL())).ConvertToBitmap()
+    sh_sh = fonction(six.BytesIO(getDataSH())).Rescale(500, 500, wx.IMAGE_QUALITY_HIGH)
     return (sh_tr, sh_bl, sh_sh.ConvertToBitmap())
-
 
 #-----------------------------------------------------------------------------
 # PATH & FILE FILLING (OS INDEPENDENT)
@@ -877,8 +880,10 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         self._selectioncolour = "#009EFF"
         self.grayPen = wx.Pen("#A2A2D2", 1, wx.SHORT_DASH)
         self.grayPen.SetJoin(wx.JOIN_MITER)
-        self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_LISTBOX))
-
+        if 'phoenix' in wx.PlatformInfo:
+            self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_LISTBOX))
+        else :
+            self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_LISTBOX))
         t, b, s = getShadow()
         self.shadow = wx.MemoryDC()
         self.shadow.SelectObject(s)
@@ -1448,7 +1453,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         """
         
         capHeight = 0
-        for ii in xrange(begRow, begRow + count):
+        for ii in range(begRow, begRow + count):
             if ii < len(self._tCaptionHeight):
                 capHeight = capHeight + self._tCaptionHeight[ii]
 
@@ -1496,21 +1501,21 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         """
 
         width = self.GetClientSize().GetWidth()
-        self._cols = (width - self._tBorder)/(self._tWidth + self._tBorder)
+        self._cols = (width - self._tBorder)//(self._tWidth + self._tBorder)
         
         if self._cols == 0:
             self._cols = 1
 
         tmpvar = (len(self._items)%self._cols and [1] or [0])[0]
-        self._rows = len(self._items)/self._cols + tmpvar
+        self._rows = len(self._items)//self._cols + tmpvar
         
         self._tCaptionHeight = []
 
-        for row in xrange(self._rows):
+        for row in range(self._rows):
 
             capHeight = 0
             
-            for col in xrange(self._cols):
+            for col in range(self._cols):
 
                 ii = row*self._cols + col
                 
@@ -1801,7 +1806,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         row = -1
         xwhite = self._tBorder
 
-        for ii in xrange(len(self._items)):
+        for ii in range(len(self._items)):
 
             col = ii%self._cols
             if col == 0:

@@ -8,9 +8,9 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
 
 ID_PLUS = 100
 ID_MOINS = 101
@@ -67,8 +67,10 @@ class Visu(wx.ScrolledWindow):
 class MyFrame(wx.Frame):
     def __init__(self, parent, imgPIL=None, imgWX=None):
         wx.Frame.__init__(self, parent, -1, size = (800, 600))
-        
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.SetTitle(_(u"Visualisateur d'image"))

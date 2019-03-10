@@ -9,7 +9,7 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import datetime
 import time
 import GestionDB
@@ -17,10 +17,15 @@ import wx.lib.colourdb
 from Dlg import DLG_Saisie_presence
 from Dlg import DLG_Application_modele
 import FonctionsPerso
-import os
 import operator
 import sys
 from Utils import UTILS_Fichiers
+from Utils import UTILS_Adaptations
+
+if 'phoenix' in wx.PlatformInfo:
+    CURSOR = wx.Cursor
+else :
+    CURSOR = wx.StockCursor
 
 # Déclaration de variables à modifier au choix
 
@@ -170,7 +175,7 @@ def AdditionHeures(heureBase, temps, operation="+"):
     minutesTemp =  int(heureStr[posTemp+1:])  
     
     if heuresTemp > 23:
-        print "stop"
+        print("stop")
         
     heureFin = datetime.time(heuresTemp, minutesTemp)
     return heureFin
@@ -182,7 +187,10 @@ class Graduations(wx.ScrolledWindow):
         wx.ScrolledWindow.__init__(self, parent, -1, (0, 0), size=wx.DefaultSize, style=wx.NO_BORDER)
         
         # create a PseudoDC to record our drawing
-        self.pdc = wx.PseudoDC()
+        if 'phoenix' in wx.PlatformInfo:
+            self.pdc = wx.adv.PseudoDC()
+        else :
+            self.pdc = wx.PseudoDC()
         self.DoDrawing(self.pdc)
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_ERASE_BACKGROUND, lambda x:None)
@@ -207,7 +215,7 @@ class Graduations(wx.ScrolledWindow):
             posTemp = texteHeure.index(":")
             heures = str(texteHeure[0:posTemp])
             minutes = int(texteHeure[posTemp+1:5])
-        minutes = str(minutes * 100 /60)
+        minutes = str(minutes * 100 //60)
         if len(minutes) == 1 : minutes = "0" + minutes
         heure = str(heures + minutes)
         return int(heure)
@@ -283,9 +291,11 @@ class Graduations(wx.ScrolledWindow):
         
     def DoDrawing(self, dc):
         dc.RemoveAll()
-        dc.BeginDrawing()
+        if 'phoenix' not in wx.PlatformInfo:
+            dc.BeginDrawing()
         self.DrawGraduations(dc, heureMin, heureMax)
-        dc.EndDrawing()
+        if 'phoenix' not in wx.PlatformInfo:
+            dc.EndDrawing()
         
     def MAJAffichage(self):
         self.DoDrawing(self.pdc)
@@ -336,7 +346,10 @@ class WidgetPlanning(wx.ScrolledWindow):
         self.dictContrats = self.Importation_Contrats()
         
         # create a PseudoDC to record our drawing
-        self.pdc = wx.PseudoDC()
+        if 'phoenix' in wx.PlatformInfo:
+            self.pdc = wx.adv.PseudoDC()
+        else:
+            self.pdc = wx.PseudoDC()
         self.dictIDs = {}
         self.DoDrawing(self.pdc)
 
@@ -399,7 +412,12 @@ class WidgetPlanning(wx.ScrolledWindow):
     def OffsetRect(self, r):
         xView, yView = self.GetViewStart()
         xDelta, yDelta = self.GetScrollPixelsPerUnit()
-        r.OffsetXY(-(xView*xDelta),-(yView*yDelta))
+        if 'phoenix' in wx.PlatformInfo:
+            r.Offset(-(xView*xDelta),-(yView*yDelta))
+        else :
+            r.OffsetXY(-(xView*xDelta),-(yView*yDelta))
+
+
         
     def MAJAffichage(self):
         self.DoDrawing(self.pdc)
@@ -432,11 +450,15 @@ class WidgetPlanning(wx.ScrolledWindow):
     def DoDrawing(self, dc):
         """ Creation du dessin dans le PseudoDC """
         dc.RemoveAll()
-        dc.BeginDrawing()
+        if 'phoenix' not in wx.PlatformInfo:
+            dc.BeginDrawing()
 
-        tailleDC = self.GetSizeTuple()[0]-20,  self.GetSizeTuple()[1]      
-        
-        # Calcul de la largeur des entetes de lignes et des lignes
+        if 'phoenix' in wx.PlatformInfo:
+            tailleDC = self.GetSize()[0]-20,  self.GetSize()[1]
+        else:
+            tailleDC = self.GetSizeTuple()[0] - 20, self.GetSizeTuple()[1]
+
+            # Calcul de la largeur des entetes de lignes et des lignes
         self.CalcLargeurEnteteLigne(dc)
         self.CalcCoordLignes(tailleDC)
         self.parent.DCgraduations.MAJAffichage()
@@ -446,18 +468,18 @@ class WidgetPlanning(wx.ScrolledWindow):
         
         # Dessin des présences
         # dc, heureDebut, heureFin, IDcategorie, intitule, posG, posD, posYhaut, posYbas
-        for IDpresence, valeurs in self.dictPresences.iteritems() :
+        for IDpresence, valeurs in self.dictPresences.items() :
             self.dictPresences[IDpresence][7]  = HeuresEnCoords(valeurs[3]) 
             self.dictPresences[IDpresence][8] = HeuresEnCoords(valeurs[4])
             self.DrawBarre(dc, IDpresence, valeurs[3], valeurs[4], valeurs[5], valeurs[6], valeurs[7], valeurs[8], valeurs[9], valeurs[10])
 
         # Dessine le Nbre de présents par tranche d'heures
         if afficher_nbre_presents == True :
-            for keyGroupe, valeurs in self.dictGroupes.iteritems() :
+            for keyGroupe, valeurs in self.dictGroupes.items() :
                 self.DessineNbrePresents(dc, IDobjet=None, keyGroupe=keyGroupe)
 
-        dc.EndDrawing()
-##        print ('Created PseudoDC draw list with %d operations!'%self.pdc.GetLen())
+        if 'phoenix' not in wx.PlatformInfo:
+            dc.EndDrawing()
 
  
     def DrawBarre(self, dc, IDpresence, heureDebut, heureFin, IDcategorie, intitule, posG, posD, posYhaut, posYbas, IDobjet=None, mode="screen"):
@@ -526,7 +548,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             self.dictIDs[IDobjet] = ("tache", IDpresence)
     
     def Impression(self):
-        print "lancement de l'impression..."
+        print("lancement de l'impression...")
         
         if len(self.listePresences) == 0 :
             dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucune présence à imprimer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
@@ -576,16 +598,16 @@ class WidgetPlanning(wx.ScrolledWindow):
             self.dictPresences[item[0]] = [item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7], item[8], item[9], item[10]]
             # Création du dict des IDprésences par ligne
             keyLigne = (item[1], item[2])
-            if self.dictInfosLignes.has_key(keyLigne):
+            if keyLigne in self.dictInfosLignes:
                 self.dictInfosLignes[keyLigne]["presencesLigne"].append(item[0])
             else:
                 self.dictInfosLignes[keyLigne] = { "presencesLigne" : [item[0],] , "IDobjet" : None, "keyGroupe" : None, "IDobjetGroupe" : None }
 
         # Recherche des keyGroupe de chaque ligne :
-        for keyGroupe, valeursGroupe in self.dictGroupes.iteritems() :
+        for keyGroupe, valeursGroupe in self.dictGroupes.items() :
             for valeursLigne in valeursGroupe[4] :
                 keyLigne = (valeursLigne[0], valeursLigne[1])
-                if self.dictInfosLignes.has_key(keyLigne) :
+                if keyLigne in self.dictInfosLignes :
                     self.dictInfosLignes[keyLigne]["keyGroupe"] = keyGroupe
         
         
@@ -679,7 +701,7 @@ class WidgetPlanning(wx.ScrolledWindow):
 
         # Dessin des groupes
         dc.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial'))
-        for key, valeurs in self.dictGroupes.iteritems() :
+        for key, valeurs in self.dictGroupes.items() :
             self.dictInfosGroupes[key] = {}
             if mode == "screen" :
                 IDobjet = wx.NewId()
@@ -710,7 +732,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         listeTexteEntetes = []
         largeurEntetes = 0
         
-        for key, valeurs in self.dictLignes.iteritems() :
+        for key, valeurs in self.dictLignes.items() :
             if mode == "screen" :
                 IDobjet = wx.NewId()
                 dc.SetId(IDobjet)
@@ -752,7 +774,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             # Rayures si hors contrat
             if afficher_contrats == True :
                 IDpersonne = key[0]
-                if self.dictContrats.has_key(IDpersonne) :
+                if IDpersonne in self.dictContrats :
                     listeContrats = self.dictContrats[IDpersonne]
                     contrat = False
                     for IDcontrat, date_debut, date_fin in listeContrats :
@@ -778,13 +800,13 @@ class WidgetPlanning(wx.ScrolledWindow):
             
         # Dessin du label temps total de chaque groupe
         if afficher_temps_groupe == True :
-            for keyGroupe, valeurs in self.dictGroupes.iteritems() :
+            for keyGroupe, valeurs in self.dictGroupes.items() :
                 self.DessineLabelTempsGroupe(dc, IDobjet=None, keyGroupe=keyGroupe)
 
                 
     
     def DessineLabelTempsLigne(self, dc, keyLigne, IDobjet=None, refresh=False, mode="screen"):
-        if self.dictInfosLignes.has_key(keyLigne) :
+        if keyLigne in self.dictInfosLignes :
             dureeMinutes = 0
             for IDpresence in self.dictInfosLignes[keyLigne]["presencesLigne"] :
                 valeurs = self.dictPresences[IDpresence]
@@ -799,7 +821,10 @@ class WidgetPlanning(wx.ScrolledWindow):
                 dureeTotale = str(nbreHeures) + "h" + str(nbreMinutes)
             
             labelTempsLigne = dureeTotale
-            largeurDC = self.GetSizeTuple()[0]-20
+            if 'phoenix' in wx.PlatformInfo:
+                largeurDC = self.GetSize()[0]-20
+            else:
+                largeurDC = self.GetSizeTuple()[0]-20
             posX = largeurDC-50
             posY = self.dictLignes[keyLigne][1]
             largeurTexte, hauteurTexte = self.GetTextExtent(labelTempsLigne)
@@ -834,7 +859,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         dureeMinutes = 0
         for ligne in self.dictGroupes[keyGroupe][4] :
             keyLigne = (ligne[0], ligne[1])
-            if self.dictInfosLignes.has_key(keyLigne) :
+            if keyLigne in self.dictInfosLignes :
                 for IDpresence in self.dictInfosLignes[keyLigne]["presencesLigne"] :
                     valeurs = self.dictPresences[IDpresence]
                     HMin = datetime.timedelta(hours=valeurs[3].hour, minutes=valeurs[3].minute)
@@ -848,7 +873,10 @@ class WidgetPlanning(wx.ScrolledWindow):
         dureeTotale = str(nbreHeures) + "h" + str(nbreMinutes)
         
         labelTempsGroupe = dureeTotale
-        largeurDC = self.GetSizeTuple()[0]-20
+        if 'phoenix' in wx.PlatformInfo:
+            largeurDC = self.GetSize()[0]-20
+        else:
+            largeurDC = self.GetSizeTuple()[0]-20
         posX = largeurDC-50
         posY = self.dictGroupes[keyGroupe][1] + 3
         
@@ -882,7 +910,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         listePositions = []
         for ligne in self.dictGroupes[keyGroupe][4] :
             keyLigne = (ligne[0], ligne[1])
-            if self.dictInfosLignes.has_key(keyLigne) :
+            if keyLigne in self.dictInfosLignes :
                 for IDpresence in self.dictInfosLignes[keyLigne]["presencesLigne"] :
                     valeurs = self.dictPresences[IDpresence]
                     posG = valeurs[7] 
@@ -946,7 +974,10 @@ class WidgetPlanning(wx.ScrolledWindow):
         # MAJ de l'affichage
         if refresh == True :
             tmp, posY = self.ConvertCoords(premierePosition, posY)
-            largeurDC = self.GetSizeTuple()[0]
+            if 'phoenix' in wx.PlatformInfo:
+                largeurDC = self.GetSize()[0]
+            else:
+                largeurDC = self.GetSizeTuple()[0]
             r = (0, posY-7, largeurDC, 15)
             self.RefreshRect(r, False)
             
@@ -1009,7 +1040,7 @@ class WidgetPlanning(wx.ScrolledWindow):
     def HitTestEnteteLigne(self, x, y) :
         global selectionsLignes
         if (20 <= x <= (largeurEnteteLigne + 20)) :
-            for key, valeurs in self.dictLignes.iteritems() :
+            for key, valeurs in self.dictLignes.items() :
                 posY = valeurs[1] + varScroll
                 if ((posY+hauteurBarre) >= y >= posY) :
                     if key not in selectionsLignes :
@@ -1021,7 +1052,7 @@ class WidgetPlanning(wx.ScrolledWindow):
     def HitTestLigne(self, x, y) :
         """ Est utilise pour le menu contextuel """
         if (coordLigne[0] <= x <= coordLigne[1]) :            
-            for key, valeurs in self.dictLignes.iteritems() :
+            for key, valeurs in self.dictLignes.items() :
                 posY = valeurs[1]
                 if ((posY+hauteurBarre) >= y >= posY) :
                     return key
@@ -1032,7 +1063,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         """ Pour sélectionner toutes les lignes d'un groupe """
         # Recherche d'un titre de groupe
         if (10<= x <= self.GetSizeTuple()[0]-30) : 
-            for key, valeurs in self.dictGroupes.iteritems() :
+            for key, valeurs in self.dictGroupes.items() :
                 posYH = valeurs[1]
                 posYB = posYH + 16
                 if (posYH <= y <= posYB) :
@@ -1049,7 +1080,7 @@ class WidgetPlanning(wx.ScrolledWindow):
                             
     def SelectAllLignes(self):
         global selectionsLignes
-        for key, valeurs in self.dictLignes.iteritems() :                
+        for key, valeurs in self.dictLignes.items() :                
             if key not in selectionsLignes :
                 selectionsLignes.append(key)
         self.MAJAffichage()
@@ -1076,7 +1107,7 @@ class WidgetPlanning(wx.ScrolledWindow):
                 return
             
         # Recherche d'une ligne
-        for key, valeurs in self.dictLignes.iteritems() :
+        for key, valeurs in self.dictLignes.items() :
             posYH = valeurs[1] + varScroll
             posXG = coordLigne[0]
             posXD = coordLigne[1]
@@ -1105,9 +1136,9 @@ class WidgetPlanning(wx.ScrolledWindow):
 
     def MAJ_listCtrl_Categories(self):
         """ Calcule les temps dans le dictCategories """
-        for key, valeurs in self.dictCategories.iteritems() :
+        for key, valeurs in self.dictCategories.items() :
             self.dictCategories[key][4] = 0
-        for key, valeurs in self.dictPresences.iteritems() :
+        for key, valeurs in self.dictPresences.items() :
             HMin = datetime.timedelta(hours=valeurs[3].hour, minutes=valeurs[3].minute)
             HMax = datetime.timedelta(hours=valeurs[4].hour, minutes=valeurs[4].minute)
             duree = ((HMax - HMin).seconds)/60
@@ -1118,12 +1149,12 @@ class WidgetPlanning(wx.ScrolledWindow):
     def SetCurseur(self, varSelectBarre):
         """ Change la forme du curseur lors d'un dragging """
         if varSelectBarre == None:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+            self.SetCursor(CURSOR(wx.CURSOR_ARROW))
             return
         if varSelectBarre[1] == "gauche" or varSelectBarre[1] == "droite" :
-            self.SetCursor(wx.StockCursor(wx.CURSOR_SIZEWE))
+            self.SetCursor(CURSOR(wx.CURSOR_SIZEWE))
         elif varSelectBarre[1] == "milieu":
-            self.SetCursor(wx.StockCursor(wx.CURSOR_SIZING))    
+            self.SetCursor(CURSOR(wx.CURSOR_SIZING))
 
     def OnLeaveWindow(self, event):
         self.SetCurseur(None)
@@ -1147,11 +1178,11 @@ class WidgetPlanning(wx.ScrolledWindow):
             nbreMinutes = dureeMinutes-(nbreHeures*60)
             if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
             dureeStr = str(nbreHeures) + "h" + str(nbreMinutes)
-            heure_debut = unicode(self.dictPresences[IDpresence][3])[:5]
-            heure_fin = unicode(self.dictPresences[IDpresence][4])[:5]
+            heure_debut = six.text_type(self.dictPresences[IDpresence][3])[:5]
+            heure_fin = six.text_type(self.dictPresences[IDpresence][4])[:5]
             IDcategorie = self.dictPresences[IDpresence][5]
             categorieStr = self.dictCategories[IDcategorie][0]
-            intitule = unicode(self.dictPresences[IDpresence][6])
+            intitule = six.text_type(self.dictPresences[IDpresence][6])
             if intitule != "" : categorieStr = u"%s | %s" % (categorieStr, intitule)
             texteStatusBar = u"%s-%s (%s) : %s" % (heure_debut, heure_fin, dureeStr, categorieStr)
         else:
@@ -1193,7 +1224,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             listeObjets = self.pdc.FindObjectsByBBox(x, y)
             if len(listeObjets) != 0 :
                 IDobjet = listeObjets[0]
-                if self.dictIDs.has_key(IDobjet) :
+                if IDobjet in self.dictIDs :
                     if self.dictIDs[IDobjet][0] == "tache" :
                         IDpresence = self.dictIDs[IDobjet][1]
                         selectTemp = self.HitTestBarre(x, IDpresence, IDobjet)
@@ -1306,7 +1337,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         # Création d'une liste des présences du même jour et du même animateur
         listeHeuresDebut = []
         listeHeuresFin = []
-        for key, valeurs in self.dictPresences.iteritems() :
+        for key, valeurs in self.dictPresences.items() :
             if valeurs[1] == IDpersonne and valeurs[2] == date :
                 listeHeuresDebut.append(valeurs[3])
                 listeHeuresFin.append(valeurs[4])
@@ -1389,7 +1420,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         dc.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Arial'))
 
         largeurTemp = 0
-        for key, valeurs in self.dictLignes.iteritems():
+        for key, valeurs in self.dictLignes.items():
             largeur, hauteur = self.GetTextExtent(valeurs[2])
             if largeur > largeurTemp : largeurTemp = largeur
         largeurEnteteLigne = largeurTemp            
@@ -1449,7 +1480,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         """ Supprimer une tâche """
         dlg = wx.MessageDialog(self, txt,  _(u"Suppression d'une tâche"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
         if dlg.ShowModal() == wx.ID_NO :
-            print "suppression annulee"
+            print("suppression annulee")
             dlg.Destroy() 
             return
         dlg.Destroy()
@@ -1486,7 +1517,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             else:
                 IDpresence = self.Context[0]
             
-        menu = wx.Menu()
+        menu = UTILS_Adaptations.Menu()
         
         if self.ligne != None :
             if IDpresence == None  : 
@@ -1677,7 +1708,7 @@ class WidgetPlanning(wx.ScrolledWindow):
 
     def SousMenuCategories(self, IDparent, menu, titre, couleurTitre):
         # make a submenu avec self.dictCategories
-        sm = wx.Menu()
+        sm = UTILS_Adaptations.Menu()
 
         if IDparent != 0 :
             index, texte = IDparent,titre
@@ -1692,12 +1723,12 @@ class WidgetPlanning(wx.ScrolledWindow):
             sm.AppendSeparator()
 
         nbre = 0
-        for key, valeurs in self.dictCategories.iteritems() :
+        for key, valeurs in self.dictCategories.items() :
             if valeurs[1] == IDparent:
 
                 # Recherche s'il y a des sous-menus :
                 enfantsExists = False
-                for key2, valeurs2 in self.dictCategories.iteritems() :
+                for key2, valeurs2 in self.dictCategories.items() :
                     if valeurs2[1] == key : enfantsExists = True
 
                 if enfantsExists == False :
@@ -1748,7 +1779,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         for ligne in selectionsLignes :
             IDpersonne1 = ligne[0]
             date1 = ligne[1]
-            for key, presence in self.dictPresences.iteritems() :
+            for key, presence in self.dictPresences.items() :
                 IDpresence = presence[0]
                 IDpersonne2 = presence[1]
                 date2 = presence[2]
@@ -1770,7 +1801,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             txt = _(u"Souhaitez-vous vraiment supprimer toutes les tâches des ") + str(nbreLignes) + _(u" lignes sélectionnées ?")
         dlg = wx.MessageDialog(self, txt ,  _(u"Suppression de toutes les tâches"), wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT)
         if dlg.ShowModal() == wx.ID_NO :
-            print "suppression annulle"
+            print("suppression annulle")
             dlg.Destroy() 
             return
         
@@ -1854,7 +1885,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         # Liste en dictionnaire :
         dictContrats = {}
         for IDcontrat, IDpersonne, date_debut, date_fin in listeContrats :
-            if dictContrats.has_key(IDpersonne) : 
+            if IDpersonne in dictContrats : 
                 dictContrats[IDpersonne].append( (IDcontrat, date_debut, date_fin) )
             else:
                 dictContrats[IDpersonne] = [ (IDcontrat, date_debut, date_fin), ]
@@ -1874,18 +1905,18 @@ class BarreOptions(wx.Panel):
         
         self.boutonOutils = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Outils.png"), wx.BITMAP_TYPE_PNG) )
         self.txtOutils = wx.StaticText( self, -1, _(u"Outils") )
-        self.boutonOutils.SetToolTipString(_(u"Cliquez ici pour afficher le menu des outils du planning"))
-        self.txtOutils.SetToolTipString(_(u"Cliquez ici pour afficher le menu des outils du planning"))
+        self.boutonOutils.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le menu des outils du planning")))
+        self.txtOutils.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le menu des outils du planning")))
         
         self.boutonOptions = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Options.png"), wx.BITMAP_TYPE_PNG) )
         self.txtOptions = wx.StaticText( self, -1, _(u"Options d'affichage") )
-        self.boutonOptions.SetToolTipString(_(u"Cliquez ici pour afficher le menu des options d'affichage du planning"))
-        self.txtOptions.SetToolTipString(_(u"Cliquez ici pour afficher le menu des options d'affichage du planning"))
+        self.boutonOptions.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le menu des options d'affichage du planning")))
+        self.txtOptions.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le menu des options d'affichage du planning")))
         
         self.boutonAide = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_PNG) )
         self.txtAide = wx.StaticText( self, -1, "Aide " )
-        self.boutonAide.SetToolTipString(_(u"Cliquez ici pour afficher l'aide"))
-        self.txtAide.SetToolTipString(_(u"Cliquez ici pour afficher l'aide"))
+        self.boutonAide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher l'aide")))
+        self.txtAide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher l'aide")))
 
         # Bind
         self.Bind(wx.EVT_RADIOBUTTON, self.OnRadio1, self.radio1 )
@@ -1914,7 +1945,7 @@ class BarreOptions(wx.Panel):
 
         
         # Layout
-        sizer = wx.FlexGridSizer(rows=1, cols=12)
+        sizer = wx.FlexGridSizer(rows=1, cols=12, vgap=0, hgap=0)
         sizer.Add( self.txtRadio, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 3 )
         sizer.Add( self.radio1, 0, wx.ALL, 3 )
         sizer.Add( self.radio2, 0, wx.ALL, 3 )
@@ -1987,7 +2018,7 @@ class BarreOptions(wx.Panel):
         """Ouverture du menu contextuel des outils du planning """
         
         # Création du menu contextuel
-        menu = wx.Menu()
+        menu = UTILS_Adaptations.Menu()
         
         # Commande Imprimer
         IDitem = 10
@@ -2027,7 +2058,7 @@ class BarreOptions(wx.Panel):
         """Ouverture du menu contextuel des options d'affichage du planning """
         
         # Création du menu contextuel
-        menu = wx.Menu()
+        menu = UTILS_Adaptations.Menu()
         
         # Affichage des légendes
         IDitem = 210
@@ -2121,8 +2152,9 @@ class BarreOptions(wx.Panel):
         # Récupération des personnes de la liste de personnes
         listePersonnes = panelPresences.panelPersonnes.listCtrlPersonnes.GetListePersonnes()
         from Dlg import DLG_Statistiques
-        frm = DLG_Statistiques.MyFrame(self, listeDates=listeDates, listePersonnes=listePersonnes)
-        frm.Show()
+        dlg = DLG_Statistiques.Dialog(self, listeDates=listeDates, listePersonnes=listePersonnes)
+        dlg.ShowModal()
+        dlg.Destroy()
         topWindow = wx.GetApp().GetTopWindow() 
         try : topWindow.SetStatusText(u"")
         except : pass
@@ -2362,7 +2394,7 @@ class PanelPlanning(wx.Panel):
         > MODE 1
         > Groupe = DATES | Lignes = PERSONNES | Uniquement les présents chaque jour
         """
-        print "mode 1"
+        print("mode 1")
         listeConditions = [str(date) for date in listeDates] 
         if len(listeConditions) == 0 : listeConditions = "('3000-10-10')"
         elif len(listeConditions) == 1 : listeConditions = "('%s')" % listeConditions[0]
@@ -2563,7 +2595,7 @@ class PanelPlanning(wx.Panel):
     def CreationDictLignes(self, dictGroupes):
         """ Créée un dict des lignes à partir du dictGroupes """
         dictLignes = {}
-        for IDgroupe, groupe in dictGroupes.iteritems() :
+        for IDgroupe, groupe in dictGroupes.items() :
             for ligne in groupe[4] :
                 IDpersonne = ligne[0]
                 datetimeDate = ligne[1]
@@ -2733,7 +2765,7 @@ class ImpressionPDFvTexte():
             titreGroupe, posY_debut, posY_fin, nbreLignes, listeLignes = dictGroupes[index]
             
             # Création du titre
-            if type(titreGroupe) != unicode : 
+            if type(titreGroupe) != six.text_type :
                 titreGroupe = titreGroupe.decode("iso-8859-15")
             dataTableau = [(titreGroupe, "" , ""),]
             
@@ -2757,7 +2789,7 @@ class ImpressionPDFvTexte():
                         txtTemps = txtTemps + self.minutesEnHeures(temps) + "\n"
             
                 # Intégration des lignes et des présences dans le tableau
-                if type(titre_ligne) != unicode : 
+                if type(titre_ligne) != six.text_type :
                     titre_ligne = titre_ligne.decode("iso-8859-15")
                 dataTableau.append( (titre_ligne, txtTaches[:-1], txtTemps[:-1]) )
             
@@ -2773,7 +2805,7 @@ class ImpressionPDFvTexte():
         # Création des totaux de catégories
         dataTableau = [("", _(u"Total par catégorie"), ""),]
         totalTemps = 0
-        for IDcategorie, valeurs in dictCategories.iteritems() :
+        for IDcategorie, valeurs in dictCategories.items() :
             nomCategorie = valeurs[0]
             temps = valeurs[4]
             if temps != 0 :

@@ -47,7 +47,7 @@ class Footer(Control):
     def MAJ_totaux(self):
         self.dictTotaux = {}
         for track in self.listview.innerList :
-            for nomColonne, dictColonne in self.dictColonnes.items() :
+            for nomColonne, dictColonne in list(self.dictColonnes.items()) :
                 if dictColonne["mode"] == "total" :
                     if hasattr(track, nomColonne) :
                         total = getattr(track, nomColonne)

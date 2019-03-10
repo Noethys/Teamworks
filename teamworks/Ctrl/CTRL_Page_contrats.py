@@ -14,6 +14,7 @@ import datetime
 import FonctionsPerso
 from Dlg import DLG_Edition_DUE
 from Dlg import DLG_Creation_contrat
+from Utils import UTILS_Adaptations
 
 
 def DateEngFr(textDate):
@@ -50,15 +51,15 @@ class Panel_Contrats(wx.Panel):
 
     def __set_properties(self):
 
-        self.bouton_contrats_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir un nouveau contrat"))
+        self.bouton_contrats_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour saisir un nouveau contrat")))
         self.bouton_contrats_ajouter.SetSize(self.bouton_contrats_ajouter.GetBestSize())
-        self.bouton_contrats_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le contrat sélectionné dans la liste"))
+        self.bouton_contrats_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier le contrat sélectionné dans la liste")))
         self.bouton_contrats_modifier.SetSize(self.bouton_contrats_modifier.GetBestSize())
-        self.bouton_contrats_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le contrat sélectionné dans la liste"))
+        self.bouton_contrats_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le contrat sélectionné dans la liste")))
         self.bouton_contrats_supprimer.SetSize(self.bouton_contrats_supprimer.GetBestSize())
-        self.bouton_signature.SetToolTipString(_(u"Cliquez ici pour signaler que le contrat est signé ou non"))
-        self.bouton_due.SetToolTipString(_(u"Cliquez ici pour signaler si la DUE a bien été faite"))
-        self.bouton_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer un contrat, une DUE, une attestation de travail, etc..."))
+        self.bouton_signature.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour signaler que le contrat est signé ou non")))
+        self.bouton_due.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour signaler si la DUE a bien été faite")))
+        self.bouton_imprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour imprimer un contrat, une DUE, une attestation de travail, etc...")))
         
         # Binds
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAjoutContrat, self.bouton_contrats_ajouter)
@@ -138,8 +139,9 @@ class Panel_Contrats(wx.Panel):
         event.Skip()
 
     def AjouterContrat(self):
-        frame_saisieContrat = DLG_Creation_contrat.MyWizard(self, IDcontrat=0, IDpersonne=self.IDpersonne)
-        frame_saisieContrat.Show()
+        dlg = DLG_Creation_contrat.Dialog(self, IDcontrat=0, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifContrat(self, event):
         self.ModifierContrat()
@@ -154,8 +156,9 @@ class Panel_Contrats(wx.Panel):
             dlg.Destroy()
             return
         varIDcontrat = self.list_ctrl_contrats.GetItemData(index)
-        frame_saisieContrat = DLG_Creation_contrat.MyWizard(self, IDcontrat=varIDcontrat, IDpersonne=self.IDpersonne)
-        frame_saisieContrat.Show()
+        dlg = DLG_Creation_contrat.Dialog(self, IDcontrat=varIDcontrat, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonSupprContrat(self, event):
         self.SupprimerContrat()
@@ -174,7 +177,7 @@ class Panel_Contrats(wx.Panel):
 
         # Demande de confirmation
         texteContrat = self.list_ctrl_contrats.GetItem(index, 3).GetText()
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce contrat ? \n\n> ") + texteContrat))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer ce contrat ? \n\n> ") + texteContrat))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -343,7 +346,7 @@ class ListCtrl_contrats(wx.ListCtrl):
             
         # Création des items
         index = 0
-        for IDcontrat, valeurs in self.DictContrats.iteritems():
+        for IDcontrat, valeurs in self.DictContrats.items():
             etat = valeurs[0]
             classification = valeurs[1]
             date_debut =valeurs[2]
@@ -352,7 +355,10 @@ class ListCtrl_contrats(wx.ListCtrl):
             signature= valeurs[5]
             due= valeurs[6]
             # Création de l'item
-            self.InsertStringItem(index, str(IDcontrat))
+            if 'phoenix' in wx.PlatformInfo:
+                self.InsertItem(index, str(IDcontrat))
+            else:
+                self.InsertStringItem(index, str(IDcontrat))
             # Etat
             if etat == "Perim":
                 item = self.GetItem(index)
@@ -360,18 +366,30 @@ class ListCtrl_contrats(wx.ListCtrl):
                 self.SetItem(item)
 
             # Autres colonnes
-            self.SetStringItem(index, 1, DateEngFr(date_debut))
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItem(index, 1, DateEngFr(date_debut))
+            else:
+                self.SetStringItem(index, 1, DateEngFr(date_debut))
             if date_fin == "2999-01-01" :
                 date_fin = _(u"Indétermin.")
             else:
                 date_fin = DateEngFr(date_fin)
             if date_rupture != "" :
                 date_fin = DateEngFr(date_rupture) + "-R"
-            self.SetStringItem(index, 2, date_fin)
-            self.SetStringItem(index, 3, classification)
-            self.SetStringItem(index, 4, signature)
-            if due == None : due = ""
-            self.SetStringItem(index, 5, due)
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItem(index, 2, date_fin)
+                self.SetItem(index, 3, classification)
+                self.SetItem(index, 4, signature)
+            else:
+                self.SetStringItem(index, 2, date_fin)
+                self.SetStringItem(index, 3, classification)
+                self.SetStringItem(index, 4, signature)
+            if due == None :
+                due = ""
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItem(index, 5, due)
+            else:
+                self.SetStringItem(index, 5, due)
             # Intégration du data ID
             self.SetItemData(index, IDcontrat)
             index += 1
@@ -385,8 +403,12 @@ class ListCtrl_contrats(wx.ListCtrl):
             self.EnsureVisible(nbreItems-1) 
 
     def ColumnSorter(self, key1, key2):
-        item1 = self.GetItem( self.FindItemData(-1, key1), 1).GetText()
-        item2 = self.GetItem( self.FindItemData(-1, key2), 1).GetText()
+        if 'phoenix' in wx.PlatformInfo:
+            item1 = self.GetItem( self.FindItem(-1, key1), 1).GetText()
+            item2 = self.GetItem( self.FindItem(-1, key2), 1).GetText()
+        else:
+            item1 = self.GetItem( self.FindItem(-1, key1), 1).GetText()
+            item2 = self.GetItem( self.FindItem(-1, key2), 1).GetText()
         # Bascule les dates françaises en dates anglaises pour faire le tri
         item1 = DateFrEng(item1)
         item2 = DateFrEng(item2)
@@ -481,7 +503,7 @@ class ListCtrl_contrats(wx.ListCtrl):
         etatDue = self.GetItem(index, 5).GetText()
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))

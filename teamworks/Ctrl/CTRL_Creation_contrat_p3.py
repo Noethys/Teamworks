@@ -15,7 +15,10 @@ from Dlg import DLG_Config_val_point
 from Dlg import DLG_Config_types_contrats
 import FonctionsPerso
 import datetime
-
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN
 
 class Page(wx.Panel):
     def __init__(self, *args, **kwds):
@@ -46,14 +49,14 @@ class Page(wx.Panel):
         self.bouton_valpoint = wx.Button(self, -1, "...", style=wx.BU_EXACTFIT)
         
         self.label_date_debut = wx.StaticText(self, -1, "       A partir du :")
-        self.datepicker_date_debut = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.datepicker_date_debut = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.label_date_fin = wx.StaticText(self, -1, "Jusqu'au :")
-        self.datepicker_date_fin = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.datepicker_date_fin = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.datepicker_date_debut.Enable(False)
         self.datepicker_date_fin.Enable(False)
         
         self.check_rupture = wx.CheckBox(self, -1, _(u" Rupture anticipée du contrat au :"))
-        self.datepicker_rupture = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.datepicker_rupture = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.datepicker_rupture.Enable(False)
         
         self.label_essai = wx.StaticText(self, -1, _(u"    Nbre de jours :"))
@@ -79,12 +82,12 @@ class Page(wx.Panel):
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.bouton_type.SetMinSize((20, 20))
-        self.bouton_type.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des types de contrat"))
+        self.bouton_type.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des types de contrat")))
         self.bouton_class.SetMinSize((20, 20))
-        self.bouton_class.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des classifications"))
+        self.bouton_class.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des classifications")))
         self.bouton_valpoint.SetMinSize((20, 20))
-        self.bouton_valpoint.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des valeurs de points"))
-        self.check_rupture.SetToolTipString(_(u"Cliquez ici pour saisir une date de fin de contrat si l'employeur ou le salarié ont mis fin prématurément au contrat."))
+        self.bouton_valpoint.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des valeurs de points")))
+        self.check_rupture.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour saisir une date de fin de contrat si l'employeur ou le salarié ont mis fin prématurément au contrat.")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -199,7 +202,7 @@ class Page(wx.Panel):
         nbreJours = (date_fin - date_debut).days
         nbreSemaines = nbreJours / 7
         
-        print nbreJours, nbreSemaines      
+        print(nbreJours, nbreSemaines)      
         
         
         self.periode_essai.SetValue(essai)

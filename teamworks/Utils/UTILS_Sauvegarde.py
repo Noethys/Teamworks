@@ -107,8 +107,8 @@ def Sauvegarde(listeFichiersLocaux=[], listeFichiersReseau=[], nom="", repertoir
                                 'DB_BACKUP' : fichierSave,
                                 }
                 os.system(sql)
-            except Exception, err:
-                print err
+            except Exception as err:
+                print(err)
                 dlgErreur = wx.MessageDialog(None, _(u"L'erreur suivante a été détectée dans la sauvegarde :\n%s.\n\n(Attention, notez bien que MySQL doit être installé sur votre poste)") % err, _(u"Erreur"), wx.OK | wx.ICON_ERROR)
                 dlgErreur.ShowModal() 
                 dlgErreur.Destroy()
@@ -118,7 +118,7 @@ def Sauvegarde(listeFichiersLocaux=[], listeFichiersReseau=[], nom="", repertoir
             # Insère le fichier Sql dans le ZIP
             try :
                 fichierZip.write(fichierSave, _(u"%s.sql") % nomFichier) #.decode("iso-8859-15")
-            except Exception, err:
+            except Exception as err:
                 dlgErreur = wx.MessageDialog(None, _(u"Une erreur est survenue dans la restauration...\n\n(Attention, notez bien que MySQL doit être installé sur votre poste)") % err, _(u"Erreur"), wx.OK | wx.ICON_ERROR)
                 dlgErreur.ShowModal() 
                 dlgErreur.Destroy()
@@ -190,7 +190,7 @@ def Sauvegarde(listeFichiersLocaux=[], listeFichiersReseau=[], nom="", repertoir
                 ssl=dictAdresse["connexionssl"], 
                 #listeImages=listeImages,
                 )
-        except Exception, err:
+        except Exception as err:
             dlgErreur = wx.MessageDialog(None, _(u"L'erreur suivante a été détectée dans l'envoi par Email :\n%s.") % err, _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlgErreur.ShowModal() 
             dlgErreur.Destroy()
@@ -273,7 +273,7 @@ def Restauration(fichier="", listeFichiersLocaux=[], listeFichiersReseau=[], dic
                 f = open(UTILS_Fichiers.GetRepData(fichier), "wb")
                 f.write(buffer)
                 f.close()
-            except Exception, err:
+            except Exception as err:
                 dlg = wx.MessageDialog(None, _(u"La restauration du fichier '") + nomFichier + _(u"' a rencontré l'erreur suivante : \n") + err, "Erreur", wx.OK| wx.ICON_ERROR)  
                 dlg.ShowModal()
                 dlg.Destroy()
@@ -371,7 +371,7 @@ def Restauration(fichier="", listeFichiersLocaux=[], listeFichiersReseau=[], dic
                                     'DB_BACKUP' : fichierRestore,
                                     }
                     os.system(sql)
-                except Exception, err:
+                except Exception as err:
                     dlgErreur = wx.MessageDialog(None, _(u"L'erreur suivante a été détectée dans la restauration :\n%s.\n\n(Attention, notez bien que MySQL doit être installé sur votre poste)") % err, _(u"Erreur"), wx.OK | wx.ICON_ERROR)
                     dlgErreur.ShowModal() 
                     dlgErreur.Destroy()
@@ -476,4 +476,4 @@ def GetRepertoireMySQL(dictValeurs={}):
 
 if __name__ == _(u"__main__"):
     app = wx.App(0)
-    print GetRepertoireMySQL()
+    print(GetRepertoireMySQL())

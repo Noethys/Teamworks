@@ -10,20 +10,15 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 from wx.lib.agw import ultimatelistctrl as ULC
 from Utils import UTILS_Fichiers
-import sys
 import os
-import time
 import datetime
-import operator
-import sqlite3
-import cStringIO
 try :
     import MySQLdb
-except Exception, err :
-    print err
+except Exception as err :
+    print(err)
 
 
 
@@ -96,7 +91,11 @@ class FirstColumnRenderer(object):
 
     def GetLineHeight(self):
         dc = wx.MemoryDC()
-        dc.SelectObject(wx.EmptyBitmap(100, 20))
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Bitmap(100, 20)
+        else :
+            bmp = wx.EmptyBitmap(100, 20)
+        dc.SelectObject(bmp)
         
         if self.icon != None :
             bmpWidth, bmpHeight = self.icon.GetWidth(), self.icon.GetHeight()
@@ -154,7 +153,11 @@ class SecondColumnRenderer(object):
 
     def GetLineHeight(self):
         dc = wx.MemoryDC()
-        dc.SelectObject(wx.EmptyBitmap(100, 20))
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Bitmap(100, 20)
+        else :
+            bmp = wx.EmptyBitmap(100, 20)
+        dc.SelectObject(bmp)
         textWidth, textHeight, d1, d2 = dc.GetFullTextExtent("xx", self.smallerFont)
         dc.SelectObject(wx.NullBitmap)
         return 2*textHeight + 20
@@ -162,7 +165,11 @@ class SecondColumnRenderer(object):
 
     def GetSubItemWidth(self):
         dc = wx.MemoryDC()
-        dc.SelectObject(wx.EmptyBitmap(100, 20))
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Bitmap(100, 20)
+        else :
+            bmp = wx.EmptyBitmap(100, 20)
+        dc.SelectObject(bmp)
         
         if self.date != None :
             texte = _(u"Date modif.:") + self.date
@@ -207,7 +214,7 @@ class CTRL(ULC.UltimateListCtrl):
         self.InsertColumn(1, "Column 2") 
         
         for dictFichier in self.listeFichiers :
-            index = self.InsertStringItem(sys.maxint, "")
+            index = self.InsertStringItem(six.MAXSIZE, "")
 
             klass = FirstColumnRenderer(self, titre=dictFichier["titre"], image=dictFichier["image"], description=dictFichier["description"])
             self.SetItemCustomRenderer(index, 0, klass)
@@ -275,7 +282,7 @@ class CTRL(ULC.UltimateListCtrl):
             connexion.set_character_set('utf8')
             cursor = connexion.cursor()
             connexion.close()
-        except Exception, err :
+        except Exception as err :
             return err
         return True
 
@@ -293,7 +300,7 @@ class CTRL(ULC.UltimateListCtrl):
             connexion = MySQLdb.connect(host=hote, user=utilisateur, passwd=motdepasse, port=int(port), use_unicode=True) 
             connexion.set_character_set('utf8')
             cursor = connexion.cursor()
-        except Exception, err :
+        except Exception as err :
             return listeFichiers
         
         # Test de connexion à une base de données
@@ -382,8 +389,8 @@ class CTRL(ULC.UltimateListCtrl):
                 source = UTILS_Fichiers.GetRepData(u"%s_%s.dat" % (titre, suffixe))
                 destination = UTILS_Fichiers.GetRepData(u"%s_%s.dat" % (nouveauTitre, suffixe))
                 os.rename(source, destination)
-            except Exception, err :
-                print "Erreur dans le renommage de fichier : " + err
+            except Exception as err :
+                print("Erreur dans le renommage de fichier : " + err)
         self.Remplissage() 
         
 
@@ -407,7 +414,7 @@ class CTRL(ULC.UltimateListCtrl):
             for suffixe in ("TDATA", "TDOCUMENTS", "TPHOTOS") :
                 try :
                     os.remove(UTILS_Fichiers.GetRepData(u"%s_%s.dat" % (titre, suffixe)))
-                except Exception, err :
+                except Exception as err :
                     pass
         
         # Supprime un fichier réseau
@@ -421,7 +428,7 @@ class CTRL(ULC.UltimateListCtrl):
                 connexion = MySQLdb.connect(host=hote, user=utilisateur, passwd=motdepasse, port=int(port), use_unicode=True) 
                 connexion.set_character_set('utf8')
                 cursor = connexion.cursor()
-            except Exception, err :
+            except Exception as err :
                 dlg = wx.MessageDialog(self, _(u"Erreur de connexion MySQL !\n\n%s") % err, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
@@ -455,7 +462,7 @@ class MyFrame(wx.Frame):
     
     def OnSelection(self, event):
         index = self.ctrl.GetFirstSelected()
-        print self.ctrl.GetItemPyData(index)
+        print(self.ctrl.GetItemPyData(index))
         
         
 

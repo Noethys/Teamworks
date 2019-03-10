@@ -544,14 +544,17 @@ class MyFrame(wx.Frame):
                 
     def __set_properties(self):
         self.SetTitle(_(u"Edition d'une déclaration préalable à l'embauche"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour visualiser le document au format PDF")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour visualiser le document au format PDF"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler et fermer")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler et fermer"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -800,7 +803,7 @@ class MyFrame(wx.Frame):
         listeDonnees["CONTRAT_TYPE"] = type_contrat 
 
         index = 0
-        for code, valeur in listeDonnees.iteritems() :
+        for code, valeur in listeDonnees.items() :
             index = 0
             for champ in champs :
                 if champ[0] == code :

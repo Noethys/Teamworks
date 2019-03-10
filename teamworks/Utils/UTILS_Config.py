@@ -55,7 +55,7 @@ def GenerationFichierConfig():
     cfg = FichierConfig()
     cfg.SetDictConfig(dictConfig=dictDonnees)
 
-    print("nouveau_fichier = %s" % nouveau_fichier)
+    print(("nouveau_fichier = %s" % nouveau_fichier))
     return nouveau_fichier
 
 def SupprimerFichier():
@@ -108,7 +108,7 @@ class FichierConfig():
         """ Remplace plusieurs valeur dans le fichier de config """
         """ dictParametres = {nom : valeur, nom : valeur...} """
         data = self.GetDictConfig()
-        for key, valeur in dictParametres.items():
+        for key, valeur in list(dictParametres.items()):
             data[key] = valeur
         self.SetDictConfig(data)
 
@@ -174,7 +174,7 @@ def GetParametres(dictParametres={}):
         dictSource = cfg.GetDictConfig()
         
     # Lit les données
-    for nom, valeur in dictParametres.items() :
+    for nom, valeur in list(dictParametres.items()) :
         if nom in dictSource :
             dictFinal[nom] = dictSource[nom]
         else :
@@ -192,7 +192,7 @@ def SetParametres(dictParametres={}):
         nomWindow = None
     if nomWindow == "general" : 
         # Si la frame 'General' est chargée, on y récupère le dict de config
-        for nom, valeur in dictParametres.items() :
+        for nom, valeur in list(dictParametres.items()) :
             topWindow.userConfig[nom] = valeur
     else:
         # Enregistrement dans le fichier de config sur le disque dur
@@ -204,6 +204,6 @@ def SetParametres(dictParametres={}):
 
 # --------------- TESTS ----------------------------------------------------------------------------------------------------------
 if __name__ == u"__main__":
-    print("GET :", GetParametres( {"impression_factures_impayes" : 0} ))
+    print(("GET :", GetParametres( {"impression_factures_impayes" : 0} )))
     #print("SET :", SetParametres( {"test1" : True, "test2" : True} ))
 

@@ -69,10 +69,10 @@ def GetDonneesDocument(categorie=None, ID=None):
                 listeMotscles.append(motcle)
         
         dictDonnees = {}
-        for motcle, valeur in dictDonneesPersonne.iteritems() :
+        for motcle, valeur in dictDonneesPersonne.items() :
             if not motcle.startswith("_") :
                 dictDonnees[motcle] = valeur
-        for motcle, valeur in dictDonneesContrat.iteritems() :
+        for motcle, valeur in dictDonneesContrat.items() :
             if not motcle.startswith("_") :
                 dictDonnees[motcle] = valeur
         
@@ -100,10 +100,10 @@ def GetDonneesDocument(categorie=None, ID=None):
                 listeMotscles.append(motcle)
         
         dictDonnees = {}
-        for motcle, valeur in dictDonneesPersonne.iteritems() :
+        for motcle, valeur in dictDonneesPersonne.items() :
             if not motcle.startswith("_") :
                 dictDonnees[motcle] = valeur
-        for motcle, valeur in dictDonneesCandidature.iteritems() :
+        for motcle, valeur in dictDonneesCandidature.items() :
             if not motcle.startswith("_") :
                 dictDonnees[motcle] = valeur
         
@@ -140,10 +140,10 @@ def Importation_candidat(IDcandidat=None):
     dictDonnees["CPRESID"] = ""
     try :
         if cp_resid != "" and cp_resid != None and cp_resid != "     " :
-            if type(cp_resid) == unicode : cp_resid = int(cp_resid)
+            if type(cp_resid) == six.text_type : cp_resid = int(cp_resid)
             dictDonnees["CPRESID"] = "%05d" % cp_resid
         if cp_naiss != "" and cp_naiss != None and cp_naiss != "     " :
-            if type(cp_naiss) == unicode : cp_naiss = int(cp_naiss)
+            if type(cp_naiss) == six.text_type : cp_naiss = int(cp_naiss)
             dictDonnees["CPRESID"] = "%05d" % cp_resid
     except : 
         pass
@@ -395,10 +395,10 @@ def Importation_personne(IDpersonne=None):
     dictDonnees["CPNAISS"] = ""
     try :
         if cp_naiss != "" and cp_naiss != None and cp_naiss != "     " :
-            if type(cp_naiss) == unicode : cp_naiss = int(cp_naiss)
+            if type(cp_naiss) == six.text_type : cp_naiss = int(cp_naiss)
             dictDonnees["CPNAISS"] = "%05d" % cp_naiss
         if cp_naiss != "" and cp_naiss != None and cp_naiss != "     " :
-            if type(cp_naiss) == unicode : cp_naiss = int(cp_naiss)
+            if type(cp_naiss) == six.text_type : cp_naiss = int(cp_naiss)
             dictDonnees["CPNAISS"] = "%05d" % cp_naiss
     except : 
         pass
@@ -438,10 +438,10 @@ def Importation_personne(IDpersonne=None):
     dictDonnees["CPRESID"] = ""
     try :
         if cp_resid != "" and cp_resid != None and cp_resid != "     " :
-            if type(cp_resid) == unicode : cp_resid = int(cp_resid)
+            if type(cp_resid) == six.text_type : cp_resid = int(cp_resid)
             dictDonnees["CPRESID"] = "%05d" % cp_resid
         if cp_resid != "" and cp_resid != None and cp_resid != "     " :
-            if type(cp_resid) == unicode : cp_resid = int(cp_resid)
+            if type(cp_resid) == six.text_type : cp_resid = int(cp_resid)
             dictDonnees["CPRESID"] = "%05d" % cp_resid
     except : 
         pass
@@ -585,7 +585,7 @@ def Importation_contrat(IDcontrat=None):
 
 # --------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    print GetDictDonnees(categorie="candidat", listeID=[2, 5])
+    print(GetDictDonnees(categorie="candidat", listeID=[2, 5]))
     
     
     

@@ -18,6 +18,7 @@ from Dlg import DLG_Selection_periode
 from Dlg import DLG_Config_fonctions
 from Dlg import DLG_Config_affectations
 from Dlg import DLG_Config_emplois
+from Utils import UTILS_Adaptations
 
 
 class Panel(wx.Panel):
@@ -112,9 +113,9 @@ class Panel(wx.Panel):
         self.bouton_courrier = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Envoyer_courrier.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         
         self.__set_properties()
         self.__do_layout()
@@ -143,28 +144,28 @@ class Panel(wx.Panel):
         self.OnCheckReponse(None)
         
     def __set_properties(self):
-        self.ctrl_date.SetToolTipString(_(u"Saisissez la date de l'acte de candidature"))
-        self.ctrl_type.SetToolTipString(_(u"Sélectionnez un type d'acte dans la liste proposée"))
-        self.ctrl_acte_remarques.SetToolTipString(_(u"Saisissez des remarques sur l'acte de candidature"))
-        self.ctrl_emploi.SetToolTipString(_(u"Sélectionnez une offre d'emploi dans la liste proposée"))
-        self.ctrl_periodes.SetToolTipString(_(u"Sélectionnez un ou plusieurs périodes de disponibilités"))
-        self.ctrl_periodes_remarques.SetToolTipString(_(u"Saisissez un complement d'information sur les disponibilités"))
-        self.ctrl_fonction.SetToolTipString(_(u"Cochez la ou les fonctions recherchées par le candidat"))
-        self.ctrl_affectations.SetToolTipString(_(u"Cochez la ou les affectations recherchées par le candidat"))
-        self.ctrl_poste_remarques.SetToolTipString(_(u"Saisissez un complément d'information sur le poste souhaité"))
-        self.ctrl_decision.SetToolTipString(_(u"Selectionnez votre decision concernant cet acte de candidature dans la liste proposee"))
-        self.ctrl_reponse_remarques.SetToolTipString(_(u"Vous pouvez saisir un complément d'information à propos de la décision"))
-        self.ctrl_reponse_obligatoire.SetToolTipString(_(u"Cochez cette case si une réponse doit être communiqué au candidat"))
-        self.ctrl_reponse_communiquee.SetToolTipString(_(u"Cochez cette case si vous avez communiqué votre réponse au candidat"))
-        self.date_envoi_reponse.SetToolTipString(_(u"Saisissez la date à laquelle vous avez informé le candidat de la réponse"))
-        self.ctrl_type_reponse.SetToolTipString(_(u"Sélectionnez le type de communication utilisé"))
-        self.bouton_ajouter_periode.SetToolTipString(_(u"Cliquez ici pour ajouter une période"))
-        self.bouton_modifier_periode.SetToolTipString(_(u"Cliquez ici pour modifier la période sélectionnée"))
-        self.bouton_supprimer_periode.SetToolTipString(_(u"Cliquez ici pour supprimer la période sélectionnée"))
-        self.bouton_fonctions.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des fonctions"))
-        self.bouton_affectations.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des affectations"))
-        self.bouton_emplois.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des offres d'emploi"))
-        self.bouton_courrier.SetToolTipString(_(u"Cliquez ici pour envoyer un courrier pour cette candidature"))
+        self.ctrl_date.SetToolTip(wx.ToolTip(_(u"Saisissez la date de l'acte de candidature")))
+        self.ctrl_type.SetToolTip(wx.ToolTip(_(u"Sélectionnez un type d'acte dans la liste proposée")))
+        self.ctrl_acte_remarques.SetToolTip(wx.ToolTip(_(u"Saisissez des remarques sur l'acte de candidature")))
+        self.ctrl_emploi.SetToolTip(wx.ToolTip(_(u"Sélectionnez une offre d'emploi dans la liste proposée")))
+        self.ctrl_periodes.SetToolTip(wx.ToolTip(_(u"Sélectionnez un ou plusieurs périodes de disponibilités")))
+        self.ctrl_periodes_remarques.SetToolTip(wx.ToolTip(_(u"Saisissez un complement d'information sur les disponibilités")))
+        self.ctrl_fonction.SetToolTip(wx.ToolTip(_(u"Cochez la ou les fonctions recherchées par le candidat")))
+        self.ctrl_affectations.SetToolTip(wx.ToolTip(_(u"Cochez la ou les affectations recherchées par le candidat")))
+        self.ctrl_poste_remarques.SetToolTip(wx.ToolTip(_(u"Saisissez un complément d'information sur le poste souhaité")))
+        self.ctrl_decision.SetToolTip(wx.ToolTip(_(u"Selectionnez votre decision concernant cet acte de candidature dans la liste proposee")))
+        self.ctrl_reponse_remarques.SetToolTip(wx.ToolTip(_(u"Vous pouvez saisir un complément d'information à propos de la décision")))
+        self.ctrl_reponse_obligatoire.SetToolTip(wx.ToolTip(_(u"Cochez cette case si une réponse doit être communiqué au candidat")))
+        self.ctrl_reponse_communiquee.SetToolTip(wx.ToolTip(_(u"Cochez cette case si vous avez communiqué votre réponse au candidat")))
+        self.date_envoi_reponse.SetToolTip(wx.ToolTip(_(u"Saisissez la date à laquelle vous avez informé le candidat de la réponse")))
+        self.ctrl_type_reponse.SetToolTip(wx.ToolTip(_(u"Sélectionnez le type de communication utilisé")))
+        self.bouton_ajouter_periode.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter une période")))
+        self.bouton_modifier_periode.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la période sélectionnée")))
+        self.bouton_supprimer_periode.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la période sélectionnée")))
+        self.bouton_fonctions.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des fonctions")))
+        self.bouton_affectations.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des affectations")))
+        self.bouton_emplois.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des offres d'emploi")))
+        self.bouton_courrier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour envoyer un courrier pour cette candidature")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=0, hgap=0)
@@ -810,7 +811,7 @@ class ListBoxDisponibilites(wx.ListBox):
             index += 1
     
     def GetIDselection(self):
-        print self.GetSelection()
+        print(self.GetSelection())
     
     def OnContextMenu(self, event):
         """Ouverture du menu contextuel """
@@ -819,7 +820,7 @@ class ListBoxDisponibilites(wx.ListBox):
             self.SetSelection(index)
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -889,7 +890,7 @@ class ChoiceEmploi(wx.Choice):
     
     def SetIDselection(self, IDemploi):
         if IDemploi == 0 : self.Select(0)
-        for index, IDemp in self.dictIndexes.iteritems():
+        for index, IDemp in self.dictIndexes.items():
             if IDemploi == IDemp :
                 self.Select(index)
                 return        
@@ -997,7 +998,10 @@ class MyFrame(wx.Frame):
             self.SetTitle(_(u"%s d'une candidature") % type)
         else:
             self.SetTitle(_(u"%s d'une candidature pour %s") % (type, nom_complet))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         

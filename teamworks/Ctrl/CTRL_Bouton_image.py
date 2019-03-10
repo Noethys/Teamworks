@@ -22,9 +22,14 @@ import PIL.ImageOps as ImageOps
 def PILtoWx(image):
     """Convert a PIL image to wx image format"""
     largeur, hauteur = image.size
-    imagewx = wx.EmptyImage(largeur, hauteur)
-    imagewx.SetData(image.tobytes('raw', 'RGB'))
-    imagewx.SetAlphaData(image.convert("RGBA").tobytes()[3::4])
+    if 'phoenix' in wx.PlatformInfo:
+        imagewx = wx.Image(largeur, hauteur)
+        imagewx.SetData(image.tobytes('raw', 'RGB'))
+        imagewx.SetAlpha(image.convert("RGBA").tobytes()[3::4])
+    else:
+        imagewx = wx.EmptyImage(largeur, hauteur)
+        imagewx.SetData(image.tobytes('raw', 'RGB'))
+        imagewx.SetAlphaData(image.convert("RGBA").tobytes()[3::4])
     return imagewx        
 
 
@@ -75,7 +80,7 @@ class CTRL(wx.Button):
 
 class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent   
         t1 = time.time() 
         
@@ -92,7 +97,7 @@ class Dialog(wx.Dialog):
         self.__set_properties()
         self.__do_layout()
         
-        print "Temps d'affichage =", time.time() - t1
+        print("Temps d'affichage =", time.time() - t1)
         
         self.Bind(wx.EVT_BUTTON, self.OnBoutonTest, self.bouton_aide1)
 
@@ -160,7 +165,7 @@ def ModifieFichiers():
     indexFichier = 0
     for nomFichier in listeFichiers :
         if nomFichier.endswith("py") and nomFichier.startswith("DATA_") == False and nomFichier != "CTRL_Bouton_image.py" :
-            print "%d/%d :  %s..." % (indexFichier, len(listeFichiers), nomFichier)
+            print("%d/%d :  %s..." % (indexFichier, len(listeFichiers), nomFichier))
             
             # Ouverture des fichiers
             fichier = open(nomFichier, "r")
@@ -204,7 +209,7 @@ def ModifieFichiers():
             
         indexFichier += 1
             
-    print "Fini !!!!!!!!!!!!!!!!!"
+    print("Fini !!!!!!!!!!!!!!!!!")
 
 
 

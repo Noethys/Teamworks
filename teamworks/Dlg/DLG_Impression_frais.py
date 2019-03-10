@@ -9,10 +9,11 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
 from Utils import UTILS_Fichiers
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 import GestionDB
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import sys
@@ -58,14 +59,17 @@ class MyFrame(wx.Frame):
         
     def __set_properties(self):
         self.SetTitle(_(u"Imprimer une fiche de frais de déplacements"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((710, 380))
 
@@ -185,7 +189,7 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # Remplissage avec les valeurs
         self.remplissage = True
         for IDdeplacement, date, objet, trajet, dist, tarif_km, montantStr, remboursement in self.listeDonnees :
-                index = self.InsertStringItem(sys.maxint, str(IDdeplacement))
+                index = self.InsertStringItem(six.MAXSIZE, str(IDdeplacement))
                 self.SetStringItem(index, 1, date)
                 self.SetStringItem(index, 2, objet)
                 self.SetStringItem(index, 3, trajet)
@@ -302,7 +306,7 @@ class ImpressionFicheFrais():
         DB.Close()
         
         if len(listeDonnees) == 0 : 
-            print "pas de donnees a imprimer"
+            print("pas de donnees a imprimer")
             return
         
         # Initialisation du PDF

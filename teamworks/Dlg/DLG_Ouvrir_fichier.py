@@ -21,7 +21,7 @@ from Ctrl import CTRL_Liste_fichiers
 
 class MyDialog(wx.Dialog):
     def __init__(self, parent, fichierOuvert=None):
-        wx.Dialog.__init__(self, parent, id=-1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, id=-1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.fichierOuvert = fichierOuvert
         if self.fichierOuvert != None and "[RESEAU]" in self.fichierOuvert :
             self.fichierOuvert = self.fichierOuvert[self.fichierOuvert.index("[RESEAU]"):]
@@ -73,25 +73,28 @@ class MyDialog(wx.Dialog):
         
 
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.SetTitle(_(u"Ouverture d'un fichier"))
-        self.radio_local.SetToolTipString(_(u"Cliquez ici pour afficher les fichiers disponibles en mode local"))
-        self.radio_reseau.SetToolTipString(_(u"Cliquez ici pour afficher les fichiers disponibles en mode réseau"))
+        self.radio_local.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher les fichiers disponibles en mode local")))
+        self.radio_reseau.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher les fichiers disponibles en mode réseau")))
         self.ctrl_port.SetMinSize((40, -1))
-        self.ctrl_port.SetToolTipString(_(u"Le numéro de port est 3306 par défaut"))
+        self.ctrl_port.SetToolTip(wx.ToolTip(_(u"Le numéro de port est 3306 par défaut")))
         self.ctrl_hote.SetMinSize((90,-1))
-        self.ctrl_hote.SetToolTipString(_(u"Indiquez ici le nom du serveur hôte"))
+        self.ctrl_hote.SetToolTip(wx.ToolTip(_(u"Indiquez ici le nom du serveur hôte")))
         self.ctrl_utilisateur.SetMinSize((90,-1))
-        self.ctrl_utilisateur.SetToolTipString(_(u"Indiquez ici le nom de l'utilisateur"))
-        self.ctrl_motdepasse.SetToolTipString(_(u"Indiquez ici le mot de passe nécessaire à la connexion à MySQL"))
-        self.bouton_valider_codes.SetToolTipString(_(u"Cliquez ici pour valider les codes réseau et afficher la liste des fichiers disponibles"))
-        self.bouton_modifier_fichier.SetToolTipString(_(u"Cliquez ici pour modifier le nom du fichier sélectionné dans la liste"))
-        self.bouton_supprimer_fichier.SetToolTipString(_(u"Cliquez ici pour supprimer le fichier sélectionné dans la liste"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour ouvrir le fichier sélectionné dans la liste"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.ctrl_utilisateur.SetToolTip(wx.ToolTip(_(u"Indiquez ici le nom de l'utilisateur")))
+        self.ctrl_motdepasse.SetToolTip(wx.ToolTip(_(u"Indiquez ici le mot de passe nécessaire à la connexion à MySQL")))
+        self.bouton_valider_codes.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider les codes réseau et afficher la liste des fichiers disponibles")))
+        self.bouton_modifier_fichier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier le nom du fichier sélectionné dans la liste")))
+        self.bouton_supprimer_fichier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le fichier sélectionné dans la liste")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ouvrir le fichier sélectionné dans la liste")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(4, 1, 10, 10)
@@ -170,7 +173,7 @@ class MyDialog(wx.Dialog):
         """ Récupération des codes réseau saisis """
         try :
             port = int(self.ctrl_port.GetValue())
-        except Exception, err:
+        except Exception as err:
             port = ""
         hote = self.ctrl_hote.GetValue()
         utilisateur = self.ctrl_utilisateur.GetValue()
@@ -300,6 +303,6 @@ if __name__ == "__main__":
     app = wx.App(0)
     dlg = MyDialog(None)
     if dlg.ShowModal() == wx.ID_OK :
-        print dlg.GetNomFichier() 
+        print(dlg.GetNomFichier()) 
     dlg.Destroy() 
     app.MainLoop()

@@ -98,7 +98,7 @@ def Envoi_mail(adresseExpediteur="", listeDestinataires=[], listeDestinatairesCC
             Encoders.encode_base64(part)
         # Set the filename parameter
         nomFichier= os.path.basename(fichier)
-        if type(nomFichier) == unicode :
+        if type(nomFichier) == six.text_type :
             nomFichier = FonctionsPerso.supprime_accent(nomFichier)
         part.add_header('Content-Disposition', 'attachment', filename=nomFichier)
         msg.attach(part)

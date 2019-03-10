@@ -10,13 +10,12 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-import sys
+import six
 import FonctionsPerso
 import GestionDB
-import os
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import wx.lib.agw.customtreectrl as CT
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 
 from Ol import OL_personnes
 from Ol import OL_contrats
@@ -93,9 +92,9 @@ class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             index += 1
         
         for donnees in self.listeDonnees :
-            index = self.InsertStringItem(sys.maxint, unicode(donnees[0]))
+            index = self.InsertStringItem(six.MAXSIZE, six.text_type(donnees[0]))
             for x in range(1, len(donnees)) :
-                self.SetStringItem(index, x, unicode(donnees[x]))
+                self.SetStringItem(index, x, six.text_type(donnees[x]))
             self.SetItemData(index, donnees[0])
 
 
@@ -216,11 +215,11 @@ class ToolBook(wx.Toolbook):
         dictGroupes = {}
         for IDcontrat, nomPersonne, classification, type, date_debut, date_fin in listeDonnees :
             texteContrat = _(u"%s %s du %s au %s") % (type, classification, FonctionsPerso.DateEngFr(date_debut), FonctionsPerso.DateEngFr(date_fin))
-            if dictGroupes.has_key(nomPersonne) :
+            if nomPersonne in dictGroupes :
                 dictGroupes[nomPersonne].append( (IDcontrat, texteContrat) )
             else:
                 dictGroupes[nomPersonne] = [ (IDcontrat, texteContrat), ]
-        listeKeys = dictGroupes.keys()
+        listeKeys = list(dictGroupes.keys())
         listeKeys.sort()
         for key in listeKeys:
             listeContrats.append( (key, dictGroupes[key]) )
@@ -256,11 +255,11 @@ class ToolBook(wx.Toolbook):
         dictGroupes = {}
         for IDcandidature, nomCandidat, classification, type, date_debut, date_fin in listeDonnees :
             texteContrat = _(u"%s %s du %s au %s") % (type, classification, FonctionsPerso.DateEngFr(date_debut), FonctionsPerso.DateEngFr(date_fin))
-            if dictGroupes.has_key(nomPersonne) :
+            if nomPersonne in dictGroupes :
                 dictGroupes[nomPersonne].append( (IDcontrat, texteContrat) )
             else:
                 dictGroupes[nomPersonne] = [ (IDcontrat, texteContrat), ]
-        listeKeys = dictGroupes.keys()
+        listeKeys = list(dictGroupes.keys())
         listeKeys.sort()
         for key in listeKeys:
             listeContrats.append( (key, dictGroupes[key]) )
@@ -317,14 +316,17 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler la saisie")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((750, 600))
 
@@ -394,10 +396,13 @@ class MyFrame(wx.Frame):
         # Récupère les données pour le publipostage
         from Utils import UTILS_Publipostage_donnees
         dictDonnees = UTILS_Publipostage_donnees.GetDictDonnees(categorie, listeID)
+
         # Ouvre le publiposteur
         from Dlg import DLG_Publiposteur
-        frm = DLG_Publiposteur.MyWizard(None, "", dictDonnees=dictDonnees)
-        frm.Show()
+        dlg = DLG_Publiposteur.Dialog(None, "", dictDonnees=dictDonnees)
+        dlg.ShowModal()
+        dlg.Destroy()
+
 
 class Hyperlink(hl.HyperLinkCtrl):
     def __init__(self, parent, id=-1, label="test", infobulle="test infobulle", URL="", size=(-1, -1), pos=(0, 0)):

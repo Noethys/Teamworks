@@ -46,13 +46,13 @@ class Dialog(wx.Dialog):
     def __set_properties(self):
         self.SetTitle(_(u"Paramètres de connexion"))
         self.ctrl_port.SetMinSize((60, -1))
-        self.ctrl_port.SetToolTipString("Saisissez ici le numéro de port")
-        self.ctrl_hote.SetToolTipString("Saisissez ici l'hôte")
-        self.ctrl_utilisateur.SetToolTipString("Saisissez ici l'utilisateur")
-        self.ctrl_mdp.SetToolTipString("Saisissez ici le mot de passe")
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler")
+        self.ctrl_port.SetToolTip(wx.ToolTip("Saisissez ici le numéro de port"))
+        self.ctrl_hote.SetToolTip(wx.ToolTip("Saisissez ici l'hôte"))
+        self.ctrl_utilisateur.SetToolTip(wx.ToolTip("Saisissez ici l'utilisateur"))
+        self.ctrl_mdp.SetToolTip(wx.ToolTip("Saisissez ici le mot de passe"))
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler"))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -86,7 +86,7 @@ class Dialog(wx.Dialog):
         self.CenterOnScreen() 
         
     def OnBoutonAide(self, event): 
-        print "Aide..."
+        print("Aide...")
 
     def OnBoutonAnnuler(self, event): 
         self.EndModal(wx.ID_CANCEL)
@@ -100,7 +100,7 @@ class Dialog(wx.Dialog):
         # Vérification des infos saisies
         try :
             port = int(port)
-        except Exception, err:
+        except Exception as err:
             dlg = wx.MessageDialog(self, _(u"Le numéro de port n'est pas valide. \n\nErreur : %s") % err, _(u"Erreur de saisie"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
@@ -147,7 +147,7 @@ def TestConnexion(dictValeurs={}):
     try :
         connexion = MySQLdb.connect(host=dictValeurs["hote"],user=dictValeurs["utilisateur"], passwd=dictValeurs["mdp"], port=dictValeurs["port"], use_unicode=True) 
         cursor = connexion.cursor()
-    except Exception, err :
+    except Exception as err :
         return False
     return True
 

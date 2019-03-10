@@ -34,13 +34,16 @@ class MyDialog(wx.Dialog):
         
     def __set_properties(self):
         self.SetTitle(_(u"Saisie d'une URL"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.ctrl_label.SetToolTipString(_(u"Saisissez ici le label"))
-        self.ctrl_url.SetToolTipString(_(u"Saisissez ici l'URL"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler la saisie"))
+        self.ctrl_label.SetToolTip(wx.ToolTip(_(u"Saisissez ici le label")))
+        self.ctrl_url.SetToolTip(wx.ToolTip(_(u"Saisissez ici l'URL")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler la saisie")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=0, hgap=0)

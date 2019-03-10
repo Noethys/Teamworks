@@ -16,6 +16,7 @@ from Utils import UTILS_Phonex
 import string
 import wx.lib.masked as masked
 import FonctionsPerso
+from Utils import UTILS_Adaptations
 
 
 def PhonexPerso(word):
@@ -68,21 +69,24 @@ class FrameGestionVilles(wx.Frame):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle("Gestion des villes")
         self.SetMinSize((540, 550))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_recherche_ville.SetToolTipString(_(u"Saisissez ici un nom de ville"))
-        self.bouton_Rechercher.SetToolTipString(_(u"Cliquez ici pour lancer la recherche"))
-        self.bouton_AfficherTout.SetToolTipString(_(u"Cliquez ici pour ré-afficher la liste complète"))
+        self.text_recherche_ville.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom de ville")))
+        self.bouton_Rechercher.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour lancer la recherche")))
+        self.bouton_AfficherTout.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ré-afficher la liste complète")))
         self.bouton_AfficherTout.Hide()
-        self.radio_box_recherche.SetToolTipString(_(u"Sélectionnez ici un type de recherche"))
+        self.radio_box_recherche.SetToolTip(wx.ToolTip(_(u"Sélectionnez ici un type de recherche")))
         self.radio_box_recherche.SetSelection(0)
         self.text_SaisieCode.SetMinSize((70, -1))
-        self.text_SaisieCode.SetToolTipString(_(u"Saisissez ici un code postal"))
-        self.text_SaisieVille.SetToolTipString(_(u"Saisissez ici un nom de ville"))
-        self.bouton_Aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_Ok.SetToolTipString(_(u"Cliquez ici pou valider et fermer cette fenêtre"))
-        self.bouton_Annuler.SetToolTipString(_(u"Cliquez ici pour annuler et fermer cette fenêtre"))
+        self.text_SaisieCode.SetToolTip(wx.ToolTip(_(u"Saisissez ici un code postal")))
+        self.text_SaisieVille.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom de ville")))
+        self.bouton_Aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_Ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pou valider et fermer cette fenêtre")))
+        self.bouton_Annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler et fermer cette fenêtre")))
         self.list_ctrl_1.SetMinSize((300, -1))
         # end wxGlade
 
@@ -272,7 +276,7 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
         tailleIcones = 16
         self.il = wx.ImageList(tailleIcones, tailleIcones)
         a={"sm_up":"GO_UP","sm_dn":"GO_DOWN","w_idx":"WARNING","e_idx":"ERROR","i_idx":"QUESTION"}
-        for k,v in a.items():
+        for k,v in list(a.items()):
             s="self.%s= self.il.Add(wx.ArtProvider_GetBitmap(wx.ART_%s,wx.ART_TOOLBAR,(16,16)))" % (k,v)
             exec(s)
         self.imgTriAz= self.il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Tri_az.png"), wx.BITMAP_TYPE_PNG))
@@ -307,7 +311,7 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -391,7 +395,7 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
         return item.GetText()
 
     def OnItemDeselected(self, evt):
-        print ("OnItemDeselected: %s" % evt.m_itemIndex)
+        print(("OnItemDeselected: %s" % evt.m_itemIndex))
 
 
     #---------------------------------------------------
@@ -422,9 +426,9 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    def SortItems(self,sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
         # redraw the list
         self.Refresh()
@@ -497,7 +501,7 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
         self.selection = (int(self.getColumnText(index, 0)), self.getColumnText(index, 1))
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item avec image
         item = wx.MenuItem(menuPop, 10, _(u"Insérer cette ville dans la fiche individuelle"))

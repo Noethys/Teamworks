@@ -9,8 +9,7 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
-import sys
+import six
 from wx.lib.splitter import MultiSplitterWindow
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import GestionDB
@@ -20,6 +19,7 @@ import FonctionsPerso
 from Ctrl import CTRL_Planning
 from Ctrl import CTRL_Calendrier_tw
 from Dlg import DLG_Application_modele
+from Utils import UTILS_Adaptations
 
 selectionPersonnes = []     # liste de IDpersonne sélectionnés
 selectionDates = []     # liste des dates sélectionnées
@@ -66,7 +66,10 @@ class PanelCalendrier(CTRL_Calendrier_tw.Panel):
     def OnPaint(self, event):
         dc= wx.PaintDC(self)
         dc= wx.BufferedDC(dc)
-        largeurDC, hauteurDC= self.GetSizeTuple()
+        if 'phoenix' in wx.PlatformInfo:
+            largeurDC, hauteurDC= self.GetSize()
+        else:
+            largeurDC, hauteurDC = self.GetSizeTuple()
         
         # paint le fond
         dc.SetBackground(wx.Brush(self.couleurFondDC))
@@ -150,7 +153,7 @@ class PanelCalendrierArchive(wx.Panel):
         self.calendrier.SelectJours( [datetime.date.today(),] )
         
         self.bouton_CalendrierAnnuel = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calendrier_jour.png"), wx.BITMAP_TYPE_PNG), size=(28, 21))
-        self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
+        self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
         
         self.barreTitre = FonctionsPerso.BarreTitre(self, _(u"Calendrier"), _(u"Ceci est l'info-bulle !"))
 
@@ -207,13 +210,13 @@ class PanelCalendrierArchive(wx.Panel):
         if self.calendrier.GetTypeCalendrier() == "mensuel" :
             self.calendrier.SetTypeCalendrier("annuel")
             self.combo_mois.Enable(False)
-            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier mensuel"))
+            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier mensuel")))
             self.GetGrandParent().SetSashPosition(450, True)
             self.GetParent().SetSashPosition(0, 400)
         else:
             self.calendrier.SetTypeCalendrier("mensuel")
             self.combo_mois.Enable(True)
-            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
+            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
             self.GetGrandParent().SetSashPosition(230, True)
             self.GetParent().SetSashPosition(0, 220)
     
@@ -268,7 +271,7 @@ class ListCtrl_Legendes(wx.ListCtrl):
         
         # ImageList
         self.il = wx.ImageList(16,16)
-        for key, valeurs in self.DictCategories.iteritems() :
+        for key, valeurs in self.DictCategories.items() :
             r, v, b = self.FormateCouleur(valeurs[3])
             exec("self.img" + str(key) + " = self.il.Add(self.CreationImage((16, 16), r, v, b, key))")
         self.SetImageList(self.il, wx.IMAGE_LIST_SMALL)     
@@ -285,7 +288,7 @@ class ListCtrl_Legendes(wx.ListCtrl):
         # Création des items
         index = 0
         totalMinutes = 0
-        for key, valeurs in self.DictCategories.iteritems():
+        for key, valeurs in self.DictCategories.items():
             if valeurs[4] != 0 :
                 nomCategorie = valeurs[0]
                 texteCouleur = valeurs[3]
@@ -301,10 +304,15 @@ class ListCtrl_Legendes(wx.ListCtrl):
                     duree = ""
                 
                 # Création de l'item
-                self.InsertStringItem(index, nomCategorie)
-                self.SetStringItem(index, 1, duree)
+                if 'phoenix' in wx.PlatformInfo:
+                    self.InsertItem(index, nomCategorie)
+                    self.SetItem(index, 1, duree)
+                else:
+                    self.InsertStringItem(index, nomCategorie)
+                    self.SetStringItem(index, 1, duree)
+
                 # Intégration de l'image
-                exec("self.SetItemImage(index, self.img" + str(key) + ")")
+                self.SetItemImage(index, getattr(self, "img%s" % key))
 
                 # Intégration du data ID
                 self.SetItemData(index, key)
@@ -316,8 +324,12 @@ class ListCtrl_Legendes(wx.ListCtrl):
             nbreMinutes = totalMinutes-(nbreHeures*60)
             if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
             duree = str(nbreHeures) + "h" + str(nbreMinutes)
-            self.InsertStringItem(index, "Total")
-            self.SetStringItem(index, 1, str(duree))
+            if 'phoenix' in wx.PlatformInfo:
+                self.InsertItem(index, "Total")
+                self.SetItem(index, 1, str(duree))
+            else:
+                self.InsertStringItem(index, "Total")
+                self.SetStringItem(index, 1, str(duree))
             self.SetItemData(index, 0)
             item = self.GetItem(index)
             item.SetTextColour(couleurFondPanneau)
@@ -346,14 +358,14 @@ class ListCtrl_Legendes(wx.ListCtrl):
         event.Skip()
 
     def OnMouseMotion(self, event):
-	index = self.HitTest(event.GetPosition())[0]
-            
-	if index == -1:
-            if self.popupIndex != -1 :
-                self.DestroyPopup()
-            return
-        
-	item = self.GetItem(index, 0)
+        index = self.HitTest(event.GetPosition())[0]
+
+        if index == -1:
+                if self.popupIndex != -1 :
+                    self.DestroyPopup()
+                return
+
+        item = self.GetItem(index, 0)
        
         pos = self.ClientToScreen(event.GetPosition()) # Position du curseur sur l'écran
         decalage = (10, -50)
@@ -402,7 +414,7 @@ class ListCtrl_Legendes(wx.ListCtrl):
 
        
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         menuPop.Append(400, _(u"Ajouter1"), "aide sur ajouter1", wx.ITEM_RADIO)
         menuPop.Append(401, _(u"Ajouter2"), "aide sur ajouter2", wx.ITEM_RADIO)
@@ -432,7 +444,7 @@ class ListCtrl_Legendes(wx.ListCtrl):
         self.parent.SupprimerCoord()
 
     def Menu_Envoyer_Email(self, event):
-        print "Envoie Email"
+        print("Envoie Email")
         
         destinataire = _(u"ggamer@wanadoo.fr")
         sujet = _(u"Test")
@@ -450,11 +462,18 @@ class ListCtrl_Legendes(wx.ListCtrl):
 
     def CreationImage(self, tailleImages, r, v, b, IDcategorie):
         """ Création des images pour le TreeCtrl """
-        bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+
         colFond = couleurFondWidgets
-        bmp.SetRGBRect((0, 0, 16, 16), colFond[0], colFond[1], colFond[2])
-        bmp.SetRGBRect((3, 3, 10, 10), 0, 0, 0)
-        bmp.SetRGBRect((4, 4, 8, 8), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGB((0, 0, 16, 16), colFond[0], colFond[1], colFond[2])
+            bmp.SetRGB((3, 3, 10, 10), 0, 0, 0)
+            bmp.SetRGB((4, 4, 8, 8), r, v, b)
+        else:
+            bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGBRect((0, 0, 16, 16), colFond[0], colFond[1], colFond[2])
+            bmp.SetRGBRect((3, 3, 10, 10), 0, 0, 0)
+            bmp.SetRGBRect((4, 4, 8, 8), r, v, b)
         return bmp.ConvertToBitmap()
 
   
@@ -557,13 +576,16 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
         self.InsertColumn(0, "Personnes")
 
         # Remplissage avec les valeurs
-        for key, valeurs in self.parent.dictPersonnes.iteritems():
+        for key, valeurs in self.parent.dictPersonnes.items():
             if valeurs[3] == True :
                 if self.parent.triCritere == "prenom" :
                     txt = valeurs[1] + " " + valeurs[0]
                 else:
                     txt = valeurs[0] + " " + valeurs[1]
-                index = self.InsertStringItem(sys.maxint, txt)
+                if 'phoenix' in wx.PlatformInfo:
+                    index = self.InsertItem(six.MAXSIZE, txt)
+                else:
+                    index = self.InsertStringItem(six.MAXSIZE, txt)
                 self.SetItemData(index, key)
                 # Sélection
                 if valeurs[4] == True :
@@ -602,12 +624,12 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
         else:
             item1 = self.parent.dictPersonnes[key1][0] + " " + self.parent.dictPersonnes[key1][1]
             item2 = self.parent.dictPersonnes[key2][0] + " " + self.parent.dictPersonnes[key2][1]
-	if item1 == item2:  
-	    return 0
-	elif item1 < item2: 
-	    return -1
-	else:           
-	    return 1
+        if item1 == item2:
+            return 0
+        elif item1 < item2:
+            return -1
+        else:
+            return 1
 
     def OnItemActivated(self, evt):
         self.ToggleItem(evt.m_itemIndex)
@@ -667,7 +689,7 @@ class BarreRecherche(wx.SearchCtrl):
         txtSearch = txtSearch.upper()
         
         # Recherche dans le dictPersonnes
-        for key, valeurs in dictPersonnes.iteritems():
+        for key, valeurs in dictPersonnes.items():
             if self.parent.triCritere == "prenom" :
                 txt = valeurs[1] + " " + valeurs[0]
             else:
@@ -693,11 +715,11 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         # Création Widgets
         self.imgMenu = wx.StaticBitmap(self, bitmap=wx.Bitmap(Chemins.GetStaticPath("Images/16x16/MiniFleche_bas_nr.png"), wx.BITMAP_TYPE_PNG))
         self.imgMenu.SetBackgroundColour(couleurFondWidgets)
-        self.imgMenu.SetToolTipString(_(u"Cliquez ici pour afficher le menu des options d'affichage de la liste"))
+        self.imgMenu.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le menu des options d'affichage de la liste")))
         self.txtOptions = wx.StaticText(self, -1, "")
         self.txtOptions.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL))
         self.txtOptions.SetBackgroundColour(couleurFondWidgets)
-        self.txtOptions.SetToolTipString(_(u"Cliquez ici pour afficher le menu des options d'affichage de la liste"))
+        self.txtOptions.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le menu des options d'affichage de la liste")))
         self.MAJtexteOptions()
         
 ##        self.barreTitre = FonctionsPerso.BarreTitre(self, _(u"Liste des personnes"), _(u"Ceci est l'info-bulle !"), arrondis=True, couleurFondPanel=self.GetParent().GetBackgroundColour())
@@ -757,9 +779,9 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         """Ouverture du menu contextuel du ListCtrl."""
         
         # Création du menu contextuel
-        menu = wx.Menu()
+        menu = UTILS_Adaptations.Menu()
 
-        smTri = wx.Menu()
+        smTri = UTILS_Adaptations.Menu()
         smTri.Append(110, _(u"Dernière présence"), _(u"Trier selon la dernière présence"), wx.ITEM_RADIO)
         smTri.Append(120, _(u"Nom"), _(u"Trier selon le nom"), wx.ITEM_RADIO)
         smTri.Append(130, _(u"Prénom"), _(u"Trier selon le prénom"), wx.ITEM_RADIO)
@@ -769,7 +791,7 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         menu.AppendMenu(10, "Tri par", smTri)
         
 
-        smOrdre = wx.Menu()
+        smOrdre = UTILS_Adaptations.Menu()
         smOrdre.Append(210, _(u"Ordre croissant"), _(u"Trier par ordre croissant"), wx.ITEM_RADIO)
         smOrdre.Append(220, _(u"Ordre décroissant"), _(u"Trier par ordre décroissant"), wx.ITEM_RADIO)
         if self.triOrdre == "croissant" : smOrdre.Check(210, True)
@@ -863,7 +885,7 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
     
     def Menu_30(self, event):
         """ Afficher tout """
-        for key, valeurs in self.dictPersonnes.iteritems():
+        for key, valeurs in self.dictPersonnes.items():
             self.dictPersonnes[key][3] = True
         self.MAJlistCtrl()
 
@@ -1079,7 +1101,6 @@ class PanelPresences(wx.Panel):
 
 class TestFrame(wx.Frame):
     def __init__(self, *args, **kwds):
-        # begin wxGlade: TestPlanning.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.statusbar = self.CreateStatusBar(2, 0)
@@ -1088,19 +1109,10 @@ class TestFrame(wx.Frame):
         
         self.__set_properties()
         self.__do_layout()
-        # end wxGlade
-
 
     def __set_properties(self):
-        # begin wxGlade: TestPlanning.__set_properties
         self.SetTitle(_(u"Panel Présences"))
         self.SetSize((1000, 800))
-##        self.statusbar.SetStatusWidths([-1])
-##        # statusbar fields
-##        statusbar_fields = [""]
-##        for i in range(len(statusbar_fields)):
-##            self.statusbar.SetStatusText(statusbar_fields[i], i)
-        # end wxGlade
 
     def __do_layout(self):
         # begin wxGlade: TestPlanning.__do_layout

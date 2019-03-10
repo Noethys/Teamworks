@@ -13,10 +13,10 @@ from Utils import UTILS_Adaptations
 import wx
 from Ctrl import CTRL_Bouton_image
 import GestionDB
-import wx.combo
-from PIL import Image
-import os
-import cStringIO
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import BitmapComboBox
+else :
+    from wx.combo import BitmapComboBox
 
 from ObjectListView import FastObjectListView, ColumnDefn, Filter
 
@@ -100,7 +100,7 @@ class CTRL_Choix(FastObjectListView):
         self.rowFormatter = rowFormatter
         self.SetColumns(liste_Colonnes)
         self.SetEmptyListMsg(_(u"Aucun choix"))
-        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         self.SetObjects(self.listeChoix)
        
     def MAJ(self):
@@ -115,7 +115,7 @@ class CTRL_Choix(FastObjectListView):
             noSelection = False
           
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -277,7 +277,7 @@ class CTRL_Categorie(wx.Choice):
         return listeItems
 
     def SetID(self, ID=0):
-        for index, values in self.dictDonnees.iteritems():
+        for index, values in self.dictDonnees.items():
             if values["IDcategorie"] == ID :
                  self.SetSelection(index)
 
@@ -293,9 +293,9 @@ class CTRL_Categorie(wx.Choice):
 # -----------------------------------------------------------------------------------------------------------------------
 
 
-class CTRL_Controle(wx.combo.BitmapComboBox):
+class CTRL_Controle(BitmapComboBox):
     def __init__(self, parent, size=(-1,  -1)):
-        wx.combo.BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
+        BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
         self.parent = parent
         self.MAJlisteDonnees() 
         self.SetSelection(0)
@@ -325,32 +325,32 @@ class CTRL_Controle(wx.combo.BitmapComboBox):
         index = self.GetSelection()
         if index == -1 : return {}
         dictControle = CTRL_Questionnaire.LISTE_CONTROLES[index]
-        if dictControle.has_key("options") :
+        if "options" in dictControle :
             return dictControle["options"]
         else:
             return {}
         
     def OnChoix(self, event=None, MAJ=True, insereValeursDefaut=True):
         dictOptions = self.GetDictOptions() 
-        if dictOptions.has_key("hauteur") :
+        if "hauteur" in dictOptions :
             self.parent.ctrl_hauteur.Enable(True) 
             if insereValeursDefaut == True :
                 self.parent.ctrl_hauteur.SetValue(dictOptions["hauteur"])
         else:
             self.parent.ctrl_hauteur.Enable(False) 
-        if dictOptions.has_key("min") :
+        if "min" in dictOptions :
             self.parent.ctrl_valmin.Enable(True) 
             if insereValeursDefaut == True :
                 self.parent.ctrl_valmin.SetValue(dictOptions["min"])
         else:
             self.parent.ctrl_valmin.Enable(False) 
-        if dictOptions.has_key("max") :
+        if "max" in dictOptions :
             self.parent.ctrl_valmax.Enable(True) 
             if insereValeursDefaut == True :
                 self.parent.ctrl_valmax.SetValue(dictOptions["max"])
         else:
             self.parent.ctrl_valmax.Enable(False) 
-        if dictOptions.has_key("choix") :
+        if "choix" in dictOptions :
             self.parent.ActiveCtrlChoix(True)
         else:
             self.parent.ActiveCtrlChoix(False)
@@ -363,7 +363,7 @@ class CTRL_Controle(wx.combo.BitmapComboBox):
 
 class Dialog(wx.Dialog):
     def __init__(self, parent, type="individu", IDquestion=None):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent    
         self.type = type
         self.IDquestion = IDquestion  
@@ -441,21 +441,21 @@ class Dialog(wx.Dialog):
 
     def __set_properties(self):
         self.SetTitle(_(u"Saisie d'une question"))
-        self.ctrl_label.SetToolTipString(_(u"Saisissez ici le label de la question"))
-        self.ctrl_categorie.SetToolTipString(_(u"Sélectionnez ici la catégorie de la question"))
-        self.ctrl_controle.SetToolTipString(_(u"Sélectionnez ici le type de contrôle souhaité"))
-        self.ctrl_visible.SetToolTipString(_(u"Cochez cette case pour rendre visible cette question"))
-        self.bouton_ajouter_choix.SetToolTipString(_(u"Cliquez ici pour ajouter une nouvelle question"))
-        self.bouton_modifier_choix.SetToolTipString(_(u"Cliquez ici pour modifier la ligne sélectionnée dans la liste"))
-        self.bouton_supprimer_choix.SetToolTipString(_(u"Cliquez ici pour supprimer la ligne sélectionnée dans la liste"))
-        self.bouton_monter_choix.SetToolTipString(_(u"Cliquez ici pour monter la ligne sélectionnée dans la liste"))
-        self.bouton_descendre_choix.SetToolTipString(_(u"Cliquez ici pour descendre la ligne sélectionnée dans la liste"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.ctrl_hauteur.SetToolTipString(_(u"Saisissez ici la hauteur du contrôle (en pixels)\nIndiquez '-1' pour définir une taille automatiquement"))
-        self.ctrl_valmin.SetToolTipString(_(u"Saisissez ici la valeur minimale du contrôle"))
-        self.ctrl_valmax.SetToolTipString(_(u"Saisissez ici la valeur maximale du contrôle"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.ctrl_label.SetToolTip(wx.ToolTip(_(u"Saisissez ici le label de la question")))
+        self.ctrl_categorie.SetToolTip(wx.ToolTip(_(u"Sélectionnez ici la catégorie de la question")))
+        self.ctrl_controle.SetToolTip(wx.ToolTip(_(u"Sélectionnez ici le type de contrôle souhaité")))
+        self.ctrl_visible.SetToolTip(wx.ToolTip(_(u"Cochez cette case pour rendre visible cette question")))
+        self.bouton_ajouter_choix.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter une nouvelle question")))
+        self.bouton_modifier_choix.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la ligne sélectionnée dans la liste")))
+        self.bouton_supprimer_choix.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la ligne sélectionnée dans la liste")))
+        self.bouton_monter_choix.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour monter la ligne sélectionnée dans la liste")))
+        self.bouton_descendre_choix.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour descendre la ligne sélectionnée dans la liste")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.ctrl_hauteur.SetToolTip(wx.ToolTip(_(u"Saisissez ici la hauteur du contrôle (en pixels)\nIndiquez '-1' pour définir une taille automatiquement")))
+        self.ctrl_valmin.SetToolTip(wx.ToolTip(_(u"Saisissez ici la valeur minimale du contrôle")))
+        self.ctrl_valmax.SetToolTip(wx.ToolTip(_(u"Saisissez ici la valeur maximale du contrôle")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         self.SetMinSize((650, 450))
 
     def __do_layout(self):
@@ -586,7 +586,7 @@ class Dialog(wx.Dialog):
         self.MAJ_apercu() 
         
     def OnBoutonAide(self, event):
-        print "Aide..."
+        print("Aide...")
 
     def OnBoutonAnnuler(self, event): 
         self.EndModal(wx.ID_CANCEL)
@@ -617,7 +617,7 @@ class Dialog(wx.Dialog):
         """ Récupère les options au format str pour l'enregistrement dans la base """
         listeOptions = []
         dictOptions = self.GetDictOptions() 
-        for code, valeur in dictOptions.iteritems() :
+        for code, valeur in dictOptions.items() :
             listeOptions.append("%s=%s" % (code, str(valeur)))
         texte = ";".join(listeOptions) 
         return texte
@@ -672,9 +672,9 @@ class Dialog(wx.Dialog):
             for option in listeOptions :
                 codeOption, valeurOption = option.split("=")
                 dictOptions[codeOption] = valeurOption
-        if dictOptions.has_key("hauteur") : self.ctrl_hauteur.SetValue(int(dictOptions["hauteur"]))
-        if dictOptions.has_key("min") : self.ctrl_valmin.SetValue(int(dictOptions["min"]))
-        if dictOptions.has_key("max") : self.ctrl_valmax.SetValue(int(dictOptions["max"]))
+        if "hauteur" in dictOptions : self.ctrl_hauteur.SetValue(int(dictOptions["hauteur"]))
+        if "min" in dictOptions : self.ctrl_valmin.SetValue(int(dictOptions["min"]))
+        if "max" in dictOptions : self.ctrl_valmax.SetValue(int(dictOptions["max"]))
     
     def GetIDquestion(self):
         return self.IDquestion 

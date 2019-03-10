@@ -149,12 +149,9 @@ class Notebook(wx.Notebook):
         
         
         
-        
-class MyFrame(wx.Frame):
-    def __init__(self, parent, id=-1, titre=_(u"Fiche individuelle"), IDpersonne=0):
-        wx.Frame.__init__(self, parent, id, titre, name="FicheIndividuelle", style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-
+class Dialog(wx.Dialog):
+    def __init__(self, parent, titre=_(u"Fiche individuelle"), IDpersonne=0):
+        wx.Dialog.__init__(self, parent, -1, name="FicheIndividuelle", style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.IDpersonne = IDpersonne
         self.contratEnCours = None
         self.AnnulationImpossible = False
@@ -207,35 +204,30 @@ class MyFrame(wx.Frame):
         self.txtDefilant.Bind(wx.EVT_MOTION, self.OnMotionTxtDefilant)
         self.txtDefilant.Bind(wx.EVT_LEAVE_WINDOW, self.OnLeaveTxtDefilant)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-##        self.bitmap_photo.Bind(wx.EVT_LEFT_DOWN, self.MenuPhoto)
-##        self.bitmap_photo.Bind(wx.EVT_RIGHT_DOWN, self.MenuPhoto)
-##        
-##        # Charge la photo de la personne
-##        self.Charge_photo()
-        
-        
+
         self.__set_properties()
         self.__do_layout()
         
         self.Affichage_barre_problemes()
 
-
     def __set_properties(self):
         self.SetTitle("Fiche individuelle")
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.label_hd_CatId.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
         self.label_hd_nomPrenom.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.bitmap_photo.SetBackgroundColour(wx.Colour(0, 0, 0))
-        self.txtDefilant.SetToolTipString(_(u"Cette barre d'information recense les points\nà contrôler sur le dossier de cette personne."))
-        self.bitmap_photo.SetToolTipString("Cliquez sur le bouton droit de votre souris pour modifier cette image")
-        self.bitmap_button_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.txtDefilant.SetToolTip(wx.ToolTip(_(u"Cette barre d'information recense les points\nà contrôler sur le dossier de cette personne.")))
+        self.bitmap_photo.SetToolTip(wx.ToolTip("Cliquez sur le bouton droit de votre souris pour modifier cette image"))
+        self.bitmap_button_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bitmap_button_aide.SetSize(self.bitmap_button_aide.GetBestSize())
-        self.bitmap_button_Ok.SetToolTipString("Cliquez ici pour valider")
+        self.bitmap_button_Ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bitmap_button_Ok.SetSize(self.bitmap_button_Ok.GetBestSize())
-        self.bitmap_button_annuler.SetToolTipString("Cliquez ici pour annuler")
+        self.bitmap_button_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler"))
         self.bitmap_button_annuler.SetSize(self.bitmap_button_annuler.GetBestSize())
         self.SetMinSize((770, 600))
         
@@ -310,9 +302,9 @@ class MyFrame(wx.Frame):
     def Recup_txt_pb_personne(self):
         """ Récupère un texte de la liste des problèmes de la personne """
         dictNomsPersonnes, dictProblemesPersonnes = FonctionsPerso.Recup_liste_pb_personnes()
-        if dictProblemesPersonnes.has_key(self.IDpersonne):
+        if self.IDpersonne in dictProblemesPersonnes:
             txtProblemes = ""
-            for labelCategorie, listeProblemes in dictProblemesPersonnes[self.IDpersonne].iteritems() :
+            for labelCategorie, listeProblemes in dictProblemesPersonnes[self.IDpersonne].items() :
                 txtProblemes += labelCategorie + " ("
                 for labelProbleme in listeProblemes :
                     txtProblemes += labelProbleme + ", "
@@ -359,9 +351,9 @@ class MyFrame(wx.Frame):
         
         infosPersonne = ((self.IDpersonne, civilite, nom, nom_jfille, prenom, date_naiss, cp_naiss, ville_naiss, pays_naiss, nationalite, num_secu, adresse_resid, cp_resid, ville_resid, IDsituation),)
         dictNomsPersonnes, dictProblemesPersonnes = FonctionsPerso.Recherche_problemes_personnes(listeIDpersonnes = (self.IDpersonne,), infosPersonne=infosPersonne)
-        if dictProblemesPersonnes.has_key(self.IDpersonne):
+        if self.IDpersonne in dictProblemesPersonnes:
             txtProblemes = ""
-            for labelCategorie, listeProblemes in dictProblemesPersonnes[self.IDpersonne].iteritems() :
+            for labelCategorie, listeProblemes in dictProblemesPersonnes[self.IDpersonne].items() :
                 txtProblemes += labelCategorie + " ("
                 for labelProbleme in listeProblemes :
                     txtProblemes += labelProbleme + ", "
@@ -428,15 +420,6 @@ class MyFrame(wx.Frame):
     def Fermer(self, save=True):
         """ Fermeture """
         if save == False :
-            # Annulation impossible
-##            if self.AnnulationImpossible == True :
-##                txtMessage = _(u"Désolé, il m'est impossible d'annuler maintenant. Vous devez donc cliquer sur le bouton 'Ok'. \n\nVoulez-vous que je le fasse pour vous maintenant ?")
-##                dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Annulation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
-##                reponse = dlgConfirm.ShowModal()
-##                dlgConfirm.Destroy()
-##                if reponse == wx.ID_NO:
-##                    return
-            
             # Annule la création d'une nouvelle fiche
             if self.nouvelleFiche == True :
                 db = GestionDB.DB()
@@ -460,8 +443,7 @@ class MyFrame(wx.Frame):
             frm.listCtrl_personnes.MAJ(IDpersonne=self.IDpersonne)
             frm.panel_dossiers.tree_ctrl_problemes.MAJ_treeCtrl()
         # Fin
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
     
     def Verifie_validite_donnees(self):
         # Vérifie Civilité        
@@ -500,14 +482,7 @@ class MyFrame(wx.Frame):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-
-##    dlgSaisie = wx.TextEntryDialog(None, _(u"Entrez un ID :"), "Choix de l'ID", "0", style=wx.OK|wx.CANCEL)
-##    reponse = dlgSaisie.ShowModal()
-##    if reponse == wx.ID_OK:
-##        ID = int(dlgSaisie.GetValue())
-##    dlgSaisie.Destroy()
-    
-    fiche = MyFrame(None, -1, "", IDpersonne=1)
-    app.SetTopWindow(fiche)
-    fiche.Show()
+    dlg = Dialog(None, IDpersonne=1)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

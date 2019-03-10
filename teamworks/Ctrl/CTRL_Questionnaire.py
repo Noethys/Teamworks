@@ -13,10 +13,8 @@ import wx
 from Ctrl import CTRL_Bouton_image
 import wx.lib.agw.hypertreelist as HTL
 import wx.lib.colourselect
-##import wx.lib.agw.knobctrl
-import datetime
+from Utils import UTILS_Adaptations
 import GestionDB
-
 from Ctrl import CTRL_Saisie_date
 from Dlg import DLG_Saisie_categorie_question
 from Dlg import DLG_Saisie_question
@@ -54,7 +52,7 @@ def ConvertCouleur(couleur=None):
 
 class DLG_Choix_creation(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.bouton_categorie = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Questionnaire_categorie.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_question = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Questionnaire_question.png"), wx.BITMAP_TYPE_ANY))
@@ -73,10 +71,10 @@ class DLG_Choix_creation(wx.Dialog):
 
     def __set_properties(self):
         self.SetTitle(_(u"Choix de l'élément à créer"))
-        self.bouton_categorie.SetToolTipString(_(u"Créer une nouvelle catégorie"))
-        self.bouton_question.SetToolTipString(_(u"Créer une nouvelle question"))
-        self.bouton_aide.SetToolTipString(_(u"Obtenir de l'aide"))
-        self.bouton_annuler.SetToolTipString(_(u"Annuler"))
+        self.bouton_categorie.SetToolTip(wx.ToolTip(_(u"Créer une nouvelle catégorie")))
+        self.bouton_question.SetToolTip(wx.ToolTip(_(u"Créer une nouvelle question")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Obtenir de l'aide")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Annuler")))
         self.SetMinSize((340, 230))
 
     def __do_layout(self):
@@ -108,7 +106,7 @@ class DLG_Choix_creation(wx.Dialog):
         self.EndModal(200)
 
     def OnBoutonAide(self, event): 
-        print "Aide..."
+        print("Aide...")
 
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -143,7 +141,7 @@ class CTRL_ligne_texte(wx.TextCtrl):
 
 class CTRL_bloc_texte(wx.TextCtrl):
     def __init__(self, parent, item=None, track=None):
-        if track.dictOptions.has_key("hauteur"):
+        if "hauteur" in track.dictOptions:
             hauteur = int(track.dictOptions["hauteur"])
         else:
             hauteur = 60
@@ -179,11 +177,11 @@ class CTRL_entier(wx.SpinCtrl):
         self.item = item
         self.track = track
         
-        if self.track.dictOptions.has_key("min"):
+        if "min" in self.track.dictOptions:
             min = int(self.track.dictOptions["min"])
         else:
             min = 0
-        if self.track.dictOptions.has_key("max"):
+        if "max" in self.track.dictOptions:
             max = int(self.track.dictOptions["max"])
         else:
             max = 100
@@ -234,7 +232,7 @@ class CTRL_liste_deroulante(wx.Choice):
     def SetValeur(self, IDchoix=None):
         if IDchoix == None : 
             self.Select(0)
-        for index, dictChoix in self.dictDonnees.iteritems() :
+        for index, dictChoix in self.dictDonnees.items() :
             if IDchoix == dictChoix["IDchoix"] :
                 self.Select(index)
 
@@ -251,7 +249,7 @@ class CTRL_liste_deroulante(wx.Choice):
 
     def GetValeur(self):
         index = self.GetSelection() 
-        if self.dictDonnees.has_key(index) :
+        if index in self.dictDonnees :
             dictChoix = self.dictDonnees[index]
             return dictChoix["IDchoix"]
         else:
@@ -267,7 +265,7 @@ class CTRL_liste_deroulante(wx.Choice):
 
 class CTRL_liste_coches(wx.CheckListBox):
     def __init__(self, parent, item=None, track=None):
-        if track.dictOptions.has_key("hauteur"):
+        if "hauteur" in track.dictOptions:
             hauteur = int(track.dictOptions["hauteur"])
         else:
             hauteur = -1
@@ -286,7 +284,7 @@ class CTRL_liste_coches(wx.CheckListBox):
         self.SetItems(self.listeLabels)
     
     def SetValeur(self, listeIDchoix=[]):
-        for index, dictChoix in self.dictDonnees.iteritems() :
+        for index, dictChoix in self.dictDonnees.items() :
             if dictChoix["IDchoix"] in listeIDchoix :
                 etat = True
             else:
@@ -309,7 +307,7 @@ class CTRL_liste_coches(wx.CheckListBox):
 
     def GetValeur(self):
         listeIDchoix = []
-        for index, dictChoix in self.dictDonnees.iteritems() :
+        for index, dictChoix in self.dictDonnees.items() :
             if self.IsChecked(index) == True :
                 listeIDchoix.append(dictChoix["IDchoix"])
         if len(listeIDchoix) == 0 : return None
@@ -366,7 +364,7 @@ class CTRL_date(CTRL_Saisie_date.Date2):
         self.item = item
         self.track = track
         self.SetBackgroundColour((255, 255, 255))
-        self.ctrl_date.SetToolTipString(_(u"Saisissez une date"))
+        self.ctrl_date.SetToolTip(wx.ToolTip(_(u"Saisissez une date")))
     
     def SetValeur(self, valeur=None):
         if valeur == None : valeur = u""
@@ -394,7 +392,7 @@ class CTRL_date(CTRL_Saisie_date.Date2):
 
 class CTRL_slider(wx.Panel):
     def __init__(self, parent, item=None, track=None):
-        if track.dictOptions.has_key("hauteur"):
+        if "hauteur" in track.dictOptions:
             hauteur = int(track.dictOptions["hauteur"])
         else:
             hauteur = -1
@@ -409,11 +407,11 @@ class CTRL_slider(wx.Panel):
         self.label_valeur.SetMinSize((25, -1))
         
         self.ctrl_slider = wx.Slider(self, -1, style=wx.SL_HORIZONTAL|wx.SL_AUTOTICKS)
-        if track.dictOptions.has_key("min"):
+        if "min" in track.dictOptions:
             min = int(track.dictOptions["min"])
         else:
             min = 0
-        if track.dictOptions.has_key("max"):
+        if "max" in track.dictOptions:
             max = int(track.dictOptions["max"])
         else:
             max = 10
@@ -421,7 +419,7 @@ class CTRL_slider(wx.Panel):
         self.ctrl_slider.SetValue(0)
         self.Bind(wx.EVT_COMMAND_SCROLL, self.OnSlider, self.ctrl_slider)
         self.ctrl_slider.SetBackgroundColour(wx.Colour(255, 255, 255))
-        self.ctrl_slider.SetToolTipString(_(u"Faites glisser la glissière sur la valeur de votre choix"))
+        self.ctrl_slider.SetToolTip(wx.ToolTip(_(u"Faites glisser la glissière sur la valeur de votre choix")))
 
         # Layout
         grid_sizer_base = wx.FlexGridSizer(rows=1, cols=2, vgap=0, hgap=0)
@@ -461,7 +459,7 @@ class CTRL_slider(wx.Panel):
 
 class CTRL_couleur(wx.lib.colourselect.ColourSelect):
     def __init__(self, parent, item=None, track=None):
-        if track.dictOptions.has_key("hauteur"):
+        if "hauteur" in track.dictOptions:
             hauteur = int(track.dictOptions["hauteur"])
         else:
             hauteur = 20
@@ -470,7 +468,7 @@ class CTRL_couleur(wx.lib.colourselect.ColourSelect):
         self.item = item
         self.track = track
         self.SetBackgroundColour((255, 255, 255))
-        self.SetToolTipString(_(u"Cliquez ici pour sélectionner une couleur"))
+        self.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner une couleur")))
 
     def SetValeur(self, valeur=None):
         if valeur == None : valeur = u""
@@ -565,7 +563,7 @@ class CTRL_couleur(wx.lib.colourselect.ColourSelect):
 
 class CTRL_documents(wx.Panel):
     def __init__(self, parent, item=None, track=None):
-        if track.dictOptions.has_key("hauteur"):
+        if "hauteur" in track.dictOptions:
             hauteur = int(track.dictOptions["hauteur"])
         else:
             hauteur = -1
@@ -581,7 +579,7 @@ class CTRL_documents(wx.Panel):
         self.ctrl_vignettes = CTRL_Vignettes_documents.CTRL(self, IDreponse=None, afficheLabels=False, tailleVignette=hauteur-20, style=wx.BORDER_SUNKEN)
         
         self.bouton_outils = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Outils.png"), wx.BITMAP_TYPE_ANY))
-        self.bouton_outils.SetToolTipString(_(u"Cliquez ici pour accéder aux commandes disponibles"))
+        self.bouton_outils.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour accéder aux commandes disponibles")))
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOutils, self.bouton_outils)
         
         # Layout
@@ -598,7 +596,7 @@ class CTRL_documents(wx.Panel):
     def SetValeur(self, valeur=None):
         IDquestion = self.track.IDquestion
         dictReponses = self.GetGrandParent().dictReponses
-        if dictReponses.has_key(IDquestion) :
+        if IDquestion in dictReponses :
             IDreponse = dictReponses[IDquestion]["IDreponse"]
             self.ctrl_vignettes.SetIDreponse(IDreponse)
 
@@ -644,7 +642,7 @@ class Track(object):
                 self.dictOptions[codeOption] = valeurOption
         
         # Liste de choix
-        if dictChoix.has_key(self.IDquestion):
+        if self.IDquestion in dictChoix:
             self.listeChoix = dictChoix[self.IDquestion]
         else:
             self.listeChoix = []
@@ -781,7 +779,7 @@ class CTRL(HTL.HyperTreeList):
         listeChoix = DB.ResultatReq()     
         dictChoix = {}
         for IDchoix, IDquestion, ordre, visible, label in listeChoix :
-            if dictChoix.has_key(IDquestion) == False :
+            if (IDquestion in dictChoix) == False :
                 dictChoix[IDquestion] = []
             dictTemp = {"IDchoix":IDchoix, "ordre":ordre, "visible":visible, "label":label}
             dictChoix[IDquestion].append(dictTemp)
@@ -889,7 +887,7 @@ class CTRL(HTL.HyperTreeList):
                             track.ctrl = ctrl      
                         
                         # Insère la valeur
-                        if self.dictReponses.has_key(IDquestion) :
+                        if IDquestion in self.dictReponses :
                             valeur = self.dictReponses[IDquestion]["reponse"]
                         else:
                             valeur = track.defaut
@@ -905,7 +903,7 @@ class CTRL(HTL.HyperTreeList):
         self.GetMainWindow().CalculatePositions() 
     
     def IdentificationBranche(self, branche):
-        if self.dictBranches.has_key(branche) :
+        if branche in self.dictBranches :
             return self.dictBranches[branche]
         else:
             return None
@@ -928,7 +926,7 @@ class CTRL(HTL.HyperTreeList):
     def SetValeurs(self, dictValeurs={}):
         # Remplit le ctrl avec les valeurs données. Ex : {IDquestion : valeur} """
         for track in self.dictCategories[IDcategorie]["questions"] :
-            if dictValeurs.has_key(track.IDquestion) :
+            if track.IDquestion in dictValeurs :
                 track.SetValeurStr(dictValeurs[track.IDquestion])
 
     def OnContextMenu(self, event):
@@ -941,7 +939,7 @@ class CTRL(HTL.HyperTreeList):
             noSelection = False
           
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -1205,9 +1203,9 @@ class MyFrame(wx.Frame):
         listeIDcategorie = self.ctrl.listeIDcategorie
         
         for IDcategorie in listeIDcategorie :
-            print ">>>", dictCategories[IDcategorie]["label"]
+            print(">>>", dictCategories[IDcategorie]["label"])
             for track in dictCategories[IDcategorie]["questions"] :
-                print (track.label, track.GetValeur(), track.GetValeurStr())
+                print((track.label, track.GetValeur(), track.GetValeurStr()))
             
         
 

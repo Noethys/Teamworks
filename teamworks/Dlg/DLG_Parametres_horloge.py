@@ -13,7 +13,7 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import  wx.lib.colourselect as  csel
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 
 
 class MyFrame(wx.Frame):
@@ -75,20 +75,23 @@ class MyFrame(wx.Frame):
         self.bouton_couleurFond.Bind(csel.EVT_COLOURSELECT, self.OnBoutonColFond)
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.largeur_texte.SetToolTipString(_(u"Saisissez ici une valeur pour la largeur du gadget"))
-        self.largeur_slider.SetToolTipString(_(u"Vous pouvez aussi utiliser cette glissière pour régler la largeur"))
-        self.hauteur_texte.SetToolTipString(_(u"Saisissez ici une valeur pour la hauteur du gadget"))
-        self.hauteur_slider.SetToolTipString(_(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur"))
-        self.bouton_couleurFace.SetToolTipString(_(u"Cliquez ici pour modifier la couleur de face de l'horloge"))
-        self.bouton_couleurFond.SetToolTipString(_(u"Cliquez ici pour modifier la couleur de fond de l'horloge"))
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.largeur_texte.SetToolTip(wx.ToolTip(_(u"Saisissez ici une valeur pour la largeur du gadget")))
+        self.largeur_slider.SetToolTip(wx.ToolTip(_(u"Vous pouvez aussi utiliser cette glissière pour régler la largeur")))
+        self.hauteur_texte.SetToolTip(wx.ToolTip(_(u"Saisissez ici une valeur pour la hauteur du gadget")))
+        self.hauteur_slider.SetToolTip(wx.ToolTip(_(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur")))
+        self.bouton_couleurFace.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur de face de l'horloge")))
+        self.bouton_couleurFond.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur de fond de l'horloge")))
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         self.SetMinSize((400, 305))
 
@@ -287,7 +290,7 @@ class MyFrame(wx.Frame):
         event.Skip()
         
     def OnBoutonAide(self, event):
-        print "Aide"
+        print("Aide")
 
     def OnBoutonAnnuler(self, event):
         self.MakeModal(False)

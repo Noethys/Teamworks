@@ -92,7 +92,7 @@ def Lire(nom_fichier="", conversion_auto=False):
                 data = json.load(json_file, object_hook=MyDecoder)
         except Exception as err:
             print("Impossible d'ouvrir le fichier Json")
-            print(err,)
+            print((err,))
             is_json = False
 
     if is_json == False :
@@ -103,7 +103,7 @@ def Lire(nom_fichier="", conversion_auto=False):
         try:
             fichier = shelve.open(nom_fichier, "r")
             data = {}
-            for key, valeur in fichier.items():
+            for key, valeur in list(fichier.items()):
                 if type(key) == str:
                     key = key.decode("iso-8859-15")
                 if type(valeur) == str:
@@ -116,7 +116,7 @@ def Lire(nom_fichier="", conversion_auto=False):
                 Ecrire(nom_fichier=nom_fichier, data=data)
         except Exception as err:
             print("Conversion du shelve en Json impossible :")
-            print(err,)
+            print((err,))
 
     return data
 

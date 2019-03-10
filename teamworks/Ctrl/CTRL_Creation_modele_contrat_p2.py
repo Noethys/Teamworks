@@ -22,7 +22,7 @@ class PanelDefilant(scrolled.ScrolledPanel):
         self.dicoChampsTous = self.GetGrandParent().GetParent().page1.listCtrl_champs.dictChamps
         self.selections = self.GetGrandParent().GetParent().page1.listCtrl_champs.selections
         self.dicoChamps = {}
-        for ID, valeurs in self.dicoChampsTous.iteritems() :
+        for ID, valeurs in self.dicoChampsTous.items() :
             if ID in self.selections :
                 self.dicoChamps[ID] = valeurs
                 
@@ -35,7 +35,7 @@ class PanelDefilant(scrolled.ScrolledPanel):
         # Création des champs dans l'interface
         grid_sizer = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
         
-        for ID, valeurs in self.dicoChamps.iteritems() : 
+        for ID, valeurs in self.dicoChamps.items() : 
             nom = "champ" + str(ID)
             label = valeurs[1]
             infoBulle = valeurs[2]
@@ -45,13 +45,13 @@ class PanelDefilant(scrolled.ScrolledPanel):
             
             # Importation de la valeur si le contrat est en modification
             d = self.GetGrandParent().GetParent().dictChamps
-            if ID in d.keys() : valeur = d[ID]
+            if ID in list(d.keys()) : valeur = d[ID]
             
             # TextCtrl pour réponse
             self.sizer_champs = wx.StaticBox(self, -1, label)
             sizer_champ = wx.StaticBoxSizer(self.sizer_champs, wx.VERTICAL)
             exec( "self.text_" + nom + " = wx.TextCtrl(self, -1, valeur)" )
-            exec( "self.text_" + nom + ".SetToolTipString(infoBulle)")
+            exec( "self.text_" + nom + ".SetToolTip(wx.ToolTip(infoBulle))")
             exec( "sizer_champ.Add(self.text_" + nom + ", 0, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 0)")
             
             # Exemple :
@@ -112,7 +112,7 @@ class Page(wx.Panel):
         # Vérifie que les champs ont été remplis
         listeInvalides = []
         dictChamps = {}
-        for ID, valeurs in self.panelDefilant.dicoChamps.iteritems() : 
+        for ID, valeurs in self.panelDefilant.dicoChamps.items() : 
             nom = "champ" + str(ID)
             label = valeurs[1]
             exec( "texte = self.panelDefilant.text_" + nom + ".GetValue()" )

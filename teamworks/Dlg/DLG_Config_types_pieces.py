@@ -9,11 +9,12 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 from Dlg import DLG_Saisie_type_piece
 import FonctionsPerso
+from Utils import UTILS_Adaptations
 
 
 def FormatDuree(duree):
@@ -83,13 +84,13 @@ class Panel_TypesPieces(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau type de pièce"))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un nouveau type de pièce")))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier un type de pièce sélectionné dans la liste"))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier un type de pièce sélectionné dans la liste")))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer un type de pièce sélectionné dans la liste"))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer un type de pièce sélectionné dans la liste")))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -178,7 +179,7 @@ class Panel_TypesPieces(wx.Panel):
         # Demande de confirmation
         IDtype_piece = int(self.listCtrl_TypesPieces.GetItem(index, 0).GetText())
         NomPiece = self.listCtrl_TypesPieces.GetItem(index, 1).GetText()
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce type de pièce ? \n\n> ") + NomPiece))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer ce type de pièce ? \n\n> ") + NomPiece))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -228,7 +229,7 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
 
     def OnSize(self, event):
         self.Refresh()
-        print "Refresh du ListCtrl"
+        print("Refresh du ListCtrl")
         event.Skip()
 
     def Remplissage(self):
@@ -253,7 +254,7 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -389,7 +390,7 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
+        valeur = six.text_type(self.itemDataMap[index][col])
         return valeur
 
     def OnGetItemImage(self, item):
@@ -410,9 +411,9 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    def SortItems(self,sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
         # redraw the list
         self.Refresh()
@@ -436,7 +437,7 @@ class ListCtrlTypesPieces(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.C
         key = int(self.getColumnText(index, 0))
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))

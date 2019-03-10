@@ -129,4 +129,4 @@ def phonex(chaine):
 if __name__ == '__main__':
     listeTest = (_(u"Noémie"), _(u"Noemie"), "Nomie", "Mathis")
     for texte in listeTest :
-        print (texte, phonex(texte))
+        print((texte, phonex(texte)))

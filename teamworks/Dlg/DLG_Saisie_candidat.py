@@ -10,6 +10,7 @@ import Chemins
 from Utils.UTILS_Traduction import _
 from Utils import UTILS_Adaptations
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 import datetime
@@ -20,6 +21,7 @@ from Dlg import DLG_Saisie_coords
 OL_candidatures = UTILS_Adaptations.Import("Ol.OL_candidatures")
 import sys
 from Ol import OL_entretiens
+from Utils import UTILS_Adaptations
 
 
 
@@ -159,36 +161,36 @@ class Panel(wx.Panel):
             self.bouton_ok.SetFocus()
         
     def __set_properties(self):
-        self.ctrl_civilite.SetToolTipString(_(u"Sélectionnez la civilité du candidat"))
+        self.ctrl_civilite.SetToolTip(wx.ToolTip(_(u"Sélectionnez la civilité du candidat")))
         self.ctrl_civilite.SetSelection(0)
         self.ctrl_nom.SetFont(wx.Font(14, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
-        self.ctrl_nom.SetToolTipString(_(u"Saisissez le nom de famille du candidat"))
+        self.ctrl_nom.SetToolTip(wx.ToolTip(_(u"Saisissez le nom de famille du candidat")))
         self.ctrl_prenom.SetFont(wx.Font(14, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
-        self.ctrl_prenom.SetToolTipString(_(u"Saisissez le prénom du candidat"))
-        self.ctrl_date_naiss.SetToolTipString(_(u"Saisissez la date de naissance du candidat"))
+        self.ctrl_prenom.SetToolTip(wx.ToolTip(_(u"Saisissez le prénom du candidat")))
+        self.ctrl_date_naiss.SetToolTip(wx.ToolTip(_(u"Saisissez la date de naissance du candidat")))
         self.ctrl_age_1.Enable(False)
-        self.ctrl_age_2.SetToolTipString(_(u"Saisissez l'âge du candidat si vous ne connaissez pas sa date de naissance"))
-        self.ctrl_adresse.SetToolTipString(_(u"Saisissez l'adresse du candidat"))
+        self.ctrl_age_2.SetToolTip(wx.ToolTip(_(u"Saisissez l'âge du candidat si vous ne connaissez pas sa date de naissance")))
+        self.ctrl_adresse.SetToolTip(wx.ToolTip(_(u"Saisissez l'adresse du candidat")))
         self.ctrl_cp.SetMinSize((60, -1))
-        self.ctrl_cp.SetToolTipString(_(u"Saisissez le code postal"))
-        self.ctrl_ville.SetToolTipString(_(u"Saisissez la ville"))
+        self.ctrl_cp.SetToolTip(wx.ToolTip(_(u"Saisissez le code postal")))
+        self.ctrl_ville.SetToolTip(wx.ToolTip(_(u"Saisissez la ville")))
         self.bouton_villes.SetMinSize((20, 20))
-        self.bouton_villes.SetToolTipString(_(u"Cliquez ici pour la gestion des villes"))
-        self.bouton_ajouter_coord.SetToolTipString(_(u"Cliquez ici pour ajouter une coordonnée"))
-        self.bouton_modifier_coord.SetToolTipString(_(u"Cliquez ici pour modifier la coordonnée selectionnée"))
-        self.bouton_supprimer_coord.SetToolTipString(_(u"Cliquez ici pour supprimer la coordonnée selectionnée"))
-        self.bouton_qualifications.SetToolTipString(_(u"Cliquez ici pour sélectionner des qualifications pour ce candidat"))
-        self.bouton_ajouter_cand.SetToolTipString(_(u"Cliquez ici pour créer une candidature pour ce candidat"))
-        self.bouton_modifier_cand.SetToolTipString(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste"))
-        self.bouton_supprimer_cand.SetToolTipString(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste"))
-        self.bouton_ajouter_entretien.SetToolTipString(_(u"Cliquez ici pour créer un entretien"))
-        self.bouton_modifier_entretien.SetToolTipString(_(u"Cliquez ici pour modifier l'entretien selectionné dans la liste"))
-        self.bouton_supprimer_entretien.SetToolTipString(_(u"Cliquez ici pour supprimer l'entretien selectionné dans la liste"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_convertir.SetToolTipString(_(u"Cliquez ici pour convertir la fiche de ce candidat en fiche individuelle d'employé"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider la fiche"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
-        self.bouton_courrier.SetToolTipString(_(u"Cliquez ici pour créer un courrier ou un mail par publipostage"))
+        self.bouton_villes.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour la gestion des villes")))
+        self.bouton_ajouter_coord.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter une coordonnée")))
+        self.bouton_modifier_coord.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la coordonnée selectionnée")))
+        self.bouton_supprimer_coord.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la coordonnée selectionnée")))
+        self.bouton_qualifications.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour sélectionner des qualifications pour ce candidat")))
+        self.bouton_ajouter_cand.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer une candidature pour ce candidat")))
+        self.bouton_modifier_cand.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste")))
+        self.bouton_supprimer_cand.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste")))
+        self.bouton_ajouter_entretien.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un entretien")))
+        self.bouton_modifier_entretien.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier l'entretien selectionné dans la liste")))
+        self.bouton_supprimer_entretien.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer l'entretien selectionné dans la liste")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_convertir.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour convertir la fiche de ce candidat en fiche individuelle d'employé")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider la fiche")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
+        self.bouton_courrier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un courrier ou un mail par publipostage")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=6, cols=1, vgap=0, hgap=0)
@@ -401,10 +403,10 @@ class Panel(wx.Panel):
         # Champs spéciaux
         try :
             if cp_resid != "" and cp_resid != None and cp_resid != "     " :
-                if type(cp_resid) == unicode : cp_resid = int(cp_resid)
+                if type(cp_resid) == six.text_type : cp_resid = int(cp_resid)
                 self.ctrl_cp.SetValue("%05d" % cp_resid)
             if cp_naiss != "" and cp_naiss != None and cp_naiss != "     " :
-                if type(cp_naiss) == unicode : cp_naiss = int(cp_naiss)
+                if type(cp_naiss) == six.text_type : cp_naiss = int(cp_naiss)
                 self.ctrl_cp.SetValue("%05d" % cp_naiss)
         except : 
             pass
@@ -491,7 +493,7 @@ class Panel(wx.Panel):
 
         # Demande de confirmation
         texteCoord = self.ctrl_coords.GetItemText(index)
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette coordonnée ? \n\n> ") + texteCoord))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette coordonnée ? \n\n> ") + texteCoord))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -828,7 +830,7 @@ class ListCtrl_Diplomes(wx.ListCtrl):
             
         # Création des items
         index = 0
-        for key, valeurs in self.DictDiplomes.iteritems():
+        for key, valeurs in self.DictDiplomes.items():
             IDdiplome = key
             IDtype_diplome = valeurs[0]
             self.listeDiplomes.append(IDtype_diplome)
@@ -893,7 +895,7 @@ class ListCtrl_Diplomes(wx.ListCtrl):
         key = self.GetItemData(index)
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Modifier"))
@@ -909,7 +911,7 @@ class ListCtrl_Diplomes(wx.ListCtrl):
     def Menu_Modifier(self, event):
         index = self.GetFirstSelected()
         key = self.GetItemData(index)
-        print "Modifier le num : ", key
+        print("Modifier le num : ", key)
 
 
 
@@ -1113,7 +1115,7 @@ class ListCtrlCoords(wx.ListCtrl):
             
         # Création des items
         index = 0
-        for key, valeurs in self.DictCoords.iteritems():
+        for key, valeurs in self.DictCoords.items():
             categorie = valeurs[2]
             texte = valeurs[3]
             # Création de l'item
@@ -1235,7 +1237,7 @@ class ListCtrlCoords(wx.ListCtrl):
         key = self.GetItemData(index)
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -1284,7 +1286,7 @@ class ListCtrlCoords(wx.ListCtrl):
 
     def Menu_Envoyer_Email(self, event):
         """ Envoyer un mail """
-        print "Envoi d'un mail perso."
+        print("Envoi d'un mail perso.")
         index = self.GetFirstSelected()
         key = self.GetItemData(index)
         FonctionsPerso.EnvoyerMail(adresses = (self.DictCoords[key][3],))
@@ -1354,7 +1356,10 @@ class MyFrame(wx.Frame):
             self.SetTitle(_(u"Saisie d'un candidat"))
         else:
             self.SetTitle(_(u"Modification d'un candidat"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         

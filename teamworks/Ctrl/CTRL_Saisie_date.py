@@ -526,7 +526,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBouton1, self.bouton1)
 
     def OnBouton1(self, event):
-        print(self.ctrl1.Validation())
+        print((self.ctrl1.Validation()))
 
 
 

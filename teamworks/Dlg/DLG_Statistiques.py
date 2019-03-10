@@ -9,6 +9,7 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 import datetime
@@ -16,7 +17,7 @@ import time
 import FonctionsPerso
 import  wx.grid as gridlib
 import calendar
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import os
 import sys
@@ -33,8 +34,8 @@ try :
     from matplotlib.pyplot import setp
     import matplotlib.dates as mdates
     import matplotlib.mlab as mlab
-except Exception, err :
-    print "Erreur d'import : ", Exception, err
+except Exception as err :
+    print("Erreur d'import : ", Exception, err)
 
 def DateEngFr(textDate):
     text = str(textDate[8:10]) + "/" + str(textDate[5:7]) + "/" + str(textDate[:4])
@@ -128,8 +129,8 @@ class PanelGraph(wx.Panel):
         hr, mn = valeur[1:].split(":")
         if mode == "decimal" :
             # Mode décimal
-            minDecimal = int(mn)*100/60
-            texte = "%s.%s" % (hr, minDecimal)
+            minDecimal = int(float(mn))*100//60
+            texte = "%s.%s" % (int(float(hr)), minDecimal)
             resultat = float(texte)
         else:
             # Mode Heure
@@ -190,7 +191,7 @@ class PanelGraph(wx.Panel):
             nom_colonne = dictCategories[IDcategorie][0]
             rowLabels.append(nom_colonne)
             # liste des couleurs
-            exec("couleur_colonne=" + dictCategories[IDcategorie][3])
+            couleur_colonne= eval(dictCategories[IDcategorie][3])
             listeCouleurs.append(self.convertCouleur(couleur_colonne))
             
             dataTemp = []
@@ -201,9 +202,9 @@ class PanelGraph(wx.Panel):
                     colLabels.append(nomPersonne)
                 # Valeurs du graph
                 valeursExists = False
-                if dictLignes.has_key(IDpersonne) :
-                    if dictLignes[IDpersonne].has_key("total") :
-                        if dictLignes[IDpersonne]["total"].has_key(IDcategorie) :
+                if IDpersonne in dictLignes :
+                    if "total" in dictLignes[IDpersonne] :
+                        if IDcategorie in dictLignes[IDpersonne]["total"] :
                             heures = dictLignes[IDpersonne]["total"][IDcategorie]
                             dataTemp.append(self.FormateHeure(heures, "decimal"))
                             dataTableauTemp.append(self.FormateHeure(heures, None))
@@ -228,7 +229,7 @@ class PanelGraph(wx.Panel):
         width = 0.5
         yoff = array([0.0] * len(colLabels)) 
         listeBarresLegende = []
-        for row in xrange(rows):
+        for row in range(rows):
             couleur = dictCategories[IDcategorie][3]
             dataTmp = []
             for valeur in data[row] :
@@ -349,12 +350,12 @@ class PanelGraph(wx.Panel):
             listeLabels = []
             listeHeures = []
             listeCouleurs = []
-            if dictLignes.has_key(IDpersonne) :
-                if dictLignes[IDpersonne].has_key("total") :
-                    for IDcategorie, valeur in dictLignes[IDpersonne]["total"].iteritems() :
+            if IDpersonne in dictLignes :
+                if "total" in dictLignes[IDpersonne] :
+                    for IDcategorie, valeur in dictLignes[IDpersonne]["total"].items() :
                         if IDcategorie != "total" :
                             labelCategorie = dictCategories[IDcategorie][0]
-                            exec("couleur_categorie=" + dictCategories[IDcategorie][3])
+                            couleur_categorie = eval(dictCategories[IDcategorie][3])
                             listeCouleurs.append(self.convertCouleur(couleur_categorie))
                             listeLabels.append(labelCategorie)
                             listeHeures.append(self.FormateHeure(valeur, "decimal"))
@@ -400,7 +401,7 @@ class PanelGraph(wx.Panel):
         listeHeures = []
             
         # Total des heures
-        for dateStr, valeurs in dictDetails.iteritems() :
+        for dateStr, valeurs in dictDetails.items() :
             date = DateEngEnDateDD(dateStr)
             nbreHeures = dictDetails[dateStr]["totalColonne"]
             listeDonnees.append( (date, self.FormateHeure(nbreHeures, "decimal") ) ) 
@@ -433,11 +434,11 @@ class PanelGraph(wx.Panel):
         else :
             
             # Heures par catégorie
-            for IDcategorie in dictColonnes.keys() :
+            for IDcategorie in list(dictColonnes.keys()) :
                 if IDcategorie != "total" :
                     listeDonneesTmp = []
-                    for dateStr, valeurs in dictDetails.iteritems() :
-                        if IDcategorie in valeurs.keys() :
+                    for dateStr, valeurs in dictDetails.items() :
+                        if IDcategorie in list(valeurs.keys()) :
                             date = DateEngEnDateDD(dateStr)
                             nbreHeures = dictDetails[dateStr][IDcategorie]
                             listeDonneesTmp.append( (date, self.FormateHeure(nbreHeures, "decimal") ) ) 
@@ -483,68 +484,11 @@ class PanelGraph(wx.Panel):
     def CreateGraph5(self) :
         """ Barres 3D """
         pass
-##        from mpl_toolkits.mplot3d import axes3d
-##        from matplotlib import cm
-##        import numpy as np
-##        
-##        ctrlTableau = self.GetGrandParent().ctrl_tableau
-##        dictLignes = ctrlTableau.dictLignes
-##        dictColonnes = ctrlTableau.dictColonnes
-##        dictDetails = ctrlTableau.dictDetails
-##        dictCategories = ctrlTableau.dictCategories
-##        listePersonnes = ctrlTableau.listePersonnes
-##        listeCategories = ctrlTableau.listeCategories
-##        
-##        ax = axes3d.Axes3D(self.figure)
-##        indexX = 0.5
-##        for IDcategorie in listeCategories :
-##            
-##            indexY = 1
-##            Ytmp = []
-##            Ztmp = []
-##                
-##            for nomPersonne, IDpersonne in listePersonnes :
-##                # Recherche du total d'heures
-##                if dictLignes.has_key(IDpersonne) :
-##                    if dictLignes[IDpersonne]["total"].has_key(IDcategorie) :
-##                        nbreHeures = self.FormateHeure(dictLignes[IDpersonne]["total"][IDcategorie], "decimal")
-##                    else:
-##                        nbreHeures = 0.0
-##                else:
-##                    nbreHeures = 0.0
-##
-##                Ytmp.append(indexY)
-##                Ztmp.append(int(nbreHeures))
-##                indexY += 1
-##
-##            xpos = np.array(Ytmp)
-##            ypos = (np.zeros(len(Ytmp)) + 0.5) + indexX
-##            zpos = np.zeros(len(xpos))
-##            dx = np.zeros(len(xpos)) +0.5
-##            dy = np.zeros(len(xpos)) +0.8
-##            dz = np.array(Ztmp) + 0.001
-##                        
-##            # Recherche de la couleur
-##            couleurTxt = dictCategories[IDcategorie][3]
-##            r, v, b = couleurTxt[1:-1].split(",")
-##            couleurCategorie = self.convertCouleur( (int(r), int(v), int(b)) )
-##            
-##            # Dessin des barres
-##            ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=couleurCategorie)
-##                
-##            Ytmp.append(indexY)
-##            indexX += 1
-##
-##        # Re-dessine le canvas
-##        self.figure.canvas.draw()
-     
-       
 
-class MyFrame(wx.Frame):
+       
+class Dialog(wx.Dialog):
     def __init__(self, parent, listeDates=[], periode = None, listePersonnes=[]):
-        wx.Frame.__init__(self, parent, -1, title=_(u"Statistiques"), style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-        
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.listeDates = listeDates
         self.periode = ("%d-01-01" % datetime.date.today().year, "%d-12-31" % datetime.date.today().year)
@@ -593,7 +537,6 @@ class MyFrame(wx.Frame):
             _(u"4. Répartition des heures par personne et par catégorie (Secteurs)"), 
             _(u"5. Evolution annuelle du total des heures des personnes sélectionnées (Courbes)"), 
             _(u"6. Evolution annuelle des heures des personnes sélectionnées par catégorie (Courbes)"), 
-##            _(u"7. GraphTest"), 
             ])
         self.ctrl_choix_graph.SetSelection(0)
         
@@ -641,9 +584,7 @@ class MyFrame(wx.Frame):
 
         self.__set_properties()
         self.__do_layout()
-        
-##        self.ctrl_tableau.InitTableau()
-        
+
         # Binds
         self.Bind(wx.EVT_CHOICE, self.OnChoiceGroupement, self.ctrl_groupement )
         self.Bind(wx.EVT_CHOICE, self.OnChoiceDetail, self.ctrl_detail)
@@ -658,7 +599,6 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonClipboardImage, self.bouton_clipboard_image)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonImprimerImage, self.bouton_imprimer_image)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonFermer, self.bouton_fermer)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonModeTableau, self.bouton_mode_tableau)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonModeGraph, self.bouton_mode_graph)
         
@@ -670,16 +610,19 @@ class MyFrame(wx.Frame):
         self.grid_sizer_boutons.Layout()
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_fermer.SetToolTipString(_(u"Cliquez ici pour fermer"))
-        self.bouton_excel.SetToolTipString(_(u"Cliquez ici pour exporter les données des statistiques au format Excel"))
-        self.bouton_save_image.SetToolTipString(_(u"Cliquez ici pour enregistrer le graphe au format image"))
-        self.bouton_clipboard_image.SetToolTipString(_(u"Cliquez ici pour envoyer le graphe dans le presse-papiers"))
-        self.bouton_imprimer_image.SetToolTipString(_(u"Cliquez ici pour publier le graphe au format PDF"))
-        self.bouton_imprimer_tableau.SetToolTipString(_(u"Cliquez ici pour publier le tableau au format PDF"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_fermer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour fermer")))
+        self.bouton_excel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour exporter les données des statistiques au format Excel")))
+        self.bouton_save_image.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour enregistrer le graphe au format image")))
+        self.bouton_clipboard_image.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour envoyer le graphe dans le presse-papiers")))
+        self.bouton_imprimer_image.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour publier le graphe au format PDF")))
+        self.bouton_imprimer_tableau.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour publier le tableau au format PDF")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=10)
@@ -1025,16 +968,11 @@ class MyFrame(wx.Frame):
     def SetPersonne(self, IDpersonne=None):
         """ Sélectionne une personne à partir de son ID dans la liste des personnes """
         if IDpersonne == None : return
-        for index, valeurs in self.dictPersonnes.iteritems() :
+        for index, valeurs in self.dictPersonnes.items() :
             ID = valeurs[0]
             if IDpersonne == ID :
                 self.ctrl_personne.SetSelection(index)
-    
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        
+
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(59)
     
@@ -1134,9 +1072,9 @@ class MyFrame(wx.Frame):
                         colLabels.append(nomPersonne)
                     # Valeurs du graph
                     valeursExists = False
-                    if dictLignes.has_key(IDpersonne) :
-                        if dictLignes[IDpersonne].has_key("total") :
-                            if dictLignes[IDpersonne]["total"].has_key(IDcategorie) :
+                    if IDpersonne in dictLignes :
+                        if "total" in dictLignes[IDpersonne] :
+                            if IDcategorie in dictLignes[IDpersonne]["total"] :
                                 heures = dictLignes[IDpersonne]["total"][IDcategorie]
                                 dataTemp.append(self.FormateHeure(heures, "decimal"))
                                 valeursExists = True
@@ -1151,7 +1089,7 @@ class MyFrame(wx.Frame):
         # Mode : Avec détail et Groupement par période :
         if self.ctrl_detail.GetSelection() > 0 and self.ctrl_groupement.GetSelection() == 0 :
             
-            listeGroupes = dictDetails.keys()
+            listeGroupes = list(dictDetails.keys())
             nbreGraphs = len(listeGroupes)
             
             # Recherche les valeurs du quadrillage des subplots
@@ -1183,9 +1121,9 @@ class MyFrame(wx.Frame):
                             colLabels.append(nomPersonne)
                         # Valeurs du graph
                         valeursExists = False
-                        if dictLignes.has_key(IDpersonne) :
-                            if dictLignes[IDpersonne].has_key(codeGroupe) :
-                                if dictLignes[IDpersonne][codeGroupe].has_key(IDcategorie) :
+                        if IDpersonne in dictLignes :
+                            if codeGroupe in dictLignes[IDpersonne] :
+                                if IDcategorie in dictLignes[IDpersonne][codeGroupe] :
                                     heures = dictLignes[IDpersonne][codeGroupe][IDcategorie]
                                     dataTemp.append(self.FormateHeure(heures, "decimal"))
                                     valeursExists = True
@@ -1227,9 +1165,7 @@ class MyFrame(wx.Frame):
 
 
     def OnBoutonFermer(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     def OnBoutonExcel(self, event):
         if "linux" in sys.platform :
@@ -1484,7 +1420,7 @@ class Tableau(gridlib.Grid):
             if IDcategorie not in listeCategories : listeCategories.append(IDcategorie)
             # dict des présences
             listePresences = (IDpresence, IDcategorie, date, heure_debut, heure_fin)
-            if dictPresences.has_key(IDpersonne) :
+            if IDpersonne in dictPresences :
                 dictPresences[IDpersonne].append(listePresences)
             else:
                 dictPresences[IDpersonne] = [listePresences,]
@@ -1508,7 +1444,7 @@ class Tableau(gridlib.Grid):
         else:
             signeB = heureB[0]
             hrB, mnB = heureB[1:].split(":")
-            hrB, mnB = int(hrB), int(mnB)
+            hrB, mnB = int(float(hrB)), int(float(mnB))
             totalMinutesB = (hrB*60) + mnB
             if signeB == "-" : totalMinutesB = -totalMinutesB
         # Opération
@@ -1571,16 +1507,16 @@ class Tableau(gridlib.Grid):
                     
                     # Création de la ligne de groupe
                     codeLigne = "total"
-                    if dictLignes[IDpersonne].has_key(codeLigne) == False :
+                    if (codeLigne in dictLignes[IDpersonne]) == False :
                         dictLignes[IDpersonne][codeLigne] = {}
                         
-                    if dictLignes[IDpersonne][codeLigne].has_key(IDcategorie) :
+                    if IDcategorie in dictLignes[IDpersonne][codeLigne] :
                         dictLignes[IDpersonne][codeLigne][IDcategorie] = self.OperationHeures(dictLignes[IDpersonne][codeLigne][IDcategorie], duree, "addition")
                     else:
                         dictLignes[IDpersonne][codeLigne][IDcategorie] = duree
                     
                     # Création du total de la ligne de total
-                    if dictLignes[IDpersonne][codeLigne].has_key("total") == False :
+                    if ("total" in dictLignes[IDpersonne][codeLigne]) == False :
                         dictLignes[IDpersonne][codeLigne]["total"] = duree
                     else:
                         dictLignes[IDpersonne][codeLigne]["total"] = self.OperationHeures(dictLignes[IDpersonne][codeLigne]["total"], duree, "addition")
@@ -1590,9 +1526,9 @@ class Tableau(gridlib.Grid):
                     if mode_detail == 2 : codeLigne = "%d-%02d" % (dateDD.year, dateDD.month) # Détail par mois
                     if mode_detail == 3 : codeLigne = str(dateDD.year) # Détail par année
                     if mode_detail > 0 :
-                        if dictLignes[IDpersonne].has_key(codeLigne) == False :
+                        if (codeLigne in dictLignes[IDpersonne]) == False :
                             dictLignes[IDpersonne][codeLigne] = {}
-                        if dictLignes[IDpersonne][codeLigne].has_key(IDcategorie) :
+                        if IDcategorie in dictLignes[IDpersonne][codeLigne] :
                             dictLignes[IDpersonne][codeLigne][IDcategorie] = self.OperationHeures(dictLignes[IDpersonne][codeLigne][IDcategorie], duree, "addition")
                         else:
                             dictLignes[IDpersonne][codeLigne][IDcategorie] = duree
@@ -1601,13 +1537,13 @@ class Tableau(gridlib.Grid):
                             nbreLabelsDetails += 1
                     
                         # Création du total de la ligne de détail
-                        if dictLignes[IDpersonne][codeLigne].has_key("total") == False :
+                        if ("total" in dictLignes[IDpersonne][codeLigne]) == False :
                             dictLignes[IDpersonne][codeLigne]["total"] = duree
                         else:
                             dictLignes[IDpersonne][codeLigne]["total"] = self.OperationHeures(dictLignes[IDpersonne][codeLigne]["total"], duree, "addition")
                         
                         # Pour le groupement par détail :
-                        if dictDetails.has_key(codeLigne) == False :
+                        if (codeLigne in dictDetails) == False :
                             dictDetails[codeLigne] = {}
                             dictDetails[codeLigne]["listePersonnes"] = [IDpersonne,]
                             dictDetails[codeLigne]["totalColonne"] = duree
@@ -1615,17 +1551,17 @@ class Tableau(gridlib.Grid):
                             if IDpersonne not in dictDetails[codeLigne]["listePersonnes"] :
                                 dictDetails[codeLigne]["listePersonnes"].append(IDpersonne)
                             dictDetails[codeLigne]["totalColonne"] = self.OperationHeures(dictDetails[codeLigne]["totalColonne"], duree, "addition")
-                        if dictDetails[codeLigne].has_key(IDcategorie) :
+                        if IDcategorie in dictDetails[codeLigne] :
                             dictDetails[codeLigne][IDcategorie] = self.OperationHeures(dictDetails[codeLigne][IDcategorie], duree, "addition")
                         else:
                             dictDetails[codeLigne][IDcategorie] = duree
                             
                     # Création du total de la colonne
-                    if dictColonnes.has_key(IDcategorie) == False :
+                    if (IDcategorie in dictColonnes) == False :
                         dictColonnes[IDcategorie] = { "total" : duree }
                     else:
                         dictColonnes[IDcategorie]["total"] = self.OperationHeures(dictColonnes[IDcategorie]["total"], duree, "addition")
-                    if dictColonnes.has_key("total") == False :
+                    if ("total" in dictColonnes) == False :
                         dictColonnes["total"] = duree
                     else:
                         dictColonnes["total"] = self.OperationHeures(dictColonnes["total"], duree, "addition")
@@ -1661,7 +1597,7 @@ class Tableau(gridlib.Grid):
             if mode_detail == 0 :
                 nbreLignes =  2
             else:
-                listeGroupes = self.dictDetails.keys()
+                listeGroupes = list(self.dictDetails.keys())
                 nbreDetailsGroupes = 0
                 for codeDetail in listeGroupes :
                     nbreDetailsGroupes += len(self.dictDetails[codeDetail]["listePersonnes"])
@@ -1691,7 +1627,7 @@ class Tableau(gridlib.Grid):
         for IDcategorie in self.listeCategories :
             nom_colonne = self.dictCategories[IDcategorie][0]
             couleur_colonne = self.dictCategories[IDcategorie][3]
-            exec("couleur_colonne=" + couleur_colonne)
+            couleur_colonne = eval(couleur_colonne)
             self.SetCellBackgroundColour(0, index_col, couleur_colonne)
             self.SetCellValue(0, index_col, nom_colonne)
             self.SetReadOnly(0, index_col, True)
@@ -1740,7 +1676,7 @@ class Tableau(gridlib.Grid):
                         self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                         self.SetReadOnly(indexLigne, indexColonne, True)
                         self.SetRowSize(indexLigne, 30)
-                        if self.dictLignes[IDpersonne]["total"].has_key(IDcategorie) :
+                        if IDcategorie in self.dictLignes[IDpersonne]["total"] :
                             duree = self.dictLignes[IDpersonne]["total"][IDcategorie]
                             self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(duree))
                              
@@ -1787,7 +1723,7 @@ class Tableau(gridlib.Grid):
                         self.SetRowSize(indexLigneTotal, 30)
                         font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
                         self.SetCellFont(indexLigneTotal, indexColonne, font) 
-                        if self.dictLignes[IDpersonne]["total"].has_key(IDcategorie) :
+                        if IDcategorie in self.dictLignes[IDpersonne]["total"] :
                             duree = self.dictLignes[IDpersonne]["total"][IDcategorie]
                             self.SetCellValue(indexLigneTotal, indexColonne, self.FormateHeure(duree))      
                             
@@ -1818,8 +1754,8 @@ class Tableau(gridlib.Grid):
                         self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                         self.SetReadOnly(indexLigne, indexColonne, True)
                         self.SetRowSize(indexLigne, 30)
-                        if self.dictLignes[IDpersonne].has_key(codeLigne) :
-                             if self.dictLignes[IDpersonne][codeLigne].has_key(IDcategorie) :
+                        if codeLigne in self.dictLignes[IDpersonne] :
+                             if IDcategorie in self.dictLignes[IDpersonne][codeLigne] :
                                 duree = self.dictLignes[IDpersonne][codeLigne][IDcategorie]
                                 self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(duree))
                                 
@@ -1840,7 +1776,7 @@ class Tableau(gridlib.Grid):
         else:
             
             # Test de groupement par détail : <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            listeDetails = self.dictDetails.keys()
+            listeDetails = list(self.dictDetails.keys())
             listeDetails.sort()
             
 ##            print "-------------------------------------------------------------------------------------"
@@ -1874,7 +1810,7 @@ class Tableau(gridlib.Grid):
                         self.SetReadOnly(indexLigne, indexColonne, True)
                         self.SetRowSize(indexLigne, 30)
                         totalLigne = "+00:00"
-                        if self.dictDetails[codeDetail].has_key(IDcategorie) :
+                        if IDcategorie in self.dictDetails[codeDetail] :
                             duree = self.dictDetails[codeDetail][IDcategorie]
                             totalLigne = self.OperationHeures(totalLigne, duree, "addition")
                             self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(duree))
@@ -1922,7 +1858,7 @@ class Tableau(gridlib.Grid):
                         self.SetRowSize(indexLigneTotal, 30)
                         font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
                         self.SetCellFont(indexLigneTotal, indexColonne, font)
-                        if self.dictDetails[codeDetail].has_key(IDcategorie) :
+                        if IDcategorie in self.dictDetails[codeDetail] :
                             duree = self.dictDetails[codeDetail][IDcategorie]
                             totalLigne = self.OperationHeures(totalLigne, duree, "addition")
                             self.SetCellValue(indexLigneTotal, indexColonne, self.FormateHeure(duree))      
@@ -1962,8 +1898,8 @@ class Tableau(gridlib.Grid):
                         self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                         self.SetReadOnly(indexLigne, indexColonne, True)
                         self.SetRowSize(indexLigne, 30)
-                        if self.dictLignes[IDpersonne].has_key(codeDetail) :
-                             if self.dictLignes[IDpersonne][codeDetail].has_key(IDcategorie) :
+                        if codeDetail in self.dictLignes[IDpersonne] :
+                             if IDcategorie in self.dictLignes[IDpersonne][codeDetail] :
                                 duree = self.dictLignes[IDpersonne][codeDetail][IDcategorie]
                                 self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(duree))
 
@@ -2017,8 +1953,8 @@ class Tableau(gridlib.Grid):
             
         indexColonne = 1
         for IDcategorie in self.listeCategories :
-            if self.dictColonnes.has_key(IDcategorie) :
-                 if self.dictColonnes[IDcategorie].has_key("total") :
+            if IDcategorie in self.dictColonnes :
+                 if "total" in self.dictColonnes[IDcategorie] :
                     duree = self.dictColonnes[IDcategorie]["total"]
                     self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(duree))
                     self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
@@ -2028,7 +1964,7 @@ class Tableau(gridlib.Grid):
             indexColonne += 1
         
         # Total de la ligne de groupe
-        if self.dictColonnes.has_key("total") :
+        if "total" in self.dictColonnes :
             self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(self.dictColonnes["total"]))
             self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
             self.SetReadOnly(indexLigne, indexColonne, True)
@@ -2135,12 +2071,15 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
 
         # Remplissage avec les valeurs
         self.activeCheck = False
-        for key, valeurs in self.dictPersonnes.iteritems():
-                index = self.InsertStringItem(sys.maxint, valeurs[0] + " " + valeurs[1])
-                self.SetItemData(index, key)
-                # Sélection
-                if key in self.listePersonnes :
-                    self.CheckItem(index)
+        for key, valeurs in self.dictPersonnes.items():
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, valeurs[0] + " " + valeurs[1])
+            else:
+                index = self.InsertStringItem(six.MAXSIZE, valeurs[0] + " " + valeurs[1])
+            self.SetItemData(index, key)
+            # Sélection
+            if key in self.listePersonnes :
+                self.CheckItem(index)
                     
         self.activeCheck = True
         # Ajustement tailles colonnes
@@ -2199,7 +2138,7 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
         return listeDonnees
 
     def SelectAll(self):
-        self.listePersonnes = self.dictPersonnes.keys()
+        self.listePersonnes = list(self.dictPersonnes.keys())
         self.Remplissage()
         self.GetGrandParent().MAJdonnees()
 

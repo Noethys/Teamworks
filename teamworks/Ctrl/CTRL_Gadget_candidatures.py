@@ -98,7 +98,7 @@ class TreeCtrl(CT.CustomTreeCtrl):
         self.ctrl_vide = wx.StaticText(self, -1, _(u"Aucune information"), size=(200, 30), style=wx.ALIGN_CENTER |wx.FULL_REPAINT_ON_RESIZE)
         self.ctrl_vide.SetForegroundColour(wx.LIGHT_GREY)
         self.ctrl_vide.SetBackgroundColour(self.GetBackgroundColour())
-        self.ctrl_vide.SetFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.ctrl_vide.SetFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         self.ctrl_vide.Show(False)
         
         # Bind

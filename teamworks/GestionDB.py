@@ -15,7 +15,11 @@ import sqlite3
 import wx
 from Utils import UTILS_Fichiers
 import os
-import MySQLdb
+try:
+    import MySQLdb
+except Exception as err:
+    print("Importation de MySQLdb impossible")
+    print(err)
 
 from Data import DATA_Tables as Tables
 
@@ -61,15 +65,15 @@ class DB:
             if os.path.isfile(nomFichier)  == False :
                 # Teste si c'est une ancienne version de fichier
                 if os.path.isfile(UTILS_Fichiers.GetRepData(u"%s.twk" % self.nomFichierCourt))  == False :
-                    print "Le fichier SQLITE demande n'est pas present sur le disque dur."
+                    print("Le fichier SQLITE demande n'est pas present sur le disque dur.")
                     self.echec = 1
                     return
         # Initialisation de la connexion
         try :
             self.connexion = sqlite3.connect(nomFichier.encode('utf-8'))
             self.cursor = self.connexion.cursor()
-        except Exception, err:
-            print "La connexion avec la base de donnees SQLITE a echouee : \nErreur detectee :%s" % err
+        except Exception as err:
+            print("La connexion avec la base de donnees SQLITE a echouee : \nErreur detectee :%s" % err)
             self.erreur = err
             self.echec = 1
         else:
@@ -116,8 +120,8 @@ class DB:
                 self.cursor.execute("CREATE DATABASE IF NOT EXISTS %s CHARSET utf8 COLLATE utf8_unicode_ci;" % nomFichier)
                 self.cursor.execute("USE %s;" % nomFichier)
                 
-        except Exception, err:
-            print "La connexion avec la base de donnees MYSQL a echouee : \nErreur detectee :%s" % err
+        except Exception as err:
+            print("La connexion avec la base de donnees MYSQL a echouee : \nErreur detectee :%s" % err)
             self.erreur = err
             self.echec = 1
         else:
@@ -198,8 +202,8 @@ class DB:
             req = req.replace("()", "(10000000, 10000001)")
         try:
             self.cursor.execute(req)
-        except Exception, err:
-            print _(u"Requete SQL incorrecte :\n%s\nErreur detectee:\n%s") % (req, err)
+        except Exception as err:
+            print(_(u"Requete SQL incorrecte :\n%s\nErreur detectee:\n%s") % (req, err))
             return 0
         else:
             return 1
@@ -259,8 +263,8 @@ class DB:
                 # Version Sqlite
                 self.cursor.execute("SELECT last_insert_rowid() FROM %s" % nomTable)
             newID = self.cursor.fetchall()[0][0]
-        except Exception, err:
-            print "Requete sql d'INSERT incorrecte :\n%s\nErreur detectee:\n%s" % (req, err)
+        except Exception as err:
+            print("Requete sql d'INSERT incorrecte :\n%s\nErreur detectee:\n%s" % (req, err))
         # Retourne l'ID de l'enregistrement créé
         return newID
     
@@ -345,8 +349,8 @@ class DB:
         try:
             self.cursor.execute(req, tuple(valeurs))
             self.Commit()
-        except Exception, err:
-            print _(u"Requete sql de mise a jour incorrecte :\n%s\nErreur detectee:\n%s") % (req, err)
+        except Exception as err:
+            print(_(u"Requete sql de mise a jour incorrecte :\n%s\nErreur detectee:\n%s") % (req, err))
         
     def ReqDEL(self, nomTable, nomChampID, ID):
         """ Suppression d'un enregistrement """
@@ -354,8 +358,8 @@ class DB:
         try:
             self.cursor.execute(req)
             self.Commit()
-        except Exception, err:
-            print _(u"Requete sql de suppression incorrecte :\n%s\nErreur detectee:\n%s") % (req, err)
+        except Exception as err:
+            print(_(u"Requete sql de suppression incorrecte :\n%s\nErreur detectee:\n%s") % (req, err))
         
     def Modifier(self, table, ID, champs, valeurs, dicoDB):
         # champs et valeurs sont des tuples
@@ -412,7 +416,7 @@ class DB:
             ID = None
             for nomChamp in listeChamps :
                 valeur = enregistrement[index]
-                if dictModifications.has_key(nomChamp):
+                if nomChamp in dictModifications:
                     valeur = dictModifications[nomChamp]
                 if nomChamp != nomChampCle :
                     listeTemp.append((nomChamp, valeur))
@@ -574,8 +578,8 @@ class DB:
         # Ouverture de la base par défaut
         try:
             connexionDefaut = sqlite3.connect(nomFichierdefault.encode('utf-8'))
-        except Exception, err:
-            print "Echec Importation table. Erreur detectee :%s" % err
+        except Exception as err:
+            print("Echec Importation table. Erreur detectee :%s" % err)
             echec = 1
         else:
             cursor = connexionDefaut.cursor()
@@ -615,8 +619,6 @@ class DB:
 
     def Importation_table_reseau(self, nomTable="", nomFichier="", dictTables={}):
         """ Importe toutes les données d'une table donnée dans un fichier réseau """
-        import cStringIO
-        
         # Ouverture de la base réseau
         try :
             from MySQLdb.constants import FIELD_TYPE
@@ -639,8 +641,8 @@ class DB:
             # Ouverture Database
             cursor.execute("USE %s;" % nomFichier)
             
-        except Exception, err:
-            print "La connexion avec la base de donnees MYSQL a importer a echouee : \nErreur detectee :%s" % err
+        except Exception as err:
+            print("La connexion avec la base de donnees MYSQL a importer a echouee : \nErreur detectee :%s" % err)
             erreur = err
             echec = 1
         else:
@@ -767,7 +769,7 @@ class DB:
             try :
                 from Utils import UTILS_Procedures
                 UTILS_Procedures.A2000(nomFichier=self.nomFichierCourt)
-            except Exception, err :
+            except Exception as err :
                 return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
         
         # =============================================================
@@ -781,7 +783,7 @@ class DB:
                 if self.IsTableExists("questionnaire_reponses") == False : self.CreationTable("questionnaire_reponses", Tables.DB_DATA)
                 from Utils import UTILS_Procedures
                 UTILS_Procedures.D1051(nomFichier=self.nomFichierCourt)
-            except Exception, err :
+            except Exception as err :
                 return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
         
         # =============================================================
@@ -791,7 +793,7 @@ class DB:
             try:
                 if self.IsTableExists("profils") == False: self.CreationTable("profils", Tables.DB_DATA)
                 if self.IsTableExists("profils_parametres") == False: self.CreationTable("profils_parametres", Tables.DB_DATA)
-            except Exception, err:
+            except Exception as err:
                 return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
 
         # =============================================================
@@ -801,7 +803,7 @@ class DB:
 
 def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None):
     """ Convertit une DB locale en version RESEAU MySQL """
-    print "Lancement de la procedure de conversion local->reseau :"
+    print("Lancement de la procedure de conversion local->reseau :")
     
     for suffixe, dictTables in ( ("TDATA", Tables.DB_DATA), ("TPHOTOS", Tables.DB_PHOTOS), ("TDOCUMENTS", Tables.DB_DOCUMENTS) ) :
         
@@ -815,14 +817,14 @@ def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None)
             dlg = wx.MessageDialog(None, _(u"La connexion au réseau MySQL est impossible. \n\nErreur : %s") % erreur, "Erreur de connexion", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
-            print "connexion reseau MySQL impossible."
+            print("connexion reseau MySQL impossible.")
             return False
         # Vérifie que le fichier n'est pas déjà utilisé
         if dictResultats["fichier"][0] == True :
             dlg = wx.MessageDialog(None, _(u"Le fichier existe déjà."), "Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
-            print "le nom existe deja."
+            print("le nom existe deja.")
             return False
         
         # Création de la base de données
@@ -834,31 +836,31 @@ def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None)
             dlg.ShowModal()
             dlg.Destroy()
             return False
-        print "  > Nouveau fichier reseau %s cree..." % suffixe
+        print("  > Nouveau fichier reseau %s cree..." % suffixe)
         
         # Création des tables
         if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Création des tables de données %s...") % suffixe)
         db.CreationTables(dicoDB=dictTables)
-        print "  > Nouvelles tables %s creees..." % suffixe
+        print("  > Nouvelles tables %s creees..." % suffixe)
         
         # Importation des valeurs
-        listeTables = dictTables.keys()
+        listeTables = list(dictTables.keys())
         index = 1
         for nomTable in listeTables :
-            print "  > Importation de la table '%s' (%d/%d)" % (nomTable, index, len(listeTables))
+            print("  > Importation de la table '%s' (%d/%d)" % (nomTable, index, len(listeTables)))
             if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Importation de la table %d sur %s...") % (index, len(listeTables)))
             db.Importation_table(nomTable, nomFichierActif)
-            print "     -> ok"
+            print("     -> ok")
             index += 1
         
         db.Close() 
     
-    print "  > Conversion terminee avec succes."
+    print("  > Conversion terminee avec succes.")
             
 
 def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None):
     """ Convertit une DB RESEAU MySQL en version LOCALE SQLITE """
-    print "Lancement de la procedure de conversion reseau->local :"
+    print("Lancement de la procedure de conversion reseau->local :")
     
     for suffixe, dictTables in ( ("TDATA", Tables.DB_DATA), ("TPHOTOS", Tables.DB_PHOTOS), ("TDOCUMENTS", Tables.DB_DOCUMENTS) ) :
         
@@ -870,7 +872,7 @@ def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None)
             dlg = wx.MessageDialog(None, _(u"Le fichier existe déjà."), "Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
-            print "le nom existe deja."
+            print("le nom existe deja.")
             return False
         
         # Création de la base de données
@@ -882,26 +884,26 @@ def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None)
             dlg.ShowModal()
             dlg.Destroy()
             return False
-        print "  > Nouveau fichier local %s cree..." % suffixe
+        print("  > Nouveau fichier local %s cree..." % suffixe)
         
         # Création des tables
         if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Création des tables de données %s...") % suffixe)
         db.CreationTables(dicoDB=dictTables)
-        print "  > Nouvelles tables %s creees..." % suffixe
+        print("  > Nouvelles tables %s creees..." % suffixe)
         
         # Importation des valeurs
-        listeTables = dictTables.keys()
+        listeTables = list(dictTables.keys())
         index = 1
         for nomTable in listeTables :
-            print "  > Importation de la table '%s' (%d/%d)" % (nomTable, index, len(listeTables))
+            print("  > Importation de la table '%s' (%d/%d)" % (nomTable, index, len(listeTables)))
             if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Importation de la table %d sur %s...") % (index, len(listeTables)))
             db.Importation_table_reseau(nomTable, u"%s_%s" % (nomFichier, suffixe), dictTables)
-            print "     -> ok"
+            print("     -> ok")
             index += 1
         
         db.Close() 
     
-    print "  > Conversion reseau->local terminee avec succes."
+    print("  > Conversion reseau->local terminee avec succes.")
 
 
 def TestConnexionMySQL(typeTest="fichier", nomFichier=""):
@@ -921,7 +923,7 @@ def TestConnexionMySQL(typeTest="fichier", nomFichier=""):
         cursor = connexion.cursor()
         dictResultats["connexion"] =  (True, None)
         etatConnexion = True
-    except Exception, err :
+    except Exception as err :
         dictResultats["connexion"] =  (False, err)
         etatConnexion = False
     
@@ -939,7 +941,7 @@ def TestConnexionMySQL(typeTest="fichier", nomFichier=""):
                 dictResultats["fichier"] =  (True, None)
             else:
                 dictResultats["fichier"] =  (False, _(u"Accès au fichier impossible."))
-        except Exception, err :
+        except Exception as err :
             dictResultats["fichier"] =  (False, err)
     
     try :
@@ -1005,7 +1007,7 @@ if __name__ == "__main__":
     for nomTable in listeTables :
         db.CreationTable(nomTable, Tables.DB_DATA)
     db.Close()
-    print "creation tables ok."         
+    print("creation tables ok.")         
            
 ## ----------------------------------------------------------------------
 

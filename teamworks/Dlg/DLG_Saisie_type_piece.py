@@ -77,18 +77,21 @@ class Frm_SaisieTypesPieces(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: Frm_SaisieTypesPieces.__set_properties
         self.SetTitle(_(u"Saisie d'un type de pièce"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_nom.SetToolTipString(_(u"Saisissez ici un nom de type de pièce. Par exemple : 'Diplôme B.A.F.A.'..."))
-        self.radio_duree_1.SetToolTipString(_(u"Sélectionnez 'Illimitée' si le type de pièce est valable à vie. Comme le diplôme du BAFA par exemple..."))
-        self.radio_duree_2.SetToolTipString(_(u"Sélectionnez 'Limitée' si vous pouvez définir une durée pour le type de pièce. \nCette durée peut être approximative. Par exemple, pour un certificat valable \n1 an et 6 mois en général, vous devez saisir '1' dans la case Années et '6' dans la case mois"))
+        self.text_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom de type de pièce. Par exemple : 'Diplôme B.A.F.A.'...")))
+        self.radio_duree_1.SetToolTip(wx.ToolTip(_(u"Sélectionnez 'Illimitée' si le type de pièce est valable à vie. Comme le diplôme du BAFA par exemple...")))
+        self.radio_duree_2.SetToolTip(wx.ToolTip(_(u"Sélectionnez 'Limitée' si vous pouvez définir une durée pour le type de pièce. \nCette durée peut être approximative. Par exemple, pour un certificat valable \n1 an et 6 mois en général, vous devez saisir '1' dans la case Années et '6' dans la case mois")))
         self.spin_jours.SetMinSize((60, -1))
         self.spin_mois.SetMinSize((60, -1))
         self.spin_annees.SetMinSize((60, -1))
-        self.radio_diplomes_1.SetToolTipString(_(u"Avec cette option, toutes les personnes employées devront fournir ce type de pièce quelque soit leur poste et leurs diplômes."))
-        self.radio_diplomes_2.SetToolTipString(_(u"Sélectionnez les diplômes que vous souhaitez associer avec cette pièce"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide sur cette fenêtre"))
+        self.radio_diplomes_1.SetToolTip(wx.ToolTip(_(u"Avec cette option, toutes les personnes employées devront fournir ce type de pièce quelque soit leur poste et leurs diplômes.")))
+        self.radio_diplomes_2.SetToolTip(wx.ToolTip(_(u"Sélectionnez les diplômes que vous souhaitez associer avec cette pièce")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide sur cette fenêtre")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())

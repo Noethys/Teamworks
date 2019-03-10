@@ -9,10 +9,12 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
+import FonctionsPerso
 import wx.lib.mixins.listctrl  as  listmix
 from Dlg import DLG_Config_modeles_contrats as ConfigModeles
 import GestionDB
+from Utils import UTILS_Adaptations
 
 
 class Page(wx.Panel):
@@ -40,7 +42,7 @@ class Page(wx.Panel):
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.bouton_modeles.SetMinSize((20, 20))
-        self.bouton_modeles.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des modèles de contrat"))
+        self.bouton_modeles.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des modèles de contrat")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
@@ -194,7 +196,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -251,7 +253,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])       
+        valeur = six.text_type(self.itemDataMap[index][col])
         return valeur
 
     def OnGetItemImage(self, item):
@@ -272,9 +274,9 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    def SortItems(self,sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
         # redraw the list
         self.Refresh()
@@ -298,7 +300,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         key = int(self.getColumnText(index, 0))
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))

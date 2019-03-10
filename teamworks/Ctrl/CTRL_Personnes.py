@@ -347,28 +347,18 @@ class PanelPersonnes(wx.Panel):
 ##        self.splitter.SetSashPosition(250, True)
         
     def __set_properties(self):
-        self.barreRecherche.SetToolTipString(_(u"Saisissez ici un nom, un prénom, un nom de ville, etc... pour retrouver une personne donnée."))
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle fiche individuelle"))
-        self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la fiche sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
-        self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la fiche sélectionnée dans la liste"))
-        self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_rechercher.SetToolTipString(_(u"Cliquez ici pour rechercher les personnes présentes sur une période donnée"))
-        self.bouton_rechercher.SetSize(self.bouton_rechercher.GetBestSize())
-        self.bouton_affichertout.SetToolTipString(_(u"Cliquez ici pour réafficher toute la liste"))
-        self.bouton_affichertout.SetSize(self.bouton_affichertout.GetBestSize())
-        self.bouton_options.SetToolTipString(_(u"Cliquez ici pour afficher les options de la liste"))
-        self.bouton_options.SetSize(self.bouton_options.GetBestSize())
-        self.bouton_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer la liste"))
-        self.bouton_imprimer.SetSize(self.bouton_imprimer.GetBestSize())
-        self.bouton_export_texte.SetToolTipString(_(u"Cliquez ici pour exporter la liste au format texte"))
-        self.bouton_export_texte.SetSize(self.bouton_export_texte.GetBestSize())
-        self.bouton_export_excel.SetToolTipString(_(u"Cliquez ici pour exporter la liste au format Excel"))
-        self.bouton_export_excel.SetSize(self.bouton_export_excel.GetBestSize())
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_courrier.SetToolTipString(_(u"Cliquez ici pour créer un courrier ou un Email par publipostage"))
+        self.barreRecherche.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom, un prénom, un nom de ville, etc... pour retrouver une personne donnée.")))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer une nouvelle fiche individuelle")))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la fiche sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la fiche sélectionnée dans la liste")))
+        self.bouton_rechercher.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour rechercher les personnes présentes sur une période donnée")))
+        self.bouton_affichertout.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour réafficher toute la liste")))
+        self.bouton_options.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher les options de la liste")))
+        self.bouton_imprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour imprimer la liste")))
+        self.bouton_export_texte.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour exporter la liste au format texte")))
+        self.bouton_export_excel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour exporter la liste au format Excel")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_courrier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un courrier ou un Email par publipostage")))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -519,7 +509,7 @@ class TreeCtrlCategories(wx.TreeCtrl):
         return # <<<<<<<<<<<<<
     
         self.listeDonnees = self.GetListeProblemes()
-        print self.listeDonnees
+        print(self.listeDonnees)
 
 
         self.root = self.AddRoot(_(u"Problèmes à résoudre"))
@@ -529,7 +519,7 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
     def AddTreeNodes(self, parentItem, items, img=None):
         for item in items:
-            if type(item) == str or type(item) == unicode:
+            if type(item) == str or type(item) == six.text_type:
                 # Items
                 newItem = self.AppendItem(parentItem, item)
                 self.SetPyData(newItem, None)
@@ -544,16 +534,16 @@ class TreeCtrlCategories(wx.TreeCtrl):
                 
     def OnActivate(self, event):
         if self.item:
-            print ("OnActivate: %s\n" % self.GetItemText(self.item))
+            print(("OnActivate: %s\n" % self.GetItemText(self.item)))
 
     def GetListeProblemes(self):
         dictNoms, dictProblemes = FonctionsPerso.Recup_liste_pb_personnes(recalc=False)
         # Transforme le dict en liste
         listeProblemes = []
         index1 = 0
-        for IDpersonne, dictCategories in dictProblemes.iteritems() :
+        for IDpersonne, dictCategories in dictProblemes.items() :
             listeProblemes.append( [dictNoms[IDpersonne], []] )
-            for nomCategorie, valeurs in dictCategories.iteritems() :
+            for nomCategorie, valeurs in dictCategories.items() :
                 listeProblemes[index1][1].append( [nomCategorie, valeurs] )
             index1 += 1
         

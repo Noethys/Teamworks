@@ -103,7 +103,7 @@ class Page(wx.Panel):
         nbreResultats = len(listeChampsDB)
         
         # On regarde chaque champ un par un
-        for IDchamp, valeur in dictChamps.iteritems() :
+        for IDchamp, valeur in dictChamps.items() :
             
             listeDonnees = [ ("IDchamp",     IDchamp),
                                     ("type",            "modele"),
@@ -130,7 +130,7 @@ class Page(wx.Panel):
         for IDval_champDB, IDchampDB in listeChampsDB :
             
             trouve = False
-            for IDchamp, valeur in dictChamps.iteritems() : 
+            for IDchamp, valeur in dictChamps.items() : 
                 if IDchampDB == IDchamp : trouve = True
             
             if trouve == False :

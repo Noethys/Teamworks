@@ -40,11 +40,11 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonMonter, self.bouton_monter)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonDescendre, self.bouton_descendre)
 
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour ajouter une catégorie ou une question"))
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la catégorie ou la question sélectionnée"))
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la catégorie ou la question sélectionnée"))
-        self.bouton_monter.SetToolTipString(_(u"Cliquez ici pour monter la catégorie ou la question sélectionnée"))
-        self.bouton_descendre.SetToolTipString(_(u"Cliquez ici pour descendre la catégorie ou la question sélectionnée"))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter une catégorie ou une question")))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la catégorie ou la question sélectionnée")))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la catégorie ou la question sélectionnée")))
+        self.bouton_monter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour monter la catégorie ou la question sélectionnée")))
+        self.bouton_descendre.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour descendre la catégorie ou la question sélectionnée")))
 
 ##        self.label_conclusion = wx.StaticText(self, -1, "Remarques...")
 
@@ -116,14 +116,17 @@ class MyFrame(wx.Frame):
 
     def __set_properties(self):
         self.SetTitle(_(u"Paramétrage des questionnaires"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 

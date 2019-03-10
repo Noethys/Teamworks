@@ -9,7 +9,7 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import sys
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import GestionDB
@@ -17,6 +17,7 @@ import datetime
 import FonctionsPerso
 from Dlg import DLG_Saisie_modele
 from Dlg import DLG_Confirm_appli_modele
+from Utils import UTILS_Adaptations
 
 
 class Panel(wx.Panel):
@@ -86,13 +87,13 @@ class Panel(wx.Panel):
             self.date_fin.SetValue(date)
 
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un modèle"))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un modèle")))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le modèle sélectionné dans la liste"))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier le modèle sélectionné dans la liste")))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le modèle sélectionné dans la liste"))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le modèle sélectionné dans la liste")))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_dupliquer.SetToolTipString(_(u"Cliquez ici pour dupliquer le modèle sélectionné dans la liste"))
+        self.bouton_dupliquer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour dupliquer le modèle sélectionné dans la liste")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
@@ -449,7 +450,7 @@ class Panel(wx.Panel):
             nomPersonne = self.list_ctrl_personnes.dictPersonnes[IDpersonne][0] + " " + self.list_ctrl_personnes.dictPersonnes[IDpersonne][1]
             dictConfirmations[(IDpersonne, nomPersonne)] = {}
             
-        dictConfirmations.keys().sort(reverse=True)
+        list(dictConfirmations.keys()).sort(reverse=True)
             
         for tache in listeCreationsTaches :
             IDpersonne = tache[0]
@@ -460,7 +461,7 @@ class Panel(wx.Panel):
             categorie = dictCategories[tache[4]]
             intitule = tache[5]
             #if len(dictConfirmations[nomPersonne]) == 0 :
-            if dictConfirmations[key].has_key(date) :
+            if date in dictConfirmations[key] :
                 dictConfirmations[key][date].append( [horaires, categorie, intitule] )
                 dictConfirmations[key][date].sort()
             else:                
@@ -727,8 +728,8 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
         self.InsertColumn(0, "Personnes")
 
         # Remplissage avec les valeurs
-        for key, valeurs in self.dictPersonnes.iteritems():
-                index = self.InsertStringItem(sys.maxint, valeurs[0] + " " + valeurs[1])
+        for key, valeurs in self.dictPersonnes.items():
+                index = self.InsertStringItem(six.MAXSIZE, valeurs[0] + " " + valeurs[1])
                 self.SetItemData(index, key)
                 # Sélection
                 if key in self.GetGrandParent().GetParent().selectionPersonnes :
@@ -815,8 +816,8 @@ class listCtrl_Modeles(wx.ListCtrl, CheckListCtrlMixin):
         self.InsertColumn(1, "Description")
 
         # Remplissage avec les valeurs
-        for key, valeurs in self.dictModeles.iteritems():
-                index = self.InsertStringItem(sys.maxint, valeurs[0])
+        for key, valeurs in self.dictModeles.items():
+                index = self.InsertStringItem(six.MAXSIZE, valeurs[0])
                 self.SetStringItem(index, 1, valeurs[1])
                 self.SetItemData(index, key)
                 # Sélection
@@ -890,7 +891,7 @@ class listCtrl_Modeles(wx.ListCtrl, CheckListCtrlMixin):
             mode = "deselected"
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
         
         # Item Ajouter
         item = wx.MenuItem(menuPop, 10, _(u"Créer un nouveau modèle"))
@@ -947,7 +948,10 @@ class frm_application_modele(wx.Frame):
         self.panel = Panel(self, selectionLignes=selectionLignes, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates)
         
         # Propriétés
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.MakeModal(True)

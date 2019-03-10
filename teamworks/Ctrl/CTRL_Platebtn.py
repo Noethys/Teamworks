@@ -143,7 +143,10 @@ class PlateButton(wx.PyControl):
             self._bmp['enable'] = bmp
             img = bmp.ConvertToImage()
             img = img.ConvertToGreyscale(.795, .073, .026) #(.634, .224, .143)
-            self._bmp['disable'] = wx.BitmapFromImage(img)
+            if 'phoenix' in wx.PlatformInfo:
+                self._bmp['disable'] = wx.Bitmap(img)
+            else:
+                self._bmp['disable'] = wx.BitmapFromImage(img)
 
         self._menu = None
         self.SetLabel(label)

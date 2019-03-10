@@ -108,7 +108,7 @@ class Track(object):
             self.offre_emploi = DICT_EMPLOIS[self.IDemploi][2]
         
         # Disponibilites
-        if DICT_DISPONIBILITES.has_key(self.IDcandidature) :
+        if self.IDcandidature in DICT_DISPONIBILITES :
             texteDispo = ""
             for IDdisponibilite, date_debut, date_fin in DICT_DISPONIBILITES[self.IDcandidature] :
                 texteDispo += _(u"du %s au %s; \n") % (date_debut.strftime("%d/%m/%Y"), date_fin.strftime("%d/%m/%Y"))
@@ -118,7 +118,7 @@ class Track(object):
             self.disponibilites = _(u"Inconnu")
         
         # Fonctions
-        if DICT_CAND_FONCTIONS.has_key(self.IDcandidature) :
+        if self.IDcandidature in DICT_CAND_FONCTIONS :
             texteDispo = ""
             for IDfonction in DICT_CAND_FONCTIONS[self.IDcandidature] :
                 texteDispo += u"%s; \n" % DICT_FONCTIONS[IDfonction]
@@ -128,7 +128,7 @@ class Track(object):
             self.fonctions = _(u"Inconnu")
         
         # Affectations
-        if DICT_CAND_AFFECTATIONS.has_key(self.IDcandidature) :
+        if self.IDcandidature in DICT_CAND_AFFECTATIONS :
             texteDispo = ""
             for IDfonction in DICT_CAND_AFFECTATIONS[self.IDcandidature] :
                 texteDispo += u"%s; \n" % DICT_AFFECTATIONS[IDfonction]
@@ -248,7 +248,7 @@ class ListView(ObjectListView):
         def GetListeDisponibilites(dictFiltres):
             """ Recherche des disponibilités """
             listeTemp = []
-            for IDcandidature, disponibilites in DICT_DISPONIBILITES.iteritems() :
+            for IDcandidature, disponibilites in DICT_DISPONIBILITES.items() :
                 for IDdisponibilite, date_debut, date_fin in disponibilites :
                     if date_fin>=dictFiltres["valeur"][0] and date_debut<=dictFiltres["valeur"][1] :
                         listeTemp.append(IDcandidature)
@@ -257,7 +257,7 @@ class ListView(ObjectListView):
         def GetListeFonctions(dictFiltres):
             """ Recherche des fonctions """
             listeTemp = []
-            for IDcandidature, listeFonctions in DICT_CAND_FONCTIONS.iteritems() :
+            for IDcandidature, listeFonctions in DICT_CAND_FONCTIONS.items() :
                 for ID, label in dictFiltres["valeur"] :
                     if ID in listeFonctions :
                         if IDcandidature not in listeTemp :
@@ -267,7 +267,7 @@ class ListView(ObjectListView):
         def GetListeAffectations(dictFiltres):
             """ Recherche des affectations """
             listeTemp = []
-            for IDcandidature, listeAffectations in DICT_CAND_AFFECTATIONS.iteritems() :
+            for IDcandidature, listeAffectations in DICT_CAND_AFFECTATIONS.items() :
                 for ID, label in dictFiltres["valeur"] :
                     if ID in listeAffectations :
                         if IDcandidature not in listeTemp :
@@ -411,7 +411,7 @@ class ListView(ObjectListView):
         for IDdisponibilite, IDcandidature, date_debut, date_fin in listeDonnees :
             date_debut = datetime.date(year=int(date_debut[:4]), month=int(date_debut[5:7]), day=int(date_debut[8:10]))
             date_fin = datetime.date(year=int(date_fin[:4]), month=int(date_fin[5:7]), day=int(date_fin[8:10]))
-            if DICT_DISPONIBILITES.has_key(IDcandidature) :
+            if IDcandidature in DICT_DISPONIBILITES :
                 DICT_DISPONIBILITES[IDcandidature].append((IDdisponibilite, date_debut, date_fin))
             else:
                 DICT_DISPONIBILITES[IDcandidature] = [(IDdisponibilite, date_debut, date_fin),]
@@ -428,7 +428,7 @@ class ListView(ObjectListView):
         global DICT_CAND_FONCTIONS
         DICT_CAND_FONCTIONS = {}
         for IDcand_fonction, IDcandidature, IDfonction in listeDonnees :
-            if DICT_CAND_FONCTIONS.has_key(IDcandidature) :
+            if IDcandidature in DICT_CAND_FONCTIONS :
                 DICT_CAND_FONCTIONS[IDcandidature].append(IDfonction)
             else:
                 DICT_CAND_FONCTIONS[IDcandidature] = [IDfonction,]
@@ -445,7 +445,7 @@ class ListView(ObjectListView):
         global DICT_CAND_AFFECTATIONS
         DICT_CAND_AFFECTATIONS = {}
         for IDcand_affectation, IDcandidature, IDaffectation in listeDonnees :
-            if DICT_CAND_AFFECTATIONS.has_key(IDcandidature) :
+            if IDcandidature in DICT_CAND_AFFECTATIONS :
                 DICT_CAND_AFFECTATIONS[IDcandidature].append(IDaffectation)
             else:
                 DICT_CAND_AFFECTATIONS[IDcandidature] = [IDaffectation,]
@@ -569,7 +569,7 @@ class ListView(ObjectListView):
         self.SetColumns(liste_Colonnes)
         
         self.SetEmptyListMsg(_(u"Aucune candidature"))
-        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         if self.activeCheckBoxes == True :
             self.CreateCheckStateColumn(1)
             self.SetSortColumn(self.columns[2])
@@ -635,7 +635,7 @@ class ListView(ObjectListView):
             ID = self.Selection()[0].IDcandidature
                 
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Ajouter
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -873,7 +873,7 @@ class ListView(ObjectListView):
                 
         # Demande de confirmation
         date_depot = self.Selection()[0].depot
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer la candidature du %s ?") % date_depot))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer la candidature du %s ?") % date_depot))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()

@@ -17,7 +17,7 @@ from PIL import Image
 from VideoCapture import Device
 from Utils import UTILS_Fichiers
 from Ctrl import CTRL_Bandeau
-
+from Utils import UTILS_Adaptations
 
 
 CAMERA = None
@@ -105,7 +105,7 @@ class CTRL_Video(wx.Panel):
 
 class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, name="DLG_Depots", style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, -1, name="DLG_Depots", style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
 
         # Bandeau
@@ -151,11 +151,11 @@ class Dialog(wx.Dialog):
             dlg.Destroy()
 
     def __set_properties(self):
-        self.bouton_capture.SetToolTipString(_(u"Cliquez ici pour prendre la photo"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_options.SetToolTipString(_(u"Cliquez ici pour définir les propriétés de la capture vidéo"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.bouton_capture.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour prendre la photo")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_options.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour définir les propriétés de la capture vidéo")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         self.SetMinSize((700, 720))
 
     def __do_layout(self):
@@ -192,11 +192,11 @@ class Dialog(wx.Dialog):
             self.bouton_ok.Enable(False)
 
     def OnBoutonAide(self, event): 
-        print "Aide..."
+        print("Aide...")
 
     def OnBoutonOptions(self, event): 
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
         
         menuPop.AppendItem(wx.MenuItem(menuPop, 10, _(u"Propriétés du flux vidéo")))
         self.Bind(wx.EVT_MENU, self.Menu_proprietes_pin, id=10)

@@ -129,6 +129,6 @@ def SetValeur(section="", cle="", valeur=""):
 
 # --------------- TESTS ----------------------------------------------------------------------------------------------------------
 if __name__ == u"__main__":
-    print("GET :", GetValeur("interface", "theme", "Vert"))
+    print(("GET :", GetValeur("interface", "theme", "Vert")))
     #print "SET :", GetValeur("interface", "theme", "Rouge")
 

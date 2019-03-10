@@ -217,7 +217,7 @@ class Impression():
             totalMinutesMois = 0
             for numJour in range(1, nbreJoursMois+1) :
                 dateDD = datetime.date(year=self.annee, month=self.mois, day=numJour)
-                if self.dictPresences[IDpersonne].has_key(dateDD) :
+                if dateDD in self.dictPresences[IDpersonne] :
                     totalMinutesMois += self.dictPresences[IDpersonne][dateDD]["totalJour"]
                     dictBarres = self.dictPresences[IDpersonne][dateDD]
                     case = CaseDate(xoffset=0, hauteurCase=12, largeurCase=largeurColonnes, dateDD=dateDD, dictBarres=dictBarres )
@@ -289,7 +289,7 @@ class Impression():
             dataTableauLegende[numLigne][numCol] = CaseLegende(0, 10, _(u"Jours fériés"), COULEUR_FERIES, None)
             numLigne += 1
         
-        for IDcategorie, nbreHeures in self.dictTotauxCategories.iteritems() :
+        for IDcategorie, nbreHeures in self.dictTotauxCategories.items() :
             if IDcategorie != "totalMois" :
                 nom_categorie, ordre, couleur = DICT_CATEGORIES[IDcategorie]
                 legende = CaseLegende(0, 10, nom_categorie, couleur, nbreHeures)
@@ -351,22 +351,22 @@ class Impression():
             HMax = datetime.timedelta(hours=heure_fin.hour, minutes=heure_fin.minute)
             duree = ((HMax - HMin).seconds)/60
             # Création du dict des présences
-            if dictPresences.has_key(IDpersonne) == False :
+            if (IDpersonne in dictPresences) == False :
                 dictPresences[IDpersonne] = {}
-            if dictPresences[IDpersonne].has_key(dateDD) == False :
+            if (dateDD in dictPresences[IDpersonne]) == False :
                 dictPresences[IDpersonne][dateDD] = {"totalJour" : 0}
-            if dictPresences[IDpersonne][dateDD].has_key(IDcategorie):
+            if IDcategorie in dictPresences[IDpersonne][dateDD]:
                 dictPresences[IDpersonne][dateDD][IDcategorie] = dictPresences[IDpersonne][dateDD][IDcategorie] + duree
             else:
                 dictPresences[IDpersonne][dateDD][IDcategorie] = duree
             dictPresences[IDpersonne][dateDD]["totalJour"] = dictPresences[IDpersonne][dateDD]["totalJour"] + duree
 
             # Création du dict des totaux par categories
-            if dictTotalHeures.has_key(IDcategorie):
+            if IDcategorie in dictTotalHeures:
                 dictTotalHeures[IDcategorie] = dictTotalHeures[IDcategorie] + duree
             else:
                 dictTotalHeures[IDcategorie] = duree
-            if dictTotalHeures.has_key("totalMois"):
+            if "totalMois" in dictTotalHeures:
                 dictTotalHeures["totalMois"] = dictTotalHeures["totalMois"] + duree
             else:
                 dictTotalHeures["totalMois"] = duree
@@ -462,7 +462,7 @@ class CaseDate(Flowable) :
         
         # Transformation du nombre d'heures par catégorie en pourcentage
         listeCategories = []
-        for IDcategorie, nbreHeures in self.dictBarres.iteritems():
+        for IDcategorie, nbreHeures in self.dictBarres.items():
             if IDcategorie != "totalJour" :
                 largeurBarre = nbreHeures * 1.0 * self.largeurCase / totalJour
                 listeCategories.append( (largeurBarre, IDcategorie) )
@@ -571,15 +571,15 @@ class MyDialog(wx.Dialog):
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.ctrl_mois.SetToolTipString(_(u"Sélectionnez un mois de référence dans cette liste"))
-        self.ctrl_annee.SetToolTipString(_(u"Saisissez une année de référence"))
-        self.ctrl_afficher_we.SetToolTipString(_(u"Cette option colore les week-ends"))
-        self.ctrl_afficher_vacances.SetToolTipString(_(u"Cette option colore les périodes de vacances"))
-        self.ctrl_afficher_feries.SetToolTipString(_(u"Cette option colore les jours fériés"))
-        self.ctrl_afficher_heures.SetToolTipString(_(u"Cette option affiche le total d'heures journalier"))
-        self.ctrl_afficher_heures_mois.SetToolTipString(_(u"Cette option affiche le total d'heures mensuel"))
-        self.ctrl_afficher_couleurs_categories.SetToolTipString(_(u"Cette option affiche les catégories de tâches"))
-        self.ctrl_afficher_legende.SetToolTipString(_(u"Cette option affiche la légende des couleurs"))
+        self.ctrl_mois.SetToolTip(wx.ToolTip(_(u"Sélectionnez un mois de référence dans cette liste")))
+        self.ctrl_annee.SetToolTip(wx.ToolTip(_(u"Saisissez une année de référence")))
+        self.ctrl_afficher_we.SetToolTip(wx.ToolTip(_(u"Cette option colore les week-ends")))
+        self.ctrl_afficher_vacances.SetToolTip(wx.ToolTip(_(u"Cette option colore les périodes de vacances")))
+        self.ctrl_afficher_feries.SetToolTip(wx.ToolTip(_(u"Cette option colore les jours fériés")))
+        self.ctrl_afficher_heures.SetToolTip(wx.ToolTip(_(u"Cette option affiche le total d'heures journalier")))
+        self.ctrl_afficher_heures_mois.SetToolTip(wx.ToolTip(_(u"Cette option affiche le total d'heures mensuel")))
+        self.ctrl_afficher_couleurs_categories.SetToolTip(wx.ToolTip(_(u"Cette option affiche les catégories de tâches")))
+        self.ctrl_afficher_legende.SetToolTip(wx.ToolTip(_(u"Cette option affiche la légende des couleurs")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
@@ -697,7 +697,7 @@ class MyChoice(wx.Choice):
         return self.dictIndexes[index], self.GetStringSelection()
     
     def SetIDselection(self, ID):
-        for index, IDtemp in self.dictIndexes.iteritems():
+        for index, IDtemp in self.dictIndexes.items():
             if ID == IDtemp :
                 self.Select(index)
                 return        
@@ -711,7 +711,7 @@ class MyCheckListBox(wx.CheckListBox):
     def GetListePersonnes(self, annee, mois):
         dictPersonnes = ImportPersonnes(annee, mois)
         listePersonnes = []
-        for IDpersonne, dictData in dictPersonnes.iteritems() :
+        for IDpersonne, dictData in dictPersonnes.items() :
             nomPersonne = u"%s %s" % (dictData["nom"], dictData["prenom"])
             listePersonnes.append((nomPersonne, IDpersonne))
         listePersonnes.sort()

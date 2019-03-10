@@ -8,12 +8,13 @@
 
 import Chemins
 from Utils.UTILS_Traduction import _
+import six
 import wx
 from Ctrl import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
-
+from Utils import UTILS_Adaptations
 
 
 class Panel(wx.Panel):
@@ -49,13 +50,13 @@ class Panel(wx.Panel):
 ##        self.bouton_supprimer.Enable(False)
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau type de situation sociale"))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un nouveau type de situation sociale")))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier un type de situation sociale sélectionné dans la liste"))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier un type de situation sociale sélectionné dans la liste")))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer un type de situation sociale sélectionné dans la liste"))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer un type de situation sociale sélectionné dans la liste")))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -193,7 +194,7 @@ class Panel(wx.Panel):
         # Demande de confirmation
         IDsituation = int(self.listCtrl_Situations.GetItem(index, 0).GetText())
         NomSituation = self.listCtrl_Situations.GetItem(index, 1).GetText()
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce type de situation sociale ? \n\n> ") + NomSituation))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer ce type de situation sociale ? \n\n> ") + NomSituation))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -254,7 +255,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -268,7 +269,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_CONTEXT_MENU, self.OnContextMenu)
         #self.Bind(wx.EVT_SIZE, self.OnSize)
-        
+
     def Importation(self):
       
         # Récupération des données de la table TYPES_PIECES
@@ -317,7 +318,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
+        valeur = six.text_type(self.itemDataMap[index][col])
         return valeur
 
     def OnGetItemImage(self, item):
@@ -338,11 +339,18 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    # def SortItems(self, sorter=cmp):
+    #     items = list(self.itemDataMap.keys())
+    #     items.sort(sorter)
+    #     self.itemIndexMap = items
+    #     # redraw the list
+    #     self.Refresh()
+
+
+    def SortItems(self, sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
-        # redraw the list
         self.Refresh()
 
     # Used by the ColumnSorterMixin, see wx/lib/mixins/listctrl.py
@@ -364,7 +372,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         key = int(self.getColumnText(index, 0))
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -405,12 +413,11 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
 
 
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, title="" ):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, name="DLG_Config_situations", style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
-        self.MakeModal(True)
-        
+
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
@@ -430,14 +437,17 @@ class MyFrame(wx.Frame):
 
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des situations sociales"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 
@@ -464,7 +474,6 @@ class MyFrame(wx.Frame):
         self.sizer_pages = sizer_pages
 
     def OnClose(self, event):
-        self.MakeModal(False)
         FonctionsPerso.SetModalFrameParente(self)
         event.Skip()
         
@@ -475,7 +484,6 @@ class MyFrame(wx.Frame):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Classification
         self.MAJparents()
         # Fermeture
-        self.MakeModal(False)
         FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
         
@@ -483,7 +491,6 @@ class MyFrame(wx.Frame):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Classification
         self.MAJparents()
         # Fermeture
-        self.MakeModal(False)
         FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()     
 
@@ -494,8 +501,7 @@ class MyFrame(wx.Frame):
         
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "")
+    app.SetTopWindow(dlg)
+    dlg.Show()
     app.MainLoop()

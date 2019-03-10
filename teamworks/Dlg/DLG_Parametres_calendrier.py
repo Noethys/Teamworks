@@ -6,13 +6,14 @@
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 
+import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import  wx.lib.colourselect as  csel
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 
 
 class MyFrame(wx.Frame):
@@ -111,28 +112,31 @@ class MyFrame(wx.Frame):
 
         
     def __set_properties(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.largeur_texte.SetToolTipString(_(u"Saisissez ici une valeur pour la largeur du gadget"))
-        self.largeur_slider.SetToolTipString(_(u"Vous pouvez aussi utiliser cette glissière pour régler la largeur"))
-        self.hauteur_texte.SetToolTipString(_(u"Saisissez ici une valeur pour la hauteur du gadget"))
-        self.hauteur_slider.SetToolTipString(_(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur"))
-        self.bouton_couleurFond.SetToolTipString(_(u"Cliquez ici pour modifier la couleur de fond du gadget"))
-        self.bouton_couleurCases.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases (semaine)"))
-        self.bouton_couleurWE.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases (week-end)"))
-        self.bouton_couleurVacances.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases (vacances)"))
-        self.bouton_couleurFerie.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases (fériés)"))
-        self.bouton_couleurSelect.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des cases sélectionnées"))
-        self.bouton_couleurSurvol.SetToolTipString(_(u"Cliquez ici pour modifier la couleur des bords des cases survolées"))
-        self.bouton_couleurFontJours.SetToolTipString(_(u"Cliquez ici pour modifier la couleur du texte des numéros de jours"))
-        self.bouton_couleurFontJoursAvecPresents.SetToolTipString(_(u"Cliquez ici pour modifier la couleur du texte des \njours ayant des présences enregistrées"))
+        self.largeur_texte.SetToolTip(wx.ToolTip(_(u"Saisissez ici une valeur pour la largeur du gadget")))
+        self.largeur_slider.SetToolTip(wx.ToolTip(_(u"Vous pouvez aussi utiliser cette glissière pour régler la largeur")))
+        self.hauteur_texte.SetToolTip(wx.ToolTip(_(u"Saisissez ici une valeur pour la hauteur du gadget")))
+        self.hauteur_slider.SetToolTip(wx.ToolTip(_(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur")))
+        self.bouton_couleurFond.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur de fond du gadget")))
+        self.bouton_couleurCases.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (semaine))"))
+        self.bouton_couleurWE.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (week-end))"))
+        self.bouton_couleurVacances.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (vacances))"))
+        self.bouton_couleurFerie.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (fériés))"))
+        self.bouton_couleurSelect.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases sélectionnées")))
+        self.bouton_couleurSurvol.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des bords des cases survolées")))
+        self.bouton_couleurFontJours.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur du texte des numéros de jours")))
+        self.bouton_couleurFontJoursAvecPresents.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur du texte des \njours ayant des présences enregistrées")))
         
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler la saisie")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
@@ -412,7 +416,7 @@ class MyFrame(wx.Frame):
         event.Skip()
         
     def OnBoutonAide(self, event):
-        print "Aide"
+        print("Aide")
 
     def OnBoutonAnnuler(self, event):
         self.MakeModal(False)

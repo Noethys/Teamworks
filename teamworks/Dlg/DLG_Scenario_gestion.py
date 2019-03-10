@@ -13,8 +13,10 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import datetime
-import  wx.gizmos as gizmos
+import wx.gizmos as gizmos
+import wx.lib.agw.hypertreelist as HTL
 from Dlg import DLG_Scenario
+from Utils import UTILS_Adaptations
 
 
 
@@ -26,11 +28,16 @@ class Panel(wx.Panel):
         self.IDpersonne = IDpersonne
         texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer des scénarios.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
-        
+
+        if 'phoenix' in wx.PlatformInfo:
+            TR_COLUMN_LINES = HTL.TR_COLUMN_LINES
+        else :
+            TR_COLUMN_LINES = wx.TR_COLUMN_LINES
+
         if IDpersonne == None :
-            style = wx.BORDER_THEME | wx.TR_FULL_ROW_HIGHLIGHT  | wx.TR_COLUMN_LINES | wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT | wx.TR_SINGLE
+            style = wx.BORDER_THEME | wx.TR_FULL_ROW_HIGHLIGHT  | TR_COLUMN_LINES | wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT | wx.TR_SINGLE
         else:
-            style = wx.BORDER_THEME | wx.TR_FULL_ROW_HIGHLIGHT  | wx.TR_COLUMN_LINES | wx.TR_HIDE_ROOT | wx.TR_SINGLE
+            style = wx.BORDER_THEME | wx.TR_FULL_ROW_HIGHLIGHT  | TR_COLUMN_LINES | wx.TR_HIDE_ROOT | wx.TR_SINGLE
         self.listCtrl = TreeListCtrl(self, -1, IDpersonne=IDpersonne, style=style)
         self.listCtrl.SetMinSize((20, 20))        
         self.bouton_ajouter = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_ANY))
@@ -49,13 +56,13 @@ class Panel(wx.Panel):
 
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau scénario"))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un nouveau scénario")))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le scénario sélectionné dans la liste"))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier le scénario sélectionné dans la liste")))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le scénario sélectionné dans la liste"))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le scénario sélectionné dans la liste")))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_dupliquer.SetToolTipString(_(u"Cliquez ici pour dupliquer le scénario sélectionné"))
+        self.bouton_dupliquer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour dupliquer le scénario sélectionné")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -86,8 +93,9 @@ class Panel(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        frmSaisie = DLG_Scenario.MyFrame(self, IDscenario=None, IDpersonne=self.IDpersonne)
-        frmSaisie.Show()
+        dlg = DLG_Scenario.Dialog(self, IDscenario=None, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -103,8 +111,9 @@ class Panel(wx.Panel):
             dlg.Destroy()
             return
         
-        frmSaisie = DLG_Scenario.MyFrame(self, IDscenario=IDscenario, IDpersonne=self.IDpersonne)
-        frmSaisie.Show()
+        dlg = DLG_Scenario.Dialog(self, IDscenario=IDscenario, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
         
     def OnBoutonSupprimer(self, event):
         self.Supprimer()
@@ -134,8 +143,8 @@ class Panel(wx.Panel):
                         nbreReports += 1
         
         if nbreReports > 0 :
-            if nbreReports == 1 : txtMessage = unicode(_(u"Un report utilise ce scénario.\n\nSouhaitez-vous tout de même le supprimer ?"))
-            else : txtMessage = unicode(_(u"%d reports utilisent ce scénario.\n\nSouhaitez-vous tout de même le supprimer ?") % nbreReports)
+            if nbreReports == 1 : txtMessage = six.text_type(_(u"Un report utilise ce scénario.\n\nSouhaitez-vous tout de même le supprimer ?"))
+            else : txtMessage = six.text_type(_(u"%d reports utilisent ce scénario.\n\nSouhaitez-vous tout de même le supprimer ?") % nbreReports)
             dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
             reponse = dlgConfirm.ShowModal()
             dlgConfirm.Destroy()
@@ -144,7 +153,7 @@ class Panel(wx.Panel):
         
         # Demande de confirmation
         Nom = self.listCtrl.GetItemText(item)
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce scénario ? \n\n> ") + Nom))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer ce scénario ? \n\n> ") + Nom))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -173,7 +182,7 @@ class Panel(wx.Panel):
         
         # Demande de confirmation
         Nom = self.listCtrl.GetItemText(item)
-        txtMessage = unicode((_(u"Voulez-vous vraiment dupliquer ce scénario ? \n\n> ") + Nom))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment dupliquer ce scénario ? \n\n> ") + Nom))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de duplication"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -284,7 +293,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
         # Création des branches
         
         if self.IDpersonne == None :
-            listeIDPersonnes = self.dictScenarios.keys()
+            listeIDPersonnes = list(self.dictScenarios.keys())
             listeNomsPersonnes = []
             for IDpersonne in listeIDPersonnes :
                 IDpersonne, nom, prenom, civilite = DICT_PERSONNES[IDpersonne]
@@ -325,7 +334,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
         else:
             
             # Version pour fiche individuelle
-            if self.dictScenarios.has_key(self.IDpersonne) :
+            if self.IDpersonne in self.dictScenarios :
                 listeScenarios = self.dictScenarios[self.IDpersonne]
                 for IDscenario, nom, description, date_debut, date_fin in listeScenarios :
                     last = self.AppendItem(self.root, nom)
@@ -365,7 +374,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
         DB.Close()
         dictScenarios = {}
         for IDscenario, IDpersonne, nom, description, date_debut, date_fin in listeDonnees :
-            if dictScenarios.has_key(IDpersonne) :
+            if IDpersonne in dictScenarios :
                 dictScenarios[IDpersonne].append( (IDscenario, nom, description, date_debut, date_fin) )
             else:
                 dictScenarios[IDpersonne] = [ (IDscenario, nom, description, date_debut, date_fin), ]
@@ -400,7 +409,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
         self.SelectItem(item, item, True)
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Ajouter
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -466,12 +475,15 @@ class MyFrame(wx.Frame):
 
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des scénarios"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_fermer.SetToolTipString(_(u"Cliquez ici pour fermer"))
+        self.bouton_fermer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour fermer")))
         self.bouton_fermer.SetSize(self.bouton_fermer.GetBestSize())        
 
     def __do_layout(self):

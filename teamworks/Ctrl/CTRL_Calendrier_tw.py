@@ -9,16 +9,13 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import calendar
 import datetime
-import time
 import GestionDB
 import FonctionsPerso
 import sys
-
-
-
+from Utils import UTILS_Adaptations
 
 
 class Calendrier(wx.ScrolledWindow):
@@ -84,7 +81,10 @@ class Calendrier(wx.ScrolledWindow):
     
     def CreatePseudoDC(self):
         # create a PseudoDC to record our drawing
-        self.pdc = wx.PseudoDC()
+        if 'phoenix' in wx.PlatformInfo:
+            self.pdc = wx.adv.PseudoDC()
+        else :
+            self.pdc = wx.PseudoDC()
         self.DoDrawing(self.pdc)
 
     def ConvertEventCoords(self, event):
@@ -96,7 +96,10 @@ class Calendrier(wx.ScrolledWindow):
     def OffsetRect(self, r):
         xView, yView = self.GetViewStart()
         xDelta, yDelta = self.GetScrollPixelsPerUnit()
-        r.OffsetXY(-(xView*xDelta),-(yView*yDelta))
+        if 'phoenix' in wx.PlatformInfo:
+            r.Offset(-(xView*xDelta),-(yView*yDelta))
+        else:
+            r.OffsetXY(-(xView*xDelta),-(yView*yDelta))
  
     def OnPaint(self, event):
         # Create a buffered paint DC.  It will create the real
@@ -122,10 +125,12 @@ class Calendrier(wx.ScrolledWindow):
         
     def DoDrawing(self, dc):
         dc.RemoveAll()
-        dc.BeginDrawing()        
+        if 'phoenix' not in wx.PlatformInfo:
+            dc.BeginDrawing()
         self.caseSurvol = None
         self.Calendrier(dc)
-        dc.EndDrawing()        
+        if 'phoenix' not in wx.PlatformInfo:
+            dc.EndDrawing()
 
     def MAJAffichage(self):
         self.DoDrawing(self.pdc)
@@ -143,7 +148,10 @@ class Calendrier(wx.ScrolledWindow):
         
         self.dictCases = {}
         self.listeCasesJours = []
-        largeur, hauteur = self.GetClientSizeTuple()
+        if 'phoenix' in wx.PlatformInfo:
+            largeur, hauteur = self.GetClientSize()
+        else:
+            largeur, hauteur = self.GetClientSizeTuple()
 
         annee = self.anneeCalendrier
 
@@ -591,7 +599,7 @@ class Calendrier(wx.ScrolledWindow):
             dc.DrawRectangle(x+l-7, y+2, 4, 4)
 
         # Dessin texte
-        if unicode(texteDate) in self.listeJoursAvecPresents :
+        if six.text_type(texteDate) in self.listeJoursAvecPresents :
             dc.SetTextForeground(self.couleurFontJoursAvecPresents)
         else:
             dc.SetTextForeground(self.couleurFontJours)
@@ -726,7 +734,7 @@ class Calendrier(wx.ScrolledWindow):
             texteDate = None
         
         # Création du menu
-        menu = wx.Menu()
+        menu = UTILS_Adaptations.Menu()
         
         # Si une date a bien été cliquée :
         if texteDate != None :
@@ -738,9 +746,9 @@ class Calendrier(wx.ScrolledWindow):
             # Sélection/déselection du jour cliqué
             self.popupID1 = wx.NewId()
             if select == False :
-                texte = _(u"Sélectionner le ") + unicode(texteDate.day) + "/" + unicode(texteDate.month) + "/" + unicode(texteDate.year)
+                texte = _(u"Sélectionner le ") + six.text_type(texteDate.day) + "/" + six.text_type(texteDate.month) + "/" + six.text_type(texteDate.year)
             else:
-                texte = _(u"Désélectionner le ") + unicode(texteDate.day) + "/" + unicode(texteDate.month) + "/" + unicode(texteDate.year)
+                texte = _(u"Désélectionner le ") + six.text_type(texteDate.day) + "/" + six.text_type(texteDate.month) + "/" + six.text_type(texteDate.year)
             menu.Append(self.popupID1, texte)
             self.Bind(wx.EVT_MENU, self.OnPopup1, id=self.popupID1)
             
@@ -759,7 +767,7 @@ class Calendrier(wx.ScrolledWindow):
         # Choisir une période de vacances
         self.popupID3 = wx.NewId()
         if len(self.listePeriodesVacs) != 0 :
-            sm = wx.Menu()
+            sm = UTILS_Adaptations.Menu()
             index = 0
             self.listePeriodesVacs.reverse()
             # Seules les 20 dernières périodes sont retenues
@@ -960,7 +968,7 @@ class Panel(wx.Panel):
             self.calendrier.SelectJours( [datetime.date.today(),] )
             
         self.bouton_CalendrierAnnuel = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calendrier_jour.png"), wx.BITMAP_TYPE_PNG), size=(28, 21))
-        self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
+        self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
 
         # Layout
         sizer =  wx.BoxSizer(wx.VERTICAL)
@@ -1024,7 +1032,7 @@ class Panel(wx.Panel):
         if self.calendrier.GetTypeCalendrier() == "mensuel" :
             self.calendrier.SetTypeCalendrier("annuel")
             self.combo_mois.Enable(False)
-            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier mensuel"))
+            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier mensuel")))
             
             # l'appel vient de la saisie des présences de la fiche individuelle
             if self.GetGrandParent().GetName() == "panel_saisiePresences_FicheInd" :
@@ -1044,7 +1052,7 @@ class Panel(wx.Panel):
         else:
             self.calendrier.SetTypeCalendrier("mensuel")
             self.combo_mois.Enable(True)
-            self.bouton_CalendrierAnnuel.SetToolTipString(_(u"Cliquez ici pour afficher le calendrier annuel"))
+            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
             
             if self.GetGrandParent().GetName() == "splitter" :
                 self.GetGrandParent().SetSashPosition(240, True)

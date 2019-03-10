@@ -42,7 +42,7 @@ def ParametresCategorie(mode="get", categorie="", dictParametres={}, nomFichier=
     dictFinal = {}
     
     # On boucle sur chaque valeur
-    for nom, valeur in dictParametres.items() :
+    for nom, valeur in list(dictParametres.items()) :
 
         # Préparation de la valeur par défaut
         type_parametre = type(valeur)
@@ -183,6 +183,6 @@ def TestParametre(categorie="", nom="", valeur=None, nomFichier=""):
 if __name__ == u"__main__":
     #print(ParametresCategorie(mode="get", categorie="parametres_grille_conso", dictParametres={"affiche_colonne_memo":True, "test":u"ça marche !"}, nomFichier=""))
     reponse = Parametres(mode="get", categorie="dlg_ouvertures", nom="afficher_tous_groupes", valeur=False)
-    print(reponse, type(reponse))
+    print((reponse, type(reponse)))
     
     

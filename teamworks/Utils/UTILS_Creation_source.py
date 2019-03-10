@@ -20,11 +20,11 @@ def listdirectory(path):
 def CreationSource(nomZip = "teamworks_source.zip"):
     """ Création du ZIP Source publique """
     # Recherche des modules importés
-    print "Recherche des modules..."
+    print("Recherche des modules...")
     finder = ModuleFinder()
     finder.run_script('Teamworks.py')
     listeModules = []
-    for nom, mod in finder.modules.iteritems():
+    for nom, mod in finder.modules.items():
         cheminFichier = mod.__file__
         if cheminFichier != None and "Teamworks" in cheminFichier :
             cheminFichier = cheminFichier.replace(os.getcwd(), "")
@@ -34,7 +34,7 @@ def CreationSource(nomZip = "teamworks_source.zip"):
     listeModules.sort() 
 
     # Affichage des modules trouvés
-    print len(listeModules), "modules trouves."
+    print(len(listeModules), "modules trouves.")
         
     # Initialisation du ZIP
     if os.path.isfile(nomZip) == True :
@@ -86,14 +86,14 @@ def CreationSource(nomZip = "teamworks_source.zip"):
             zfi.external_attr = 16
             zfile.writestr(zfi, '')
 
-    print "Insertion fichiers ok."
+    print("Insertion fichiers ok.")
 
     # Insertion des modules importés
     for fichier in listeModules :
         zfile.write(fichier, fichier)
         
     zfile.close()
-    print "Zip ok."
+    print("Zip ok.")
 
 
 

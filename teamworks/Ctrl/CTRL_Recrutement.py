@@ -9,21 +9,17 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
-import wx.lib.mixins.listctrl  as  listmix
 from wx.lib.splitter import MultiSplitterWindow
 import GestionDB
-import re
 import datetime
 import FonctionsPerso
 import sys
-
 from Ctrl import CTRL_Gadget_candidatures
 from Ol import OL_candidatures
 from Ol import OL_candidats
 from Ol import OL_entretiens
 from Ol import OL_emplois
-
+from Utils import UTILS_Adaptations
 from ObjectListView import Filter
 
 
@@ -381,13 +377,13 @@ class BarreAffichage(wx.Panel):
         
         self.boutonOutils = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Outils.png"), wx.BITMAP_TYPE_PNG) )
         self.txtOutils = wx.StaticText( self, -1, "Outils" )
-        self.boutonOutils.SetToolTipString(_(u"Cliquez ici pour afficher le menu des outils du planning"))
-        self.txtOutils.SetToolTipString(_(u"Cliquez ici pour afficher le menu des outils du planning"))
+        self.boutonOutils.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le menu des outils du planning")))
+        self.txtOutils.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le menu des outils du planning")))
         
         self.boutonAide = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_PNG) )
         self.txtAide = wx.StaticText( self, -1, "Aide " )
-        self.boutonAide.SetToolTipString(_(u"Cliquez ici pour afficher l'aide"))
-        self.txtAide.SetToolTipString(_(u"Cliquez ici pour afficher l'aide"))
+        self.boutonAide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher l'aide")))
+        self.txtAide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher l'aide")))
 
         # Bind
         self.Bind(wx.EVT_RADIOBUTTON, self.OnRadio1, self.radio1 )
@@ -486,7 +482,7 @@ class BarreAffichage(wx.Panel):
         """Ouverture du menu contextuel des options d'affichage du planning """
         
         # Création du menu contextuel
-        menu = wx.Menu()
+        menu = UTILS_Adaptations.Menu()
         
         # Commande Imprimer
         IDitem = 10
@@ -514,7 +510,7 @@ class BarreAffichage(wx.Panel):
         menu.AppendSeparator()
         
         # Sous-menu Options d'affichage
-        smOptions = wx.Menu()
+        smOptions = UTILS_Adaptations.Menu()
 
         # Affichage des légendes
         IDitem = 210
@@ -601,10 +597,10 @@ class BarreAffichage(wx.Panel):
 
 
 
-class ToolBar(wx.ToolBar):
+class ToolBar(UTILS_Adaptations.ToolBar):
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.TB_FLAT|wx.TB_TEXT
-        wx.ToolBar.__init__(self, *args, **kwds)
+        UTILS_Adaptations.ToolBar.__init__(self, *args, **kwds)
         self.SetToolBitmapSize((22, 22))
         self.AddLabelTool(10, _(u"Candidats"), wx.Bitmap(Chemins.GetStaticPath("Images/22x22/Candidats.png"), wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, _(u"Afficher la liste des candidats"), "")
         self.AddLabelTool(20, _(u"Candidatures"), wx.Bitmap(Chemins.GetStaticPath("Images/22x22/Candidatures.png"), wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_RADIO, _(u"Afficher la liste des candidatures"), "")
@@ -730,17 +726,17 @@ class Panel(wx.Panel):
 ##        self.splitter.SetSashPosition(250, True)
         
     def __set_properties(self):
-        self.barreRecherche.SetToolTipString(_(u"Saisissez ici un nom, un prénom, un nom de ville, etc... pour retrouver un candidat dans la liste."))
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle fiche individuelle"))
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la fiche sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la fiche sélectionnée dans la liste"))
-        self.bouton_affichertout.SetToolTipString(_(u"Cliquez ici pour réafficher toute la liste"))
-        self.bouton_options.SetToolTipString(_(u"Cliquez ici pour afficher les options de la liste"))
-        self.bouton_courrier.SetToolTipString(_(u"Cliquez ici créer un courrier ou un Email par publipostage"))
-        self.bouton_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer la liste"))
-        self.bouton_export_texte.SetToolTipString(_(u"Cliquez ici pour exporter la liste au format texte"))
-        self.bouton_export_excel.SetToolTipString(_(u"Cliquez ici pour exporter la liste au format Excel"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.barreRecherche.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom, un prénom, un nom de ville, etc... pour retrouver un candidat dans la liste.")))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer une nouvelle fiche individuelle")))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la fiche sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la fiche sélectionnée dans la liste")))
+        self.bouton_affichertout.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour réafficher toute la liste")))
+        self.bouton_options.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher les options de la liste")))
+        self.bouton_courrier.SetToolTip(wx.ToolTip(_(u"Cliquez ici créer un courrier ou un Email par publipostage")))
+        self.bouton_imprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour imprimer la liste")))
+        self.bouton_export_texte.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour exporter la liste au format texte")))
+        self.bouton_export_excel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour exporter la liste au format Excel")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
 
 
     def __do_layout(self):
@@ -868,9 +864,9 @@ class Panel(wx.Panel):
             self.barreRecherche.Show(True)
             self.barreTitre_liste.barreTitre.SetLabel(_(u"Liste des candidats"))
             self.bouton_courrier.Show(True)
-            self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouveau candidat"))
-            self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le candidat sélectionné dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
-            self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le candidat sélectionné dans la liste"))
+            self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un nouveau candidat")))
+            self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier le candidat sélectionné dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")))
+            self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le candidat sélectionné dans la liste")))
         else:
             self.listCtrl_candidats.Show(False)
             self.barreRecherche.Show(False)
@@ -879,9 +875,9 @@ class Panel(wx.Panel):
             self.listCtrl_candidatures.Show(True)
             self.barreTitre_liste.barreTitre.SetLabel(_(u"Liste des candidatures"))
             self.bouton_courrier.Show(True)
-            self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle candidature"))
-            self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
-            self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste"))
+            self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer une nouvelle candidature")))
+            self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la candidature sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")))
+            self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la candidature sélectionnée dans la liste")))
         else:
             self.listCtrl_candidatures.Show(False)
         # Entretiens
@@ -889,9 +885,9 @@ class Panel(wx.Panel):
             self.listCtrl_entretiens.Show(True)
             self.barreTitre_liste.barreTitre.SetLabel(_(u"Liste des entretiens"))
             self.bouton_courrier.Show(False)
-            self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer un nouvel entretien"))
-            self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier l'entretien sélectionné dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
-            self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer l'entretien sélectionné dans la liste"))
+            self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un nouvel entretien")))
+            self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier l'entretien sélectionné dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")))
+            self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer l'entretien sélectionné dans la liste")))
         else:
             self.listCtrl_entretiens.Show(False)
         # Offres d'emploi
@@ -899,17 +895,17 @@ class Panel(wx.Panel):
             self.listCtrl_emplois.Show(True)
             self.barreTitre_liste.barreTitre.SetLabel(_(u"Liste des offres d'emploi"))
             self.bouton_courrier.Show(False)
-            self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle offre d'emploi"))
-            self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier l'offre d'emploi sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)"))
-            self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer l'offre d'emploi sélectionnée dans la liste"))
+            self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer une nouvelle offre d'emploi")))
+            self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier l'offre d'emploi sélectionnée dans la liste\n(Vous pouvez également double-cliquer sur une ligne)")))
+            self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer l'offre d'emploi sélectionnée dans la liste")))
         else:
             self.listCtrl_emplois.Show(False)
         # Refresh
         self.grid_sizer_D.Layout()
         self.Refresh()
         # Refresh ListView
-        exec("self.listCtrl_%s.MAJ()" % MODE_AFFICHAGE)
-        
+        getattr(self, "listCtrl_%s" % MODE_AFFICHAGE).MAJ()
+
     def MAJpanel(self, listeElements=[], MAJpanelResume=True) :
         """ Met à jour les éléments du panel personnes """
         # Elements possibles : [] pour tout, listCtrl_personnes
@@ -939,16 +935,16 @@ class Panel(wx.Panel):
                     self.panel_resume.listCtrl_entretiens.MAJ()
     
     def OnBoutonCourrier(self, event):
-        exec("self.listCtrl_%s.CourrierPublipostage(mode='multiple')" % MODE_AFFICHAGE)
-        
+        getattr(self, "listCtrl_%s" % MODE_AFFICHAGE).CourrierPublipostage(mode='multiple')
+
     def OnBoutonImprimer(self, event):
-        exec("self.listCtrl_%s.Imprimer()" % MODE_AFFICHAGE)
+        getattr(self, "listCtrl_%s" % MODE_AFFICHAGE).Imprimer()
         
     def OnBoutonExportTexte(self, event):
-        exec("self.listCtrl_%s.ExportTexte()" % MODE_AFFICHAGE)
+        getattr(self, "listCtrl_%s" % MODE_AFFICHAGE).ExportTexte()
         
     def OnBoutonExportExcel(self, event):
-        exec("self.listCtrl_%s.ExportExcel()" % MODE_AFFICHAGE)
+        getattr(self, "listCtrl_%s" % MODE_AFFICHAGE).ExportExcel()
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

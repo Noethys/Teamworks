@@ -160,9 +160,9 @@ if __name__ == "__main__":
     # DeplaceFichiers()
 
     # Répertoire utilisateur
-    print(GetRepUtilisateur())
+    print((GetRepUtilisateur()))
 
     # Répertoire des données
     chemin = GetRepData()
-    print(1, os.path.join(chemin, u"Testé.pdf"))
-    print(2, os.path.join(chemin, "Test.pdf"))
+    print((1, os.path.join(chemin, u"Testé.pdf")))
+    print((2, os.path.join(chemin, "Test.pdf")))

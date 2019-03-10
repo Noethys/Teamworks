@@ -11,7 +11,8 @@ from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
 import threading
-import thread
+#import thread
+from threading import Thread as thread
 import time
 import FonctionsPerso
 

@@ -41,7 +41,7 @@ class Calendrier():
     
     def RechercheElement(self, component=None, nom="DTSTART", type="date"):
         """ Recherche un élément dans un Event """
-        if component.has_key(nom) :
+        if nom in component :
             if type == "date" : return component.decoded(nom)
             if type == "texte" : return u"%s" % component[nom]
         else :
@@ -88,9 +88,9 @@ class Calendrier():
 
 if __name__ == "__main__":
     cal = Calendrier(url="http://media.education.gouv.fr/ics/Calendrier_Scolaire_Zone_A.ics")
-    print ">>", cal.GetTitre()
+    print(">>", cal.GetTitre())
 ##    for event in cal.GetEvents() :
 ##        print event
     for x in cal.GetVacances() :
-        print x
+        print(x)
         

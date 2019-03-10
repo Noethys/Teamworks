@@ -10,7 +10,7 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-import sys
+import six
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import GestionDB
 import FonctionsPerso
@@ -50,15 +50,15 @@ class Panel(wx.Panel):
 
         
     def __set_properties(self):
-        self.bouton_options.SetToolTipString(_(u"Cliquez ici pour modifier les options du gadget sélectionné"))
+        self.bouton_options.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier les options du gadget sélectionné")))
         self.bouton_options.SetSize(self.bouton_options.GetBestSize())
-        self.bouton_reinit.SetToolTipString(_(u"Cliquez ici pour réinitialiser les paramètres par défaut de tous les gadgets"))
+        self.bouton_reinit.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour réinitialiser les paramètres par défaut de tous les gadgets")))
         self.bouton_reinit.SetSize(self.bouton_reinit.GetBestSize())
-        self.bouton_haut.SetToolTipString(_(u"Cliquez ici pour déplacer le gadget sélectionné vers le haut"))
+        self.bouton_haut.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour déplacer le gadget sélectionné vers le haut")))
         self.bouton_haut.SetSize(self.bouton_haut.GetBestSize())
-        self.bouton_bas.SetToolTipString(_(u"Cliquez ici pour déplacer le gadget sélectionné vers le bas"))
+        self.bouton_bas.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour déplacer le gadget sélectionné vers le bas")))
         self.bouton_bas.SetSize(self.bouton_bas.GetBestSize())
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -127,7 +127,7 @@ class Panel(wx.Panel):
         # Avertissement
         dlg = wx.MessageDialog(self, _(u"Souhaitez-vous vraiment réinitialiser les paramètres de tous les gadgets de la page d'accueil ?"), "Confirmation", wx.YES_NO | wx.CANCEL | wx.ICON_EXCLAMATION)
         if dlg.ShowModal() == wx.ID_YES:
-            print "REINIT !"
+            print("REINIT !")
             dlg.Destroy()
         else:
             dlg.Destroy()
@@ -201,18 +201,23 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # Remplissage avec les valeurs
         self.remplissage = True
         for IDgadget, nom, label, description, taille, affichage, ordre, config, parametres in self.listeGadgets :
-                index = self.InsertStringItem(sys.maxint, str(ordre))
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, str(ordre))
+                self.SetItem(index, 1, label)
+                self.SetItem(index, 2, description)
+            else:
+                index = self.InsertStringItem(six.MAXSIZE, str(ordre))
                 self.SetStringItem(index, 1, label)
                 self.SetStringItem(index, 2, description)
-                self.SetItemData(index, IDgadget)
-                
-                # Check
-                if affichage == "True":
-                    self.CheckItem(index) 
-                                
-                # Sélection
-                if IDgadget == select :
-                    self.Select(index)
+            self.SetItemData(index, IDgadget)
+
+            # Check
+            if affichage == "True":
+                self.CheckItem(index)
+
+            # Sélection
+            if IDgadget == select :
+                self.Select(index)
         
         self.remplissage = False
 
@@ -276,11 +281,10 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
 
 
 
-class MyFrame(wx.Frame):
-    def __init__(self, parent, title="" ):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
+class Dialog(wx.Dialog):
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
-        self.MakeModal(True)
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
@@ -293,21 +297,23 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.SetMinSize((450, 350))
         self.SetSize((650, 380))
 
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des gadgets"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 
@@ -333,40 +339,21 @@ class MyFrame(wx.Frame):
         self.Centre()
         self.sizer_pages = sizer_pages
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(45)
             
     def Onbouton_annuler(self, event):
-        self.MAJparents()
-        # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        
-    def Onbouton_ok(self, event):
-        self.MAJparents()
-        # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.EndModal(wx.ID_CANCEL)
 
-    def MAJparents(self):
-        if self.parent == None and FonctionsPerso.FrameOuverte("panel_accueil") != None :
-            # Mise à jour de la page d'accueil
-            topWindow = wx.GetApp().GetTopWindow() 
-            topWindow.toolBook.GetPage(0).MAJpanel() 
-        
+    def Onbouton_ok(self, event):
+        self.EndModal(wx.ID_OK)
+
+
         
         
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
+    frame_1 = Dialog(None, "")
     app.SetTopWindow(frame_1)
     frame_1.Show()
     app.MainLoop()

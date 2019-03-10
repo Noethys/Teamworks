@@ -10,7 +10,7 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import datetime
 import wx
-from Ctrl import CTRL_Bouton_image
+from Utils import UTILS_Adaptations
 import GestionDB
 import operator
 import FonctionsPerso
@@ -83,7 +83,7 @@ class Track(object):
         return texteAge
 
     def GetCoordonnees(self, IDcandidat, type=""):
-        if DICT_COORDONNEES.has_key(IDcandidat) == False :
+        if (IDcandidat in DICT_COORDONNEES) == False :
             return ""
         listeCoordonnees = DICT_COORDONNEES[IDcandidat]
         txtCoords = ""
@@ -103,7 +103,7 @@ class Track(object):
         return txtCoords
 
     def GetQualifications(self, IDcandidat):
-        if DICT_QUALIFICATIONS.has_key(IDcandidat) == False :
+        if (IDcandidat in DICT_QUALIFICATIONS) == False :
             return ""
         listeQualifications = DICT_QUALIFICATIONS[IDcandidat]
         txtQualifications = ""
@@ -215,7 +215,7 @@ class ListView(ObjectListView):
         def GetListeQualifications(dictFiltres):
             """ Recherche des qualifications """
             listeTemp = []
-            for IDqualif, listeQualifications in DICT_QUALIFICATIONS.iteritems() :
+            for IDqualif, listeQualifications in DICT_QUALIFICATIONS.items() :
                 for ID, label in dictFiltres["valeur"] :
                     if ID in listeQualifications :
                         if IDqualif not in listeTemp :
@@ -306,7 +306,7 @@ class ListView(ObjectListView):
         global DICT_QUALIFICATIONS
         DICT_QUALIFICATIONS = {}
         for IDdiplome, IDcandidat, IDtype_diplome in listeDonnees :
-            if DICT_QUALIFICATIONS.has_key(IDcandidat) :
+            if IDcandidat in DICT_QUALIFICATIONS :
                 DICT_QUALIFICATIONS[IDcandidat].append(IDtype_diplome)
             else:
                 DICT_QUALIFICATIONS[IDcandidat] = [IDtype_diplome,]
@@ -338,7 +338,7 @@ class ListView(ObjectListView):
         DICT_COORDONNEES = {}
         for IDcoord, IDcandidat, categorie, texte, intitule in listeCoordonnees :
             donnees = (IDcoord, IDcandidat, categorie, texte, intitule)
-            if DICT_COORDONNEES.has_key(IDcandidat) :
+            if IDcandidat in DICT_COORDONNEES :
                 DICT_COORDONNEES[IDcandidat].append(donnees)
             else :
                 DICT_COORDONNEES[IDcandidat] = [(donnees),]
@@ -385,7 +385,7 @@ class ListView(ObjectListView):
         self.SetColumns(liste_Colonnes)
 
         self.SetEmptyListMsg(_(u"Aucun candidat"))
-        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         if self.activeCheckBoxes == True :
             self.CreateCheckStateColumn(0)
             self.SetSortColumn(self.columns[3])
@@ -461,7 +461,7 @@ class ListView(ObjectListView):
                 self.adresseMail = ""
             
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -716,7 +716,7 @@ class ListView(ObjectListView):
                 
         # Demande de confirmation
         nom_complet = self.Selection()[0].nom_complet
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer le candidat : %s ?") % nom_complet))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer le candidat : %s ?") % nom_complet))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()

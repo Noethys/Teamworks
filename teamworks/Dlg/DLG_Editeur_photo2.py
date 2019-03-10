@@ -9,12 +9,10 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 from PIL import Image
-import cStringIO
-import GestionDB
 import FonctionsPerso
-import GestionDB
 
 
 
@@ -26,7 +24,7 @@ def pil2wx(image):
 
 def load_image(fn):
     """Read a file into PIL Image object. Return the image and file size"""
-    buf=cStringIO.StringIO()
+    buf = six.BytesIO()
     f=open(fn,"rb")
     while 1:
         rdbuf=f.read(8192)
@@ -41,7 +39,7 @@ def save_image_buf(image,q=90):
     """Save a PIL Image into a byte buffer as a JPEG with the given quality.
     Return the buffer and file size.
     """
-    buf=cStringIO.StringIO()
+    buf = six.BytesIO()
     image.save(buf,format='JPEG',quality=q)
     buf.seek(0)
     return buf,len(buf.getvalue())
@@ -157,9 +155,9 @@ class ImgBox(wx.Window):
             ok=1
             if ok:
                 save_image_file(nomFichier,buf)
-                print "Saved image to %s (%.f kB)" % (nomFichier, bytes/1024)
+                print("Saved image to %s (%.f kB)" % (nomFichier, bytes/1024))
         except:
-                print "Failed to save image!"
+                print("Failed to save image!")
                 return None
         return nomFichier
         
@@ -207,17 +205,20 @@ class MyDialog(wx.Dialog):
         
     def __set_properties(self):
         self.SetTitle(_(u"Editeur de photo"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider l'image"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider l'image")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         
-        self.bouton_rotation_gauche.SetToolTipString(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens inverse des aiguilles d'une montre"))
-        self.bouton_rotation_droite.SetToolTipString(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens des aiguilles d'une montre"))
-        self.slider_ratio.SetToolTipString(_(u"Ajustez avec cette fonction ratio\nla taille de la photo"))
-        self.bouton_reinit.SetToolTipString(_(u"Cliquez ici pour réinitialiser la position\net la taille de la photo initiale"))
+        self.bouton_rotation_gauche.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens inverse des aiguilles d'une montre")))
+        self.bouton_rotation_droite.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour effectuer une rotation de 90°\n dans le sens des aiguilles d'une montre")))
+        self.slider_ratio.SetToolTip(wx.ToolTip(_(u"Ajustez avec cette fonction ratio\nla taille de la photo")))
+        self.bouton_reinit.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour réinitialiser la position\net la taille de la photo initiale")))
         
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)

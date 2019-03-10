@@ -82,7 +82,7 @@ class Impression():
         story = []
         
         # Création des lignes        
-        for IDgroupe, valeurs in dictGroupes.iteritems() :
+        for IDgroupe, valeurs in dictGroupes.items() :
             titreGroupe, posY_debut, posY_fin, nbreLignes, listeLignes = valeurs
             
             # Création du titre du groupe
@@ -110,7 +110,7 @@ class Impression():
         story.append(Spacer(0,10))
         nbre_legendes = 0
         total_heures = 0
-        for key, valeurs in dictCategories.iteritems() :
+        for key, valeurs in dictCategories.items() :
             nom, IDcat_parent, ordre, couleur, nbreHeures = valeurs
             if nbreHeures != 0 :
                 legende = Legende(0, 15, nom, couleur, nbreHeures)
@@ -143,7 +143,7 @@ class Ligne(Flowable) :
     
     def draw(self):
         canvas = self.canv
-        if type(self.labelLigne) != unicode : 
+        if type(self.labelLigne) != six.text_type :
             self.labelLigne = self.labelLigne.decode("iso-8859-15")
         canvas.setFont("Helvetica", 9)
         # Dessin du label de la ligne
@@ -228,7 +228,7 @@ class LabelGroupe(Flowable) :
         return (self.xoffset, self.size)
     def draw(self):
         canvas = self.canv
-        if type(self.label) != unicode : 
+        if type(self.label) != six.text_type :
             self.label = self.label.decode("iso-8859-15")
         # Texte label
         canvas.setFillColorRGB(0, 0, 0)

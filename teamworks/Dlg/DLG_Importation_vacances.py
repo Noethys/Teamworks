@@ -70,7 +70,7 @@ class ListView(FastObjectListView):
         listeListeView = []
         for item in listePeriodes :
             track = Track(item)
-            if self.dictVacances.has_key((track.annee, track.nom)) == False :
+            if ((track.annee, track.nom) in self.dictVacances) == False :
                 listeListeView.append(track)
         return listeListeView
             
@@ -102,7 +102,7 @@ class ListView(FastObjectListView):
         self.CreateCheckStateColumn(0)
         
         self.SetEmptyListMsg(_(u"Aucune période de vacances"))
-        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         self.SetSortColumn(self.columns[3])
         self.SetObjects(self.donnees)
        
@@ -127,7 +127,7 @@ class ListView(FastObjectListView):
         anneeActuelle = datetime.date.today().year
         nbre = 0
         for track in self.donnees :
-            if self.dictVacances.has_key((str(track.annee), track.nom)) == False and track.annee >= anneeActuelle :
+            if ((str(track.annee), track.nom) in self.dictVacances) == False and track.annee >= anneeActuelle :
                 self.Check(track)
                 self.RefreshObject(track)
                 nbre += 1
@@ -178,7 +178,7 @@ class Hyperlien(Hyperlink.HyperLinkCtrl):
 
 class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.THICK_FRAME)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         
         intro = _(u"Vous pouvez ici importer des périodes de vacances depuis le site internet de l'Education Nationale. Sélectionnez votre zone géographique et cochez les périodes à importer.")
@@ -223,10 +223,10 @@ class Dialog(wx.Dialog):
         
 
     def __set_properties(self):
-        self.ctrl_zone.SetToolTipString(_(u"Sélectionnez une zone"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour importer les périodes sélectionnées"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez ici pour annuler"))
+        self.ctrl_zone.SetToolTip(wx.ToolTip(_(u"Sélectionnez une zone")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour importer les périodes sélectionnées")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
         self.SetMinSize((670, 680))
 
     def __do_layout(self):

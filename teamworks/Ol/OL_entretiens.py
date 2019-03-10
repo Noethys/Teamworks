@@ -12,7 +12,7 @@ import datetime
 import wx
 from Ctrl import CTRL_Bouton_image
 import GestionDB
-import wx.lib.hyperlink as hl
+import wx.lib.agw.hyperlink as hl
 import operator
 import FonctionsPerso
 import os
@@ -20,6 +20,7 @@ import sys
 from Dlg import DLG_Saisie_entretien
 from Dlg import DLG_Selection_candidat
 from Utils import UTILS_Fichiers
+from Utils import UTILS_Adaptations
 from ObjectListView import ObjectListView, ColumnDefn
 
 
@@ -428,7 +429,7 @@ class ListView(ObjectListView):
 
         self.SetSortColumn(self.columns[1])
         self.SetEmptyListMsg(_(u"Aucun entretien"))
-        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, face="Tekton"))
+        self.SetEmptyListMsgFont(wx.FFont(11, wx.DEFAULT, False, "Tekton"))
         self.SetObjects(self.donnees)
         
        
@@ -479,7 +480,7 @@ class ListView(ObjectListView):
             ID = self.Selection()[0].IDcandidat
                 
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -728,7 +729,7 @@ class ListView(ObjectListView):
         # Demande de confirmation
         texte = self.Selection()[0].date
         nom_complet = self.Selection()[0].nom_candidat
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer l'entretien du %s pour %s ?") % (FonctionsPerso.DateEngFr(texte), nom_complet)))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer l'entretien du %s pour %s ?") % (FonctionsPerso.DateEngFr(texte), nom_complet)))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -1171,8 +1172,11 @@ class SaisiePassword(wx.Dialog):
         
         self.bouton_ok = CTRL_Bouton_image.CTRL(self, id=wx.ID_OK, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
-        self.text_password.SetToolTipString(_(u"Saisissez votre mot de passe ici"))
-        _icon = wx.EmptyIcon()
+        self.text_password.SetToolTip(wx.ToolTip(_(u"Saisissez votre mot de passe ici")))
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Cadenas.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.__do_layout()

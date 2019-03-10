@@ -10,14 +10,13 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 from PIL import Image
 import os
-import cStringIO
 import FonctionsPerso
 from Utils import UTILS_Fichiers
 from Ctrl import CTRL_thumbnailctrl as TC
-
+from Utils import UTILS_Adaptations
 import GestionDB
 
 
@@ -42,7 +41,7 @@ DICT_TYPES = {
     
 def ChargeImage(fichier):
     """Read a file into PIL Image object. Return the image and file size"""
-    buf=cStringIO.StringIO()
+    buf = six.BytesIO()
     f=open(fichier,"rb")
     while 1:
         rdbuf=f.read(8192)
@@ -99,13 +98,13 @@ class Track(object):
     def GetImage(self):
         # Si c'est une image :
         if self.type in ("jpg", "jpeg", "bmp", "png", "gif", None) :
-            io = cStringIO.StringIO(self.buffer)
+            io = six.BytesIO(self.buffer)
             img = wx.ImageFromStream(io, wx.BITMAP_TYPE_JPEG)
             img = wxtopil(img)
             self.isImage = True
             return img
         # Si c'est un document :
-        if DICT_TYPES.has_key(self.type) :        
+        if self.type in DICT_TYPES :        
             cheminImage = DICT_TYPES[self.type]
             img = Image.open(cheminImage)
             self.isImage = False
@@ -164,9 +163,9 @@ class CTRL(TC.ThumbnailCtrl):
         listeDonnees = []
         # Recherche des images dans la base de données
         if self.IDpiece != None :
-            req = "SELECT IDdocument, IDpiece, IDreponse, document, type, label FROM documents WHERE IDpiece=%d AND document IS NOT NULL;" % self.IDpiece
+            req = "SELECT IDdocument, IDpiece, IDreponse, document, type, label FROM documents WHERE IDpiece=%s AND document IS NOT NULL;" % self.IDpiece
         elif self.IDreponse != None :
-            req = "SELECT IDdocument, IDpiece, IDreponse, document, type, label FROM documents WHERE IDreponse=%d AND document IS NOT NULL;" % self.IDreponse
+            req = "SELECT IDdocument, IDpiece, IDreponse, document, type, label FROM documents WHERE IDreponse=%s AND document IS NOT NULL;" % self.IDreponse
         else:
             return
         db = GestionDB.DB(suffixe="DOCUMENTS")
@@ -258,7 +257,7 @@ Tous les fichiers (*.*)|*.*"
                 file.close() 
                 
                 # Met le fichier dans un buffer
-                buffer = cStringIO.StringIO(data)
+                buffer = six.BytesIO(data)
                 blob = buffer.read()
         
             # Demande le titre du document
@@ -285,7 +284,7 @@ Tous les fichiers (*.*)|*.*"
             imgPIL = imgPIL.resize((largeur, hauteur), Image.ANTIALIAS) #.Rescale(width=largeur, height=hauteur, quality=qualite) 
         
         # Met l'image dans un buffer
-        buffer = cStringIO.StringIO()
+        buffer = six.BytesIO()
         imgPIL.save(buffer, format="JPEG", quality=85)
         buffer.seek(0)
         blob = buffer.read()
@@ -345,7 +344,7 @@ Tous les fichiers (*.*)|*.*"
         self.MAJ() 
         
     def ContextMenu(self):
-        menu = wx.Menu()
+        menu = UTILS_Adaptations.Menu()
 
         item = wx.MenuItem(menu, ID_AJOUTER, _(u"Ajouter des documents"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_PNG))
@@ -440,7 +439,7 @@ Tous les fichiers (*.*)|*.*"
         
     def VisualiserPage(self, event):
         index = self.GetSelection()
-        print index
+        print(index)
         if index == -1 :
             dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un document !"), _(u"Erreur"), wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()

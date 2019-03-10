@@ -9,6 +9,7 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
@@ -17,7 +18,7 @@ import FonctionsPerso
 from Dlg import DLG_Saisie_presence
 from Ctrl import CTRL_Calendrier_tw
 from Dlg import DLG_Application_modele
-
+from Utils import UTILS_Adaptations
 
 
 
@@ -48,21 +49,21 @@ class Panel(wx.Panel):
 
     def __set_properties(self):
 
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir une tâche"))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour saisir une tâche")))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la tâche sélectionnée"))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la tâche sélectionnée")))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la tâche sélectionnée"))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la tâche sélectionnée")))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer une feuille d'heures"))
+        self.bouton_imprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour imprimer une feuille d'heures")))
         self.bouton_imprimer.SetSize(self.bouton_imprimer.GetBestSize())
-        self.bouton_stats.SetToolTipString(_(u"Cliquez ici pour afficher les statistiques de présences"))
+        self.bouton_stats.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher les statistiques de présences")))
         self.bouton_stats.SetSize(self.bouton_stats.GetBestSize())
-        self.bouton_modele.SetToolTipString(_(u"Cliquez ici pour appliquer un modèle de présences"))
+        self.bouton_modele.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour appliquer un modèle de présences")))
         self.bouton_modele.SetSize(self.bouton_modele.GetBestSize())
-        self.bouton_recherche.SetToolTipString(_(u"Cliquez ici pour faire apparaître ou disparaître la barre de recherche"))
+        self.bouton_recherche.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour faire apparaître ou disparaître la barre de recherche")))
         self.bouton_recherche.SetSize(self.bouton_recherche.GetBestSize())
-        self.barreRecherche.SetToolTipString(_(u"Saisissez ici '2008', 'Toussaint 2008', 'Samedi 15 décembre 2008', etc..."))
+        self.barreRecherche.SetToolTip(wx.ToolTip(_(u"Saisissez ici '2008', 'Toussaint 2008', 'Samedi 15 décembre 2008', etc...")))
         
         # Binds
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAjout, self.bouton_ajouter)
@@ -115,8 +116,9 @@ class Panel(wx.Panel):
         event.Skip()
 
     def Ajouter(self):
-        frmSaisie = Frm_saisiePresences(self, IDpersonne=self.IDpersonne)
-        frmSaisie.Show()
+        dlg = Dialog_saisie(self, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModif(self, event):
         self.Modifier()
@@ -169,7 +171,7 @@ class Panel(wx.Panel):
                         date = self.listCtrl.GetItem(index-4, 3).GetText()
         horaires = self.listCtrl.GetItem(index, 5).GetText()
         textePresence = date + " : " + horaires
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette tâche ? \n\n> ") + textePresence))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette tâche ? \n\n> ") + textePresence))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -197,13 +199,13 @@ class Panel(wx.Panel):
         topWindow = wx.GetApp().GetTopWindow() 
         try : topWindow.SetStatusText(_(u"Chargement du module des statistiques en cours. Veuillez patientez..."))
         except : pass
-        print "lancement fonction Stats..."
+        print("lancement fonction Stats...")
         try :
             from Dlg import DLG_Statistiques
             frm = DLG_Statistiques.MyFrame(self, listeDates=[], listePersonnes=[self.IDpersonne,])
             frm.Show()
-        except Exception, err :
-            print "Erreur d'ouverture de la frame Stats : ", Exception, err
+        except Exception as err :
+            print("Erreur d'ouverture de la frame Stats : ", Exception, err)
         try : topWindow.SetStatusText(u"")
         except : pass
         
@@ -274,13 +276,11 @@ class BarreRecherche(wx.SearchCtrl):
 
 # ------------------------------------        SAISIE PRESENCE             --------------------------------------------------------------------------
 
-
-class Frm_saisiePresences(wx.Frame):
-    def __init__(self, parent, title=_(u"Saisie de présences"), IDpersonne=0 ):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_saisiePresences_FicheInd", style=wx.DEFAULT_FRAME_STYLE)
+class Dialog_saisie(wx.Dialog):
+    def __init__(self, parent, title=_(u"Saisie de présences"), IDpersonne=0):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDpersonne = IDpersonne
-        self.MakeModal(True)
         self.panel_base = wx.Panel(self, -1, name="panel_saisiePresences_FicheInd")
         
         # Panel Calendrier
@@ -322,13 +322,7 @@ class Frm_saisiePresences(wx.Frame):
         
     def Fermer(self):
         self.parent.MAJpanel()
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        
-        # MàJ du listCtrl de la fiche individuelle
-##        if index > 0 : self.parent.listCtrl.indexEnCours = index - 1
-##        else: self.parent.listCtrl.indexEnCours = 0
+        self.EndModal(wx.ID_OK)
 
     def SendDates(self, listeDates=[]):
         # Envoie des dates au panel de saisie des présences
@@ -464,9 +458,9 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         self.imgTriAz= self.il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/22x22/Tri_az.png"), wx.BITMAP_TYPE_PNG))
         self.imgTriZa= self.il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/22x22/Tri_za.png"), wx.BITMAP_TYPE_PNG))
         # Images des couleurs de Catégories
-        for key, valeurs in self.dictCategories.iteritems() :
+        for key, valeurs in self.dictCategories.items() :
             r, v, b = self.FormateCouleur(valeurs[1])
-            exec("self.img" + str(key) + " = self.il.Add(self.CreationImage((22, 22), r, v, b, key))")
+            setattr(self, "img%s" % key, self.il.Add(self.CreationImage((22, 22), r, v, b, key)))
         # Finalisation ImageList
         self.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
 
@@ -480,10 +474,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         #events
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_CONTEXT_MENU, self.OnContextMenu)
-##        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
-##        self.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.OnItemDeselected)
-        #self.Bind(wx.EVT_SIZE, self.OnSize)
-        
+
         self.indexEnCours = self.nbreLignes-1
         self.SetSelection(index=self.indexEnCours, selection=False)
 
@@ -497,10 +488,15 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     
     def CreationImage(self, tailleImages, r, v, b, IDcategorie):
         """ Création des images pour le TreeCtrl """
-        bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
         colFond = (255, 255, 255)
-        bmp.SetRGBRect((0, 0, tailleImages[0], tailleImages[1]), colFond[0], colFond[1], colFond[2])
-        bmp.SetRGBRect((0, 5, 12, 12), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGB((0, 0, tailleImages[0], tailleImages[1]), colFond[0], colFond[1], colFond[2])
+            bmp.SetRGB((0, 5, 12, 12), r, v, b)
+        else:
+            bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGBRect((0, 0, tailleImages[0], tailleImages[1]), colFond[0], colFond[1], colFond[2])
+            bmp.SetRGBRect((0, 5, 12, 12), r, v, b)
         return bmp.ConvertToBitmap()
     
     def OnSize(self, event):
@@ -534,7 +530,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -712,15 +708,15 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
+        valeur = six.text_type(self.itemDataMap[index][col])
         # Formate les dates
         if col == 3 :
             dateStr = self.FormateDate(valeur)
             if index > 1 :
                 # Texte de la ligne précédente
-                datePrecedente = unicode(self.itemDataMap[index-1][col])
+                datePrecedente = six.text_type(self.itemDataMap[index-1][col])
                 if valeur == datePrecedente : return ""
-            if type(dateStr) != unicode : 
+            if type(dateStr) != six.text_type :
                 dateStr = dateStr.decode("iso-8859-15")
             return dateStr
         return valeur
@@ -729,14 +725,14 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         """ Affichage des images en début de ligne """
         index=self.itemIndexMap[item]
         IDcategorie = self.itemDataMap[index][2]
-        exec("img = self.img" + str(IDcategorie))
+        img = eval("self.img" + str(IDcategorie))
         return img
 
 
     def OnGetItemAttr(self, item):
         """ Application d'une couleur de fond pour un jour sur deux """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][1])
+        valeur = six.text_type(self.itemDataMap[index][1])
         if valeur == "1" : return self.attr1
         else : return None
 
@@ -747,9 +743,9 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    def SortItems(self,sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
         # redraw the list
         self.Refresh()
@@ -773,7 +769,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         key = int(self.getColumnText(index, 0))
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -849,11 +845,11 @@ class MyFrame(wx.Frame):
             self.SetTitle(_(u"Liste des présences de ") + identite[1] + " " + identite[0])
         except :
             self.SetTitle(_(u"Liste des présences"))
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 
@@ -889,7 +885,7 @@ class MyFrame(wx.Frame):
         event.Skip()
 
     def Onbouton_aide(self, event):
-        print "aide"
+        print("aide")
             
     def Onbouton_annuler(self, event):
         self.MakeModal(False)

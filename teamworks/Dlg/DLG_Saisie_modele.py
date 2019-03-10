@@ -15,6 +15,7 @@ import datetime
 import time
 from Dlg import DLG_Saisie_presence
 import FonctionsPerso
+from Utils import UTILS_Adaptations
 
 
 class Frm_SaisieModele(wx.Frame):
@@ -81,30 +82,33 @@ class Frm_SaisieModele(wx.Frame):
             self.SetTitle(_(u"Création d'un modèle"))
         else:
             self.SetTitle(_(u"Modification d'un modèle"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.text_nom.SetToolTipString(_(u"Saisissez ici le nom de votre choix pour ce modèle"))
-        self.radio_type_1.SetToolTipString(_(u"Sélectionnez 'Journalier' di vous ne souhaitez créer qu'un modèle comportant une journée-type"))
-        self.radio_type_2.SetToolTipString(_(u"Sélectionnez 'Hebdomadaire' si vous souhaitez créer un modèle qui comporte une semaine-type"))
-        self.text_description.SetToolTipString(_(u"Vous pouvez donner ici une description de ce modèle"))
-        self.checkbox_periodes_1.SetToolTipString(_(u"Les tâches saisies dans cette catégorie de période seront créées sur des périodes de vacances et des périodes de vacances"))
-        self.checkbox_periodes_2.SetToolTipString(_(u"Les tâches créées dans cette catégorie seront appliquées uniquement sur des périodes scolaires"))
-        self.checkbox_periodes_3.SetToolTipString(_(u"Les tâches saisies dans cette catégorie de période seront appliquées uniquement sur des vacances scolaires"))
+        self.text_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici le nom de votre choix pour ce modèle")))
+        self.radio_type_1.SetToolTip(wx.ToolTip(_(u"Sélectionnez 'Journalier' di vous ne souhaitez créer qu'un modèle comportant une journée-type")))
+        self.radio_type_2.SetToolTip(wx.ToolTip(_(u"Sélectionnez 'Hebdomadaire' si vous souhaitez créer un modèle qui comporte une semaine-type")))
+        self.text_description.SetToolTip(wx.ToolTip(_(u"Vous pouvez donner ici une description de ce modèle")))
+        self.checkbox_periodes_1.SetToolTip(wx.ToolTip(_(u"Les tâches saisies dans cette catégorie de période seront créées sur des périodes de vacances et des périodes de vacances")))
+        self.checkbox_periodes_2.SetToolTip(wx.ToolTip(_(u"Les tâches créées dans cette catégorie seront appliquées uniquement sur des périodes scolaires")))
+        self.checkbox_periodes_3.SetToolTip(wx.ToolTip(_(u"Les tâches saisies dans cette catégorie de période seront appliquées uniquement sur des vacances scolaires")))
         self.tree_planning.SetMinSize((500, 250))
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour ajouter une tâche"))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter une tâche")))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier la tâche sélectionnée"))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la tâche sélectionnée")))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer la tâche sélectionnée"))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la tâche sélectionnée")))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString("Cliquez ici pour valider")
+        self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider"))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString("Cliquez ici pour annuler")
+        self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.checkbox_inclureferies.SetToolTipString(_(u"Cochez cette case si vous souhaitez que le modèle soit également appliqué les jours fériés."))
+        self.checkbox_inclureferies.SetToolTip(wx.ToolTip(_(u"Cochez cette case si vous souhaitez que le modèle soit également appliqué les jours fériés.")))
         
         self.checkbox_periodes_1.SetValue(self.periodes[0] )
         self.checkbox_periodes_2.SetValue(self.periodes[1] )
@@ -423,7 +427,7 @@ class Frm_SaisieModele(wx.Frame):
         
     def GetPeriodeJour(self, selectionData):
         data = str(selectionData)
-        print data
+        print(data)
         periode = int(data[0])
         jour =  int(data[1])
         return periode, jour
@@ -557,7 +561,7 @@ class TreeCtrlPlanning(wx.TreeCtrl):
             numJour += 1
 
     def CreationTaches(self, rootJour, numJour) :
-        print self.listeTaches
+        print(self.listeTaches)
         for tache in self.listeTaches :
             ID = tache[0]
             type = tache[2]
@@ -662,7 +666,7 @@ class TreeCtrlPlanning(wx.TreeCtrl):
         self.SelectItem(item, True)
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
         
         if mode == "jour" :
             # Item Ajouter

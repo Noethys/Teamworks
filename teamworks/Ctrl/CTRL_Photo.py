@@ -11,13 +11,14 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 from PIL import Image
 import os
-import cStringIO
 import FonctionsPerso
 import GestionDB
 from Utils import UTILS_Fichiers
+from Utils import UTILS_Adaptations
+
 
 
 def GetPhoto(IDindividu=None, nomFichier=None, taillePhoto=(128, 128), qualite=wx.IMAGE_QUALITY_HIGH):
@@ -36,8 +37,11 @@ def GetPhoto(IDindividu=None, nomFichier=None, taillePhoto=(128, 128), qualite=w
         if len(listeDonnees) > 0 :
             IDphoto, bufferPhoto = listeDonnees[0]
             # Transformation du buffer en wx.bitmap
-            io = cStringIO.StringIO(bufferPhoto)
-            img = wx.ImageFromStream(io, wx.BITMAP_TYPE_JPEG)
+            io = six.BytesIO(bufferPhoto)
+            if 'phoenix' in wx.PlatformInfo:
+                img = wx.Image(io, wx.BITMAP_TYPE_JPEG)
+            else:
+                img = wx.ImageFromStream(io, wx.BITMAP_TYPE_JPEG)
             bmp = img.ConvertToBitmap()
             
             # Récupération du cadre de décoration
@@ -47,7 +51,10 @@ def GetPhoto(IDindividu=None, nomFichier=None, taillePhoto=(128, 128), qualite=w
                 # Application du masque
                 tailleInitiale = bmp.GetSize()
                 # Création du dc temporaire
-                bmp = wx.EmptyBitmap(tailleInitiale[0], tailleInitiale[1])
+                if 'phoenix' in wx.PlatformInfo:
+                    bmp = wx.Bitmap(tailleInitiale[0], tailleInitiale[1])
+                else:
+                    bmp = wx.EmptyBitmap(tailleInitiale[0], tailleInitiale[1])
                 dc = wx.MemoryDC()
                 dc.SelectObject(bmp)
 
@@ -111,7 +118,7 @@ class CTRL_Photo(wx.StaticBitmap):
         self.taillePhoto = (128, 128)
         
         self.SetBackgroundColour(wx.Colour(0, 0, 0))
-        self.SetToolTipString(_(u"Cliquez sur le bouton droit de votre souris\npour accéder aux fonctions photo"))
+        self.SetToolTip(wx.ToolTip(_(u"Cliquez sur le bouton droit de votre souris\npour accéder aux fonctions photo")))
         
         self.Bind(wx.EVT_LEFT_DOWN, self.MenuPhoto)
         self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPhoto)
@@ -136,7 +143,7 @@ class CTRL_Photo(wx.StaticBitmap):
         """Ouverture du menu contextuel de la photo """
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Ajouter
         item = wx.MenuItem(menuPop, 10, _(u"Importer une photo"))
@@ -174,7 +181,7 @@ class CTRL_Photo(wx.StaticBitmap):
         
         # Choix d'un cadre de décoration
         nomCadrePersonne, textePhoto = GetCadreEtTexte(self.IDindividu)
-        sousmenu1 = wx.Menu()
+        sousmenu1 = UTILS_Adaptations.Menu()
         indexID = 500
         for nomCadre in FonctionsPerso.GetListeCadresPhotos() :
             sousmenu1.Append(indexID, nomCadre.decode("iso-8859-15"), _(u"Choisir le cadre de décoration '") + nomCadre.decode("iso-8859-15") + _(u"' pour cette personne"), wx.ITEM_RADIO)

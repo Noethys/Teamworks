@@ -10,9 +10,8 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-import sys
+import six
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
-import GestionDB
 import FonctionsPerso
 import operator
 
@@ -43,11 +42,11 @@ class Panel(wx.Panel):
 
         
     def __set_properties(self):
-        self.bouton_reinit.SetToolTipString(_(u"Cliquez ici pour réinitialiser les paramètres par défaut de l'affichage"))
+        self.bouton_reinit.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour réinitialiser les paramètres par défaut de l'affichage")))
         self.bouton_reinit.SetSize(self.bouton_reinit.GetBestSize())
-        self.bouton_haut.SetToolTipString(_(u"Cliquez ici pour déplacer la colonne sélectionnée vers le haut"))
+        self.bouton_haut.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour déplacer la colonne sélectionnée vers le haut")))
         self.bouton_haut.SetSize(self.bouton_haut.GetBestSize())
-        self.bouton_bas.SetToolTipString(_(u"Cliquez ici pour déplacer la colonne sélectionnée vers le bas"))
+        self.bouton_bas.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour déplacer la colonne sélectionnée vers le bas")))
         self.bouton_bas.SetSize(self.bouton_bas.GetBestSize())
         
     def __do_layout(self):
@@ -149,7 +148,7 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.remplissage = True
         self.listeColonnes.sort(key=operator.itemgetter(8))
         for ID, labelCol, alignement, largeur, nomChamp, args, description, affiche, ordre in self.listeColonnes : 
-                index = self.InsertStringItem(sys.maxint, str(ordre))
+                index = self.InsertStringItem(six.MAXSIZE, str(ordre))
                 self.SetStringItem(index, 1, labelCol)
                 self.SetStringItem(index, 2, description)
                 self.SetItemData(index, ID)
@@ -215,13 +214,11 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
     
     
     
-    
-class MyFrame(wx.Frame):
-    def __init__(self, parent, listeColonnes=[] ):
-        wx.Frame.__init__(self, parent, -1, title="", name="config_liste_personnes", style=wx.DEFAULT_FRAME_STYLE)
+class Dialog(wx.Dialog):
+    def __init__(self, parent, listeColonnes=[]):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.listeColonnes = listeColonnes
-        self.MakeModal(True)
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
@@ -234,24 +231,25 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.SetMinSize((450, 350))
         self.SetSize((550, 380))
         self.Centre()
 
     def __set_properties(self):
         self.SetTitle(_(u"Configuration de la liste de personnes"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -275,19 +273,11 @@ class MyFrame(wx.Frame):
         self.Centre()
         self.sizer_pages = sizer_pages
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(53)
             
     def Onbouton_annuler(self, event):
-        # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def Onbouton_ok(self, event):
         listeColonnes = self.panel_contenu.listCtrl.Exportation()
@@ -296,9 +286,7 @@ class MyFrame(wx.Frame):
         self.GetParent().MAJ()
         
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.EndModal(wx.ID_OK)
 
         
         
@@ -306,7 +294,7 @@ class MyFrame(wx.Frame):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, [])
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, [])
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

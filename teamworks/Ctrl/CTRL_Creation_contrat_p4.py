@@ -9,10 +9,10 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 import GestionDB
-import sys
+from Utils import UTILS_Adaptations
 from Dlg import DLG_Config_champs_contrats
 
 
@@ -33,7 +33,7 @@ class Page(wx.Panel):
 
     def __set_properties(self):
         self.label_titre.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
-        self.bouton_champs.SetToolTipString(_(u"Cliquez ici pour créer, modifier ou supprimer des champs personnalisés."))
+        self.bouton_champs.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer, modifier ou supprimer des champs personnalisés.")))
         self.bouton_champs.SetMinSize((20, 20))
 
     def __do_layout(self):
@@ -98,7 +98,7 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
 
     def Remplissage(self):
         
-        listeIDchamps = self.GetGrandParent().GetParent().dictChamps.keys()
+        listeIDchamps = list(self.GetGrandParent().GetParent().dictChamps.keys())
         if len(listeIDchamps) != 0 :
             self.selections = listeIDchamps
         else:
@@ -109,20 +109,20 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
         self.ClearAll()
         # Création des colonnes
         self.InsertColumn(0, "Nom")
-##        self.InsertColumn(1, "Description")
 
         # Remplissage avec les valeurs
-        for key, valeurs in self.dictChamps.iteritems():
-                index = self.InsertStringItem(sys.maxint, valeurs[1])
-##                self.SetStringItem(index, 1, valeurs[1])
-                self.SetItemData(index, key)
-                # Sélection
-                if key in self.selections :
-                    self.CheckItem(index)                    
+        for key, valeurs in self.dictChamps.items():
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, valeurs[1])
+            else:
+                index = self.InsertStringItem(six.MAXSIZE, valeurs[1])
+            self.SetItemData(index, key)
+            # Sélection
+            if key in self.selections :
+                self.CheckItem(index)
 
         # Ajustement tailles colonnes
         self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
-##        self.SetColumnWidth(1, wx.LIST_AUTOSIZE)
 
         # Tri
         self.SortItems(self.columnSorter)
@@ -185,7 +185,7 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
             mode = "deselected"
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
         
         # Item Ajouter
         item = wx.MenuItem(menuPop, 10, _(u"Créer un nouveau champ"))

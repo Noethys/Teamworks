@@ -213,7 +213,7 @@ class ObjectListViewPrinter():
         
         # Remplacement des mots-clés
         listeChamps = ["pied_page_texte_gauche", "pied_page_texte_milieu", "pied_page_texte_droite"]
-        for key, valeur in dictOptions.items() :
+        for key, valeur in list(dictOptions.items()) :
             if key in listeChamps :
                 valeur = valeur.replace("{DATE_JOUR}", UTILS_Dates.DateDDEnFr(datetime.date.today()))
                 valeur = valeur.replace("{TITRE_DOCUMENT}", self.titre)
@@ -494,9 +494,6 @@ class FramePreview(wx.Frame):
         self.Bind(wx.EVT_SCROLL, self.OnZoom, self.ctrl_zoom)
         
     def __set_properties(self):
-##        _icon = wx.EmptyIcon()
-##        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-##        self.SetIcon(_icon)
         self.SetMinSize((200, 200))
 
     def __do_layout(self):

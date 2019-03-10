@@ -348,7 +348,7 @@ class CTRL_Parametres(CTRL_Propertygrid.CTRL) :
 
     def Validation(self):
         """ Validation des données saisies """
-        for nom, valeur in self.GetPropertyValues().items() :
+        for nom, valeur in list(self.GetPropertyValues().items()) :
             propriete = self.GetPropertyByName(nom)
             if self.GetPropertyAttribute(propriete, "obligatoire") == True :
                 if valeur == "" or valeur == None :
@@ -365,7 +365,7 @@ class CTRL_Parametres(CTRL_Propertygrid.CTRL) :
         # Recherche les paramètres mémorisés
         dictParametres = UTILS_Parametres.ParametresCategorie(mode="get", categorie="impression_facture", dictParametres=dictValeurs)
         # Envoie les paramètres dans le contrôle
-        for nom, valeur in dictParametres.items() :
+        for nom, valeur in list(dictParametres.items()) :
             propriete = self.GetPropertyByName(nom)
             ancienneValeur = propriete.GetValue() 
             propriete.SetValue(valeur)
@@ -522,7 +522,7 @@ class CTRL(wx.Panel):
         # Récupération des paramètres
         if self.ctrl_parametres.Validation() == False :
             return False
-        for nom, valeur in self.ctrl_parametres.GetValeurs().items()  :
+        for nom, valeur in list(self.ctrl_parametres.GetValeurs().items())  :
             dictOptions[nom] = valeur
 
         return dictOptions

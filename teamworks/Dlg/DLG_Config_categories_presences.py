@@ -10,7 +10,7 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-import wx.lib.mixins.listctrl  as  listmix
+from Utils import UTILS_Adaptations
 import GestionDB
 import FonctionsPerso
 from Dlg import DLG_Saisie_cat_presences
@@ -51,17 +51,17 @@ class Panel_CatPresences(wx.Panel):
         self.Bind(wx.EVT_SIZE, self.OnSize)
         
     def __set_properties(self):
-        self.bouton_ajouter.SetToolTipString(_(u"Cliquez ici pour créer une nouvelle catégorie de présences"))
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer une nouvelle catégorie de présences")))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
-        self.bouton_modifier.SetToolTipString(_(u"Cliquez ici pour modifier une catégorie de présences"))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier une catégorie de présences")))
         self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
-        self.bouton_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer une catégorie de présences"))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer une catégorie de présences")))
         self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_haut.SetToolTipString(_(u"Cliquez ici pour déplacer la catégorie sélectionnée vers le haut"))
+        self.bouton_haut.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour déplacer la catégorie sélectionnée vers le haut")))
         self.bouton_haut.SetSize(self.bouton_haut.GetBestSize())
-        self.bouton_bas.SetToolTipString(_(u"Cliquez ici pour déplacer la catégorie sélectionnée vers le bas"))
+        self.bouton_bas.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour déplacer la catégorie sélectionnée vers le bas")))
         self.bouton_bas.SetSize(self.bouton_bas.GetBestSize())
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -206,7 +206,7 @@ class Panel_CatPresences(wx.Panel):
 
         # Demande de confirmation
         NomCategorie = self.treeCtrl_categories.treeSelection[1]
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette catégorie ? \n\n> ") + NomCategorie))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette catégorie ? \n\n> ") + NomCategorie))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -371,7 +371,7 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.SelectItem(item, True)
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Ajouter
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -578,14 +578,17 @@ class MyFrame(wx.Frame):
 
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des catégories de présences"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.bouton_aide.SetToolTipString("Cliquez ici pour obtenir de l'aide")
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
         
 

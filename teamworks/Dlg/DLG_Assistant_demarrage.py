@@ -44,7 +44,7 @@ class MyFrame(wx.Dialog):
         self.listeBoutons = []
         for index, label, img, infobulle in self.listeCommandes :
             bouton = CTRL_Platebtn.PlateButton(self, index, label, img, style=bstyle)
-            bouton.SetToolTipString(infobulle)
+            bouton.SetToolTip(wx.ToolTip(infobulle))
             self.Bind(wx.EVT_BUTTON, self.OnBoutonCommande, bouton)
             bouton.SetPressColor(wx.Colour(255, 255, 245))
             self.listeBoutons.append(bouton)
@@ -69,11 +69,11 @@ class MyFrame(wx.Dialog):
         
         
     def __set_properties(self):
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour fermer l'assistant et utiliser TeamWorks"))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour fermer l'assistant et utiliser TeamWorks")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.check_affichage.SetToolTipString(_(u"Cochez cette case pour ne plus faire apparaître cet assistant au démarrage de TeamWorks. \nLe dernier fichier utilisé sera alors automatiquement chargé au démarrage. \n\nRemarque : Il vous sera toujours possible de recharger l'assistant à partir du menu 'fichier'."))
+        self.check_affichage.SetToolTip(wx.ToolTip(_(u"Cochez cette case pour ne plus faire apparaître cet assistant au démarrage de TeamWorks. \nLe dernier fichier utilisé sera alors automatiquement chargé au démarrage. \n\nRemarque : Il vous sera toujours possible de recharger l'assistant à partir du menu 'fichier'.")))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)

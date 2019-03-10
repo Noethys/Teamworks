@@ -13,11 +13,19 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
-import wx.combo
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import BitmapComboBox
+else :
+    from wx.combo import BitmapComboBox
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN
 from Dlg import DLG_Selection_periode
 from Dlg import DLG_Config_fonctions
 from Dlg import DLG_Config_affectations
 from Dlg import DLG_Config_diffuseurs
+from Utils import UTILS_Adaptations
 
 
 class Panel(wx.Panel):
@@ -30,9 +38,9 @@ class Panel(wx.Panel):
         self.sizer_generalites_staticbox = wx.StaticBox(self, -1, _(u"1. Généralités"))
         self.label_introduction = wx.StaticText(self, -1, _(u"Vous pouvez ici saisir les informations concernant l'offre d'emploi."))
         self.label_date_debut = wx.StaticText(self, -1, _(u"Lancement :"))
-        self.ctrl_date_debut = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_debut = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.label_date_fin = wx.StaticText(self, -1, _(u"Clôture :"))
-        self.ctrl_date_fin = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_fin = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.label_intitule = wx.StaticText(self, -1, _(u"Intitulé :"))
         self.ctrl_intitule = wx.TextCtrl(self, -1, "")
         self.label_detail = wx.StaticText(self, -1, _(u"Détail :"))
@@ -79,9 +87,9 @@ class Panel(wx.Panel):
         self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
         self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
-        self.bouton_aide.SetToolTipString(_(u"Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTipString(_(u"Cliquez ici pour valider"))
-        self.bouton_annuler.SetToolTipString(_(u"Cliquez pour annuler et fermer"))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
+        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         
         self.__set_properties()
         self.__do_layout()
@@ -105,23 +113,23 @@ class Panel(wx.Panel):
         
         
     def __set_properties(self):
-        self.ctrl_date_debut.SetToolTipString(_(u"Saisissez la date de lancement de l'offre d'emploi"))
-        self.ctrl_date_fin.SetToolTipString(_(u"Sélectionnez la date de clôture du recrutement pour cette offre d'emploi"))
-        self.ctrl_intitule.SetToolTipString(_(u"Saisissez l'intitulé (nom) de l'offre. Ex : Animateur Mercredis et vacances Saison 2009-10"))
-        self.ctrl_detail.SetToolTipString(_(u"Saisissez le texte détaillé de l'offre d'emploi"))
-        self.ctrl_reference.SetToolTipString(_(u"Saisissez le numéro de l'annonce déposé à l'ANPE. Ex : X455676E"))
-        self.ctrl_periodes.SetToolTipString(_(u"Sélectionnez un ou plusieurs périodes de disponibilités"))
-        self.ctrl_periodes_remarques.SetToolTipString(_(u"Saisissez un complement d'information sur les disponibilités"))
-        self.ctrl_fonction.SetToolTipString(_(u"Cochez la ou les fonctions du poste"))
-        self.ctrl_affectations.SetToolTipString(_(u"Cochez la ou les affectations pour le poste"))
-        self.ctrl_poste_remarques.SetToolTipString(_(u"Saisissez un complément d'information sur le poste"))
-        self.bouton_ajouter_periode.SetToolTipString(_(u"Cliquez ici pour ajouter une période"))
-        self.bouton_modifier_periode.SetToolTipString(_(u"Cliquez ici pour modifier la période sélectionnée"))
-        self.bouton_supprimer_periode.SetToolTipString(_(u"Cliquez ici pour supprimer la période sélectionnée"))
-        self.bouton_fonctions.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des fonctions"))
-        self.bouton_affectations.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des affectations"))
-        self.bouton_diffuseurs.SetToolTipString(_(u"Cliquez ici pour ajouter, modifier ou supprimer des diffuseurs"))
-        self.ctrl_diffuseurs.SetToolTipString(_(u"Cochez ici les organismes ou moyens de communication utilisés pour diffuser cette offre d'emploi. Ex : ANPE, Presse, fédération, etc..."))
+        self.ctrl_date_debut.SetToolTip(wx.ToolTip(_(u"Saisissez la date de lancement de l'offre d'emploi")))
+        self.ctrl_date_fin.SetToolTip(wx.ToolTip(_(u"Sélectionnez la date de clôture du recrutement pour cette offre d'emploi")))
+        self.ctrl_intitule.SetToolTip(wx.ToolTip(_(u"Saisissez l'intitulé (nom) de l'offre. Ex : Animateur Mercredis et vacances Saison 2009-10")))
+        self.ctrl_detail.SetToolTip(wx.ToolTip(_(u"Saisissez le texte détaillé de l'offre d'emploi")))
+        self.ctrl_reference.SetToolTip(wx.ToolTip(_(u"Saisissez le numéro de l'annonce déposé à l'ANPE. Ex : X455676E")))
+        self.ctrl_periodes.SetToolTip(wx.ToolTip(_(u"Sélectionnez un ou plusieurs périodes de disponibilités")))
+        self.ctrl_periodes_remarques.SetToolTip(wx.ToolTip(_(u"Saisissez un complement d'information sur les disponibilités")))
+        self.ctrl_fonction.SetToolTip(wx.ToolTip(_(u"Cochez la ou les fonctions du poste")))
+        self.ctrl_affectations.SetToolTip(wx.ToolTip(_(u"Cochez la ou les affectations pour le poste")))
+        self.ctrl_poste_remarques.SetToolTip(wx.ToolTip(_(u"Saisissez un complément d'information sur le poste")))
+        self.bouton_ajouter_periode.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter une période")))
+        self.bouton_modifier_periode.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la période sélectionnée")))
+        self.bouton_supprimer_periode.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la période sélectionnée")))
+        self.bouton_fonctions.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des fonctions")))
+        self.bouton_affectations.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des affectations")))
+        self.bouton_diffuseurs.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter, modifier ou supprimer des diffuseurs")))
+        self.ctrl_diffuseurs.SetToolTip(wx.ToolTip(_(u"Cochez ici les organismes ou moyens de communication utilisés pour diffuser cette offre d'emploi. Ex : ANPE, Presse, fédération, etc...")))
         
 
     def __do_layout(self):
@@ -420,7 +428,7 @@ class Panel(wx.Panel):
         # Demande de confirmation
         formatDate = "%d/%m/%Y"
         texteDates = _(u"Du %s au %s") % (date_debut.strftime(formatDate), date_fin.strftime(formatDate))
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette période de disponibilité ? \n\n> %s") % texteDates))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette période de disponibilité ? \n\n> %s") % texteDates))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -655,9 +663,9 @@ class Panel(wx.Panel):
         
 
 
-class BitmapComboBox(wx.combo.BitmapComboBox):
+class BitmapComboBox(BitmapComboBox):
     def __init__(self, parent, listeImages=[], size=(-1,  -1) ):
-        wx.combo.BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
+        BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
         # Remplissage des items avec les images
         for texte, nomImage in listeImages :
             img = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/%s" % nomImage), wx.BITMAP_TYPE_ANY)
@@ -684,7 +692,7 @@ class ListBoxDisponibilites(wx.ListBox):
             index += 1
     
     def GetIDselection(self):
-        print self.GetSelection()
+        print(self.GetSelection())
     
     def OnContextMenu(self, event):
         """Ouverture du menu contextuel """
@@ -693,7 +701,7 @@ class ListBoxDisponibilites(wx.ListBox):
             self.SetSelection(index)
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -784,7 +792,10 @@ class MyFrame(wx.Frame):
             self.SetTitle(_(u"Saisie d'une offre d'emploi"))
         else:
             self.SetTitle(_(u"Modification d'une offre d'emploi"))
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         

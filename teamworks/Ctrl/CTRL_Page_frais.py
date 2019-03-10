@@ -9,13 +9,14 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import datetime
 import FonctionsPerso
 from Dlg import DLG_Saisie_deplacement
 from Dlg import DLG_Saisie_remboursement
+from Utils import UTILS_Adaptations
 
 
 def DateEngFr(textDate):
@@ -66,19 +67,19 @@ class Panel(wx.Panel):
         
 
     def __set_properties(self):
-        self.bouton_deplacements_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir un nouveau déplacement"))
+        self.bouton_deplacements_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour saisir un nouveau déplacement")))
         self.bouton_deplacements_ajouter.SetSize(self.bouton_deplacements_ajouter.GetBestSize())
-        self.bouton_deplacements_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le déplacement sélectionné dans la liste"))
+        self.bouton_deplacements_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier le déplacement sélectionné dans la liste")))
         self.bouton_deplacements_modifier.SetSize(self.bouton_deplacements_modifier.GetBestSize())
-        self.bouton_deplacements_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le déplacement sélectionné dans la liste"))
+        self.bouton_deplacements_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le déplacement sélectionné dans la liste")))
         self.bouton_deplacements_supprimer.SetSize(self.bouton_deplacements_supprimer.GetBestSize())
-        self.bouton_deplacements_imprimer.SetToolTipString(_(u"Cliquez ici pour imprimer une fiche de frais de déplacement"))
+        self.bouton_deplacements_imprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour imprimer une fiche de frais de déplacement")))
         
-        self.bouton_remboursements_ajouter.SetToolTipString(_(u"Cliquez ici pour saisir un nouveau remboursement"))
+        self.bouton_remboursements_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour saisir un nouveau remboursement")))
         self.bouton_remboursements_ajouter.SetSize(self.bouton_remboursements_ajouter.GetBestSize())
-        self.bouton_remboursements_modifier.SetToolTipString(_(u"Cliquez ici pour modifier le remboursement sélectionné dans la liste"))
+        self.bouton_remboursements_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier le remboursement sélectionné dans la liste")))
         self.bouton_remboursements_modifier.SetSize(self.bouton_remboursements_modifier.GetBestSize())
-        self.bouton_remboursements_supprimer.SetToolTipString(_(u"Cliquez ici pour supprimer le remboursement sélectionné dans la liste"))
+        self.bouton_remboursements_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le remboursement sélectionné dans la liste")))
         self.bouton_remboursements_supprimer.SetSize(self.bouton_remboursements_supprimer.GetBestSize())
 
 
@@ -227,7 +228,7 @@ class Panel(wx.Panel):
         
         # Demande de confirmation
         texte = self.ctrl_deplacements.GetItem(index, 3).GetText() + "\nLe " + self.ctrl_deplacements.GetItem(index, 1).GetText()
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce déplacement ? \n\n") + texte))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer ce déplacement ? \n\n") + texte))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -356,7 +357,7 @@ class Panel(wx.Panel):
         
         # Demande de confirmation
         texte = self.ctrl_remboursements.GetItem(index, 2).GetText() + _(u" d'un montant de ") + self.ctrl_remboursements.GetItem(index, 3).GetText() 
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer le remboursement du ") + texte + " ?"))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer le remboursement du ") + texte + " ?"))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -444,7 +445,7 @@ class ListCtrl_deplacements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -514,7 +515,7 @@ class ListCtrl_deplacements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
+        valeur = six.text_type(self.itemDataMap[index][col])
         # Reformate une valeur date en version française
         if col == 1 :
             if valeur[4:5]=="-" and valeur[7:8]=="-":
@@ -544,9 +545,9 @@ class ListCtrl_deplacements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    def SortItems(self,sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
         # redraw the list
         self.Refresh()
@@ -570,7 +571,7 @@ class ListCtrl_deplacements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
         key = int(self.getColumnText(index, 0))
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))
@@ -661,7 +662,7 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
         #These two should probably be passed to init more cleanly
         #setting the numbers of items = number of elements in the dictionary
         self.itemDataMap = self.donnees
-        self.itemIndexMap = self.donnees.keys()
+        self.itemIndexMap = list(self.donnees.keys())
         self.SetItemCount(self.nbreLignes)
         
         #mixins
@@ -726,7 +727,7 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index = self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
+        valeur = six.text_type(self.itemDataMap[index][col])
         # Reformate une valeur date en version française
         if col == 2 :
             if valeur[4:5]=="-" and valeur[7:8]=="-":
@@ -747,9 +748,9 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
     # the ColumnSorterMixin.__ColumnSorter() method already handles the ascending/descending,
     # and it knows to sort on another column if the chosen columns have the same value.
 
-    def SortItems(self,sorter=cmp):
+    def SortItems(self,sorter=FonctionsPerso.cmp):
         items = list(self.itemDataMap.keys())
-        items.sort(sorter)
+        items = FonctionsPerso.SortItems(items, sorter)
         self.itemIndexMap = items
         # redraw the list
         self.Refresh()
@@ -773,7 +774,7 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
         key = int(self.getColumnText(index, 1))
         
         # Création du menu contextuel
-        menuPop = wx.Menu()
+        menuPop = UTILS_Adaptations.Menu()
 
         # Item Modifier
         item = wx.MenuItem(menuPop, 10, _(u"Ajouter"))

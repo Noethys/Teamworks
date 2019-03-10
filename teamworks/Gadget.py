@@ -9,9 +9,8 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
 import FonctionsPerso
-import  wx.calendar
+# import wx.calendar
 import GestionDB
 import datetime
 from Ctrl import CTRL_Calendrier_tw
@@ -45,23 +44,15 @@ class PanelGadget(wx.Panel):
         # Importation du contenu
         self.GetContenu(self.nomGadget)
 
-##        # Titre
-##        titre = wx.StaticText(self, -1, self.paramGadget["label"])
-##        font = wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.BOLD) 
-##        titre.SetFont(font)
-##        titre.SetBackgroundColour(self.couleurFondTitre)
-##        titre.SetForegroundColour(self.couleurTexteTitre)
-        
         # Boutons
         self.img_config = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Gadget_config.png"), wx.BITMAP_TYPE_ANY))
         self.img_fermer = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Gadget_fermer.png"), wx.BITMAP_TYPE_ANY))
-        self.img_config.SetToolTipString(_(u"Cliquez ici pour accéder aux options de ce gadget"))
-        self.img_fermer.SetToolTipString(_(u"Cliquez ici pour fermer ce gadget"))
+        self.img_config.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour accéder aux options de ce gadget")))
+        self.img_fermer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour fermer ce gadget")))
         if self.paramGadget["config"] == False : self.img_config.Show(False)
         
         # Layout
         grid_sizer_titre = wx.FlexGridSizer(rows=1, cols=3, vgap=0, hgap=0)        
-##        grid_sizer_titre.Add( titre, 1, wx.ALL|wx.EXPAND, 0)
         grid_sizer_titre.Add( (5, 5), 1, wx.ALL|wx.EXPAND, 0)
         grid_sizer_titre.Add( self.img_config , 1, wx.ALL|wx.EXPAND, 0)
         grid_sizer_titre.Add( self.img_fermer , 1, wx.ALL|wx.EXPAND, 0)
@@ -100,7 +91,10 @@ class PanelGadget(wx.Panel):
     def OnPaint(self, event):
         dc= wx.PaintDC(self)
         dc= wx.BufferedDC(dc)
-        largeurDC, hauteurDC= self.GetSizeTuple()
+        if 'phoenix' in wx.PlatformInfo:
+            largeurDC, hauteurDC= self.GetSize()
+        else:
+            largeurDC, hauteurDC= self.GetSizeTuple()
         
         # paint le fond
         dc.SetBackground(wx.Brush(self.couleurFondDC))
@@ -154,7 +148,7 @@ class PanelGadget(wx.Panel):
         """ Sauvegarde la liste des gadgets dans le configUser.dat """
 
         # Enregistrement dans la listeGadgets du panel
-        for key, valeur in parametres.iteritems() :
+        for key, valeur in parametres.items() :
             self.GetParent().listeGadgets[self.index][1][key] = valeur
         
         # Sauvegarde de la listeGadgets dans la table Gadgets
@@ -164,7 +158,7 @@ class PanelGadget(wx.Panel):
         nomGadget = self.GetParent().listeGadgets[self.index][0]
         dictGadget = self.GetParent().listeGadgets[self.index][1]
 
-        for key, valeur in dictGadget.iteritems() :
+        for key, valeur in dictGadget.items() :
             # Paramètres de base
             if key == "label" : listeDonnees.append( ("label", valeur) )
             elif key == "taille" : listeDonnees.append( ("taille", str(valeur)) )
@@ -387,54 +381,6 @@ class Gadget_Calendrier(CTRL_Calendrier_tw.Panel):
         frame_config.Show()
      
 
-# ----------------------------------------------------------------------------------------------------------------------------
-
-
-##class Gadget_CalendrierArchive(wx.Panel):
-##    def __init__(self, parent):
-##        wx.Panel.__init__(self, parent, -1, name="panel_gadget_calendrier")
-##        self.parent = parent
-##        dictParam = self.parent.paramGadget
-##        
-##        # Traduction du calendrier
-##        import locale
-##        self.locale = wx.Locale(wx.LANGUAGE_FRENCH)
-##        locale.setlocale(locale.LC_ALL, 'FR')
-##        
-##        
-##        dictParam = { "afficheVacs" : True, "colPoliceVacs" : (255, 255, 255), "colFondVacs" : (100, 50, 50), "colPoliceMois" : (100, 100, 100), "colFondMois" : (255, 50, 50), "colFondJours" : (0, 50, 200)   }
-##        
-##        # Widgets
-##        self.calendrier = wx.calendar.CalendarCtrl(self, -1, wx.DateTime_Now(), style = wx.calendar.CAL_MONDAY_FIRST| wx.calendar.CAL_SEQUENTIAL_MONTH_SELECTION)
-##
-##        # Affichage des vacances
-##        if dictParam["afficheVacs"] == True :
-##            self.calendrier.EnableHolidayDisplay(True)
-##            self.calendrier.SetHolidayColours(dictParam["colPoliceVacs"], dictParam["colFondVacs"]) 
-##        
-##            # Récupération des jours de vacances
-##            DB = GestionDB.DB()        
-##            req = """SELECT IDperiode, annee, nom, date_debut, date_fin
-##            FROM periodes_vacances ORDER BY date_debut; """
-##            DB.ExecuterReq(req)
-##            listeJoursVacs = DB.ResultatReq()
-##            DB.Close()
-##            
-##            self.calendrier.SetHoliday( 5 )
-##        
-##        # Application des couleurs
-##        self.calendrier.SetHeaderColours(dictParam["colPoliceMois"], dictParam["colFondMois"])
-##        self.calendrier.SetBackgroundColour(dictParam["colFondJours"])
-##        
-##        # Layout
-##        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-##        self.sizer.Add(self.calendrier, 1, wx.EXPAND)
-##        self.SetSizer(self.sizer)
-##        self.SetAutoLayout(True)
-##
-##    def Config(self):
-##        pass
-        
 # --------------------------------------------------------------------------------------------------------------------------------
         
         

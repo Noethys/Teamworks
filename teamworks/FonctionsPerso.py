@@ -8,6 +8,7 @@
 
 import Chemins
 from Utils.UTILS_Traduction import _
+import six
 import wx
 import wx.html as  html
 import GestionDB
@@ -17,6 +18,27 @@ import sys
 import shutil
 from Utils import UTILS_Config
 from Utils import UTILS_Fichiers
+
+if six.PY3:
+    import functools
+
+
+def cmp(x, y):
+    if x < y:
+        return -1
+    elif x > y:
+        return 1
+    else:
+        return 0
+
+def SortItems(items, sorter):
+    """ Adaptation py3 pour le tri des wx.listctrl """
+    if six.PY3:
+        items.sort(key=functools.cmp_to_key(sorter))
+    else:
+        items = FonctionsPerso.SortItems(items, sorter)
+    return items
+
 
 def DateEngFr(textDate):
     text = str(textDate[8:10]) + "/" + str(textDate[5:7]) + "/" + str(textDate[:4])
@@ -175,7 +197,7 @@ def Recup_liste_pb_personnes(recalc=False):
 ##    print ">>>", nomWindow
     # Si Recalcul des données obligatoire :
     if recalc == True :
-        print _(u"Recalcul obligatoire des donnees")
+        print(_(u"Recalcul obligatoire des donnees"))
         topWindow.dictNomsPersonnes, topWindow.dictProblemesPersonnes = Creation_liste_pb_personnes()
         return topWindow.dictNomsPersonnes, topWindow.dictProblemesPersonnes
     
@@ -287,7 +309,7 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
         
         # Met les données dans le dictionnaire
         if len(problemesFiche) != 0 : 
-            if dictProblemes.has_key(IDpersonne) == False : dictProblemes[IDpersonne] = {}
+            if (IDpersonne in dictProblemes) == False : dictProblemes[IDpersonne] = {}
             if len(problemesFiche) == 1 : 
                 categorie = _(u"1 information manquante")
             else:
@@ -347,7 +369,7 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
         
         # Passe en revue toutes les pièces à fournir et regarde si la personne possède les pièces correspondantes
         for IDtype_piece, nom_piece in listePiecesAFournir :
-            if dictTmpPieces.has_key(IDtype_piece) == True :
+            if (IDtype_piece in dictTmpPieces) == True :
                 date_debut = dictTmpPieces[IDtype_piece][0]
                 date_fin = dictTmpPieces[IDtype_piece][1]
                 # Recherche la validité
@@ -368,7 +390,7 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
             DictPieces[IDtype_piece] = (etat, nom_piece)
         
 
-        for IDtype_piece, donnees in DictPieces.iteritems() :
+        for IDtype_piece, donnees in DictPieces.items() :
             etat, nom_piece = donnees
             if etat == "Ok": continue
             if etat == "PasOk" :
@@ -379,7 +401,7 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
     
         # Met les listes de problèmes dans un dictionnaire
         if len(piecesManquantes) != 0 : 
-            if dictProblemes.has_key(IDpersonne) == False : dictProblemes[IDpersonne] = {}
+            if (IDpersonne in dictProblemes) == False : dictProblemes[IDpersonne] = {}
             if len(piecesManquantes) == 1 : 
                 categorie = _(u"1 pièce manquante")
             else:
@@ -387,7 +409,7 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
             dictProblemes[IDpersonne][categorie] = piecesManquantes
 
         if len(piecesPerimees) != 0 : 
-            if dictProblemes.has_key(IDpersonne) == False : dictProblemes[IDpersonne] = {}
+            if (IDpersonne in dictProblemes) == False : dictProblemes[IDpersonne] = {}
             if len(piecesPerimees) == 1 : 
                 categorie = _(u"1 pièce bientôt périmée")
             else:
@@ -419,7 +441,7 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
         
         # Met les données dans le dictionnaire
         if len(problemesContrats) != 0 : 
-            if dictProblemes.has_key(IDpersonne) == False : dictProblemes[IDpersonne] = {}
+            if (IDpersonne in dictProblemes) == False : dictProblemes[IDpersonne] = {}
             if len(problemesContrats) == 1 : 
                 categorie = _(u"1 contrat à voir")
             else:
@@ -469,8 +491,8 @@ class BarreTitre(wx.Panel):
         self.barreTitre.SetForegroundColour('White')
         # Panel
         self.SetBackgroundColour(couleurFond)
-        self.SetToolTipString(infoBulle)
-        self.barreTitre.SetToolTipString(infoBulle)
+        self.SetToolTip(wx.ToolTip(infoBulle))
+        self.barreTitre.SetToolTip(wx.ToolTip(infoBulle))
         # Positionnement
         sizer_base = wx.BoxSizer(wx.HORIZONTAL)
         sizer_base.Add(self.barreTitre, 0, wx.EXPAND|wx.ALL, 3)
@@ -529,7 +551,10 @@ class PanelArrondi(wx.Panel):
     def OnPaint(self, event):
         dc= wx.PaintDC(self)
         dc= wx.BufferedDC(dc)
-        largeurDC, hauteurDC= self.GetSizeTuple()
+        if 'phoenix' in wx.PlatformInfo:
+            largeurDC, hauteurDC= self.GetSize()
+        else:
+            largeurDC, hauteurDC= self.GetSizeTuple()
         
         # paint le fond
         dc.SetBackground(wx.Brush(self.couleurFondDC))
@@ -577,9 +602,9 @@ def sendTextMail():
         msg = msg + MAIL_CONTENT
         server.sendmail( sourceAddress, addressTarget, msg )
         server.quit()
-        print "Envoi mail Ok"
-    except smtplib.SMTPException, msg:
-        print msg
+        print("Envoi mail Ok")
+    except smtplib.SMTPException as msg:
+        print(msg)
 
 
 def EnvoyerMail(adresses = [], sujet="", message=""):
@@ -623,7 +648,7 @@ class FichierConfig():
         import shelve
         db = shelve.open(self.nomFichier, "r")
         dictDonnees = {}
-        for key in db.keys():
+        for key in list(db.keys()):
             dictDonnees[key] = db[key]
         db.close()
         return dictDonnees
@@ -632,7 +657,7 @@ class FichierConfig():
         """ Remplace le fichier de config présent sur le disque dur par le dict donné """
         import shelve
         db = shelve.open(self.nomFichier, "n")
-        for key in dictConfig.keys():
+        for key in list(dictConfig.keys()):
             db[key] = dictConfig[key]
         db.close()
         
@@ -813,7 +838,10 @@ class Aide_archive():
         self.frameAide.Bind(wx.EVT_CLOSE, self.OnClose )
     
     def Proprietes(self):
-        _icon = wx.EmptyIcon()
+        if 'phoenix' in wx.PlatformInfo:
+            _icon = wx.Icon()
+        else :
+            _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.frameAide.SetIcon(_icon)
         self.frameAide.SetTitle(_(u"Aide de TeamWorks"))
@@ -842,7 +870,7 @@ def Parametres(mode="get", categorie="", nom="", valeur=None):
     if type_parametre == int : valeurTmp = str(valeur)
     elif type_parametre == float : valeurTmp = str(valeur)
     elif type_parametre == str : valeurTmp = valeur
-    elif type_parametre == unicode : valeurTmp = valeur
+    elif type_parametre == six.text_type : valeurTmp = valeur
     elif type_parametre == tuple : valeurTmp = str(valeur)
     elif type_parametre == list : valeurTmp = str(valeur)
     elif type_parametre == dict : valeurTmp = str(valeur)
@@ -867,11 +895,11 @@ def Parametres(mode="get", categorie="", nom="", valeur=None):
             if type_parametre == int : valeurTmp = int(valeurTmp)
             if type_parametre == float : valeurTmp = float(valeurTmp)
             if type_parametre == str : valeurTmp = valeurTmp
-            if type_parametre == unicode : valeurTmp = valeurTmp
-            if type_parametre == tuple : exec("valeurTmp = " + valeurTmp)
-            if type_parametre == list : exec("valeurTmp = " + valeurTmp)
-            if type_parametre == dict : exec("valeurTmp = " + valeurTmp)
-            if type_parametre == bool : exec("valeurTmp = " + valeurTmp)
+            if type_parametre == six.text_type : valeurTmp = valeurTmp
+            if type_parametre == tuple : valeurTmp = eval(valeurTmp)
+            if type_parametre == list : valeurTmp = eval(valeurTmp)
+            if type_parametre == dict : valeurTmp = eval(valeurTmp)
+            if type_parametre == bool : valeurTmp = eval(valeurTmp)
         else:
             # On modifie la valeur du paramètre
             IDparametre = listeDonnees[0][0]
@@ -1032,7 +1060,7 @@ def AfficheStatsProgramme():
     listeResultats = []
     nbreLignesTotal = 0
     # Recherche les fichiers python
-    print "Lancement de l'analyse..."
+    print("Lancement de l'analyse...")
     listeFichiers = os.listdir("")
     for nomFichier in listeFichiers :
         if nomFichier.endswith(".py") :
@@ -1048,11 +1076,11 @@ def AfficheStatsProgramme():
     
     # Affiche les résultats
     for nomFichier, nbreLignes in listeResultats :
-        print "%s ---> %d lignes" % (nomFichier, nbreLignes)
-    print "----------------------------------------"
-    print "Nbre total de lignes = %d lignes" % nbreLignesTotal
-    print "Nbre total de modules = %s modules" % len(listeResultats)
-    print "----------------------------------------"
+        print("%s ---> %d lignes" % (nomFichier, nbreLignes))
+    print("----------------------------------------")
+    print("Nbre total de lignes = %d lignes" % nbreLignesTotal)
+    print("Nbre total de modules = %s modules" % len(listeResultats))
+    print("----------------------------------------")
 
 
 def GetVersionTeamworks():
@@ -1214,13 +1242,13 @@ def RemplacerContenuFichier():
     listeFichiers = os.listdir("")
     for nomFichier in listeFichiers :
         if nomFichier.endswith(".py") :
-            print "%s..." % nomFichier
+            print("%s..." % nomFichier)
             fichier = open(nomFichier, 'r')
             nouveauFichier = open("New/%s" % nomFichier, 'w')
             for line in fichier :
                 for old, new in listeRemplacements :
                     if old in line :
-                        print "  ->", old
+                        print("  ->", old)
                         line = line.replace(old, new)
                 nouveauFichier.write(line)
                 
@@ -1254,7 +1282,7 @@ def PreparationFichierDefaut(nomFichier=""):
     connexion.commit()
     # Fermeture base
     connexion.close() 
-    print "Procedure terminee."
+    print("Procedure terminee.")
 
 ##if __name__ == "__main__":
 ##    RemplacerContenuFichier()
@@ -1308,7 +1336,7 @@ def RemplacerDeprecatedWxpython():
     listeFichiersTrouves = []
     for nomFichier in listeFichiers :
         if nomFichier.endswith(".py") and "FonctionsPerso.py" not in nomFichier :
-            print "%s..." % nomFichier
+            print("%s..." % nomFichier)
             fichier = open(nomFichier, 'r')
             nouveauFichier = open("New/%s" % nomFichier, 'w')
             numLigne = 1
@@ -1329,7 +1357,7 @@ def RemplacerDeprecatedWxpython():
                                 #print nomFichier, ligne
                             else :
                                 newValeurs = valeurs
-                                print "ERREUR !!!!!!!! ---------> ", nomFichier, numLigne, valeurs, "-->", newValeurs
+                                print("ERREUR !!!!!!!! ---------> ", nomFichier, numLigne, valeurs, "-->", newValeurs)
                     
                     # wx.PySimpleApp
                     chaine = "wx.PySimpleApp"
@@ -1344,16 +1372,69 @@ def RemplacerDeprecatedWxpython():
                     # Ecriture
                     nouveauFichier.write(ligne)
                     numLigne += 1
-            except Exception, err:
-                print nomFichier, err
+            except Exception as err:
+                print(nomFichier, err)
             fichier.close()
             nouveauFichier.close()
-            print "fini !!!!!!!!!!!!!!!!!"
+            print("fini !!!!!!!!!!!!!!!!!")
+
+
+
+def InsertCodeToolTip():
+    """ Pour insérer  dans tous les fichiers """
+    import re
+    x = re.compile(r'\.SetToolTipString\((.*?\))')
+    #x = re.compile(r'\.SetToolTip\(')
+
+    for repertoire in ("Ctrl", "Dlg", "Ol", "Utils") :
+        # Création du répertoire temporaire
+        if not os.path.isdir("%s/New" % repertoire):
+            os.mkdir("%s/New" % repertoire)
+
+        # Get fichiers
+        listeFichiers = os.listdir(os.path.join(os.getcwd(), repertoire))
+        indexFichier = 0
+        for nomFichier in listeFichiers :
+            if nomFichier.endswith("py") :
+                #print("%d/%d :  %s..." % (indexFichier, len(listeFichiers), nomFichier))
+
+                # Ouverture des fichiers
+                fichier = open(os.path.join(repertoire, nomFichier), "r")
+                dirty = False
+
+                # .SetToolTip(wx.ToolTip(_(u"")))
+
+                listeLignes = []
+                for ligne in fichier :
+
+                    # Modification chemin Images
+                    m = x.search(ligne)
+                    if m != None:
+                        print(ligne)
+                        nouvelle_chaine = u".SetToolTip(wx.ToolTip(%s)" % m.group(1)
+                        ligne = ligne.replace(m.group(0), nouvelle_chaine)
+                        dirty = True
+                        print(("      > ", ligne))
+
+                    listeLignes.append(ligne)
+
+                # Clôture des fichiers
+                fichier.close()
+
+                # Ecriture du nouveau fichier
+                if dirty == True :
+                    nouveauFichier = open(os.path.join(repertoire, "New", nomFichier), "w")
+                    for ligne in listeLignes :
+                        nouveauFichier.write(ligne)
+                    nouveauFichier.close()
+
+            indexFichier += 1
+
+    print("Fini !!!!!!!!!!!!!!!!!")
 
 
 
 if __name__ == "__main__":
     pass
     
-    # Adaptation wxPython 2.9
-    #RemplacerDeprecatedWxpython()
+    #InsertCodeToolTip()
