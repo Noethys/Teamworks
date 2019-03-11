@@ -9,6 +9,7 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import wx.lib.mixins.listctrl  as  listmix
 import sqlite3
@@ -23,11 +24,10 @@ def PhonexPerso(word):
     resultat = UTILS_Phonex.phonex(word.encode("iso-8859-15"))
     return resultat
 
-class FrameGestionVilles(wx.Frame):
+
+class Dialog(wx.Dialog):
     def __init__(self, parent, title, exportCP=None, exportVille=None, exportChamp=None):
-        # begin wxGlade: MyFrame.__init__
-        wx.Frame.__init__(self, parent, -1, title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.panel_base = wx.Panel(self, -1)
         self.parent = parent
         self.sizer_SaisieManuelle_staticbox = wx.StaticBox(self.panel_base, -1, "Saisie manuelle")
@@ -96,7 +96,6 @@ class FrameGestionVilles(wx.Frame):
         self.bouton_Annuler.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler)
         self.bouton_Aide.Bind(wx.EVT_BUTTON, self.OnBoutonAide)
         self.bouton_AfficherTout.Bind(wx.EVT_BUTTON, self.OnAfficherTout)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def __do_layout(self):
         # begin wxGlade: MyFrame.__do_layout
@@ -151,10 +150,6 @@ class FrameGestionVilles(wx.Frame):
         self.grid_sizer_3 = grid_sizer_3
         self.sizer_SaisieManuelle = sizer_SaisieManuelle
         self.sizer_principal = sizer_principal
-        # end wxGlade
-
-# end of class MyFrame
-
 
     def OnBoutonRechercher(self, event):
         """ Bouton de lancement de la recherche """
@@ -191,28 +186,16 @@ class FrameGestionVilles(wx.Frame):
         self.list_ctrl_1.comAfficherTout()
         event.Skip()
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBoutonOk(self, event):
         if self.text_SaisieCode.GetValue().strip() != "" or self.text_SaisieVille.GetValue().strip() != "":
             export = self.ExportManuelVille()
             if export == True:
-                self.MakeModal(False)
-                FonctionsPerso.SetModalFrameParente(self)
-                self.Destroy()
+                self.EndModal(wx.ID_OK)
         else:
-            self.MakeModal(False)
-            FonctionsPerso.SetModalFrameParente(self)
-            self.Destroy()
+            self.EndModal(wx.ID_OK)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        event.Skip()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(21)
@@ -277,12 +260,14 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
         self.il = wx.ImageList(tailleIcones, tailleIcones)
         a={"sm_up":"GO_UP","sm_dn":"GO_DOWN","w_idx":"WARNING","e_idx":"ERROR","i_idx":"QUESTION"}
         for k,v in list(a.items()):
-            s="self.%s= self.il.Add(wx.ArtProvider_GetBitmap(wx.ART_%s,wx.ART_TOOLBAR,(16,16)))" % (k,v)
-            exec(s)
+            img = getattr(wx, "ART_%s" % v)
+            if 'phoenix' in wx.PlatformInfo:
+                setattr(self, k, self.il.Add(wx.ArtProvider.GetBitmap(img, wx.ART_TOOLBAR, (16, 16))))
+            else:
+                setattr(self, k, self.il.Add(wx.ArtProvider_GetBitmap(img, wx.ART_TOOLBAR, (16,16))))
         self.imgTriAz= self.il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Tri_az.png"), wx.BITMAP_TYPE_PNG))
         self.imgTriZa= self.il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Tri_za.png"), wx.BITMAP_TYPE_PNG))
         self.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
-
 
         #adding some attributes (colourful background for each item rows)
         self.attr1 = wx.ListItemAttr()
@@ -405,7 +390,7 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
+        valeur = six.text_type(self.itemDataMap[index][col])
         return valeur
 
     def OnGetItemImage(self, item):
@@ -525,8 +510,7 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_GestionVilles = FrameGestionVilles(None, "Titre")
-    app.SetTopWindow(frame_GestionVilles)
-    frame_GestionVilles.Show()
+    dlg = Dialog(None, "")
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

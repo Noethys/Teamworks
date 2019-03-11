@@ -115,7 +115,7 @@ class Page(wx.Panel):
         for ID, valeurs in self.panelDefilant.dicoChamps.items() : 
             nom = "champ" + str(ID)
             label = valeurs[1]
-            exec( "texte = self.panelDefilant.text_" + nom + ".GetValue()" )
+            texte = getattr(self.panelDefilant, "text_%s" % nom).GetValue()
                         
             # Critères de validation
             if texte == "" :

@@ -84,10 +84,9 @@ class Panel(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        frm = DLG_Saisie_emploi.MyFrame(self, IDemploi=None)
-        frm.Show()
-        
-##        self.listCtrl.MAJListeCtrl()
+        dlg = DLG_Saisie_emploi.Dialog(self, IDemploi=None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -116,10 +115,10 @@ class Panel(wx.Panel):
                 dlg.Destroy()
                 return
             else: dlg.Destroy()
-        
-        frm = DLG_Saisie_emploi.MyFrame(self, IDemploi=varID)
-        frm.Show()
-        
+        dlg = DLG_Saisie_emploi.Dialog(self, IDemploi=varID)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonSupprimer(self, event):
         self.Supprimer()
 

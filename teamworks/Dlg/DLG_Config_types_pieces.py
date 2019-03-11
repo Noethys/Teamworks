@@ -123,8 +123,9 @@ class Panel_TypesPieces(wx.Panel):
 
     def Ajouter(self):
         """ Créer un nouveau type de pièce """
-        frame_saisieTypesPieces = DLG_Saisie_type_piece.Frm_SaisieTypesPieces(self, -1, IDtype_piece=0)
-        frame_saisieTypesPieces.Show()
+        dlg = DLG_Saisie_type_piece.Dialog(self, -1, IDtype_piece=0)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -151,8 +152,10 @@ class Panel_TypesPieces(wx.Panel):
                 dlg.Destroy()
         
         varIDtype_piece = int(self.listCtrl_TypesPieces.GetItem(index, 0).GetText())
-        frame_saisieTypesPieces = DLG_Saisie_type_piece.Frm_SaisieTypesPieces(self, -1, IDtype_piece=varIDtype_piece)
-        frame_saisieTypesPieces.Show()
+        dlg = DLG_Saisie_type_piece.Dialog(self, -1, IDtype_piece=varIDtype_piece)
+        dlg.ShowModal()
+        dlg.Destroy()
+
         
     def OnBoutonSupprimer(self, event):
         self.Supprimer()

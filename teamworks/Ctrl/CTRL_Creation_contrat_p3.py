@@ -20,6 +20,7 @@ if 'phoenix' in wx.PlatformInfo:
 else :
     from wx import DatePickerCtrl, DP_DROPDOWN
 
+
 class Page(wx.Panel):
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.TAB_TRAVERSAL

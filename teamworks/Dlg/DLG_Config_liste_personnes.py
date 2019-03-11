@@ -147,19 +147,24 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # Remplissage avec les valeurs
         self.remplissage = True
         self.listeColonnes.sort(key=operator.itemgetter(8))
-        for ID, labelCol, alignement, largeur, nomChamp, args, description, affiche, ordre in self.listeColonnes : 
+        for ID, labelCol, alignement, largeur, nomChamp, args, description, affiche, ordre in self.listeColonnes :
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, str(ordre))
+                self.SetItem(index, 1, labelCol)
+                self.SetItem(index, 2, description)
+            else:
                 index = self.InsertStringItem(six.MAXSIZE, str(ordre))
                 self.SetStringItem(index, 1, labelCol)
                 self.SetStringItem(index, 2, description)
-                self.SetItemData(index, ID)
-                
-                # Check
-                if affiche == True :
-                    self.CheckItem(index) 
-                                
-                # Sélection
-                if ID == select :
-                    self.Select(index)
+            self.SetItemData(index, ID)
+
+            # Check
+            if affiche == True :
+                self.CheckItem(index)
+
+            # Sélection
+            if ID == select :
+                self.Select(index)
         
         self.remplissage = False
 

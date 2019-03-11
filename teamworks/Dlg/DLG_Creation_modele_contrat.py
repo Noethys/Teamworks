@@ -18,11 +18,9 @@ from Ctrl.CTRL_Creation_modele_contrat_p2 import Page as Page2
 from Ctrl.CTRL_Creation_modele_contrat_p3 import Page as Page3
 
 
-class MyWizard(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, title="", IDmodele=0):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_creation_modele_contrats", style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-        
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.listePages = ("Page1", "Page2", "Page3")
         
@@ -39,8 +37,7 @@ class MyWizard(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_retour, self.bouton_retour)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_suite, self.bouton_suite)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.bouton_retour.Enable(False)
         self.nbrePages = len(self.listePages)    
         self.pageVisible = 1
@@ -109,7 +106,7 @@ class MyWizard(wx.Frame):
         self.bouton_suite.SetSize(self.bouton_suite.GetBestSize())
         self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler la création du contrat")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        self.SetMinSize((470, 380))
+        self.SetMinSize((470, 500))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -135,11 +132,6 @@ class MyWizard(wx.Frame):
         self.Centre()
         self.sizer_pages = sizer_pages
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(31)
 
@@ -184,25 +176,20 @@ class MyWizard(wx.Frame):
             self.bouton_retour.Enable(True)
             
     def Onbouton_annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def ValidationPages(self) :
         """ Validation des données avant changement de pages """
-        exec( "validation = self.page" + str(self.pageVisible) + ".Validation()" )
+        validation = getattr(self, "page%s" % self.pageVisible).Validation()
         return validation
     
     def Terminer(self):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
         
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyWizard(None, "", IDmodele=4)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "", IDmodele=4)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

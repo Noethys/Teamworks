@@ -103,8 +103,9 @@ class Panel_CatPresences(wx.Panel):
 
     def Ajouter(self):
         """ Créer une nouvelle catégorie """
-        frame_saisieCategorie = DLG_Saisie_cat_presences.Frm_SaisieCatPresences(self, -1, IDcat_parent=self.treeSelection)
-        frame_saisieCategorie.Show()
+        dlg = DLG_Saisie_cat_presences.Dialog(self, -1, IDcat_parent=self.treeSelection)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -149,10 +150,10 @@ class Panel_CatPresences(wx.Panel):
                 return
             else: dlg.Destroy()
                 
-        frame_saisieCategorie = DLG_Saisie_cat_presences.Frm_SaisieCatPresences(self, -1, IDcategorie=IDcategorie)
-        frame_saisieCategorie.Show()
+        dlg = DLG_Saisie_cat_presences.Dialog(self, -1, IDcategorie=IDcategorie)
+        dlg.ShowModal()
+        dlg.Destroy()
 
-        
     def OnBoutonSupprimer(self, event):
         self.Supprimer()
 
@@ -276,9 +277,14 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
     def CreationImage(self, tailleImages, r, v, b):
         """ Création des images pour le TreeCtrl """
-        bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
-        bmp.SetRGBRect((0, 0, 16, 16), 255, 255, 255)
-        bmp.SetRGBRect((6, 4, 8, 8), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGB((0, 0, 16, 16), 255, 255, 255)
+            bmp.SetRGB((6, 4, 8, 8), r, v, b)
+        else:
+            bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGBRect((0, 0, 16, 16), 255, 255, 255)
+            bmp.SetRGBRect((6, 4, 8, 8), r, v, b)
         return bmp.ConvertToBitmap()
 
     def Remplissage(self):
@@ -286,7 +292,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.listeCategories = self.Importation()
         tailleImages = (16,16)
         il = wx.ImageList(tailleImages[0], tailleImages[1])
-        self.imgRoot = il.Add(wx.ArtProvider_GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
+        if 'phoenix' in wx.PlatformInfo:
+            self.imgRoot = il.Add(wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
+        else:
+            self.imgRoot = il.Add(wx.ArtProvider_GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
         for categorie in self.listeCategories:
             ID = categorie[0]
             couleur = self.FormateCouleur(categorie[4])
@@ -299,7 +308,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.il = il
 
         self.root = self.AddRoot(_(u"Catégories"))
-        self.SetPyData(self.root, 0)
+        if 'phoenix' in wx.PlatformInfo:
+            self.SetItemData(self.root, 0)
+        else:
+            self.SetPyData(self.root, 0)
         self.SetItemImage(self.root, self.imgRoot, wx.TreeItemIcon_Normal)
 
         self.nbreCategories = len(self.listeCategories)
@@ -317,7 +329,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
                 # Création de la branche
                 newItem = self.AppendItem(itemParent, item[1])
-                self.SetPyData(newItem, item[0])
+                if 'phoenix' in wx.PlatformInfo:
+                    self.SetItemData(newItem, item[0])
+                else:
+                    self.SetPyData(newItem, item[0])
                 exec("self.SetItemImage(newItem, self.img" + str(item[0]) + ", wx.TreeItemIcon_Normal)")
 
                 # Sélection de l'item s'il sélectionné est par défaut
@@ -355,7 +370,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
     def OnSelChanged(self, event):
         self.item = event.GetItem()
         textItem = self.GetItemText(self.item)
-        data = self.GetPyData(self.item)
+        if 'phoenix' in wx.PlatformInfo:
+            data = self.GetItemData(self.item)
+        else:
+            data = self.GetPyData(self.item)
         self.treeSelection = (self.item, textItem, data)
         self.parent.treeSelection = data
         event.Skip()
@@ -554,12 +572,12 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.SetFocus()
 
 
-        
-class MyFrame(wx.Frame):
-    def __init__(self, parent, title="" ):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_gestion_cat_presences", style=wx.DEFAULT_FRAME_STYLE)
+
+class Dialog(wx.Dialog):
+    def __init__(self, parent, title=""):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
-        self.MakeModal(True)
+
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel_CatPresences(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
@@ -572,9 +590,6 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-       
-        
 
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des catégories de présences"))
@@ -590,7 +605,6 @@ class MyFrame(wx.Frame):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -614,40 +628,20 @@ class MyFrame(wx.Frame):
         self.Layout()
         self.Centre()
         self.sizer_pages = sizer_pages
-        
         self.SetSize((350, 500))
-        
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(8)
             
     def Onbouton_annuler(self, event):
-        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
-##        if FonctionsPerso.FrameOuverte("frm_creation_contrats") != None :
-##            self.GetParent().MAJ_choice_ValPoint()
-##        # Fermeture
-##        self.MakeModal(False)
-##        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def Onbouton_ok(self, event):
-##        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
-##        if FonctionsPerso.FrameOuverte("frm_creation_contrats") != None :
-##            self.GetParent().MAJ_choice_ValPoint()
-##        # Fermeture
-##        self.MakeModal(False)
-##        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.EndModal(wx.ID_OK)
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "")
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

@@ -24,8 +24,7 @@ class newThread(threading.Thread):
         
     def run(self):
         while 1 :
-            
-            if self.parent.doExit : 
+            if self.parent.doExit :
                 thread.exit()
                 time.sleep(0.1)
             
@@ -76,7 +75,6 @@ class MyFrame(wx.Frame):
     def stop(self):
         self.doExit = 1
         time.sleep(0.1)
-        self.MakeModal(False)
         FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
     

@@ -13,12 +13,15 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN
 
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, title="" , IDvaleur=0):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.sizer_contenu_staticbox = wx.StaticBox(self.panel_base, -1, "")
@@ -26,7 +29,7 @@ class MyFrame(wx.Frame):
         self.text_valeur = wx.TextCtrl(self.panel_base, -1, "", style=wx.TE_CENTRE)
         self.label_euro = wx.StaticText(self.panel_base, -1, u"¤")
         self.label_dateDebut = wx.StaticText(self.panel_base, -1, _(u"A partir du :"))
-        self.datepicker_dateDebut = wx.DatePickerCtrl(self.panel_base, -1, style=wx.DP_DROPDOWN)
+        self.datepicker_dateDebut = DatePickerCtrl(self.panel_base, -1, style=DP_DROPDOWN)
         self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
         self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
@@ -41,8 +44,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         self.SetTitle(_(u"Gestion de la valeur du point"))
         if 'phoenix' in wx.PlatformInfo:
@@ -87,7 +89,6 @@ class MyFrame(wx.Frame):
         self.Layout()
         self.Centre()
 
-
     def Importation(self):
         DB = GestionDB.DB()
         req = "SELECT * FROM valeurs_point WHERE IDvaleur_point=%d" % self.IDvaleur
@@ -129,18 +130,11 @@ class MyFrame(wx.Frame):
         DB.Close()
         return ID
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(13)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
@@ -165,20 +159,19 @@ class MyFrame(wx.Frame):
             return
         # Sauvegarde
         self.Sauvegarde()
+
         # MAJ du listCtrl des valeurs de points
         if FonctionsPerso.FrameOuverte("config_val_point") != None :
             self.GetParent().MAJ_ListCtrl()
+
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     
     
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "", IDvaleur=0)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "", IDvaleur=0)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

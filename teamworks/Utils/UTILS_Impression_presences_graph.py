@@ -10,7 +10,7 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import FonctionsPerso
 from Utils import UTILS_Fichiers
-
+import six
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib.units import inch, cm

@@ -83,15 +83,14 @@ class Panel(wx.Panel):
         self.SetAutoLayout(True)
         self.grid_sizer_base = grid_sizer_base
         self.grid_sizer_base2 = grid_sizer_base2
-        
-        
 
     def OnBoutonAjouter(self, event):
         self.Ajouter()
 
     def Ajouter(self):
-        frmSaisie = FrmSaisie.MyWizard(self, "", IDmodele=0)
-        frmSaisie.Show()
+        dlg = FrmSaisie.Dialog(self, "", IDmodele=0)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -104,22 +103,11 @@ class Panel(wx.Panel):
             dlg.Destroy()
             return
 
-##        # Avertissement si cet item a déjà été attribué à une personne
-##        nbreTitulaires = int(self.listCtrl_Situations.GetItem(index, 2).GetText())
-##        if nbreTitulaires != 0:
-##            message =_(u"Avertissement : Ce type de situation sociale a déjà été attribué a ") + str(nbreTitulaires) + _(u" personne(s). Toute modification sera donc répercutée en cascade sur toutes les fiches des personnes à qui cette situation sociale a été attribuée. \n\nSouhaitez-vous quand même modifier ce type de situation ?")
-##            dlg = wx.MessageDialog(self, message, "Information", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_INFORMATION)
-##            reponse = dlg.ShowModal()
-##            if reponse == wx.ID_NO:
-##                dlg.Destroy()
-##                return
-##            else:
-##                dlg.Destroy()
-        
         ID = int(self.listCtrl.GetItem(index, 0).GetText())
-        frmSaisie = FrmSaisie.MyWizard(self, "", IDmodele=ID)
-        frmSaisie.Show()
-        
+        dlg = FrmSaisie.Dialog(self, "", IDmodele=ID)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonSupprimer(self, event):
         self.Supprimer()
 

@@ -105,7 +105,10 @@ class StaticWrapText(wx.StaticText):
         lines = []
 
         # get the maximum width (that of our parent)
-        max_width = self.GetParent().GetVirtualSizeTuple()[0]-20 # J'ai ajouté le -20 ici
+        if 'phoenix' in wx.PlatformInfo:
+            max_width = self.GetParent().GetVirtualSize()[0]-20
+        else:
+            max_width = self.GetParent().GetVirtualSizeTuple()[0] - 20
         
         index = 0
         current = []

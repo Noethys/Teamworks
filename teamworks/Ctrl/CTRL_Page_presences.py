@@ -135,13 +135,14 @@ class Panel(wx.Panel):
         IDpresence = int(self.listCtrl.getColumnText(index, 0))
         # Ouverture de la frame saisie de présences
         from Dlg import DLG_Saisie_presence
-        frame_SaisiePresences = DLG_Saisie_presence.Frm_SaisiePresences(self, IDmodif=IDpresence)
-        frame_SaisiePresences.Show()
-        frame_SaisiePresences.panel.sizer_1.Hide(False)
-        frame_SaisiePresences.panel.sizer_donnees_staticbox.Hide()
-        frame_SaisiePresences.panel.grid_sizer_base.Layout()
-        frame_SaisiePresences.SetMinSize((400, 320))
-        frame_SaisiePresences.SetSize((400, 320))
+        dlg = DLG_Saisie_presence.Dialog(self, IDmodif=IDpresence)
+        dlg.panel.sizer_1.Hide(False)
+        dlg.panel.sizer_donnees_staticbox.Hide()
+        dlg.panel.grid_sizer_base.Layout()
+        dlg.SetMinSize((400, 320))
+        dlg.SetSize((400, 320))
+        dlg.ShowModal()
+        dlg.Destroy()
         self.listCtrl.indexEnCours = index
 
     def OnBoutonSuppr(self, event):
@@ -215,9 +216,9 @@ class Panel(wx.Panel):
     
     def AppliquerModele(self):
         """ Appliquer un modèle de présence """
-        frmModele = Frm_ApplicationModele(self, IDpersonne=self.IDpersonne)
-        frmModele.Show()
-        
+        dlg = Dialog_application_modele(self, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
         
     def OnBoutonRecherche(self, event):
         self.Rechercher()
@@ -343,12 +344,11 @@ class Dialog_saisie(wx.Dialog):
 # ------------------------------------        APPLICATION MODELE             --------------------------------------------------------------------------
 
 
-class Frm_ApplicationModele(wx.Frame):
-    def __init__(self, parent, title=_(u"Application d'un modèle"), IDpersonne=0 ):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_applicModele_FicheInd", style=wx.DEFAULT_FRAME_STYLE)
+class Dialog_application_modele(wx.Dialog):
+    def __init__(self, parent, title=_(u"Application d'un modèle"), IDpersonne=0):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDpersonne = IDpersonne
-        self.MakeModal(True)
         self.panel_base = wx.Panel(self, -1, name="panel_applicModele_FicheInd")
 
         self.selectionLignes = []
@@ -385,23 +385,10 @@ class Frm_ApplicationModele(wx.Frame):
         self.SetMinSize((720, 400))
         self.SetSize((720, 400))
         self.Centre()
-        
-        # Bind
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-               
-    def OnClose(self, event):
-        self.Fermer()
-        event.Skip()
-        
+
     def Fermer(self):
         self.parent.MAJpanel()
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        
-        # MàJ du listCtrl de la fiche individuelle
-##        if index > 0 : self.parent.listCtrl.indexEnCours = index - 1
-##        else: self.parent.listCtrl.indexEnCours = 0
+        self.EndModal(wx.ID_CANCEL)
 
     def SendDates(self, listeDates=[]):
         # Envoie des dates au panel d'application des modèles

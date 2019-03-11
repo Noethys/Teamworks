@@ -405,16 +405,19 @@ class Panel_general(wx.Panel):
         dlg.Destroy()
         
     def OnBoutonPays(self, event):
-        frmConfig_Pays = DLG_Config_pays.MyFrame(self, "", IDpays=self.IDpays_naiss, saisie="FicheIndiv_pays_naiss")
-        frmConfig_Pays.Show()
+        dlg = DLG_Config_pays.Dialog(self, "", IDpays=self.IDpays_naiss, saisie="FicheIndiv_pays_naiss")
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonNation(self, event):
-        frmConfig_Pays = DLG_Config_pays.MyFrame(self, "", IDpays=self.IDpays_nation, saisie="FicheIndiv_nationalite")
-        frmConfig_Pays.Show()
+        dlg = DLG_Config_pays.Dialog(self, "", IDpays=self.IDpays_nation, saisie="FicheIndiv_nationalite")
+        dlg.ShowModal()
+        dlg.Destroy()
                         
     def OnBoutonSituations(self, event):
-        frame_situations = DLG_Config_situations.MyFrame(self)
-        frame_situations.Show()
+        dlg = DLG_Config_situations.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnActivate(self, event):
         print("YAAAAAAAAAAAAAAAAAAAA... ", str(event.GetActive()))
@@ -431,16 +434,18 @@ class Panel_general(wx.Panel):
     def AppelGestionVilles(self, controleCP, controleVille, nomChamp):
         # Ouverture de la fenêtre Gestion des villes
         from Dlg import DLG_Gestion_villes
-        frame_GestionVilles = DLG_Gestion_villes.FrameGestionVilles(self, "Titre", exportCP=controleCP, exportVille=controleVille, exportChamp=nomChamp)
-        frame_GestionVilles.Show()
+        dlg = DLG_Gestion_villes.Dialog(self, "Titre", exportCP=controleCP, exportVille=controleVille, exportChamp=nomChamp)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnAjoutTel(self, event): 
         self.AjouterCoord()
         event.Skip()
 
     def AjouterCoord(self):
-        frameCoords = DLG_Saisie_coords.FrameCoords(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=0, IDpersonne=self.IDpersonne)
-        frameCoords.Show()
+        dlg = DLG_Saisie_coords.Dialog(self, IDcoord=0, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnModifTel(self, event):
         self.ModifierCoord()
@@ -455,9 +460,11 @@ class Panel_general(wx.Panel):
             dlg.Destroy()
             return
         varIDcoord = self.list_ctrl_coords.GetItemData(index)
-        frameCoords = DLG_Saisie_coords.FrameCoords(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=varIDcoord, IDpersonne=self.IDpersonne)
-        frameCoords.Show()
-        
+        dlg = DLG_Saisie_coords.Dialog(self, IDcoord=varIDcoord, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+
     def OnSupprTel(self, event): # wxGlade: Panel_general.<event_handler>
         self.SupprimerCoord()
         event.Skip()

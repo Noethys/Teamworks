@@ -74,7 +74,7 @@ LISTE_PAGES = [
     ( "page", "DLG_Config_fonctions.Panel(self, -1)", _(u"Les fonctions"), "Mail.png"),
     ( "page", "DLG_Config_affectations.Panel(self, -1)", _(u"Les affectations"), "Mail.png"),
     ( "page", "DLG_Config_diffuseurs.Panel(self, -1)", _(u"Les diffuseurs"), "Mail.png"),
-    ( "page", "DLG_Config_emplois.Panel(self, -1)", _(u"Les offres d emploi"), "Mail.png"),
+    ( "page", "DLG_Config_emplois.Panel(self, -1)", _(u"Les offres d'emploi"), "Mail.png"),
     
     ]
 
@@ -106,7 +106,7 @@ class Treebook(wx.Treebook):
                 panel = Panel_rubrique(self, -1, titre, contenu, index)
                 exec( "self.AddPage(panel, u'" + titre + "', imageId=self.img_" + str(index) + ")")
             if type == "page" :
-                exec( "self.AddSubPage(" + contenu + ", u'" + titre + "', imageId=self.img_" + str(index) + ")")
+                self.AddSubPage(eval(contenu), titre, imageId=getattr(self, "img_%s" % index))
             index += 1    
         
         # Deplie toutes les branches du treeCtrl

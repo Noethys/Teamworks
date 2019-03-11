@@ -660,7 +660,7 @@ class ListView(FastObjectListView):
             liste_labelsColonnes, listeValeurs = self.GetValeurs()
             # Selection des lignes
             from Dlg import DLG_Selection_liste
-            dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
+            dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
             if dlg.ShowModal() == wx.ID_OK:
                 listeSelections = dlg.GetSelections()
                 dlg.Destroy()

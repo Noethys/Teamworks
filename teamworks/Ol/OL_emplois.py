@@ -565,8 +565,9 @@ class ListView(ObjectListView):
         except : 
             pass
             
-        frm = DLG_Saisie_emploi.MyFrame(self, IDemploi=None)
-        frm.Show()
+        dlg = DLG_Saisie_emploi.Dialog(self, IDemploi=None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Modifier(self):
         
@@ -582,8 +583,9 @@ class ListView(ObjectListView):
             dlg.Destroy()
             return
         IDemploi = self.Selection()[0].IDemploi
-        frm = DLG_Saisie_emploi.MyFrame(self, IDemploi=IDemploi)
-        frm.Show()
+        dlg = DLG_Saisie_emploi.Dialog(self, IDemploi=IDemploi)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Supprimer(self):
         
@@ -671,7 +673,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()
@@ -759,7 +761,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="exportExcel")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportExcel")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()
@@ -848,7 +850,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="imprimerListePersonnes")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="imprimerListePersonnes")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()

@@ -1387,13 +1387,11 @@ class MyFrame(wx.Frame):
             pass
 
         self.MakeModal(False)
-##        FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
 
         
 if __name__ == _(u"__main__"):
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
     frame_1 = MyFrame(None, IDcandidat=3)
     app.SetTopWindow(frame_1)
     frame_1.Show()

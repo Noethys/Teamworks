@@ -17,7 +17,7 @@ import sys
 import datetime
 
 
-class MyFrame(wx.Dialog):
+class Dialog(wx.Dialog):
     def __init__(self, parent, size=(550, 335), listeBoutons=[], type=None):
         wx.Dialog.__init__(self, parent, -1, title=_(u"Sélection du type de document"))
         self.parent = parent
@@ -43,8 +43,7 @@ class MyFrame(wx.Dialog):
         
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler"))
         self.SetMinSize((500, -1))
@@ -73,7 +72,6 @@ class MyFrame(wx.Dialog):
         grid_sizer_boutons.AddGrowableCol(1)
 
         grid_sizer_base.AddGrowableCol(0)
-##        grid_sizer_base.AddGrowableRow(1)
         grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.EXPAND, 10)
         self.SetSizer(grid_sizer_base)
         sizer_base.Add(self, 1, wx.EXPAND, 0)
@@ -81,10 +79,6 @@ class MyFrame(wx.Dialog):
         self.Layout()
         self.CentreOnScreen()       
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         # Si impression présences :
         if self.type == "presences" :
@@ -94,8 +88,7 @@ class MyFrame(wx.Dialog):
             FonctionsPerso.Aide(6)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonClic(self, event):
         self.choix = event.GetId()
@@ -116,6 +109,7 @@ if __name__ == "__main__":
         (Chemins.GetStaticPath("Images/BoutonsImages/Imprimer_presences_graph2B.png"), _(u"Cliquez ici pour imprimer sous forme graphique au format paysage")),
         ]
 
-    frm = MyFrame(None, listeBoutons=listeBoutons)
-    frm.ShowModal()
+    dlg = Dialog(None, listeBoutons=listeBoutons)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

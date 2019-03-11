@@ -108,16 +108,19 @@ class Page(wx.Panel):
         self.SelectChoice(self.choice_class, data=classification )
         
     def OnBoutonChamps(self, event):
-        frmChamps = DLG_Config_champs_contrats.MyFrame(self, "")
-        frmChamps.Show()
-                
+        dlg = DLG_Config_champs_contrats.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonClassifications(self, event):
-        frmClassification = DLG_Config_classifications.MyFrame(self, "")
-        frmClassification.Show()
-        
+        dlg = DLG_Config_classifications.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonType(self, event):
-        frmTypes = DLG_Config_types_contrats.MyFrame(self, "")
-        frmTypes.Show()
+        dlg = DLG_Config_types_contrats.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MAJ_ListCtrl(self):
         self.listCtrl_champs.MAJListeCtrl()   
@@ -255,20 +258,20 @@ class ListCtrl_champs(wx.ListCtrl, CheckListCtrlMixin):
         self.ClearAll()
         # Création des colonnes
         self.InsertColumn(0, "Nom")
-##        self.InsertColumn(1, "Description")
 
         # Remplissage avec les valeurs
         for key, valeurs in self.dictChamps.items():
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, valeurs[1])
+            else:
                 index = self.InsertStringItem(six.MAXSIZE, valeurs[1])
-##                self.SetStringItem(index, 1, valeurs[1])
-                self.SetItemData(index, key)
-                # Sélection
-                if key in self.selections :
-                    self.CheckItem(index)                    
+            self.SetItemData(index, key)
+            # Sélection
+            if key in self.selections :
+                self.CheckItem(index)
 
         # Ajustement tailles colonnes
         self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
-##        self.SetColumnWidth(1, wx.LIST_AUTOSIZE)
 
         # Tri
         self.SortItems(self.columnSorter)

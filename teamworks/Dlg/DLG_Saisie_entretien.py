@@ -16,14 +16,15 @@ import FonctionsPerso
 import wx.lib.masked as masked
 if 'phoenix' in wx.PlatformInfo:
     from wx.adv import BitmapComboBox
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN
 else :
     from wx.combo import BitmapComboBox
+    from wx import DatePickerCtrl, DP_DROPDOWN
 
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, IDentretien=None, IDcandidat=None, IDpersonne=None):
-        wx.Frame.__init__(self, parent, -1, title="", style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.IDentretien = IDentretien
         self.IDcandidat = IDcandidat
         self.IDpersonne = IDpersonne
@@ -31,13 +32,13 @@ class MyFrame(wx.Frame):
         self.panel = wx.Panel(self, -1)
         self.sizer_contenu_staticbox = wx.StaticBox(self.panel, -1, "")
         self.label_date = wx.StaticText(self.panel, -1, _(u"Date :"))
-        self.ctrl_date = wx.DatePickerCtrl(self.panel, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date = DatePickerCtrl(self.panel, -1, style=DP_DROPDOWN)
         self.label_heure = wx.StaticText(self.panel, -1, _(u"Heure :"))
         self.ctrl_heure = masked.TextCtrl(self.panel, -1, "", size=(60, -1), style=wx.TE_CENTRE, mask = "##:##", validRegex   = "[0-2][0-9]:[0-5][0-9]")
         self.ctrl_heure.SetCtrlParameters(invalidBackgroundColour = "PINK")
         self.label_avis = wx.StaticText(self.panel, -1, _(u"Avis :"))
         listeImages = [ (_(u"Avis inconnu"), "Smiley_question.png"), (_(u"Pas convaincant"), "Smiley_nul.png"), (_(u"Mitigé"), "Smiley_bof.png"), (_(u"Bien"), "Smiley_bien.png"), (_(u"Très bien"), "Smiley_genial.png"),]
-        self.ctrl_avis = BitmapComboBox(self.panel, listeImages=listeImages)
+        self.ctrl_avis = MyBitmapComboBox(self.panel, listeImages=listeImages)
         self.label_remarques = wx.StaticText(self.panel, -1, _(u"Commentaire :"))
         self.ctrl_remarques = wx.TextCtrl(self.panel, -1, "", style=wx.TE_MULTILINE)
         
@@ -54,7 +55,6 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_CONTEXT_MENU, self.OnContextMenu)
 
     def __set_properties(self):
@@ -184,21 +184,13 @@ class MyFrame(wx.Frame):
         DB.Close()
         return ID
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
-##        FonctionsPerso.Aide(39)
         dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
@@ -236,12 +228,9 @@ class MyFrame(wx.Frame):
                 self.GetGrandParent().GetParent().MAJlabelsPages("entretiens")
         except :
             pass
-            
-            
+
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     def GetNomCandidat(self, IDcandidat=None, IDpersonne=None):
         # Récupération des données
@@ -260,9 +249,9 @@ class MyFrame(wx.Frame):
         return u"%s %s" % (nom, prenom)
     
 
-class BitmapComboBox(BitmapComboBox):
-    def __init__(self, parent, listeImages=[], size=(-1,  -1) ):
-        BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
+class MyBitmapComboBox(BitmapComboBox):
+    def __init__(self, parent, listeImages=[], size=(-1,  -1)):
+        BitmapComboBox.__init__(self, parent, size=size)
         # Remplissage des items avec les images
         for texte, nomImage in listeImages :
             img = wx.Bitmap(Chemins.GetStaticPath("Images/22x22/%s" % nomImage), wx.BITMAP_TYPE_ANY)
@@ -274,8 +263,7 @@ class BitmapComboBox(BitmapComboBox):
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, IDentretien=None)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, IDentretien=None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

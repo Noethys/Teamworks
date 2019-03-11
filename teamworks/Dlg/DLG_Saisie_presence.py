@@ -652,10 +652,17 @@ class ListCtrl_donnees(wx.ListCtrl, CheckListCtrlMixin):
         listeDonnees.sort()
         # Remplissage
         for ID, IDpersonne, date, selection in listeDonnees:
-            index = self.InsertStringItem(six.MAXSIZE, "")
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, "")
+            else:
+                index = self.InsertStringItem(six.MAXSIZE, "")
             nomPersonne = self.dictPersonnes[IDpersonne][0] + " " + self.dictPersonnes[IDpersonne][1]
-            self.SetStringItem(index, 1, nomPersonne)
-            self.SetStringItem(index, 2, "> " + DatetimeDateEnStr(date))
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItem(index, 1, nomPersonne)
+                self.SetItem(index, 2, "> " + DatetimeDateEnStr(date))
+            else:
+                self.SetStringItem(index, 1, nomPersonne)
+                self.SetStringItem(index, 2, "> " + DatetimeDateEnStr(date))
             self.SetItemData(index, ID)
             self.CheckItem(index)
       
@@ -805,10 +812,9 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
 
         
-
-class Frm_SaisiePresences(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, listeDonnees=[], IDmodif=0, mode="planning", panelPlanning=None):
-        wx.Frame.__init__(self, parent, -1, name="frm_saisiePresence", title=_(u"Saisie de présences"), style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.panelPlanning = panelPlanning
         self.panel = Panel(self, listeDonnees=listeDonnees, IDmodif=IDmodif, mode=mode, panelPlanning=self.panelPlanning)
         
@@ -831,18 +837,9 @@ class Frm_SaisiePresences(wx.Frame):
         self.SetSizer(sizer_base)
         self.Layout()
         self.Centre()
-        
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-        self.MakeModal(True)
-        
-    def OnClose(self, event):
-        self.Fermer()
-    
+
     def Fermer(self):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
 
 
@@ -853,7 +850,7 @@ if __name__ == "__main__":
             ( 2, datetime.date(2008, 1, 1)),
             ( 2, datetime.date(2008, 1, 15)),
             ]
-    frame_1 = Frm_SaisiePresences(None, listeDonnees)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, listeDonnees)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

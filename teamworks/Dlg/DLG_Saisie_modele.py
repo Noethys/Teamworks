@@ -18,10 +18,9 @@ import FonctionsPerso
 from Utils import UTILS_Adaptations
 
 
-class Frm_SaisieModele(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, IDmodele=0):
-        wx.Frame.__init__(self, parent, -1, title=_(u"Saisie de modèles"), style=wx.DEFAULT_FRAME_STYLE)
-        
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.IDmodele = IDmodele
         self.nom = ""
         self.type = "journ"
@@ -72,12 +71,10 @@ class Frm_SaisieModele(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonSupprimer, self.bouton_supprimer)
         self.text_nom.Bind(wx.EVT_KILL_FOCUS, self.OnLeaveTxtNom)
         self.text_description.Bind(wx.EVT_KILL_FOCUS, self.OnLeaveTxtDescription)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.ActivationBoutons(False, False, False)
         
     def __set_properties(self):
-        self.MakeModal(True)
         if self.IDmodele == 0 :
             self.SetTitle(_(u"Création d'un modèle"))
         else:
@@ -170,16 +167,6 @@ class Frm_SaisieModele(wx.Frame):
         self.Layout()
         self.Centre()
 
-
-    def OnClose(self, event):
-        self.Close()
-        event.Skip()
-    
-    def Close(self):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        
     def OnLeaveTxtNom(self, event):
         if self.nom != self.text_nom.GetValue() :
             self.nom = self.text_nom.GetValue()
@@ -245,7 +232,7 @@ class Frm_SaisieModele(wx.Frame):
                 return
             dlg.Destroy()
         
-        self.Close()
+        self.EndModal(wx.ID_CANCEL)
         
     def OnBoutonOk(self, event):
         """ Bouton Ok """
@@ -336,10 +323,8 @@ class Frm_SaisieModele(wx.Frame):
             listCtrl_modeles.EnsureVisible(idx)
         except :
             pass
-        
-        
-        # Fermeture du formulaire
-        self.Close()
+
+        self.EndModal(wx.ID_OK)
             
         
     def OnBoutonAjouter(self, event):
@@ -526,23 +511,35 @@ class TreeCtrlPlanning(wx.TreeCtrl):
         else:
             nomModele = self.GetGrandParent().nom
         self.root = self.AddRoot(nomModele)
-        self.SetPyData(self.root, None)
+        if 'phoenix' in wx.PlatformInfo:
+            self.SetItemData(self.root, None)
+        else:
+            self.SetPyData(self.root, None)
         
         # Création des périodes
         if self.GetGrandParent().periodes[0] == True :
             self.P1 = self.AppendItem(self.root, _(u"Toutes les périodes"))
-            self.SetPyData(self.P1, 100000)
-            self.CreationJours(self.P1, 1) 
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItemData(self.P1, 100000)
+            else:
+                self.SetPyData(self.P1, 100000)
+            self.CreationJours(self.P1, 1)
         
         if self.GetGrandParent().periodes[1] == True :
             self.P2 = self.AppendItem(self.root, _(u"Périodes scolaires"))
-            self.SetPyData(self.P2, 200000)
-            self.CreationJours(self.P2, 2) 
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItemData(self.P2, 200000)
+            else:
+                self.SetPyData(self.P2, 200000)
+            self.CreationJours(self.P2, 2)
         
         if self.GetGrandParent().periodes[2] == True :
             self.P3 = self.AppendItem(self.root, _(u"Vacances scolaires"))
-            self.SetPyData(self.P3, 300000)
-            self.CreationJours(self.P3, 3) 
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItemData(self.P3, 300000)
+            else:
+                self.SetPyData(self.P3, 300000)
+            self.CreationJours(self.P3, 3)
         
         self.CreationTaches(None, None)
         
@@ -714,7 +711,7 @@ class TreeCtrlPlanning(wx.TreeCtrl):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = Frm_SaisieModele(None, IDmodele=1)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, IDmodele=1)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

@@ -86,8 +86,9 @@ class Panel(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        frmSaisieValPoint = DLG_Saisie_val_point.MyFrame(self, "", IDvaleur=0)
-        frmSaisieValPoint.Show()
+        dlg = DLG_Saisie_val_point.Dialog(self, "", IDvaleur=0)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -116,9 +117,10 @@ class Panel(wx.Panel):
                 return
             else: dlg.Destroy()
         
-        frmSaisieValPoint = DLG_Saisie_val_point.MyFrame(self, "", IDvaleur=ID)
-        frmSaisieValPoint.Show()
-        
+        dlg = DLG_Saisie_val_point.Dialog(self, "", IDvaleur=ID)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonSupprimer(self, event):
         self.Supprimer()
 

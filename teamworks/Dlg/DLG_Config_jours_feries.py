@@ -108,8 +108,9 @@ class Panel_secondaire(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        frmSaisie = DLG_Saisie_jour_ferie.MyFrame(self, _(u"Saisie d'un jour férié"), IDferie=0, type=self.typeJour)
-        frmSaisie.Show()
+        dlg = DLG_Saisie_jour_ferie.Dialog(self, _(u"Saisie d'un jour férié"), IDferie=0, type=self.typeJour)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -123,9 +124,10 @@ class Panel_secondaire(wx.Panel):
             return
         
         ID = int(self.listCtrl.GetItem(index, 0).GetText())
-        frmSaisie = DLG_Saisie_jour_ferie.MyFrame(self, _(u"Modification d'un jour férié"), IDferie=ID, type=self.typeJour)
-        frmSaisie.Show()
-        
+        dlg = DLG_Saisie_jour_ferie.Dialog(self, _(u"Modification d'un jour férié"), IDferie=ID, type=self.typeJour)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonSupprimer(self, event):
         self.Supprimer()
 

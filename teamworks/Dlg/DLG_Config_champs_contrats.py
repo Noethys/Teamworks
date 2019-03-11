@@ -85,8 +85,9 @@ class Panel(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        frmSaisieChamps = DLG_Saisie_champs_contrats.MyFrame(self, "", IDchamp=0)
-        frmSaisieChamps.Show()
+        dlg = DLG_Saisie_champs_contrats.Dialog(self, "", IDchamp=0)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -129,9 +130,10 @@ class Panel(wx.Panel):
                 return
             else: dlg.Destroy()
         
-        frmSaisieChamps = DLG_Saisie_champs_contrats.MyFrame(self, "", IDchamp=ID)
-        frmSaisieChamps.Show()
-        
+        dlg = DLG_Saisie_champs_contrats.Dialog(self, "", IDchamp=ID)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonSupprimer(self, event):
         self.Supprimer()
 
@@ -400,13 +402,11 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
 
 
 
-
-class MyFrame(wx.Frame):
-    def __init__(self, parent, title="" ):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_gestion_ChampsContrats", style=wx.DEFAULT_FRAME_STYLE)
+class Dialog(wx.Dialog):
+    def __init__(self, parent, title=""):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
-        self.MakeModal(True)
-        
+
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
@@ -419,8 +419,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.SetMinSize((460, 350))
         self.SetSize((460, 350))
 
@@ -438,7 +437,6 @@ class MyFrame(wx.Frame):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -462,11 +460,6 @@ class MyFrame(wx.Frame):
         self.Centre()
         self.sizer_pages = sizer_pages
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(35)
             
@@ -474,17 +467,13 @@ class MyFrame(wx.Frame):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
         self.MAJparents()
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def Onbouton_ok(self, event):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
         self.MAJparents()
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.EndModal(wx.ID_OK)
         
     def MAJparents(self):
         if FonctionsPerso.FrameOuverte("frm_creation_contrats") != None :
@@ -494,8 +483,7 @@ class MyFrame(wx.Frame):
             
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "")
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

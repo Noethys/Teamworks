@@ -9,10 +9,11 @@
 import Chemins
 from Utils.UTILS_Traduction import _
 import wx
+import six
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
-import  wx.lib.colourselect as  csel
+import wx.lib.colourselect as  csel
 
 def FormateCouleur(texte):
     pos1 = texte.index(",")
@@ -22,11 +23,11 @@ def FormateCouleur(texte):
     b = int(texte[pos2+2:-1])
     return (r, v, b)
 
-class Frm_SaisieCatPresences(wx.Frame):
-    def __init__(self, parent, ID, title=_(u"Saisie d'une nouvelle catégorie"), IDcategorie=0, IDcat_parent=0):
-        wx.Frame.__init__(self, parent, ID, title=title, style=wx.DEFAULT_FRAME_STYLE, size=(350, 420))
-        self.MakeModal(True)
-        
+
+class Dialog(wx.Dialog):
+    def __init__(self, parent, ID=-1, title=_(u"Saisie d'une nouvelle catégorie"), IDcategorie=0, IDcat_parent=0):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
+
         # Valeurs par défaut à appliquer
         self.IDcategorie = IDcategorie
         self.IDcat_parent = IDcat_parent
@@ -53,11 +54,9 @@ class Frm_SaisieCatPresences(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.__set_properties()
         self.__do_layout()
-        # end wxGlade
 
         self.text_nom.SetFocus()
 
@@ -75,7 +74,7 @@ class Frm_SaisieCatPresences(wx.Frame):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTip(wx.ToolTip("Bouton annuler"))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        # end wxGlade
+        self.SetMinSize((400, 500))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -110,9 +109,6 @@ class Frm_SaisieCatPresences(wx.Frame):
         self.SetSizer(sizer_base)
         self.Layout()
         self.Centre()
-        # end wxGlade
-
-# end of class Frm_SaisieCatPresences
 
     def Importation(self):
         """ Récupération des données à modifier dans la base """
@@ -169,7 +165,6 @@ class Frm_SaisieCatPresences(wx.Frame):
         DB.Commit()
         DB.Close()
         return ID
-        
 
     def OnSelectColour(self, event):
         reponse = event.GetValue()
@@ -178,16 +173,8 @@ class Frm_SaisieCatPresences(wx.Frame):
     def OnBouton_aide(self, event):
         FonctionsPerso.Aide(11)
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBouton_annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        event.Skip()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBouton_ok(self, event):
 
@@ -225,9 +212,7 @@ class Frm_SaisieCatPresences(wx.Frame):
         self.GetParent().treeCtrl_categories.SetFocus()
 
         # Fermeture de la fenêtre
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
         
 
 class TreeCtrlCategories(wx.TreeCtrl):
@@ -241,7 +226,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
         tailleImages = (16,16)
         il = wx.ImageList(tailleImages[0], tailleImages[1])
-        self.imgRoot = il.Add(wx.ArtProvider_GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
+        if 'phoenix' in wx.PlatformInfo:
+            self.imgRoot = il.Add(wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
+        else:
+            self.imgRoot = il.Add(wx.ArtProvider_GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
         for categorie in self.listeCategories:
             ID = categorie[0]
             couleur = FormateCouleur(categorie[4])
@@ -252,13 +240,13 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
         self.SetImageList(il)
         self.il = il
-
         self.root = self.AddRoot(_(u"Catégories"))
-        self.SetPyData(self.root, 0)
+        if 'phoenix' in wx.PlatformInfo:
+            self.SetItemData(self.root, 0)
+        else:
+            self.SetPyData(self.root, 0)
         self.SetItemImage(self.root, self.imgRoot, wx.TreeItemIcon_Normal)
-
         self.Remplissage()
-
         self.Expand(self.root)
         
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnSelChanged, self)
@@ -266,9 +254,14 @@ class TreeCtrlCategories(wx.TreeCtrl):
     
     def CreationImage(self, tailleImages, r, v, b):
         """ Création des images pour le TreeCtrl """
-        bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
-        bmp.SetRGBRect((0, 0, 16, 16), 255, 255, 255)
-        bmp.SetRGBRect((6, 4, 8, 8), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGB((0, 0, 16, 16), 255, 255, 255)
+            bmp.SetRGB((6, 4, 8, 8), r, v, b)
+        else:
+            bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGBRect((0, 0, 16, 16), 255, 255, 255)
+            bmp.SetRGBRect((6, 4, 8, 8), r, v, b)
         return bmp.ConvertToBitmap()
 
     def Remplissage(self):
@@ -286,7 +279,10 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
                 # Création de la branche
                 newItem = self.AppendItem(itemParent, item[1])
-                self.SetPyData(newItem, item[0])
+                if 'phoenix' in wx.PlatformInfo:
+                    self.SetItemData(newItem, item[0])
+                else:
+                    self.SetPyData(newItem, item[0])
                 exec("self.SetItemImage(newItem, self.img" + str(item[0]) + ", wx.TreeItemIcon_Normal)")
 
                 # Sélection de l'item s'il sélectionné est par défaut
@@ -301,21 +297,21 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
     def Importation(self):
         """ Récupération de la liste des catégories dans la base """
-
         # Initialisation de la connexion avec la Base de données
         DB = GestionDB.DB()
         req = "SELECT * FROM cat_presences"
         DB.ExecuterReq(req)
         listeCategories = DB.ResultatReq()
         DB.Close()
-
-        return listeCategories               
-            
+        return listeCategories
 
     def OnSelChanged(self, event):
         self.item = event.GetItem()
         textItem = self.GetItemText(self.item)
-        data = self.GetPyData(self.item)
+        if 'phoenix' in wx.PlatformInfo:
+            data = self.GetItemData(self.item)
+        else:
+            data = self.GetPyData(self.item)
         self.IDcat_parent = data
         self.GetGrandParent().IDcat_parent = data
         event.Skip()
@@ -324,8 +320,7 @@ class TreeCtrlCategories(wx.TreeCtrl):
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = Frm_SaisieCatPresences(None, -1, IDcategorie=0)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, -1, IDcategorie=0)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

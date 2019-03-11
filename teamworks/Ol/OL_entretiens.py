@@ -683,8 +683,9 @@ class ListView(ObjectListView):
             IDcandidat = self.IDcandidat
             IDpersonne = self.IDpersonne
             
-        frm = DLG_Saisie_entretien.MyFrame(self, IDentretien=None, IDcandidat=IDcandidat, IDpersonne=IDpersonne)
-        frm.Show()
+        dlg = DLG_Saisie_entretien.Dialog(self, IDentretien=None, IDcandidat=IDcandidat, IDpersonne=IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Modifier(self):
         
@@ -709,8 +710,9 @@ class ListView(ObjectListView):
             if VERROUILLAGE == True :
                 return
             
-        frm = DLG_Saisie_entretien.MyFrame(self, IDentretien=IDentretien, IDcandidat=IDcandidat, IDpersonne=IDpersonne)
-        frm.Show()
+        dlg = DLG_Saisie_entretien.Dialog(self, IDentretien=IDentretien, IDcandidat=IDcandidat, IDpersonne=IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Supprimer(self):
         
@@ -799,7 +801,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()
@@ -887,7 +889,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="exportExcel")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportExcel")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()
@@ -976,7 +978,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="imprimerListePersonnes")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="imprimerListePersonnes")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()

@@ -14,12 +14,9 @@ import GestionDB
 import FonctionsPerso
 
 
-class Frm_SaisieTypesPieces(wx.Frame):
-    def __init__(self, parent, ID, title=_(u"Saisie d'un type de pièce"), IDtype_piece=0):
-        # begin wxGlade: Frm_SaisieTypesPieces.__init__
-        wx.Frame.__init__(self, parent, ID, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-        
+class Dialog(wx.Dialog):
+    def __init__(self, parent, ID=-1, title=_(u"Saisie d'un type de pièce"), IDtype_piece=0):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDtype_piece = IDtype_piece
         
@@ -51,7 +48,6 @@ class Frm_SaisieTypesPieces(wx.Frame):
 
         self.__set_properties()
         self.__do_layout()
-        # end wxGlade
 
         # Binds
         self.Bind(wx.EVT_RADIOBUTTON, self.OnRadioDuree, self.radio_duree_1)
@@ -61,7 +57,6 @@ class Frm_SaisieTypesPieces(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         # Règle les RadioBox à l'ouverture de la fenêtre
         self.OnRadioDuree("")
@@ -75,7 +70,6 @@ class Frm_SaisieTypesPieces(wx.Frame):
             self.Importation()
 
     def __set_properties(self):
-        # begin wxGlade: Frm_SaisieTypesPieces.__set_properties
         self.SetTitle(_(u"Saisie d'un type de pièce"))
         if 'phoenix' in wx.PlatformInfo:
             _icon = wx.Icon()
@@ -95,10 +89,8 @@ class Frm_SaisieTypesPieces(wx.Frame):
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        # end wxGlade
 
     def __do_layout(self):
-        # begin wxGlade: Frm_SaisieTypesPieces.__do_layout
         sizer_base = wx.BoxSizer(wx.VERTICAL)
         grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
         grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=5, vgap=10, hgap=10)
@@ -148,9 +140,6 @@ class Frm_SaisieTypesPieces(wx.Frame):
         sizer_base.Fit(self)
         self.Layout()
         self.Centre()
-        # end wxGlade
-
-# end of class Frm_SaisieTypesPieces
 
     def OnRadioDuree(self, event):
         if self.radio_duree_1.GetValue() == True:
@@ -167,7 +156,6 @@ class Frm_SaisieTypesPieces(wx.Frame):
             self.spin_mois.Enable(True)
             self.label_annees.Enable(True)
             self.spin_annees.Enable(True)
-
 
     def OnRadioDiplomes(self, event):
         if self.radio_diplomes_1.GetValue() == True:
@@ -193,19 +181,11 @@ class Frm_SaisieTypesPieces(wx.Frame):
             self.ListeDiplomesData.append((key, nom))
             self.ListeDiplomesPourLBox.append(nom)
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(50)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-        event.Skip()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
 
@@ -249,9 +229,7 @@ class Frm_SaisieTypesPieces(wx.Frame):
         self.parent.listCtrl_TypesPieces.MAJListeCtrl()
 
         # Fermeture de la fenêtre
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
         
         
 
@@ -403,7 +381,7 @@ class Frm_SaisieTypesPieces(wx.Frame):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = Frm_SaisieTypesPieces(None, -1, IDtype_piece=0)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, -1, IDtype_piece=0)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

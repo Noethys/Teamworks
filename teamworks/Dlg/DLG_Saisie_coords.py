@@ -15,11 +15,9 @@ import GestionDB
 import FonctionsPerso
 
 
-class FrameCoords(wx.Frame):
-    def __init__(self, parent, ID, title, size, IDcoord=0, IDpersonne=0):
-        # begin wxGlade: FrameCoords.__init__
-        wx.Frame.__init__(self, parent, ID, title=_(u"Coordonnées"), style=wx.DEFAULT_FRAME_STYLE)
-
+class Dialog(wx.Dialog):
+    def __init__(self, parent, ID=-1, title=_(u"Coordonnées"), size=(280, 290), IDcoord=0, IDpersonne=0):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDpersonne = IDpersonne
         self.IDcoord = IDcoord
@@ -32,8 +30,6 @@ class FrameCoords(wx.Frame):
         self.sizer_infos_staticbox = wx.StaticBox(self.panel_frame, -1, _(u"2. Saisissez les informations"))
         self.sizer_categories_staticbox = wx.StaticBox(self.panel_frame, -1, _(u"1. Sélectionnez une catégorie"))
         self.categorieSelect = ""
-
-        self.MakeModal(True)
 
         # Boutons        
         self.bouton_fixe = wx.BitmapButton(self.panel_frame, -1, wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Maison_NB.png"), wx.BITMAP_TYPE_ANY))
@@ -70,8 +66,6 @@ class FrameCoords(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBouton_Email, self.bouton_email)
         self.Bind(wx.EVT_BUTTON, self.OnBouton_Ok, self.bouton_Ok)
         self.Bind(wx.EVT_BUTTON, self.OnBouton_Annuler, self.bouton_Annuler)
-
-        self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
 
         # Si c'est une modification, on importe les données
         if self.IDcoord != 0:
@@ -283,14 +277,7 @@ class FrameCoords(wx.Frame):
             self.text_info.SetInsertionPoint(taille-1)
 
     def OnBouton_Annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
-
-    def OnCloseWindow(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBouton_Ok(self, event):
         """ Validation de la saisie """
@@ -353,9 +340,7 @@ class FrameCoords(wx.Frame):
             self.parent.MAJ_barre_problemes()
 
         # Fermeture du frame
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     def Sauvegarde(self):
         """ Sauvegarde des données dans la base de données """
@@ -421,7 +406,7 @@ class FrameCoords(wx.Frame):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frameCoords = FrameCoords(None, -1, _(u"Coordonnées"), size=(280, 290))
-    app.SetTopWindow(frameCoords)
-    frameCoords.Show()
+    dlg = Dialog(None, -1, _(u"Coordonnées"), size=(280, 290))
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

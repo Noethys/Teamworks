@@ -566,7 +566,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             (Chemins.GetStaticPath("Images/BoutonsImages/Imprimer_presences_graph1B.png"), _(u"Cliquez ici pour imprimer sous forme graphique au format portrait")),
             (Chemins.GetStaticPath("Images/BoutonsImages/Imprimer_presences_graph2B.png"), _(u"Cliquez ici pour imprimer sous forme graphique au format paysage")),
             ]
-        dlg = DLG_Selection_type_document.MyFrame(self, size=(650, 335), listeBoutons=listeBoutons, type="presences")
+        dlg = DLG_Selection_type_document.Dialog(self, size=(650, 335), listeBoutons=listeBoutons, type="presences")
         if dlg.ShowModal() == wx.ID_OK:
             ChoixType = dlg.GetChoix()
             dlg.Destroy()
@@ -1062,7 +1062,11 @@ class WidgetPlanning(wx.ScrolledWindow):
     def HitTestTitreGroupe(self, x, y) :
         """ Pour sélectionner toutes les lignes d'un groupe """
         # Recherche d'un titre de groupe
-        if (10<= x <= self.GetSizeTuple()[0]-30) : 
+        if 'phoenix' in wx.PlatformInfo:
+            val = self.GetSize()[0]-30
+        else:
+            val = self.GetSizeTuple()[0]-30
+        if (10<= x <= val) :
             for key, valeurs in self.dictGroupes.items() :
                 posYH = valeurs[1]
                 posYB = posYH + 16
@@ -1468,13 +1472,16 @@ class WidgetPlanning(wx.ScrolledWindow):
 
     def Ajouter(self, selection):
         """ Ajouter une présence avec le form de saisie des présences """
-        frame_SaisiePresences = DLG_Saisie_presence.Frm_SaisiePresences(None, selection, panelPlanning=self)
-        frame_SaisiePresences.Show()
+        dlg = DLG_Saisie_presence.Dialog(None, selection, panelPlanning=self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
 
     def Modifier(self, IDpresence):
         """ Modifier une présence avec le form de saisie des présences """
-        frame_SaisiePresences = DLG_Saisie_presence.Frm_SaisiePresences(None, IDmodif=IDpresence, panelPlanning=self)
-        frame_SaisiePresences.Show()
+        dlg = DLG_Saisie_presence.Dialog(None, IDmodif=IDpresence, panelPlanning=self)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Supprimer(self, IDpresence, txt):
         """ Supprimer une tâche """
@@ -1619,9 +1626,9 @@ class WidgetPlanning(wx.ScrolledWindow):
         self.DeselectAllLignes()
 
     def OnMenuAjouter(self, event):
-        frame_SaisiePresences = DLG_Saisie_presence.Frm_SaisiePresences(None, [self.ligne], panelPlanning=self)
-        frame_SaisiePresences.Show()
-        #event.Skip()
+        dlg = DLG_Saisie_presence.Dialog(None, [self.ligne], panelPlanning=self)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnMenuModifier(self, event):
         IDpresence = self.Context[0]
@@ -1712,14 +1719,14 @@ class WidgetPlanning(wx.ScrolledWindow):
 
         if IDparent != 0 :
             index, texte = IDparent,titre
-            exec("self.popupID" + str(index) + " = index")
-            exec("item = wx.MenuItem(menu, self.popupID" + str(index) +", texte)")
+            setattr(self, "popupID%s" % index, index)
+            item = wx.MenuItem(menu, getattr(self, "popupID%s" % index), texte)
             couleur = self.FormateCouleur(couleurTitre)
             r, v, b = couleur[0], couleur[1], couleur[2]
             bmp = self.CreationImage((16, 16), r, v, b, index)
             item.SetBitmap(bmp)
             sm.AppendItem(item)
-            exec("self.Bind(wx.EVT_MENU, self.OnMenuChoixCategorie, id=self.popupID" + str(index) + ")")
+            self.Bind(wx.EVT_MENU, self.OnMenuChoixCategorie, id=getattr(self, "popupID%s" % index))
             sm.AppendSeparator()
 
         nbre = 0
@@ -1735,15 +1742,14 @@ class WidgetPlanning(wx.ScrolledWindow):
                     # Si pas d'enfants, on crée un item dans le menu
                     nbre += 1
                     index, texte = key, valeurs[0]
-                    exec("self.popupID" + str(index) + " = index")
-                    exec("item = wx.MenuItem(menu, self.popupID" + str(index) +", texte)")
+                    setattr(self, "popupID%s" % index, index)
+                    item = wx.MenuItem(menu, getattr(self, "popupID%s" % index), texte)
                     couleur = self.FormateCouleur(valeurs[3])
                     r, v, b = couleur[0], couleur[1], couleur[2]
                     bmp = self.CreationImage((16, 16), r, v, b, index)
                     item.SetBitmap(bmp)
                     sm.AppendItem(item)
-                    exec("self.Bind(wx.EVT_MENU, self.OnMenuChoixCategorie, id=self.popupID" + str(index) + ")")
-                    
+                    self.Bind(wx.EVT_MENU, self.OnMenuChoixCategorie, id=getattr(self, "popupID%s" % index))
                 else:
                     # Si un ou plusieurs enfants existente, on crée un sous-menu
                     self.SousMenuCategories(key, sm, valeurs[0], valeurs[3])
@@ -1752,24 +1758,32 @@ class WidgetPlanning(wx.ScrolledWindow):
         # Rattachement de ce menu au menu parent
         if nbre != 0 :
             index, texte = 4, titre
-            exec("self.popupID" + str(index) + " = wx.NewId()")
-            exec("menu.AppendMenu(self.popupID" + str(index) + ", texte, sm)")
+            setattr(self, "popupID%s" % index, wx.NewId())
+            menu.AppendMenu(getattr(self, "popupID%s" % index), texte, sm)
                   
 
     def CreationImage(self, tailleImages, r, v, b, IDcategorie):
         """ Création des images pour le TreeCtrl """
-        bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
-        bmp.SetRGBRect((0, 0, 16, 16), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGB((0, 0, 16, 16), r, v, b)
+        else:
+            bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGBRect((0, 0, 16, 16), r, v, b)
         # Si c'est la couleur déjà sélectionnée :
         if self.dictPresences[self.Context[0]][5] == IDcategorie :
-            bmp.SetRGBRect((4, 4, 8, 8), 0, 0, 0)
+            if 'phoenix' in wx.PlatformInfo:
+                bmp.SetRGB((4, 4, 8, 8), 0, 0, 0)
+            else:
+                bmp.SetRGBRect((4, 4, 8, 8), 0, 0, 0)
         return bmp.ConvertToBitmap()
     
     def SaisiePresences(self):
         """ Saisie de présences à partir des lignes sélectionnées """ 
-        frame_SaisiePresences = DLG_Saisie_presence.Frm_SaisiePresences(self, selectionsLignes)
-        frame_SaisiePresences.Show()
-    
+        dlg = DLG_Saisie_presence.Dialog(self, selectionsLignes)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def SupprimerPresencesLignes(self):
         """ Supprime toutes les tâches des lignes sélectionnées """
         nbreLignes = len(selectionsLignes)
@@ -2119,7 +2133,7 @@ class BarreOptions(wx.Panel):
             (Chemins.GetStaticPath("Images/BoutonsImages/Imprimer_planning_mensuel.png"), _(u"Cliquez ici pour imprimer un planning mensuel")),
             (Chemins.GetStaticPath("Images/BoutonsImages/Imprimer_planning_annuel.png"), _(u"Cliquez ici pour imprimer un planning annuel pour une personne")),
             ]
-        dlg = DLG_Selection_type_document.MyFrame(self, size=(650, 335), listeBoutons=listeBoutons, type="presences")
+        dlg = DLG_Selection_type_document.Dialog(self, size=(650, 335), listeBoutons=listeBoutons, type="presences")
         if dlg.ShowModal() == wx.ID_OK:
             ChoixType = dlg.GetChoix()
             dlg.Destroy()
@@ -2162,9 +2176,10 @@ class BarreOptions(wx.Panel):
     def Menu_30(self, event):
         """ Gestion des scénarios """
         from Dlg import DLG_Scenario_gestion
-        frm = DLG_Scenario_gestion.MyFrame(self)
-        frm.Show()
-        
+        dlg = DLG_Scenario_gestion.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def Menu_210(self, event):
         """ Afficher légendes """
         global hauteurBarre, modeTexte

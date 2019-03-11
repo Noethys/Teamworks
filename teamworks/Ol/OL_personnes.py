@@ -189,7 +189,7 @@ class ListView(ObjectListView):
         
     def OnItemDeselected(self, event):
         self.itemSelected = False
-        wx.FutureCall(100, self.DeselectionneItem)
+        wx.CallLater(100, self.DeselectionneItem)
     
     def DeselectionneItem(self) :
         if self.itemSelected == False :
@@ -540,8 +540,9 @@ class ListView(ObjectListView):
     def Options(self):
         """ Choix et ordre des colonnes """
         from Dlg import DLG_Config_liste_personnes
-        frm = DLG_Config_liste_personnes.MyFrame(self, self.listeColonnes)
-        frm.Show()
+        dlg = DLG_Config_liste_personnes.Dialog(self, self.listeColonnes)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MenuImprimer(self, event):
         self.Imprimer()
@@ -731,7 +732,7 @@ class ListView(ObjectListView):
             liste_labelsColonnes, listeValeurs = self.GetValeurs()
             # Selection des lignes
             from Dlg import DLG_Selection_liste
-            dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
+            dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
             if dlg.ShowModal() == wx.ID_OK:
                 listeSelections = dlg.GetSelections()
                 dlg.Destroy()
@@ -762,7 +763,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportTexte")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()
@@ -850,7 +851,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="exportExcel")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportExcel")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()
@@ -939,7 +940,7 @@ class ListView(ObjectListView):
         
         # Selection des lignes
         from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.MyFrame(self, liste_labelsColonnes, listeValeurs, type="imprimerListePersonnes")
+        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="imprimerListePersonnes")
         if dlg.ShowModal() == wx.ID_OK:
             listeSelections = dlg.GetSelections()
             dlg.Destroy()

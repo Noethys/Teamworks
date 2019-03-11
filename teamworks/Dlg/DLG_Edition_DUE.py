@@ -352,7 +352,7 @@ class CreationPDF(threading.Thread) :
         cheminFichier = self.nomDocument + ".pdf"
         c = canvas.Canvas(cheminFichier, pageCompression = 1)
         # Création du fond
-        img = c.drawImage("Images/Special/Form_due_ursaff.jpg", -10, 0, 595, 842, preserveAspectRatio=True)
+        img = c.drawImage(Chemins.GetStaticPath("Images/Special/Form_due_ursaff.jpg"), -10, 0, 595, 842, preserveAspectRatio=True)
         # Dessin à partir de la liste de données :
         for code, label, typeControle, IDcategorie, valeur, sauvegarder, controles in self.listeChamps :
             # Si typeControle = "texte"
@@ -459,8 +459,11 @@ class Grid(gridlib.Grid):
             key += 1
             
         # test all the events
-        self.Bind(gridlib.EVT_GRID_CELL_CHANGE, self.OnCellChange)
-        
+        if 'phoenix' in wx.PlatformInfo:
+            self.Bind(gridlib.EVT_GRID_CELL_CHANGED, self.OnCellChange)
+        else :
+            self.Bind(gridlib.EVT_GRID_CELL_CHANGE, self.OnCellChange)
+
         self.moveTo = (1, 1)
 
     def OnCellChange(self, evt):
@@ -512,10 +515,10 @@ class Grid(gridlib.Grid):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        
-class MyFrame(wx.Frame):
+
+class Dialog(wx.Dialog):
     def __init__(self, parent, title="", IDcontrat=0):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_edition_due", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDcontrat = IDcontrat
         
@@ -540,8 +543,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-                
+
     def __set_properties(self):
         self.SetTitle(_(u"Edition d'une déclaration préalable à l'embauche"))
         if 'phoenix' in wx.PlatformInfo:
@@ -582,27 +584,18 @@ class MyFrame(wx.Frame):
         self.SetSize((570, 550))
         self.Centre()
 
-
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(2)
 
     def Onbouton_annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-            
     def Onbouton_ok(self, event):
         """ Affichage du PDF """
         if "linux" not in sys.platform :
             self.frmAttente = DLG_Attente.MyFrame(None, label=_(u"Création du document PDF en cours..."))
             self.frmAttente.Show()
-            self.frmAttente.MakeModal(True)
-        
+
         pdf = CreationPDF(self, champs)
         pdf.start()
 

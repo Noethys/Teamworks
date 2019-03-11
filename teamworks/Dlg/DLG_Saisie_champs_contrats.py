@@ -13,10 +13,9 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, title="" , IDchamp=0):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.sizer_contenu_staticbox = wx.StaticBox(self.panel_base, -1, "")
@@ -46,8 +45,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
         self.text_motCle.Bind(wx.EVT_KILL_FOCUS, self.OnTextMotCle)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         self.SetTitle(_(u"Saisie d'un champ personnalisé"))
         if 'phoenix' in wx.PlatformInfo:
@@ -62,11 +60,8 @@ class MyFrame(wx.Frame):
         self.text_motCle.SetToolTip(wx.ToolTip(_(u"Saisissez ici un mot-clé qui sera utilisé pour le publipostage lors de l'impression des contrats. Ce mot-clé doit être unique, en majuscule et sans caractères spéciaux.")))
         self.label_motCle_aide.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
         self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
-        self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour valider la saisie"))
-        self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler la saisie"))
-        self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -170,18 +165,11 @@ class MyFrame(wx.Frame):
         DB.Close()
         return ID
     
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-    
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(20)
         
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
@@ -244,19 +232,17 @@ class MyFrame(wx.Frame):
         
         # MAJ du listCtrl des valeurs de points
         if FonctionsPerso.FrameOuverte("panel_config_champsContrats") != None :
-            #self.GetGrandParent().GetParent().panel_contenu.MAJ_ListCtrl()
             self.GetParent().MAJ_ListCtrl()
+
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     
     
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "", IDchamp=1)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "", IDchamp=1)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

@@ -18,6 +18,10 @@ import FonctionsPerso
 from Dlg import DLG_Saisie_modele
 from Dlg import DLG_Confirm_appli_modele
 from Utils import UTILS_Adaptations
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN
 
 
 class Panel(wx.Panel):
@@ -36,9 +40,9 @@ class Panel(wx.Panel):
         self.radio_btn_1 = wx.RadioButton(self.panel_base_2, -1, u"")
         self.radio_btn_2 = wx.RadioButton(self.panel_base_2, -1, _(u"Selon les paramètres suivants :"))
         self.label_periode = wx.StaticText(self.panel_base_2, -1, _(u"Période du :"))
-        self.date_debut = wx.DatePickerCtrl(self.panel_base_2, -1, style=wx.DP_DROPDOWN)
+        self.date_debut = DatePickerCtrl(self.panel_base_2, -1, style=DP_DROPDOWN)
         self.label_au = wx.StaticText(self.panel_base_2, -1, "au")
-        self.date_fin = wx.DatePickerCtrl(self.panel_base_2, -1, style=wx.DP_DROPDOWN)
+        self.date_fin = DatePickerCtrl(self.panel_base_2, -1, style=DP_DROPDOWN)
         self.label_personnes = wx.StaticText(self.panel_base_2, -1, "Personnes :")
         self.list_ctrl_personnes = listCtrl_Personnes(self.panel_base_2)
         self.list_ctrl_personnes.SetMinSize((20, 80)) 
@@ -634,9 +638,10 @@ class Panel(wx.Panel):
        
     def OnBoutonAjouter(self, event):
         """ Créer un nouveau modèle """
-        saisieModele = DLG_Saisie_modele.Frm_SaisieModele(self, IDmodele=0)
-        saisieModele.Show()
-        
+        dlg = DLG_Saisie_modele.Dialog(self, IDmodele=0)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonModifier(self, event):
         """ Modifier un modèle """
         index = self.list_ctrl_modeles.GetFirstSelected()
@@ -646,9 +651,10 @@ class Panel(wx.Panel):
             dlg.Destroy() 
             return
         IDmodele = self.list_ctrl_modeles.GetItemData(index)
-        saisieModele = DLG_Saisie_modele.Frm_SaisieModele(self, IDmodele=IDmodele)
-        saisieModele.Show()
-        
+        dlg = DLG_Saisie_modele.Dialog(self, IDmodele=IDmodele)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonSupprimer(self, event):
         """ Suppression d'un modèle """
         index = self.list_ctrl_modeles.GetFirstSelected()
@@ -729,11 +735,14 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
 
         # Remplissage avec les valeurs
         for key, valeurs in self.dictPersonnes.items():
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, valeurs[0] + " " + valeurs[1])
+            else:
                 index = self.InsertStringItem(six.MAXSIZE, valeurs[0] + " " + valeurs[1])
-                self.SetItemData(index, key)
-                # Sélection
-                if key in self.GetGrandParent().GetParent().selectionPersonnes :
-                    self.CheckItem(index)                    
+            self.SetItemData(index, key)
+            # Sélection
+            if key in self.GetGrandParent().GetParent().selectionPersonnes :
+                self.CheckItem(index)
 
         # Ajustement tailles colonnes
         self.SetColumnWidth(0, wx.LIST_AUTOSIZE)

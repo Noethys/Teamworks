@@ -87,8 +87,9 @@ class Panel(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        frmSaisie_Pays = DLG_Saisie_pays.MyFrame(self, "", IDpays=0)
-        frmSaisie_Pays.Show()
+        dlg = DLG_Saisie_pays.Dialog(self, "", IDpays=0)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonModifier(self, event):
         self.Modifier()
@@ -101,22 +102,11 @@ class Panel(wx.Panel):
             dlg.Destroy()
             return
 
-##        # Avertissement si cet item a déjà été attribué à une personne
-##        nbreTitulaires = int(self.listCtrl_Situations.GetItem(index, 2).GetText())
-##        if nbreTitulaires != 0:
-##            message =_(u"Avertissement : Ce type de situation sociale a déjà été attribué a ") + str(nbreTitulaires) + _(u" personne(s). Toute modification sera donc répercutée en cascade sur toutes les fiches des personnes à qui cette situation sociale a été attribuée. \n\nSouhaitez-vous quand même modifier ce type de situation ?")
-##            dlg = wx.MessageDialog(self, message, "Information", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_INFORMATION)
-##            reponse = dlg.ShowModal()
-##            if reponse == wx.ID_NO:
-##                dlg.Destroy()
-##                return
-##            else:
-##                dlg.Destroy()
-        
         ID = int(self.listCtrl.GetItem(index, 0).GetText())
-        frmSaisie_Pays = DLG_Saisie_pays.MyFrame(self, "", IDpays=ID)
-        frmSaisie_Pays.Show()
-        
+        dlg = DLG_Saisie_pays.Dialog(self, "", IDpays=ID)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnBoutonSupprimer(self, event):
         self.Supprimer()
 
@@ -440,11 +430,9 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
 
 
 
-
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, title="", IDpays=0, saisie=None):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_config_pays", style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.saisie = saisie
         self.panel_base = wx.Panel(self, -1)
@@ -459,8 +447,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.SetMinSize((550, 400))
         self.SetSize((550, 400))
         
@@ -508,19 +495,12 @@ class MyFrame(wx.Frame):
         self.Layout()
         self.Centre()
         self.sizer_pages = sizer_pages
-        
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
 
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(15)
             
     def Onbouton_annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def Onbouton_ok(self, event):
         # On vérifie qu'un pays a été sélectionné
@@ -547,14 +527,15 @@ class MyFrame(wx.Frame):
             self.parent.SetNationalite(IDpays=self.panel_contenu.listCtrl.selection)
 
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.EndModal(wx.ID_OK)
+
+
 
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "")
+    dlg.Show()
+    dlg.Destroy()
+
     app.MainLoop()

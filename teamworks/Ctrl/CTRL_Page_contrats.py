@@ -266,7 +266,7 @@ class Panel_Contrats(wx.Panel):
             (Chemins.GetStaticPath("Images/BoutonsImages/Imprimer_doc_DUE.png"), _(u"Cliquez ici pour imprimer une D.U.E.")),
             (Chemins.GetStaticPath("Images/BoutonsImages/Imprimer_doc_contrat.png"), _(u"Cliquez ici pour imprimer un autre document (Contrat, attestation, etc...)")),
             ]
-        dlg = DLG_Selection_type_document.MyFrame(self, size=(450, 335), listeBoutons=listeBoutons, type="contrats")
+        dlg = DLG_Selection_type_document.Dialog(self, size=(450, 335), listeBoutons=listeBoutons, type="contrats")
         if dlg.ShowModal() == wx.ID_OK:
             ChoixType = dlg.GetChoix()
             dlg.Destroy()
@@ -287,22 +287,18 @@ class Panel_Contrats(wx.Panel):
         dictDonnees = UTILS_Publipostage_donnees.GetDictDonnees(categorie="contrat", listeID=[IDcontrat,])
         # Ouvre le publiposteur
         from Dlg import DLG_Publiposteur
-        frm = DLG_Publiposteur.MyWizard(self, "", dictDonnees=dictDonnees)
-        frm.Show()
-        
-        
+        dlg = DLG_Publiposteur.Dialog(self, "", dictDonnees=dictDonnees)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def ImprimerDUE(self):
         """ Editer un contrat """
         index = self.list_ctrl_contrats.GetFirstSelected()
         IDcontrat = self.list_ctrl_contrats.GetItemData(index)
-        frame_EditionDUE = DLG_Edition_DUE.MyFrame(self, IDcontrat=IDcontrat)
-        frame_EditionDUE.Show()
-        frame_EditionDUE.MakeModal(True)
-        
-        
-        
-        
-        
+        dlg = DLG_Edition_DUE.Dialog(self, IDcontrat=IDcontrat)
+        dlg.ShowModal()
+        dlg.Destroy()
+
 
 # ----------- LISTCTRL DOSSIER ---------------------------------------------------------------------------------------------------
 

@@ -17,7 +17,7 @@ from wx.lib.mixins.listctrl import CheckListCtrlMixin
 
 
 
-class MyFrame(wx.Dialog):
+class Dialog(wx.Dialog):
     def __init__(self, parent, liste_labelsColonnes=[], listeValeurs=[], type=None):
         wx.Dialog.__init__(self, parent, -1, title=_(u"Sélection d'éléments"), size=(800, 460))
         self.parent = parent
@@ -139,8 +139,7 @@ class MyFrame(wx.Dialog):
             FonctionsPerso.Aide(56)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
@@ -188,10 +187,16 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.remplissage = True
         for valeurs in self.listeValeurs :
             ID = int(valeurs[0])
-            index = self.InsertStringItem(six.MAXSIZE, str(ID))
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, str(ID))
+            else:
+                index = self.InsertStringItem(six.MAXSIZE, str(ID))
             x = 1
             for valeur in valeurs[1:] :
-                self.SetStringItem(index, x, valeur)
+                if 'phoenix' in wx.PlatformInfo:
+                    self.SetItem(index, x, valeur)
+                else:
+                    self.SetStringItem(index, x, valeur)
                 x += 1
 
             self.SetItemData(index, ID)
@@ -229,6 +234,7 @@ if __name__ == "__main__":
     #wx.InitAllImageHandlers()
     liste_labelsColonnes=[(_(u"COL1"), "left", 50, "col1"), (_(u"COL2"), "left", 200, "col2"),]
     listeValeurs=[ (1, _(u"ligne1-col2")), (2, _(u"ligne2-col2")),]
-    frm = MyFrame(None, liste_labelsColonnes, listeValeurs)
-    frm.ShowModal()
+    dlg = Dialog(None, liste_labelsColonnes, listeValeurs)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

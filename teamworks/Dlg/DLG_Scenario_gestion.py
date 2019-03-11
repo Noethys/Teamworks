@@ -452,13 +452,11 @@ class TreeListCtrl(gizmos.TreeListCtrl):
 
 
 
-
-class MyFrame(wx.Frame):
-    def __init__(self, parent, title="" ):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_gestion_scenarios", style=wx.DEFAULT_FRAME_STYLE)
+class Dialog(wx.Dialog):
+    def __init__(self, parent, title=""):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
-        self.MakeModal(True)
-        
+
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base, IDpersonne=None)
 
@@ -469,9 +467,6 @@ class MyFrame(wx.Frame):
         
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_fermer, self.bouton_fermer)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-        
 
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des scénarios"))
@@ -511,20 +506,11 @@ class MyFrame(wx.Frame):
         self.CentreOnScreen()
         self.sizer_pages = sizer_pages
 
-    def OnClose(self, event):
-        # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(58)
                 
     def Onbouton_fermer(self, event):
-        # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.EndModal(wx.ID_CANCEL)
         
 
 
@@ -532,7 +518,7 @@ class MyFrame(wx.Frame):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "")
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

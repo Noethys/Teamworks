@@ -440,29 +440,29 @@ class Panel(wx.Panel):
         self.ctrl_periodes.Remplissage(self.listeDisponibilites)
     
     def OnGestionFonctions(self, event):
-        frm = DLG_Config_fonctions.MyFrame(self, "")
-        frm.Show()
-    
+        dlg = DLG_Config_fonctions.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnGestionAffectations(self, event):
-        frm = DLG_Config_affectations.MyFrame(self, "")
-        frm.Show()
+        dlg = DLG_Config_affectations.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnGestionDiffuseurs(self, event):
-        frm = DLG_Config_diffuseurs.MyFrame(self, "")
-        frm.Show()
-    
+        dlg = DLG_Config_diffuseurs.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def OnClose(self, event):
         self.GetParent().Fermer()
         
     def Onbouton_aide(self, event):
-##        FonctionsPerso.Aide(38)
         dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
             
     def Onbouton_annuler(self, event):
-##        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Classification
-##        self.MAJparents()
         # Fermeture
         self.GetParent().Fermer()
         
@@ -781,9 +781,10 @@ class CheckListBox(wx.CheckListBox):
         self.listeIDcoches = self.GetIDcoches()
 
 
-class MyFrame(wx.Frame):
+
+class Dialog(wx.Dialog):
     def __init__(self, parent, IDemploi=None):
-        wx.Frame.__init__(self, parent, -1, title="", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel = Panel(self, IDemploi=IDemploi)
                 
@@ -803,17 +804,10 @@ class MyFrame(wx.Frame):
         self.SetMinSize((770, 550))
         self.SetSize((770, 550))
         self.CentreOnScreen()
-    
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-    
-    def OnClose(self, event):
-        self.Fermer() 
-    
+
     def Fermer(self):
         self.MAJparents() 
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
     
     def MAJparents(self):
         if self.GetParent().GetName() == "config_emploi" :
@@ -824,8 +818,7 @@ class MyFrame(wx.Frame):
         
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, IDemploi=1)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, IDemploi=1)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()
