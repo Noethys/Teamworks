@@ -200,9 +200,7 @@ class MyDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonReinit, self.bouton_reinit)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-        
+
     def __set_properties(self):
         self.SetTitle(_(u"Editeur de photo"))
         if 'phoenix' in wx.PlatformInfo:
@@ -266,19 +264,12 @@ class MyDialog(wx.Dialog):
         grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.EXPAND, 10)
         self.SetSizer(grid_sizer_base)
         sizer_base.Add(self, 1, wx.EXPAND, 0)
-##        self.SetSizer(sizer_base)
-##        sizer_base.Fit(self)
         self.Layout()
         self.CentreOnScreen()
         
     def Fermer(self):
-        self.MakeModal(False)
-        self.Destroy()
-        
-    def OnClose(self, event):
-        self.MakeModal(False)
-        event.Skip()
-        
+        self.EndModal(wx.ID_CANCEL)
+
     def GetBmp(self):
         return self.imgbox.bmp
                 
@@ -287,7 +278,6 @@ class MyDialog(wx.Dialog):
         dlg.ShowModal()
         dlg.Destroy()
         return
-        FonctionsPerso.Aide(42)
 
     def OnBoutonOk(self, event): 
         # Ferme la boîte de dialogue

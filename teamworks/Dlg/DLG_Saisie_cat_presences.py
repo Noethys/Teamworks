@@ -108,7 +108,7 @@ class Dialog(wx.Dialog):
         sizer_base.Add(self.panel_base, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_base)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
     def Importation(self):
         """ Récupération des données à modifier dans la base """

@@ -246,16 +246,19 @@ class Page(wx.Panel):
             self.datepicker_date_fin.Show(False)
         
     def OnBoutonClassifications(self, event):
-        frmClassification = DLG_Config_classifications.MyFrame(self, "")
-        frmClassification.Show()
+        dlg = DLG_Config_classifications.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnBoutonValPoint(self, event):
-        frmValPoint = DLG_Config_val_point.MyFrame(self, "")
-        frmValPoint.Show()
+        dlg = DLG_Config_val_point.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
         
     def OnBoutonType(self, event):
-        frmTypes = DLG_Config_types_contrats.MyFrame(self, "")
-        frmTypes.Show()
+        dlg = DLG_Config_types_contrats.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
         
     def MAJ_choice_Class(self):
         self.Importation_classifications()

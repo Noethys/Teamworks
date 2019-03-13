@@ -304,7 +304,7 @@ class Dialog(wx.Dialog):
         self.SetSizer(sizer_base)
         self.Layout()
         self.SetMinSize((570, 500))
-        self.Centre()
+        self.CenterOnScreen()
     
     def OnComboDisposition(self, evt):
         bcb = evt.GetEventObject()
@@ -503,7 +503,7 @@ class DialogSelectionPersonnes(wx.Dialog):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()       
+        self.CenterOnScreen()
     
     def ImportationDonnees(self):
         """ Importation de la liste des personnes """

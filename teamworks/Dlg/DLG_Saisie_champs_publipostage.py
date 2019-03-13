@@ -13,10 +13,10 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 
-class MyFrame(wx.Frame):
+
+class Dialog(wx.Dialog):
     def __init__(self, parent, title="" , IDchamp=0, categorie="", listeMotsCles=[]):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.ancienMotcle = None
@@ -55,8 +55,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
         self.text_motCle.Bind(wx.EVT_KILL_FOCUS, self.OnTextMotCle)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         self.SetTitle(_(u"Saisie d'un champ personnalisé"))
         if 'phoenix' in wx.PlatformInfo:
@@ -143,33 +142,25 @@ class MyFrame(wx.Frame):
         IDchamp, categorie, nom, mot_cle, defaut = donnees
         # Place les valeurs dans les controles
         self.text_nom.SetValue(nom)
-##        self.text_description.SetValue(donnees[2])
         self.text_defaut.SetValue(defaut)
         self.text_motCle.SetValue(mot_cle)
         self.ancienMotcle = mot_cle
-##        self.text_exemple.SetValue(donnees[5])
 
-
-                                    
     def Sauvegarde(self):
         """ Sauvegarde des données dans la base de données """
         
         # Récupération des valeurs des controles
         nom = self.text_nom.GetValue()
-##        description = self.text_description.GetValue()
         defaut = self.text_defaut.GetValue()
         motCle = self.text_motCle.GetValue()
-##        exemple = self.text_exemple.GetValue()
 
         DB = GestionDB.DB()
         # Création de la liste des données
-        listeDonnees = [    ("nom",   nom),  
-                                    ("categorie",   self.categorie),  
-##                                    ("description",    description),
-                                    ("mot_cle",    motCle),
-                                    ("defaut",    defaut),
-##                                    ("exemple",    exemple), 
-                                ]
+        listeDonnees = [("nom",   nom),
+                        ("categorie",   self.categorie),
+                        ("mot_cle",    motCle),
+                        ("defaut",    defaut),
+                        ]
         if self.IDchamp == 0:
             # Enregistrement
             newID = DB.ReqInsert("publipostage_champs", listeDonnees)
@@ -181,29 +172,20 @@ class MyFrame(wx.Frame):
         DB.Commit()
         DB.Close()
         return ID
-    
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-    
+
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(20)
         
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
         # Récupération des valeurs des controles
         nom = self.text_nom.GetValue()
-##        description = self.text_description.GetValue()
         defaut = self.text_defaut.GetValue()
         motCle = self.text_motCle.GetValue()
-##        exemple = self.text_exemple.GetValue()
-        
+
         # Vérifie que les valeurs ont été saisies
         if nom == "" :
             dlg = wx.MessageDialog(self, _(u"Vous devez saisir un nom pour le champ."), "Erreur", wx.OK)  
@@ -211,25 +193,7 @@ class MyFrame(wx.Frame):
             dlg.Destroy()
             self.text_nom.SetFocus()
             return
-        
-##        if description == "" :
-##            txt = _(u"Vous n'avez pas saisi de description. Ce n'est pas obligatoire mais fortement conseillé pour faciliter ensuite la saisie du champ.\n\nVoulez-vous saisir une description ?")
-##            dlgConfirm = wx.MessageDialog(self, txt, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
-##            reponse = dlgConfirm.ShowModal()
-##            dlgConfirm.Destroy()
-##            if reponse == wx.ID_YES:
-##                self.text_description.SetFocus()
-##                return
 
-##        if exemple == "" :
-##            txt = _(u"Vous n'avez pas saisi de valeurs d'exemple. Ce n'est pas obligatoire mais fortement conseillé pour faciliter ensuite la saisie du champ.\n\nVoulez-vous saisir une ou plusieurs valeurs d'exemple ?")
-##            dlgConfirm = wx.MessageDialog(self, txt, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
-##            reponse = dlgConfirm.ShowModal()
-##            dlgConfirm.Destroy()
-##            if reponse == wx.ID_YES:
-##                self.text_description.SetFocus()
-##                return
-                    
         if motCle == "" :
             txt = _(u"Vous devez saisir un mot-clé.\n\nCe mot-clé sera nécessaire lors de l'impression des documents lors de la procédure de publipostage.")
             dlg = wx.MessageDialog(self, txt, "Erreur", wx.OK)  
@@ -283,16 +247,14 @@ class MyFrame(wx.Frame):
             self.GetParent().grid.Remplissage() 
         
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     
     
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "", IDchamp=0)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "", IDchamp=0)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

@@ -79,8 +79,9 @@ class Page(wx.Panel):
             self.listCtrl_modeles.Select(0)
 
     def OnBoutonModeles(self, event):
-        frmModeles = ConfigModeles.MyFrame(self, "")
-        frmModeles.Show()
+        dlg = ConfigModeles.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
                         
     def Init_radio(self, position="non"):
         if position == "non" :

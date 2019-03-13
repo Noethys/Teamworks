@@ -25,10 +25,10 @@ def DatetimeDateEnStr(date):
     dateStr = listeJours[date.weekday()] + " " + str(date.day) + " " + listeMois[date.month-1] + " " + str(date.year)
     return dateStr
 
-class Frm_confirm_appli(wx.Frame):
-    def __init__(self, parent, nbreTaches=0, dictTaches={}, listeCreationsTaches=[], inclureFeries=False ):
-        wx.Frame.__init__(self, parent, -1, title=_(u"Confirmation d'application des modèles"), name="frm_confirmApplication", style=wx.DEFAULT_FRAME_STYLE)
-        
+
+class Dialog(wx.Dialog):
+    def __init__(self, parent, nbreTaches=0, dictTaches={}, listeCreationsTaches=[], inclureFeries=False):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.dictTaches = dictTaches
         self.listeCreationsTaches = listeCreationsTaches
         self.inclureFeries = inclureFeries
@@ -50,7 +50,6 @@ class Frm_confirm_appli(wx.Frame):
         
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def __set_properties(self):
         if 'phoenix' in wx.PlatformInfo:
@@ -59,7 +58,6 @@ class Frm_confirm_appli(wx.Frame):
             _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.MakeModal(True)
         self.SetMinSize((400, 400))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
@@ -86,14 +84,8 @@ class Frm_confirm_appli(wx.Frame):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
-
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBoutonAnnuler(self, event) :
         
         try :
@@ -102,7 +94,6 @@ class Frm_confirm_appli(wx.Frame):
                 self.thread1.abort()
             else:
                 # Fermeture après la fin du processus
-                self.MakeModal(False)
                 FonctionsPerso.SetModalFrameParente(self)
                 if self.GetParent().GetName() == "panel_applicModele" :
                     self.GetParent().Fermer()
@@ -112,12 +103,10 @@ class Frm_confirm_appli(wx.Frame):
                     self.GetGrandParent().GetGrandParent().GetGrandParent().MAJpanelPlanning()
                 except :
                     pass
-                self.Destroy()
+                self.EndModal(wx.ID_CANCEL)
         except :
             # Fermeture de la fenêtre avant lancement du processus
-            self.MakeModal(False)
-            FonctionsPerso.SetModalFrameParente(self)
-            self.Destroy()
+            self.EndModal(wx.ID_CANCEL)
         
     def OnBoutonOk(self, event):
   
@@ -231,8 +220,6 @@ class Frm_confirm_appli(wx.Frame):
             self.AffichageExceptions()
         self.bouton_annuler.SetBitmapLabel(wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Ok_L72.png"), wx.BITMAP_TYPE_ANY))
 
-            
-    
     def AffichageExceptions(self) :
         # Lecture de la liste des exceptions
         nbreInvalides =len(self.listeExceptions)
@@ -267,23 +254,7 @@ class Frm_confirm_appli(wx.Frame):
                 listeFeriesVariables.append(date)
         return listeFeriesFixes, listeFeriesVariables
     
-    
-##        if nbreInvalides != 0 :
-##            message = ""
-##            if nbreValides == 0 : message += _(u"Aucune tâche n'a été correctement enregistrée.\n\nL")
-##            elif nbreValides == 1 : message += str(nbreValides) + _(u" tâche a été correctement enregistrée.\n\nMais l")
-##            else: message += str(nbreValides) + _(u" tâches ont été correctement enregistrées.\n\nMais l")
-##            if nbreInvalides == 1 :
-##                message += _(u"a tâche de la liste suivante n'a pas pu être saisie car elle chevauchait une ou plusieurs des tâches existantes. ")
-##                message += _(u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celle-ci.\n\n")
-##            else:
-##                message += _(u"es ") + str(nbreInvalides) + _(u" tâches de la liste suivante n'ont pas pu être saisies car elles chevauchaient des tâches existantes. ")
-##                message += _(u"Vous devrez donc d'abord supprimer ou modifier les horaires de ces tâches existantes avant de pouvoir saisir celles-ci.\n\n")
-##            for exception in self.listeExceptions :
-##                message += "   > Le " + exception[1] + " pour " + exception[0] + " de " + exception[2][0] + u" à " + exception[2][1] + ".\n"
-##            dlg = wx.lib.dialogs.ScrolledMessageDialog(self, message, _(u"Rapport d'erreurs"))
-##            dlg.ShowModal()
-        
+
         
         
 
@@ -343,7 +314,10 @@ class TreeCtrlTaches(wx.TreeCtrl):
         
         # Création de la racine
         self.root = self.AddRoot(_(u"Tâches à créer :"))
-        self.SetPyData(self.root, None)
+        if 'phoenix' in wx.PlatformInfo:
+            self.SetItemData(self.root, None)
+        else:
+            self.SetPyData(self.root, None)
         # Image
         self.SetItemImage(self.root, self.imgRacine, wx.TreeItemIcon_Normal)
         
@@ -408,8 +382,7 @@ class TreeCtrlTaches(wx.TreeCtrl):
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = Frm_confirm_appli(None)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

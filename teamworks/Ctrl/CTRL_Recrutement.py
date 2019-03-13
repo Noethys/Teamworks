@@ -549,8 +549,9 @@ class BarreAffichage(wx.Panel):
         # Récupération des personnes de la liste de personnes
         listePersonnes = panelPresences.panelPersonnes.listCtrlPersonnes.GetListePersonnes()
         from Dlg import DLG_Statistiques
-        frm = DLG_Statistiques.MyFrame(self, listeDates=listeDates, listePersonnes=listePersonnes)
-        frm.Show()
+        dlg = DLG_Statistiques.Dialog(self, listeDates=listeDates, listePersonnes=listePersonnes)
+        dlg.ShowModal()
+        dlg.Destroy()
         topWindow = wx.GetApp().GetTopWindow() 
         try : topWindow.SetStatusText(u"")
         except : pass
@@ -558,9 +559,10 @@ class BarreAffichage(wx.Panel):
     def Menu_30(self, event):
         """ Gestion des scénarios """
         from Dlg import DLG_Scenario_gestion
-        frm = DLG_Scenario_gestion.MyFrame(self)
-        frm.Show()
-        
+        dlg = DLG_Scenario_gestion.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def Menu_210(self, event):
         """ Afficher légendes """
         global hauteurBarre, modeTexte

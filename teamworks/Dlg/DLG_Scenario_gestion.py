@@ -229,8 +229,9 @@ class Panel(wx.Panel):
         DB.Close()
         
         # Ouverture du scénario dans l'éditeur
-        frmSaisie = DLG_Scenario.MyFrame(self, IDscenario=newIDscenario, IDpersonne=self.IDpersonne)
-        frmSaisie.Show()
+        dlg = DLG_Scenario.Dialog(self, IDscenario=newIDscenario, IDpersonne=self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
             
         
     def MAJ_ListCtrl(self, IDselection=None):

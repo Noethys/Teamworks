@@ -84,7 +84,6 @@ class Dialog(wx.Dialog):
         # Recherche l'autorisation d'accès au fichier
         self.ctrl_autorisation.SetValue(self.RechercheAutorisation())
 
-
     def __set_properties(self):
         self.ctrl_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom pour l'utilisateur. \nIl est fortement conseillé de n'inclure aucun caractères spéciaux (accents, symboles...)")))
         self.radio_1.SetToolTip(wx.ToolTip(_(u"L'utilisateur ne peut se connecter à la base de données\n qu'à partir du serveur sur lequel se trouve la base de données.")))

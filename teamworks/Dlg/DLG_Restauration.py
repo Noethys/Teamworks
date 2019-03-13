@@ -31,7 +31,7 @@ def SelectionFichier():
     """ Sélectionner le fichier à restaurer """
     # Demande l'emplacement du fichier
     wildcard = _(u"Sauvegarde Teamworks (*.twd, *.twc, *.twz)|*.twd;*.twc;*.twz|Tous les fichiers|*.*")
-    dlg = wx.FileDialog(None, message=_(u"Veuillez sélectionner le fichier de sauvegarde à restaurer"), defaultDir=os.getcwd(), defaultFile="", wildcard=wildcard, style=wx.OPEN)
+    dlg = wx.FileDialog(None, message=_(u"Veuillez sélectionner le fichier de sauvegarde à restaurer"), defaultDir=os.getcwd(), defaultFile="", wildcard=wildcard, style=wx.FD_OPEN)
     if dlg.ShowModal() == wx.ID_OK:
         fichier = dlg.GetPath()
     else:

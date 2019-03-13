@@ -8,11 +8,10 @@ import GestionDB
 import FonctionsPerso
 
 
-class MyFrame(wx.Frame):
+
+class Dialog(wx.Dialog):
     def __init__(self, parent, title=""):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-        
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.typeJour = type
         
         self.panel_base = wx.Panel(self, -1)
@@ -32,8 +31,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         self.SetTitle(_(u"Saisie d'un mot de passe"))
         if 'phoenix' in wx.PlatformInfo:
@@ -80,8 +78,7 @@ class MyFrame(wx.Frame):
         self.SetSizer(sizer_base)        
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
-
+        self.CenterOnScreen()
 
     def Sauvegarde(self):
         """ Sauvegarde des données dans la base de données """
@@ -96,18 +93,12 @@ class MyFrame(wx.Frame):
         DB.Commit()
         DB.Close()
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        self.GetParent().checkBox.SetValue(False)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(7)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
         self.GetParent().checkBox.SetValue(False)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
@@ -143,15 +134,13 @@ class MyFrame(wx.Frame):
             self.GetParent().MAJpanel()
 
         # Fermeture
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     
     
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "")
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

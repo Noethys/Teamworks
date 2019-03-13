@@ -118,7 +118,7 @@ class Dialog(wx.Dialog):
         
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
     def Importation(self):
         DB = GestionDB.DB()

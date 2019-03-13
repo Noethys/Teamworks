@@ -231,7 +231,7 @@ Tous les fichiers (*.*)|*.*"
             defaultDir=cheminDefaut, 
             defaultFile="", 
             wildcard=wildcard,
-            style=wx.OPEN | wx.MULTIPLE
+            style=wx.FD_OPEN | wx.MULTIPLE
             )
         if dlg.ShowModal() == wx.ID_OK:
             listeFichiers = dlg.GetPaths()
@@ -451,8 +451,9 @@ Tous les fichiers (*.*)|*.*"
         if track.isImage == True :
             # Ouvrir Editeur Photo
             from Dlg import DLG_Visualiseur_image
-            dlg = DLG_Visualiseur_image.MyFrame(None, imgPIL=track.image)
-            dlg.Show(True)
+            dlg = DLG_Visualiseur_image.Dialog(None, imgPIL=track.image)
+            dlg.ShowModal()
+            dlg.Destroy()
         else:
             # Création du doc dans le répertoire Temp et ouverture
             nomFichier = UTILS_Fichiers.GetRepTemp("document.%s" % track.type)

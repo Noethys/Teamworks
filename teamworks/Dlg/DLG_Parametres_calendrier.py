@@ -16,10 +16,9 @@ import  wx.lib.colourselect as  csel
 import wx.lib.agw.hyperlink as hl
 
 
-class MyFrame(wx.Frame):
-    def __init__(self, parent, title="Configuration du gadget Calendrier"):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+class Dialog(wx.Dialog):
+    def __init__(self, parent, title=_(u"Configuration du gadget Calendrier")):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.nomGadget = "calendrier"
@@ -42,8 +41,7 @@ class MyFrame(wx.Frame):
         self.hauteur_label = wx.StaticText(self.panel_base, -1, _(u"Hauteur :"))
         self.hauteur_texte = wx.TextCtrl(self.panel_base, -1, str(self.val_hauteur), size=(40, -1))
         self.hauteur_slider = wx.Slider(self.panel_base, -1, self.val_hauteur, self.hauteur_min, self.hauteur_max, size=(-1, -1), style=wx.SL_HORIZONTAL)
-        
-        
+
         # Bouton couleur de fond
         self.label_couleurFond = wx.StaticText(self.panel_base, -1, _(u"Couleur de fond :"))
         self.bouton_couleurFond = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurFond, size = (40, 23))
@@ -79,8 +77,7 @@ class MyFrame(wx.Frame):
         # Bouton couleur de police des jours avec des présents
         self.label_couleurFontJoursAvecPresents = wx.StaticText(self.panel_base, -1, _(u"Couleur de police si présences :"))
         self.bouton_couleurFontJoursAvecPresents = csel.ColourSelect(self.panel_base, -1, "", self.val_couleurFontJoursAvecPresents, size = (40, 23))
-        
-        
+
         # Hyperlink_reinit
         self.bouton_reinit = self.Build_Hyperlink()
         
@@ -95,7 +92,6 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_SCROLL, self.OnSliderLargeur, self.largeur_slider)
         self.Bind(wx.EVT_SCROLL, self.OnSliderHauteur, self.hauteur_slider)
         self.largeur_texte.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocusLargeur)
@@ -123,10 +119,10 @@ class MyFrame(wx.Frame):
         self.hauteur_texte.SetToolTip(wx.ToolTip(_(u"Saisissez ici une valeur pour la hauteur du gadget")))
         self.hauteur_slider.SetToolTip(wx.ToolTip(_(u"Vous pouvez aussi utiliser cette glissière pour régler la hauteur")))
         self.bouton_couleurFond.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur de fond du gadget")))
-        self.bouton_couleurCases.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (semaine))"))
-        self.bouton_couleurWE.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (week-end))"))
-        self.bouton_couleurVacances.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (vacances))"))
-        self.bouton_couleurFerie.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (fériés))"))
+        self.bouton_couleurCases.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (semaine)")))
+        self.bouton_couleurWE.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (week-end)")))
+        self.bouton_couleurVacances.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (vacances)")))
+        self.bouton_couleurFerie.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases (fériés)")))
         self.bouton_couleurSelect.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des cases sélectionnées")))
         self.bouton_couleurSurvol.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur des bords des cases survolées")))
         self.bouton_couleurFontJours.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la couleur du texte des numéros de jours")))
@@ -226,11 +222,11 @@ class MyFrame(wx.Frame):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
         self.grid_sizer_base = grid_sizer_base
         
         self.SetMinSize((400, 480))
         self.SetSize((400, 480))
+        self.CenterOnScreen()
 
     def Build_Hyperlink(self) :
         """ Construit un hyperlien """
@@ -371,8 +367,8 @@ class MyFrame(wx.Frame):
     
     def InitValeurs(self, donnees):
         # Place les valeurs dans les controles
-        exec("taille = " + donnees[0])
-        exec("self.dictParametres = " + donnees[1])
+        taille = eval(donnees[0])
+        self.dictParametres = eval(donnees[1])
         self.val_largeur = taille[0]
         self.val_hauteur = taille[1]
         self.val_couleurFond = self.dictParametres["colFond"]
@@ -409,23 +405,14 @@ class MyFrame(wx.Frame):
         DB.Commit()
         DB.Close()
 
-
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         print("Aide")
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
-        
         # Sauvegarde
         self.Sauvegarde()
         
@@ -436,16 +423,13 @@ class MyFrame(wx.Frame):
             topWindow.toolBook.GetPage(0).MAJpanel() 
             
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     
     
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

@@ -1240,8 +1240,9 @@ class MyFrame(wx.Frame):
             return
 
         # Ouverture de la frame exportation
-        frameExport = DLG_Export_outlook.MyFrame(None)
-        frameExport.Show()
+        dlg = DLG_Export_outlook.Dialog(None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MenuGadgets(self, event):
         """ Configuration des gadgets de la page d'accueil """
@@ -1309,8 +1310,9 @@ class MyFrame(wx.Frame):
     def MenuPublipostage(self, event):
         """ Imprimer par publipostage """
         from Dlg import DLG_Publiposteur_Choix
-        frame = DLG_Publiposteur_Choix.MyFrame(None)
-        frame.Show()
+        dlg = DLG_Publiposteur_Choix.Dialog(None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MenuTeamword(self, event):
         """ Lancer Teamword """
@@ -1324,7 +1326,9 @@ class MyFrame(wx.Frame):
         txtLicence = open("Versions.txt", "r")
         msg = txtLicence.read()
         txtLicence.close()
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg.decode("iso-8859-15"), _(u"Notes de versions"), size=(420, 400))
+        if six.PY2:
+            msg = msg.decode("iso-8859-15")
+        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, _(u"Notes de versions"), size=(420, 400))
         dlg.ShowModal()
         
     def MenuLicence(self, event):
@@ -1333,7 +1337,9 @@ class MyFrame(wx.Frame):
         txtLicence = open("Licence.txt", "r")
         msg = txtLicence.read()
         txtLicence.close()
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg.decode("iso-8859-15"), _(u"A propos"), size=(420, 400))
+        if six.PY2:
+            msg = msg.decode("iso-8859-15")
+        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, _(u"A propos"), size=(420, 400))
         dlg.ShowModal()
 
     def MenuApropos(self, event):
@@ -1341,7 +1347,7 @@ class MyFrame(wx.Frame):
         texte = u"""
 "TeamWorks - Gestion d'équipes"
 Logiciel de gestion d'équipes pour les centres de loisirs et de vacances.
-Copyright © 2008-2015 Ivan LUCAS
+Copyright © 2008-2019 Ivan LUCAS
 
 Remerciements :
 
@@ -1448,7 +1454,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
         
         # Charge la boîte de dialogue
         from Dlg import DLG_Assistant_demarrage
-        dlg = DLG_Assistant_demarrage.MyFrame(None, checkAffichage=checkAffichage, afficherDernierFichier=afficherDernierFichier, nomDernierFichier=self.nomDernierFichier)
+        dlg = DLG_Assistant_demarrage.Dialog(None, checkAffichage=checkAffichage, afficherDernierFichier=afficherDernierFichier, nomDernierFichier=self.nomDernierFichier)
         dlg.ShowModal()
         choix = dlg.GetChoix()
         checkAffichage = dlg.GetCheckAffichage()
@@ -1525,7 +1531,7 @@ class SaisiePassword(wx.Dialog):
         grid_sizer_2.AddGrowableCol(0)
         grid_sizer_2.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
     def GetPassword(self):
         return self.text_password.GetValue()

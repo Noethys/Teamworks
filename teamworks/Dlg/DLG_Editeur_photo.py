@@ -389,7 +389,7 @@ class Dialog(wx.Dialog):
         sizer_base.Add(self, 1, wx.EXPAND, 0)
 
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
                         
     def OnBoutonAide(self, event):
         print("Aide")

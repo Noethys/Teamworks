@@ -964,17 +964,19 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         else:
             selectionDates=(None, None)
     
-        frm_application = DLG_Application_modele.frm_application_modele(self, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates )
-        frm_application.Show()
+        dlg = DLG_Application_modele.Dialog(self, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates )
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Menu_80(self,event):
         """ Ouvre la liste des présences de la personne sélectionnée """
         index = self.listCtrlPersonnes.GetFirstSelected()
         IDpersonne = int(self.listCtrlPersonnes.GetItemData(index))
         from Ctrl import CTRL_Page_presences
-        frm_liste = CTRL_Page_presences.MyFrame(self, IDpersonne=IDpersonne)
-        frm_liste.Show()
-        
+        dlg = CTRL_Page_presences.Dialog(self, IDpersonne=IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def Menu_90(self,event):
         """ Imprime le plannign annuel """
         index = self.listCtrlPersonnes.GetFirstSelected()

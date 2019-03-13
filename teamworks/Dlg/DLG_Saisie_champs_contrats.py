@@ -98,7 +98,7 @@ class Dialog(wx.Dialog):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
     def OnTextMotCle(self, event):
         texte = self.text_motCle.GetValue()

@@ -143,7 +143,7 @@ class Dialog(wx.Dialog):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
         self.sizer_pages = sizer_pages
 
     def Onbouton_aide(self, event):

@@ -154,19 +154,7 @@ class MyFrame(wx.Frame):
         self.nb = wx.aui.AuiNotebook(self, style=wx.aui.AUI_NB_BOTTOM | wx.aui.AUI_NB_DEFAULT_STYLE)
         self.pages = []
         self.rtc = None
-        
-        # Création du RichTextCtrl
-##        rtc = MyRichTextCtrl(self)
-##        self.nb.AddPage(rtc, rtc.GetNomFichier())
-##        wx.CallAfter(self.rtc.SetFocus)
-        
-##        textAttr = rt.RichTextAttr()
-##        textAttr.SetFontFaceName(self.nomPolice)
-##        textAttr.SetFontSize(self.taillePolice)
-##        self.rtc.SetBasicStyle(textAttr)
-        
-##        print self.rtc.GetBasicStyle()
-        
+
         self.positionDepartRecherche = 0
         
         # Création des panels détachables
@@ -191,7 +179,7 @@ class MyFrame(wx.Frame):
                           Name("toolbar1").Caption("barre d'outils 1").
                           ToolbarPane().Top().
                           LeftDockable(False).RightDockable(False))
-        
+
         self._mgr.AddPane(self.toolbar2, wx.aui.AuiPaneInfo().
                           Name("toolbar12").Caption("barre d'outils 2").
                           ToolbarPane().Top().Row(1).
@@ -236,17 +224,8 @@ class MyFrame(wx.Frame):
         self.Quitter()
 
     def OnFileCreate(self, evt):
-##        buffer = self.rtc.GetBuffer()
-##        p = buffer.GetChildren()[0]
-##        image = p.FindObjectAtPosition(0)
-##        image.SetMargins(30, 30, 30, 30)
-##        print image.GetRect()
-##        print image.GetImage()
-##        print image.GetImageBlock()
-        
         self.CreateNewFile()
-        
-        
+
     def CreateNewFile(self, cheminModele=None):
         # Création du richTextCtrl
         rtc = MyRichTextCtrl(self)
@@ -291,9 +270,8 @@ class MyFrame(wx.Frame):
         return True
 
     def OnFileOpen(self, evt):
-        
         wildcard, types = rt.RichTextBuffer.GetExtWildcard(save=False)
-        dlg = wx.FileDialog(self, _(u"Choisissez un fichier à ouvrir"), wildcard=wildcard, style=wx.OPEN)
+        dlg = wx.FileDialog(self, _(u"Choisissez un fichier à ouvrir"), wildcard=wildcard, style=wx.FD_OPEN)
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -354,9 +332,6 @@ class MyFrame(wx.Frame):
             rtc = self.nb.GetPage(index)
             if enregistrer == True :
                 self.CloseFile(rtc)
-##            if self.OnFileClose(None) == False :
-##                return False
-##            self.Close(True)
         # Quitter Teamword
         self._mgr.UnInit()
         del self._mgr
@@ -489,26 +464,7 @@ class MyFrame(wx.Frame):
         # Impression
         printer = wx.Printer(data) 
         printer.Print(self, printout, False) 
-        
-        # Ancienne version
-##        texteHtml = self.GetHtmlText()
-##        if len(listeValeurs) > 0 :
-##            texteHtml = self.RemplaceMotsclesPreview(texteHtml, listeValeurs)
-##        printout = wx.html.HtmlPrintout() 
-##        printout.SetHtmlText(texteHtml) 
-##        data = wx.PrintDialogData() 
-##        data.SetAllPages(True)
-##        data.SetCollate(True) # Pour assembler les pages
-##        # définit les paramètres de l'impression
-##        datapr = wx.PrintData()
-##        datapr.SetNoCopies(nbre_exemplaires)
-##        if nom_imprimante != None :
-##            datapr.SetPrinterName(nom_imprimante)
-##        data.SetPrintData(datapr)
-##        # Impression
-##        printer = wx.Printer(data) 
-##        printer.Print(self, printout, False) # Mettre True pour afficher boîte de dialogue
-        
+
     def OnPreview(self, event):
         self.Preview()
     
@@ -516,10 +472,6 @@ class MyFrame(wx.Frame):
         self.Preview()
         
     def Preview(self):
-##        rtp = rt.RichTextPrinting("Print test")
-##        buf = self.rtc.GetBuffer()
-##        rtp.PrintBuffer(buf)
-##        return
         printout1 = wx.richtext.RichTextPrintout()
         printout1.SetRichTextBuffer(self.rtc.GetBuffer()) 
         printout2 = wx.richtext.RichTextPrintout()
@@ -540,15 +492,7 @@ class MyFrame(wx.Frame):
         pfrm.SetPosition(self.GetPosition())
         pfrm.SetSize(self.GetSize())
         pfrm.Show(True)       
-        
-    
-##        # Ancienne version
-##        texteHtml=self.GetHtmlText()
-##        if len(listeValeurs) != 0 :
-##            texteHtml = self.RemplacementMotscles(texteHtml, listeValeurs)
-##        p = Printer(texteHtml)
-##        p.Preview()
-    
+
     def OnPrint(self, event):
         printout = wx.richtext.RichTextPrintout() #wx.html.HtmlPrintout() 
         printout.SetRichTextBuffer(self.rtc.GetBuffer()) 
@@ -557,22 +501,11 @@ class MyFrame(wx.Frame):
         data.SetCollate(True) # Pour assembler les pages
         # définit les paramètres de l'impression
         datapr = wx.PrintData()
-##        datapr.SetNoCopies(nbre_exemplaires)
-##        if nom_imprimante != None :
-##            datapr.SetPrinterName(nom_imprimante)
         data.SetPrintData(datapr)
         # Impression
         printer = wx.Printer(data) 
         printer.Print(self, printout, True) 
-        
-##        rtp = rt.RichTextPrinting("Print test")
-##        rtp.PageSetup()
-##        rtp.PrintBuffer(self.rtc.GetBuffer())
-##        return
-##
-##        p = Printer(source=self.GetHtmlText())
-##        p.Print()
-        
+
     def OnRechercher(self, event):
         self.positionDepartRecherche = 0
         data = wx.FindReplaceData()
@@ -650,8 +583,7 @@ class MyFrame(wx.Frame):
             replaceTxt = "Replace text: %s" % event.GetReplaceString()
         else:
             replaceTxt = ""
-##        print "%s -- Find text: %s   Replace text: %s  Flags: %d" % (evtType, event.GetFindString(), replaceTxt, event.GetFlags())
-        
+
         if et != wx.wxEVT_COMMAND_FIND_REPLACE_ALL :
             
             # Processus de recherche
@@ -703,7 +635,7 @@ class MyFrame(wx.Frame):
 
     def OnURL(self, evt):
         wx.MessageBox(evt.GetString(), "URL Clicked")
-        
+
 
 ##    def OnFileOpen(self, evt):
 ##        # This gives us a string suitable for the file dialog based on
@@ -719,14 +651,14 @@ class MyFrame(wx.Frame):
 ##                self.rtc.LoadFile(path, fileType)
 ##        dlg.Destroy()
 ##
-##        
+##
 ##    def OnFileSave(self, evt):
 ##        if not self.rtc.GetFilename():
 ##            self.OnFileSaveAs(evt)
 ##            return
 ##        self.rtc.SaveFile()
 ##
-##        
+##
 ##    def OnFileSaveAs(self, evt):
 ##        wildcard, types = rt.RichTextBuffer.GetExtWildcard(save=True)
 ##
@@ -742,9 +674,9 @@ class MyFrame(wx.Frame):
 ##                    path += '.' + ext
 ##                self.rtc.SaveFile(path, fileType)
 ##        dlg.Destroy()
-        
-    
-      
+
+
+
     def OnBold(self, evt):
         self.rtc.ApplyBoldToSelection()
         
@@ -775,8 +707,8 @@ class MyFrame(wx.Frame):
             attr.SetLeftIndent(attr.GetLeftIndent() + 100)
             attr.SetFlags(wx.TEXT_ATTR_LEFT_INDENT)
             self.rtc.SetStyle(r, attr)
-       
-        
+
+
     def OnIndentLess(self, evt):
         attr = rt.RichTextAttr()
         attr.SetFlags(wx.TEXT_ATTR_LEFT_INDENT)
@@ -791,7 +723,7 @@ class MyFrame(wx.Frame):
             attr.SetFlags(wx.TEXT_ATTR_LEFT_INDENT)
             self.rtc.SetStyle(r, attr)
 
-        
+
     def OnParagraphSpacingMore(self, evt):
         attr = rt.RichTextAttr()
         attr.SetFlags(wx.TEXT_ATTR_PARA_SPACING_AFTER)
@@ -805,7 +737,7 @@ class MyFrame(wx.Frame):
             attr.SetFlags(wx.TEXT_ATTR_PARA_SPACING_AFTER)
             self.rtc.SetStyle(r, attr)
 
-        
+
     def OnParagraphSpacingLess(self, evt):
         attr = rt.RichTextAttr()
         attr.SetFlags(wx.TEXT_ATTR_PARA_SPACING_AFTER)
@@ -820,7 +752,7 @@ class MyFrame(wx.Frame):
                 attr.SetFlags(wx.TEXT_ATTR_PARA_SPACING_AFTER)
                 self.rtc.SetStyle(r, attr)
 
-        
+
     def OnLineSpacingSingle(self, evt): 
         attr = rt.RichTextAttr()
         attr.SetFlags(wx.TEXT_ATTR_LINE_SPACING)
@@ -833,8 +765,8 @@ class MyFrame(wx.Frame):
             attr.SetFlags(wx.TEXT_ATTR_LINE_SPACING)
             attr.SetLineSpacing(10)
             self.rtc.SetStyle(r, attr)
- 
-                
+
+
     def OnLineSpacingHalf(self, evt):
         attr = rt.RichTextAttr()
         attr.SetFlags(wx.TEXT_ATTR_LINE_SPACING)
@@ -848,7 +780,7 @@ class MyFrame(wx.Frame):
             attr.SetLineSpacing(15)
             self.rtc.SetStyle(r, attr)
 
-        
+
     def OnLineSpacingDouble(self, evt):
         attr = rt.RichTextAttr()
         attr.SetFlags(wx.TEXT_ATTR_LINE_SPACING)
@@ -909,7 +841,7 @@ class MyFrame(wx.Frame):
                     attr.SetTextColour(colour)
                     self.rtc.SetStyle(r, attr)
         dlg.Destroy()
-        
+
 
 
     def OnUpdateBold(self, evt):
@@ -974,7 +906,7 @@ class MyFrame(wx.Frame):
             defaultDir=cheminDefaut, 
             defaultFile="",
             wildcard=wildcard,
-            style=wx.OPEN
+            style=wx.FD_OPEN
             )
         if dlg.ShowModal() == wx.ID_OK:
             nomFichierCourt = dlg.GetFilename()
@@ -995,180 +927,7 @@ class MyFrame(wx.Frame):
             return 
         
         self.rtc.WriteBitmap(bmp, bitmapType=wx.BITMAP_TYPE_BMP)
-        
-        
-    def EcritTexteTest(self):
-        self.rtc.Freeze()
-        self.rtc.BeginSuppressUndo()
 
-        self.rtc.BeginParagraphSpacing(0, 20)
-
-        self.rtc.BeginAlignment(wx.TEXT_ALIGNMENT_CENTRE)
-        self.rtc.BeginBold()
-
-        self.rtc.BeginFontSize(14)
-        self.rtc.WriteText("Welcome to wxRichTextCtrl, {NOM} {PRENOM} {AGE} a wxWidgets control for editing and presenting styled text and images")
-        self.rtc.EndFontSize()
-        self.rtc.Newline()
-
-        self.rtc.BeginItalic()
-        self.rtc.WriteText("by {NOM} {PRENOM} {AGE} ans")
-        self.rtc.EndItalic()
-
-        self.rtc.EndBold()
-
-        self.rtc.Newline()
-        img1 = wx.Bitmap(Chemins.GetStaticPath("Images/Special/Logo_accueil.png"), wx.BITMAP_TYPE_ANY)
-        self.rtc.WriteBitmap(img1)
-
-        self.rtc.Newline()
-        self.rtc.Newline()
-
-        self.rtc.WriteText("What can you do with this thing? ")
-##        self.rtc.WriteImage(images._rt_smiley.GetImage())
-        self.rtc.WriteText(" Well, you can change text ")
-        
-        self.rtc.EndAlignment()
-        
-        self.rtc.BeginTextColour((255, 0, 0))
-        self.rtc.WriteText("colour, like this red bit.")
-        self.rtc.EndTextColour()
-
-        self.rtc.BeginTextColour((0, 0, 255))
-        self.rtc.WriteText(" And this blue bit.")
-        self.rtc.EndTextColour()
-
-        self.rtc.WriteText(" Naturally you can make things {NOM} {PRENOM} {AGE} ")
-        self.rtc.BeginBold()
-        self.rtc.WriteText("bold ")
-        self.rtc.EndBold()
-        self.rtc.BeginItalic()
-        self.rtc.WriteText("or italic ")
-        self.rtc.EndItalic()
-        self.rtc.BeginUnderline()
-        self.rtc.WriteText("or underlined.")
-        self.rtc.EndUnderline()
-
-        self.rtc.BeginFontSize(14)
-        self.rtc.WriteText(" Different font sizes on the same line is allowed, too.")
-        self.rtc.EndFontSize()
-
-        self.rtc.WriteText(" Next we'll show an indented paragraph.")
-
-        self.rtc.BeginLeftIndent(60)
-        self.rtc.Newline()
-
-        self.rtc.WriteText("It was in January, the most down-trodden month of an Edinburgh winter. An attractive woman came into the cafe, which is nothing remarkable.")
-        self.rtc.EndLeftIndent()
-
-        self.rtc.Newline()
-
-        self.rtc.WriteText("Next, we'll show a first-line indent, achieved using BeginLeftIndent(100, -40).")
-
-        self.rtc.BeginLeftIndent(100, -40)
-        self.rtc.Newline()
-
-        self.rtc.WriteText("It was in January, the most down-trodden month of an Edinburgh winter. An attractive woman came into the cafe, which is nothing remarkable.")
-        self.rtc.EndLeftIndent()
-
-        self.rtc.Newline()
-
-        self.rtc.WriteText("Numbered bullets are possible, again using sub-indents:")
-
-        self.rtc.BeginNumberedBullet(1, 100, 60)
-        self.rtc.Newline()
-
-        self.rtc.WriteText("This is my first item. Note that wxRichTextCtrl doesn't automatically do numbering, but this will be added later.")
-        self.rtc.EndNumberedBullet()
-
-        self.rtc.BeginNumberedBullet(2, 100, 60)
-        self.rtc.Newline()
-
-        self.rtc.WriteText("This is my second item.")
-        self.rtc.EndNumberedBullet()
-
-        self.rtc.Newline()
-
-        self.rtc.WriteText("The following paragraph is right-indented:")
-
-        self.rtc.BeginRightIndent(200)
-        self.rtc.Newline()
-
-        self.rtc.WriteText("It was in January, the most down-trodden month of an Edinburgh winter. An attractive woman came into the cafe, which is nothing remarkable.")
-        self.rtc.EndRightIndent()
-
-        self.rtc.Newline()
-
-        self.rtc.WriteText("The following paragraph is right-aligned with 1.5 line spacing:")
-
-        self.rtc.BeginAlignment(wx.TEXT_ALIGNMENT_RIGHT)
-        self.rtc.BeginLineSpacing(wx.TEXT_ATTR_LINE_SPACING_HALF)
-        self.rtc.Newline()
-
-        self.rtc.WriteText("It was in January, the most down-trodden month of an Edinburgh winter. An attractive woman came into the cafe, which is nothing remarkable.")
-        self.rtc.EndLineSpacing()
-        self.rtc.EndAlignment()
-
-        self.rtc.Newline()
-        self.rtc.WriteText("Other notable features of wxRichTextCtrl include:")
-
-        self.rtc.BeginSymbolBullet('*', 100, 60)
-        self.rtc.Newline()
-        self.rtc.WriteText("Compatibility with wxTextCtrl API")
-        self.rtc.EndSymbolBullet()
-
-        self.rtc.BeginSymbolBullet('*', 100, 60)
-        self.rtc.Newline()
-        self.rtc.WriteText("Easy stack-based BeginXXX()...EndXXX() style setting in addition to SetStyle()")
-        self.rtc.EndSymbolBullet()
-
-        self.rtc.BeginSymbolBullet('*', 100, 60)
-        self.rtc.Newline()
-        self.rtc.WriteText("XML loading and saving")
-        self.rtc.EndSymbolBullet()
-
-        self.rtc.BeginSymbolBullet('*', 100, 60)
-        self.rtc.Newline()
-        self.rtc.WriteText("Undo/Redo, with batching option and Undo suppressing")
-        self.rtc.EndSymbolBullet()
-
-        self.rtc.BeginSymbolBullet('*', 100, 60)
-        self.rtc.Newline()
-        self.rtc.WriteText("Clipboard copy and paste")
-        self.rtc.EndSymbolBullet()
-
-        self.rtc.BeginSymbolBullet('*', 100, 60)
-        self.rtc.Newline()
-        self.rtc.WriteText("wxRichTextStyleSheet with named character and paragraph styles, and control for applying named styles")
-        self.rtc.EndSymbolBullet()
-
-        self.rtc.BeginSymbolBullet('*', 100, 60)
-        self.rtc.Newline()
-        self.rtc.WriteText("A design that can easily be extended to other content types, ultimately with text boxes, tables, controls, and so on")
-        self.rtc.EndSymbolBullet()
-
-        self.rtc.BeginSymbolBullet('*', 100, 60)
-        self.rtc.Newline()
-
-        # Make a style suitable for showing a URL
-        urlStyle = rt.RichTextAttr()
-        urlStyle.SetTextColour(wx.BLUE)
-        urlStyle.SetFontUnderlined(True)
-        self.rtc.BeginStyle(urlStyle)
-        self.rtc.BeginURL("http://wxPython.org/")
-        self.rtc.WriteText("The wxPython Web Site")
-        self.rtc.EndURL();
-        self.rtc.EndStyle();
-        self.rtc.Bind(wx.EVT_TEXT_URL, self.OnURL)
-        
-        self.rtc.Newline()
-        self.rtc.WriteText("Note: this sample content was generated programmatically from within the MyFrame constructor in the demo. The images were loaded from inline XPMs. Enjoy wxRichTextCtrl!")
-
-        self.rtc.EndParagraphSpacing()
-
-        self.rtc.EndSuppressUndo()
-        self.rtc.Thaw()
-        
     def ActiveOutils(self, etat=True):
         # Menu
         menuBar = self.GetMenuBar() 
@@ -1192,10 +951,7 @@ class MyFrame(wx.Frame):
         # Toolbar 2
         for id in range(200, 222+1):
             self.toolbar2.EnableTool(id, etat)
-        
-        
-        
-        
+
     def MakeMenuBar(self):
         def doBind(item, handler, updateUI=None):
             self.Bind(wx.EVT_MENU, handler, item)
@@ -1215,7 +971,7 @@ class MyFrame(wx.Frame):
         doBind( fileMenu.Append(303, _(u"Imprimer"), _(u"Imprimer")), self.OnPrint)
         fileMenu.AppendSeparator()
         doBind( fileMenu.Append(403, _(u"Quitter\tCtrl+Q"), _(u"Quitter Teamword")), self.OnFileExit )
-        
+
         editMenu = UTILS_Adaptations.Menu()
         doBind( editMenu.Append(wx.ID_UNDO, _(u"Annuler\tCtrl+Z")), self.ForwardEvent, self.ForwardEvent)
         doBind( editMenu.Append(wx.ID_REDO, _(u"Répéter\tCtrl+Y")), self.ForwardEvent, self.ForwardEvent )
@@ -1229,7 +985,7 @@ class MyFrame(wx.Frame):
         doBind( editMenu.Append(305, _(u"Remplacer\tCtrl+H"), _(u"Remplacer")), self.OnRemplacer )
         editMenu.AppendSeparator()
         doBind( editMenu.Append(wx.ID_SELECTALL, _(u"Tout sélectionner\tCtrl+A")), self.ForwardEvent, self.ForwardEvent )
-        
+
         #doBind( editMenu.AppendSeparator(),  )
         #doBind( editMenu.Append(-1, "&Find...\tCtrl+F"),  )
         #doBind( editMenu.Append(-1, "&Replace...\tCtrl+R"),  )
@@ -1254,11 +1010,11 @@ class MyFrame(wx.Frame):
         doBind( formatMenu.Append(317, _(u"Interligne simple")), self.OnLineSpacingSingle)
         doBind( formatMenu.Append(318, _(u"Interligne 1.5")), self.OnLineSpacingHalf)
         doBind( formatMenu.Append(319, _(u"Interligne double")), self.OnLineSpacingDouble)
-        
+
         insertionMenu = UTILS_Adaptations.Menu()
         doBind( insertionMenu.Append(320, _(u"Insérer une URL")), self.OnInsererURL)
         doBind( insertionMenu.Append(321, _(u"Insérer une image")), self.OnImporterImage)
-                
+
         aideMenu = UTILS_Adaptations.Menu()
         doBind( aideMenu.Append(404, _(u"Aide\tF1")), self.OnAide)
         
@@ -1279,16 +1035,16 @@ class MyFrame(wx.Frame):
             if updateUI is not None:
                 self.Bind(wx.EVT_UPDATE_UI, updateUI, item)
         
-        tbar = wx.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize, wx.TB_FLAT | wx.TB_NODIVIDER)
+        tbar = UTILS_Adaptations.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize, wx.TB_FLAT | wx.TB_NODIVIDER)
         tbar.SetToolBitmapSize(wx.Size(16,16))
-        doBind( tbar.AddTool(405, self.CreateImage("nouveau"), shortHelpString=u")Créer un nouveau document"), self.OnFileCreate)
+        doBind( tbar.AddTool(405, self.CreateImage("nouveau"), shortHelpString=_(u"Créer un nouveau document")), self.OnFileCreate)
         doBind( tbar.AddTool(406, self.CreateImage("ouvrir"), shortHelpString=_(u"Ouvrir un document")), self.OnFileOpen)
         doBind( tbar.AddTool(100, self.CreateImage("sauvegarder"), shortHelpString=_(u"Sauvegarder le document")), self.OnFileSave)
         tbar.AddSeparator()
         doBind( tbar.AddTool(101, self.CreateImage("mail"), shortHelpString=_(u"Envoyer par mail")), self.OnMail)
         tbar.AddSeparator()
         doBind( tbar.AddTool(102, self.CreateImage("imprimer"), shortHelpString=_(u"Imprimer le document")), self.OnPrint)
-        doBind( tbar.AddTool(103, self.CreateImage("apercu"), shortHelpString=u")Aperçu avant impression"), self.OnPreview)
+        doBind( tbar.AddTool(103, self.CreateImage("apercu"), shortHelpString=_(u"Aperçu avant impression")), self.OnPreview)
         tbar.AddSeparator()
         doBind( tbar.AddTool(wx.ID_CUT, self.CreateImage("couper"), shortHelpString=_(u"Couper")), self.ForwardEvent, self.ForwardEvent)
         doBind( tbar.AddTool(wx.ID_COPY, self.CreateImage("copier"), shortHelpString=_(u"Copier")), self.ForwardEvent, self.ForwardEvent)
@@ -1300,10 +1056,6 @@ class MyFrame(wx.Frame):
         doBind( tbar.AddTool(104, self.CreateImage("rechercher"), shortHelpString=_(u"Rechercher dans ce document")), self.OnRechercher)
         doBind( tbar.AddTool(105, self.CreateImage("remplacer"), shortHelpString=_(u"Rechercher et remplacer...")), self.OnRemplacer)
 
-#doBind( editMenu.AppendSeparator(),  )
-        #doBind( editMenu.Append(-1, "&Find...\tCtrl+F"),  )
-        #doBind( editMenu.Append(-1, "&Replace...\tCtrl+R"),  )
-        
         tbar.Realize()
         return tbar
 
@@ -1313,9 +1065,9 @@ class MyFrame(wx.Frame):
             if updateUI is not None:
                 self.Bind(wx.EVT_UPDATE_UI, updateUI, item)
         
-        tbar = wx.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize, wx.TB_FLAT | wx.TB_NODIVIDER)
+        tbar = UTILS_Adaptations.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize, wx.TB_FLAT | wx.TB_NODIVIDER)
         tbar.SetToolBitmapSize(wx.Size(16,16))
-        
+
         doBind( tbar.AddTool(200, self.CreateImage("police"), shortHelpString=_(u"Police")), self.OnFont)
         doBind( tbar.AddTool(201, self.CreateImage("police_couleur"), shortHelpString=_(u"Couleur de la police")), self.OnColour)
         tbar.AddSeparator()

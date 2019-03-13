@@ -187,8 +187,9 @@ class MyDialog(wx.Dialog):
     def OnBoutonApercu(self, event):
         IDscenario = self.listview_scenarios.GetSelection()
         if IDscenario == None : return
-        frm = DLG_Scenario.MyFrame(self, IDscenario)
-        frm.Show()
+        dlg = DLG_Scenario.Dialog(self, IDscenario)
+        dlg.ShowModal()
+        dlg.Destroy()
         
     def FormateCouleur(self, texte):
         pos1 = texte.index(",")

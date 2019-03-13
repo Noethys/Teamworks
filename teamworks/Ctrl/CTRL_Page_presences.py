@@ -203,8 +203,9 @@ class Panel(wx.Panel):
         print("lancement fonction Stats...")
         try :
             from Dlg import DLG_Statistiques
-            frm = DLG_Statistiques.MyFrame(self, listeDates=[], listePersonnes=[self.IDpersonne,])
-            frm.Show()
+            dlg = DLG_Statistiques.Dialog(self, listeDates=[], listePersonnes=[self.IDpersonne,])
+            dlg.ShowModal()
+            dlg.Destroy()
         except Exception as err :
             print("Erreur d'ouverture de la frame Stats : ", Exception, err)
         try : topWindow.SetStatusText(u"")
@@ -310,7 +311,7 @@ class Dialog_saisie(wx.Dialog):
         sizer_base.AddGrowableRow(0)
         self.panel_base.SetSizer(sizer_base)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
         self.SetMinSize((640, 330))
         self.SetSize((640, 330))
         
@@ -384,7 +385,7 @@ class Dialog_application_modele(wx.Dialog):
         self.Layout()
         self.SetMinSize((720, 400))
         self.SetSize((720, 400))
-        self.Centre()
+        self.CenterOnScreen()
 
     def Fermer(self):
         self.parent.MAJpanel()
@@ -801,11 +802,9 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         
         
         
-        
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, title=_(u"Liste de présences"), IDpersonne=1):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_PagePresences", style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDpersonne = IDpersonne
         self.panel_base = wx.Panel(self, -1)
@@ -819,7 +818,6 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def __set_properties(self):
         # Récupération de l'identité de la personne
@@ -838,7 +836,6 @@ class MyFrame(wx.Frame):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -865,19 +862,12 @@ class MyFrame(wx.Frame):
         self.SetMinSize((450, 350))
         self.SetSize((750, 550))
         self.CenterOnScreen()
-        
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
 
     def Onbouton_aide(self, event):
         print("aide")
             
     def Onbouton_annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def Onbouton_ok(self, event):
         # Met à jour le panel présences
@@ -887,14 +877,11 @@ class MyFrame(wx.Frame):
         except : pass
         
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()   
+        self.EndModal(wx.ID_OK)
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "")
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

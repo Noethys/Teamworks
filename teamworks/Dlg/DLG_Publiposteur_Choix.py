@@ -282,10 +282,10 @@ class ToolBook(wx.Toolbook):
 ##                                    ("IDtype_reponse", "INTEGER", _(u"IDtype"), _(u"ID du type de réponse")),
 ##                                    ], # Liste des candidatures du candidat
                                     
-                                    
-class MyFrame(wx.Frame):
+
+class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, -1, title=_(u"Créer des courriers ou des emails par publipostage"), style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel = wx.Panel(self, -1)
         
@@ -313,8 +313,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         if 'phoenix' in wx.PlatformInfo:
             _icon = wx.Icon()
@@ -375,12 +374,9 @@ class MyFrame(wx.Frame):
         dlg.ShowModal()
         dlg.Destroy()
         #FonctionsPerso.Aide(47)
-    
-    def OnClose(self, event):
-        event.Skip()
-        
+
     def Onbouton_annuler(self, event):
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
@@ -402,6 +398,9 @@ class MyFrame(wx.Frame):
         dlg = DLG_Publiposteur.Dialog(None, "", dictDonnees=dictDonnees)
         dlg.ShowModal()
         dlg.Destroy()
+
+        # Fermeture
+        self.EndModal(wx.ID_OK)
 
 
 class Hyperlink(hl.HyperLinkCtrl):
@@ -427,7 +426,7 @@ class Hyperlink(hl.HyperLinkCtrl):
     
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None)
-    frame_1.Show()
+    dlg = Dialog(None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

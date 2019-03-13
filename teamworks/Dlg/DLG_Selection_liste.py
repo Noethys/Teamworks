@@ -45,8 +45,7 @@ class Dialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
         self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
@@ -125,11 +124,7 @@ class Dialog(wx.Dialog):
     def OnLeftLink_deselect(self, event):
         """ dé-Sélectionner tout """
         self.listCtrl.MAJListeCtrl(action="deselect")
-        
-    def OnClose(self, event):
-        self.MakeModal(False)
-        event.Skip()
-        
+
     def OnBoutonAide(self, event):
         if self.type == "exportTexte" :
             FonctionsPerso.Aide(55)

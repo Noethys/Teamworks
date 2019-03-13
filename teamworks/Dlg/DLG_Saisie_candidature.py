@@ -13,7 +13,14 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import datetime
 import FonctionsPerso
-import wx.combo
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import BitmapComboBox
+else :
+    from wx.combo import BitmapComboBox
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN
 from Dlg import DLG_Selection_periode
 from Dlg import DLG_Config_fonctions
 from Dlg import DLG_Config_affectations
@@ -33,7 +40,7 @@ class Panel(wx.Panel):
         self.sizer_acte_staticbox = wx.StaticBox(self, -1, _(u"1. Dépôt de candidature"))
         self.label_introduction = wx.StaticText(self, -1, _(u"Vous pouvez ici saisir les informations concernant le dépôt de candidature."))
         self.label_date = wx.StaticText(self, -1, _(u"Date :"))
-        self.ctrl_date = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.label_type = wx.StaticText(self, -1, _(u"Type :"))
         listeImages = [ (_(u"De vive voix"), "Dialogue.png"),
                                 (_(u"Courrier"), "Mail.png"), 
@@ -45,7 +52,7 @@ class Panel(wx.Panel):
                                 (_(u"Fédération"), "Etoile.png"),
                                 (_(u"Autre"), "Etoile.png"),
                                 ] 
-        self.ctrl_type = BitmapComboBox(self, listeImages)
+        self.ctrl_type = MyBitmapComboBox(self, listeImages)
         self.label_acte_remarques = wx.StaticText(self, -1, _(u"Remarques :"))
         largeurTmp = self.label_acte_remarques.GetSize()[0]
         self.ctrl_acte_remarques = wx.TextCtrl(self, -1, u"")
@@ -85,14 +92,14 @@ class Panel(wx.Panel):
         self.sizer_reponse_staticbox = wx.StaticBox(self, -1, _(u"5. Réponse"))
         self.label_decision = wx.StaticText(self, -1, _(u"Décision :"))
         listeImages = [ (_(u"Décision non prise"), "Question.png"), (_(u"Oui"), "Ok_2.png"), (_(u"Non"), "Supprimer_2.png") ]
-        self.ctrl_decision = BitmapComboBox(self, listeImages=listeImages)
+        self.ctrl_decision = MyBitmapComboBox(self, listeImages=listeImages)
         self.label_reponse_remarques = wx.StaticText(self, -1, _(u"Remarques :"))
         self.ctrl_reponse_remarques = wx.TextCtrl(self, -1, "")
         self.label_reponse = wx.StaticText(self, -1, _(u"Réponse :"))
         self.ctrl_reponse_obligatoire = wx.CheckBox(self, -1, _(u"Réponse obligatoire"))
         self.ctrl_reponse_communiquee = wx.CheckBox(self, -1, _(u"Réponse communiquée au candidat"))
         self.label_reponse1 = wx.StaticText(self, -1, _(u"le"))
-        self.date_envoi_reponse = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.date_envoi_reponse = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.label_reponse2 = wx.StaticText(self, -1, _(u"par"))
         listeImages = [ (_(u"De vive voix"), "Dialogue.png"),
                                 (_(u"Courrier"), "Mail.png"), 
@@ -101,7 +108,7 @@ class Panel(wx.Panel):
                                 (_(u"Email"), "Mail2.png"),
                                 (_(u"Autre"), "Etoile.png"),
                                 ] 
-        self.ctrl_type_reponse = BitmapComboBox(self, listeImages, size=(140, -1))
+        self.ctrl_type_reponse = MyBitmapComboBox(self, listeImages, size=(140, -1))
         
         self.label_reponse1.Enable(False)
         self.date_envoi_reponse.Enable(False)
@@ -548,23 +555,24 @@ class Panel(wx.Panel):
         self.ctrl_periodes.Remplissage(self.listeDisponibilites)
 
     def OnGestionEmplois(self, event):
-        frm = DLG_Config_emplois.MyFrame(self, "")
-        frm.Show()
+        dlg = DLG_Config_emplois.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
             
     def OnGestionFonctions(self, event):
-        frm = DLG_Config_fonctions.MyFrame(self, "")
-        frm.Show()
+        dlg = DLG_Config_fonctions.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
     
     def OnGestionAffectations(self, event):
-        frm = DLG_Config_affectations.MyFrame(self, "")
-        frm.Show()
-
+        dlg = DLG_Config_affectations.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
     
     def OnClose(self, event):
         self.GetParent().Fermer()
         
     def Onbouton_aide(self, event):
-##        FonctionsPerso.Aide(38)
         dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
@@ -780,9 +788,9 @@ class Panel(wx.Panel):
         
 
 
-class BitmapComboBox(wx.combo.BitmapComboBox):
+class MyBitmapComboBox(BitmapComboBox):
     def __init__(self, parent, listeImages=[], size=(-1,  -1) ):
-        wx.combo.BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
+        BitmapComboBox.__init__(self, parent, size=size, style=wx.CB_READONLY)
         # Remplissage des items avec les images
         for texte, nomImage in listeImages :
             img = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/%s" % nomImage), wx.BITMAP_TYPE_ANY)
@@ -981,13 +989,13 @@ class CheckListBox(wx.CheckListBox):
         self.listeIDcoches = self.GetIDcoches()
 
 
-class MyFrame(wx.Frame):
+
+class Dialog(wx.Dialog):
     def __init__(self, parent, IDcandidat=None, IDpersonne=None, IDcandidature=None):
-        wx.Frame.__init__(self, parent, -1, title="", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel = Panel(self, IDcandidat=IDcandidat, IDpersonne=IDpersonne, IDcandidature=IDcandidature)
-        self.MakeModal(True)
-        
+
         # Propriétés
         nom_complet = self.GetNomCandidat(IDcandidat, IDpersonne)
         if IDcandidature == None :
@@ -1009,12 +1017,7 @@ class MyFrame(wx.Frame):
         self.SetMinSize((780, 560))
         self.SetSize((780, 560))
         self.CentreOnScreen()
-        
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-    
-    def OnClose(self, event):
-        self.Fermer() 
-    
+
     def Fermer(self):
         # MAJ
         parent = self.GetParent()
@@ -1029,9 +1032,7 @@ class MyFrame(wx.Frame):
         except :
             pass
 
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def GetNomCandidat(self, IDcandidat=None, IDpersonne=None):
         # Récupération des données
@@ -1052,8 +1053,7 @@ class MyFrame(wx.Frame):
         
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, IDcandidat=3, IDpersonne=None, IDcandidature=1)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, IDcandidat=3, IDpersonne=None, IDcandidature=1)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

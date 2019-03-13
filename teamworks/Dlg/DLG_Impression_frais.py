@@ -29,10 +29,9 @@ def DateFrEng(textDate):
 
 
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, IDpersonne=None):
-        wx.Frame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDpersonne = IDpersonne
         
@@ -55,8 +54,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def __set_properties(self):
         self.SetTitle(_(u"Imprimer une fiche de frais de déplacements"))
         if 'phoenix' in wx.PlatformInfo:
@@ -96,9 +94,8 @@ class MyFrame(wx.Frame):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()       
+        self.CenterOnScreen()
 
-    
     def Build_Hyperlink(self) :
         """ Construit un hyperlien """
         self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
@@ -118,16 +115,11 @@ class MyFrame(wx.Frame):
         """ Sélectionner les déplacements non remboursés """
         self.ctrl_deplacements.MAJListeCtrl()
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         FonctionsPerso.Aide(22)
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
@@ -142,10 +134,7 @@ class MyFrame(wx.Frame):
         
         # Impression
         ImpressionFicheFrais(self.IDpersonne, selections)
-        
-##        # Fermeture
-##        self.MakeModal(False)
-##        self.Destroy()
+
 
 
 
@@ -417,8 +406,7 @@ class ImpressionFicheFrais():
     
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, IDpersonne=1)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, IDpersonne=1)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

@@ -16,6 +16,7 @@ import operator
 import FonctionsPerso
 import os
 import sys
+import six
 from Dlg import DLG_Saisie_candidat
 from Utils import UTILS_Fichiers
 
@@ -606,8 +607,9 @@ class ListView(ObjectListView):
     def Options(self):
         """ Choix et ordre des colonnes """
         from Dlg import DLG_Config_liste_personnes
-        frm = DLG_Config_liste_personnes.MyFrame(self, self.listeColonnes)
-        frm.Show()
+        dlg = DLG_Config_liste_personnes.Dialog(self, self.listeColonnes)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MenuImprimer(self, event):
         self.Imprimer()
@@ -654,8 +656,9 @@ class ListView(ObjectListView):
                 self.GetGrandParent().GetParent().AffichePanelResume(False)
         except : 
             pass
-        frmFiche = DLG_Saisie_candidat.MyFrame(self, IDcandidat=None)
-        frmFiche.Show()
+        dlg = DLG_Saisie_candidat.Dialog(self, IDcandidat=None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Modifier(self):
         if len(self.Selection()) == 0:
@@ -671,9 +674,10 @@ class ListView(ObjectListView):
             pass
             
         IDcandidat = self.Selection()[0].IDcandidat
-        frmFiche = DLG_Saisie_candidat.MyFrame(self, IDcandidat=IDcandidat)
-        frmFiche.Show()
-                
+        dlg = DLG_Saisie_candidat.Dialog(self, IDcandidat=IDcandidat)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def Supprimer(self):
         if len(self.Selection()) == 0:
             dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un candidat à supprimer dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
@@ -1143,8 +1147,9 @@ class ListView(ObjectListView):
             return
         
         from Dlg import DLG_Fiche_individuelle
-        frmFiche = DLG_Fiche_individuelle.MyFrame(self.GetParent(), IDpersonne=IDpersonne)
-        frmFiche.Show()
+        dlg = DLG_Fiche_individuelle.Dialog(self.GetParent(), IDpersonne=IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
         
 
 

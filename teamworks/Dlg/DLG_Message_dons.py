@@ -81,8 +81,7 @@ class Dialog(wx.Dialog):
         grid_sizer_base.Fit(self)
         self.Layout()
         self.CenterOnScreen() 
-    
-    
+
     def OnClose(self, event):
         self.EndModal(wx.ID_OK)
 

@@ -143,7 +143,7 @@ class Dialog(wx.Dialog):
         self.SetMinSize((280, 250))
         grid_sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
         # end wxGlade
         self.grid_sizer_infos = grid_sizer_infos
 

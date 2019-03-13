@@ -315,8 +315,9 @@ class CTRL_Photo(wx.StaticBitmap):
         DB.Close()
         # Ouverture de la frame d'impression des photos  
         from Dlg import DLG_Impression_photo
-        frame = DLG_Impression_photo.MyFrame(None, listePersonnes=[[self.IDindividu, donnees[1], donnees[2], None],])
-        frame.Show()
+        dlg = DLG_Impression_photo.Dialog(None, listePersonnes=[[self.IDindividu, donnees[1], donnees[2], None],])
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Menu_ChoixCadre(self, event):
         index = event.GetId() - 500

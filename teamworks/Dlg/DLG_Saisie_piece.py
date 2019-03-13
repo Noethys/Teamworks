@@ -203,7 +203,7 @@ class Dialog(wx.Dialog):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
     def RemplissageAutresTypes(self):
         # Crée un dictionnaire des dates de validité par défaut des types de pièces

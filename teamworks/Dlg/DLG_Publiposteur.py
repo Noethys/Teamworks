@@ -306,8 +306,9 @@ class Page2(wx.Panel):
             self.AjouterChampPerso(IDchamp, mot_cle, defaut)
         
     def OnBoutonChamps(self, event):
-        frmChamps = Config_ChampsContrats.MyFrame(self, "")
-        frmChamps.Show()
+        dlg = Config_ChampsContrats.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
     
     def OnBoutonAjouter(self, event):
         self.Ajouter()
@@ -371,29 +372,17 @@ class Page2(wx.Panel):
     
 
     def Ajouter(self):
-        frm = DLG_Saisie_champs_publipostage.MyFrame(self, IDchamp=0, categorie=DICT_DONNEES["CATEGORIE"], listeMotsCles=DICT_DONNEES["MOTSCLES"])
-        frm.Show()
+        dlg = DLG_Saisie_champs_publipostage.Dialog(self, IDchamp=0, categorie=DICT_DONNEES["CATEGORIE"], listeMotsCles=DICT_DONNEES["MOTSCLES"])
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Modifier(self, numLigne=0):
         index = numLigne        
         motcle, IDchamp = DICT_DONNEES["MOTSCLES"][index]
-                
-##        # Vérifie que ce champ n'est pas attribué à un modèle de contrat
-##        DB = GestionDB.DB()
-##        req = "SELECT IDval_champ FROM contrats_valchamps WHERE IDchamp=%d AND type='modele'" % ID
-##        DB.ExecuterReq(req)
-##        listeDonnees = DB.ResultatReq()
-##        DB.Close()
-##        if len(listeDonnees) != 0 :
-##            dlg = wx.MessageDialog(self, _(u"Ce champ a déjà été attribué à ") + str(len(listeDonnees)) + _(u" modèle(s) de contrat.\nEtes-vous sûr de vouloir le modifier ?"), "Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_EXCLAMATION)
-##            reponse = dlg.ShowModal()
-##            if reponse == wx.ID_NO:
-##                dlg.Destroy()
-##                return
-##            else: dlg.Destroy()
-        
-        frm = DLG_Saisie_champs_publipostage.MyFrame(self, IDchamp=IDchamp, categorie=DICT_DONNEES["CATEGORIE"], listeMotsCles=DICT_DONNEES["MOTSCLES"])
-        frm.Show()
+
+        dlg = DLG_Saisie_champs_publipostage.Dialog(self, IDchamp=IDchamp, categorie=DICT_DONNEES["CATEGORIE"], listeMotsCles=DICT_DONNEES["MOTSCLES"])
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Supprimer(self, numLigne=0):
         index = numLigne
@@ -1129,7 +1118,7 @@ class Page4(wx.Panel):
             defaultDir=cheminDefaut, 
             defaultFile="",
             wildcard=wildcard,
-            style=wx.OPEN
+            style=wx.FD_OPEN
             )
         if dlg.ShowModal() == wx.ID_OK:
             # This returns a Python list of files that were selected.
@@ -1250,7 +1239,7 @@ Voici la liste des mots-clés du contrat en cours. Elle vous aidera à écrire votr
             from Dlg import DLG_Teamword
             Twd = DLG_Teamword.MyFrame(None, motsCles=listeMotsCles)
             Twd.Show()
-            
+
             # Création d'un nouveau document
             Twd.CreateNewFile()
             

@@ -13,7 +13,9 @@ import hashlib
 import pickle
 import sys, getopt
 import getpass
-import os
+import six
+
+
 
 class CypherText:
 
@@ -41,6 +43,8 @@ class CypherText:
 	
 def hashPassword_MD5(Password):
 	m = hashlib.md5()
+	if six.PY3:
+		Password = str(Password).encode('utf-8')
 	m.update(Password)
 	return m.hexdigest()
 	
@@ -62,12 +66,17 @@ def encrypt(message, key):
 	TrailLen = 0
 	#AES requires blocks of 16
 	while (len(message) % 16) != 0:
-		message  = message + '_'
+		if six.PY2:
+			message  = message + '_'
+		else :
+			message = message + b'_'
 		TrailLen = TrailLen + 1
 	
 	CypherOut = CypherText()
 	CypherOut.setTrail(TrailLen)
-	
+
+	if six.PY3:
+		key = key.encode("utf8")
 	cryptu = AES.new(key, AES.MODE_ECB)
 
 	#Try to delete the key from memory
@@ -77,6 +86,8 @@ def encrypt(message, key):
 	return CypherOut
 	
 def decrypt(ciphertext, key):
+	if six.PY3:
+		key = key.encode("utf8")
 	cryptu = AES.new(key, AES.MODE_ECB)
 	
 	#Try to delete the key from memory

@@ -235,8 +235,9 @@ class Gadget_BlocNotes(wx.Panel):
 
     def Config(self):
         from Dlg import DLG_Parametres_blocnotes
-        frame_config = DLG_Parametres_blocnotes.MyFrame(None)
-        frame_config.Show()
+        dlg = DLG_Parametres_blocnotes.Dialog(None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
 # ----------------------------------------------------------------------------------------------------------------
 
@@ -272,8 +273,9 @@ class Gadget_DossiersIncomplets(wx.Panel):
                 
     def Config(self):
         from Dlg import DLG_Parametres_dossiers
-        frame_config = DLG_Parametres_dossiers.MyFrame(None)
-        frame_config.Show()
+        dlg = DLG_Parametres_dossiers.Dialog(None)
+        dlg.ShowModal()
+        dlg.Destroy()
                    
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -306,8 +308,9 @@ class Gadget_Horloge(wx.Panel):
 
     def Config(self):
         from Dlg import DLG_Parametres_horloge
-        frame_config = DLG_Parametres_horloge.MyFrame(None)
-        frame_config.Show()
+        dlg = DLG_Parametres_horloge.Dialog(None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -377,8 +380,9 @@ class Gadget_Calendrier(CTRL_Calendrier_tw.Panel):
 
     def Config(self):
         from Dlg import DLG_Parametres_calendrier
-        frame_config = DLG_Parametres_calendrier.MyFrame(None)
-        frame_config.Show()
+        dlg = DLG_Parametres_calendrier.Dialog(None)
+        dlg.ShowModal()
+        dlg.Destroy()
      
 
 # --------------------------------------------------------------------------------------------------------------------------------

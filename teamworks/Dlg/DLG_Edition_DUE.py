@@ -582,7 +582,7 @@ class Dialog(wx.Dialog):
         self.Layout()
         self.SetMinSize((570, 400))
         self.SetSize((570, 550))
-        self.Centre()
+        self.CenterOnScreen()
 
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(2)
@@ -593,8 +593,9 @@ class Dialog(wx.Dialog):
     def Onbouton_ok(self, event):
         """ Affichage du PDF """
         if "linux" not in sys.platform :
-            self.frmAttente = DLG_Attente.MyFrame(None, label=_(u"Création du document PDF en cours..."))
-            self.frmAttente.Show()
+            self.frmAttente = DLG_Attente.Dialog(None, label=_(u"Création du document PDF en cours..."))
+            self.frmAttente.ShowModal()
+            self.frmAttente.Destroy()
 
         pdf = CreationPDF(self, champs)
         pdf.start()

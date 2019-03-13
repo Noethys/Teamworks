@@ -1345,9 +1345,9 @@ class TestPopup(wx.PopupWindow):
 
 
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, IDcandidat=None):
-        wx.Frame.__init__(self, parent, -1, title="", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel = Panel(self, IDcandidat=IDcandidat)
                 
@@ -1386,13 +1386,12 @@ class MyFrame(wx.Frame):
         except :
             pass
 
-        self.MakeModal(False)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
         
 if __name__ == _(u"__main__"):
     app = wx.App(0)
-    frame_1 = MyFrame(None, IDcandidat=3)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, IDcandidat=3)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

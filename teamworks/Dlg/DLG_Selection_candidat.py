@@ -63,7 +63,7 @@ class MyDialog(wx.Dialog):
         grid_sizer_base.AddGrowableCol(0)
         grid_sizer_base.AddGrowableRow(1)
         self.Layout()
-
+        self.CenterOnScreen()
 
         
     def OnBoutonOk(self, event):

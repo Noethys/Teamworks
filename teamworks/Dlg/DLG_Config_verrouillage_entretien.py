@@ -160,13 +160,13 @@ class SaisiePassword(wx.Dialog):
     def GetPassword(self):
         return self.text_password.GetValue()
     
-    
-class MyFrame(wx.Frame):
-    def __init__(self, parent, title="" ):
-        wx.Frame.__init__(self, parent, -1, title=title, name="frm_config_verrouillage_entretien", style=wx.DEFAULT_FRAME_STYLE)
+
+
+class Dialog(wx.Dialog):
+    def __init__(self, parent, title=""):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
-        self.MakeModal(True)
-        
+
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
@@ -180,8 +180,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.SetMinSize((400, 300))
         self.SetSize((400, 300))
 
@@ -216,17 +215,10 @@ class MyFrame(wx.Frame):
         sizer_base.Add(self.panel_base, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_base)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
         self.sizer_pages = sizer_pages
         
-    def OnClose(self, event):
-        self.MAJparents()
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def Onbouton_aide(self, event):
-##        FonctionsPerso.Aide(26)
         dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
@@ -235,29 +227,21 @@ class MyFrame(wx.Frame):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
         self.MAJparents()
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
         
     def Onbouton_ok(self, event):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
         self.MAJparents()
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.EndModal(wx.ID_OK)
         
     def MAJparents(self):
         pass
-##        if FonctionsPerso.FrameOuverte("frm_creation_contrats") != None :
-##            self.GetParent().MAJ_ListCtrl()
-##        if FonctionsPerso.FrameOuverte("frm_creation_modele_contrats") != None :
-##            self.GetParent().MAJ_ListCtrl()            
+
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, "")
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None, "")
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

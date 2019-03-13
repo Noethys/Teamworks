@@ -369,14 +369,10 @@ class PanelContacts(scrolled.ScrolledPanel):
 
         
         
-        
-        
-        
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, -1, title="", name="frm_export_outlook", style=wx.DEFAULT_FRAME_STYLE)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
-        self.MakeModal(True)
         self.panel_base = wx.Panel(self, -1)
         self.sizer_grid_staticbox = wx.StaticBox(self.panel_base, -1, "Champs")
         self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Synchronisez vos contacts Outlook en cliquant sur les boutons ci-dessous :"))
@@ -459,21 +455,14 @@ class MyFrame(wx.Frame):
         self.Layout()
         self.SetMinSize((570, 400))
         self.SetSize((570, 550))
-        self.Centre()
+        self.CenterOnScreen()
     
     def Onbouton_aide(self, event):
         FonctionsPerso.Aide(46)
 
     def Onbouton_annuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-            
     def OnSynchroTout(self, event):
         self.gridChamps.SynchroTout()
         event.Skip()
@@ -486,8 +475,7 @@ class MyFrame(wx.Frame):
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

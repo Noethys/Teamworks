@@ -263,8 +263,9 @@ class Panel(wx.Panel):
         
         # Appel de la frame d'impression
         from Dlg import DLG_Impression_frais
-        frm = DLG_Impression_frais.MyFrame(self, self.IDpersonne)
-        frm.Show()
+        dlg = DLG_Impression_frais.Dialog(self, self.IDpersonne)
+        dlg.ShowModal()
+        dlg.Destroy()
         
         
 # ---------------------------------------------------

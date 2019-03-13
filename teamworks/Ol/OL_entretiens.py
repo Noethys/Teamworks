@@ -619,8 +619,9 @@ class ListView(ObjectListView):
     def Options(self):
         """ Choix et ordre des colonnes """
         from Dlg import DLG_Config_liste_personnes
-        frm = DLG_Config_liste_personnes.MyFrame(self, self.listeColonnes)
-        frm.Show()
+        dlg = DLG_Config_liste_personnes.Dialog(self, self.listeColonnes)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MenuImprimer(self, event):
         self.Imprimer()

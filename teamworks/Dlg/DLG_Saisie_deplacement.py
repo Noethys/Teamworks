@@ -248,6 +248,7 @@ class SaisieDeplacement(wx.Dialog):
         grid_sizer_base.AddGrowableCol(0)
         grid_sizer_base.Fit(self)
         self.Layout()
+        self.CenterOnScreen()
     
     def ImportDernierTarif(self):
         # Récupération du dernier tarif saisi

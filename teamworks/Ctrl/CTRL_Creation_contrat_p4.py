@@ -56,8 +56,9 @@ class Page(wx.Panel):
         grid_sizer_base.AddGrowableCol(0)
 
     def OnBoutonChamps(self, event):
-        frmChamps = DLG_Config_champs_contrats.MyFrame(self, "")
-        frmChamps.Show()
+        dlg = DLG_Config_champs_contrats.Dialog(self, "")
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MAJ_ListCtrl(self):
         self.listCtrl_champs.MAJListeCtrl()   

@@ -16,10 +16,9 @@ import  wx.lib.colourselect as  csel
 import wx.lib.agw.hyperlink as hl
 
 
-class MyFrame(wx.Frame):
+class Dialog(wx.Dialog):
     def __init__(self, parent, title="Configuration du gadget Horloge"):
-        wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.panel_base = wx.Panel(self, -1)
         self.nomGadget = "horloge"
@@ -32,8 +31,7 @@ class MyFrame(wx.Frame):
         self.hauteur_max = 800
         
         self.Importation()
-        
-        
+
         # Largeur
         self.largeur_label = wx.StaticText(self.panel_base, -1, _(u"Largeur :"))
         self.largeur_texte = wx.TextCtrl(self.panel_base, -1, str(self.val_largeur), size=(40, -1))
@@ -66,7 +64,6 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_SCROLL, self.OnSliderLargeur, self.largeur_slider)
         self.Bind(wx.EVT_SCROLL, self.OnSliderHauteur, self.hauteur_slider)
         self.largeur_texte.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocusLargeur)
@@ -153,7 +150,7 @@ class MyFrame(wx.Frame):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
         self.grid_sizer_base = grid_sizer_base
 
     def Build_Hyperlink(self) :
@@ -260,8 +257,8 @@ class MyFrame(wx.Frame):
     
     def InitValeurs(self, donnees):
         # Place les valeurs dans les controles
-        exec("taille = " + donnees[0])
-        exec("self.dictParametres = " + donnees[1])
+        taille = eval(donnees[0])
+        self.dictParametres = eval(donnees[1])
         self.val_largeur = taille[0]
         self.val_hauteur = taille[1]
         self.val_couleurFace = self.dictParametres["couleur_face"]
@@ -283,19 +280,11 @@ class MyFrame(wx.Frame):
         DB.Commit()
         DB.Close()
 
-
-    def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        event.Skip()
-        
     def OnBoutonAide(self, event):
         print("Aide")
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
@@ -310,16 +299,13 @@ class MyFrame(wx.Frame):
             topWindow.toolBook.GetPage(0).MAJpanel() 
             
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     
     
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

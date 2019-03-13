@@ -143,7 +143,7 @@ class SaisieRemboursement(wx.Dialog):
         grid_sizer_base.AddGrowableCol(0)
         grid_sizer_base.Fit(self)
         self.Layout()
-    
+        self.CenterOnScreen()
                 
     def ImportationPersonnes(self):
         """ Importation de la liste des personnes """

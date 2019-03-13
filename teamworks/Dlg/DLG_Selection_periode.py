@@ -104,6 +104,7 @@ class SelectionPeriode(wx.Dialog):
         grid_sizer_base.AddGrowableCol(0)
         grid_sizer_base.AddGrowableRow(1)
         self.Layout()
+        self.CenterOnScreen()
 
     def GetDates(self):
         """ Renvoie les dates des deux datepickers au format datetime """

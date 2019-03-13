@@ -15,7 +15,7 @@ from Ctrl import CTRL_Bouton_image
 import datetime
 import os
 import wx.lib.agw.customtreectrl as CT
-
+import six
 from Ctrl import CTRL_Bandeau
 import GestionDB
 from Utils import UTILS_Sauvegarde
@@ -52,7 +52,9 @@ class CTRL_Donnees(CT.CustomTreeCtrl):
                 self.SetPyData(brancheNom, nomFichier)
                 
                 for nomCategorie, codeCategorie in LISTE_CATEGORIES :
-                    fichier = _(u"%s_%s.dat") % (nomFichier.decode("iso-8859-15"), codeCategorie)
+                    if six.PY2:
+                        nomFichier = nomFichier.decode("iso-8859-15")
+                    fichier = _(u"%s_%s.dat") % (nomFichier, codeCategorie)
                     brancheFichier = self.AppendItem(brancheNom, nomCategorie, ct_type=1)
                     self.SetPyData(brancheFichier, fichier)
                     

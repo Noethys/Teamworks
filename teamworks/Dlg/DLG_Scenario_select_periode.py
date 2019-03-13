@@ -137,6 +137,7 @@ class MyDialog(wx.Dialog):
         grid_sizer_base.AddGrowableRow(1)
         grid_sizer_base.Fit(self)
         self.Layout()
+        self.CenterOnScreen()
 
     def OnRadioButton(self, event):
         self.DisableAllRadio()

@@ -165,7 +165,7 @@ class Dialog(wx.Dialog):
         self.SetSizer(sizer1_base)
         sizer1_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
     def OnLeaveTxtNom(self, event):
         if self.nom != self.text_nom.GetValue() :

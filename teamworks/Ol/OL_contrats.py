@@ -479,8 +479,9 @@ class ListView(FastObjectListView):
     def Options(self):
         """ Choix et ordre des colonnes """
         from Dlg import DLG_Config_liste_personnes
-        frm = DLG_Config_liste_personnes.MyFrame(self, self.listeColonnes)
-        frm.Show()
+        dlg = DLG_Config_liste_personnes.Dialog(self, self.listeColonnes)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def MenuImprimer(self, event):
         self.Imprimer()
@@ -543,8 +544,9 @@ class ListView(FastObjectListView):
             IDpersonne = self.IDpersonne
             
         # Ouverture de la saisie d'un candidature
-        frm = Saisie_Candidature.MyFrame(self, IDcandidat=IDcandidat, IDpersonne=IDpersonne, IDcandidature=None)
-        frm.Show()
+        dlg = Saisie_Candidature.Dialog(self, IDcandidat=IDcandidat, IDpersonne=IDpersonne, IDcandidature=None)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Modifier(self):
         
@@ -562,8 +564,9 @@ class ListView(FastObjectListView):
         IDcandidature = self.Selection()[0].IDcandidature
         IDcandidat = self.Selection()[0].IDcandidat
         IDpersonne = self.Selection()[0].IDpersonne
-        frm = Saisie_Candidature.MyFrame(self, IDcandidat=IDcandidat, IDpersonne=IDpersonne, IDcandidature=IDcandidature)
-        frm.Show()
+        dlg = Saisie_Candidature.Dialog(self, IDcandidat=IDcandidat, IDpersonne=IDpersonne, IDcandidature=IDcandidature)
+        dlg.ShowModal()
+        dlg.Destroy()
                 
     def Supprimer(self):
         

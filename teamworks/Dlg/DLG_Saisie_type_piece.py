@@ -139,7 +139,7 @@ class Dialog(wx.Dialog):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
     def OnRadioDuree(self, event):
         if self.radio_duree_1.GetValue() == True:

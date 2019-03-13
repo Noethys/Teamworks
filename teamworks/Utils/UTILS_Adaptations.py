@@ -75,6 +75,18 @@ class ToolBar(wx.ToolBar):
         else :
             super(ToolBar, self).AddSimpleTool(*args, **kw)
 
+    def AddTool(self, *args, **kw):
+        if 'phoenix' in wx.PlatformInfo:
+            if "shortHelpString" in kw:
+                shortHelp = kw.pop("shortHelpString")
+            else:
+                shortHelp = ""
+            toolId = args[0]
+            bitmap = args[1]
+            super(ToolBar, self).AddTool(toolId=toolId, label="", bitmap=bitmap, shortHelp=shortHelp)
+        else :
+            super(ToolBar, self).AddTool(*args, **kw)
+
 
 if __name__ == "__main__":
     pass

@@ -155,7 +155,7 @@ class MyDialog(wx.Dialog):
                 setattr(self, "ctrl_%s" % nomControle, typeControle(self, valeur=valeur, nomFiltre=label, listeChoix=listeChoix, motSQL=motSQL))
             else:
                 setattr(self, "ctrl_%s" % nomControle, typeControle(self, valeur=valeur, nomFiltre=label, motSQL=motSQL))
-            grid_sizer_contenu.Add(getattr(self, "ctrl_%s" % nomControle, 0, wx.EXPAND|wx.ALL, 0)
+            grid_sizer_contenu.Add(getattr(self, "ctrl_%s" % nomControle), 0, wx.EXPAND|wx.ALL, 0)
 
         sizerStaticBox.Add(grid_sizer_contenu, 0, wx.EXPAND|wx.ALL, 10)
         grid_sizer_base.Add(sizerStaticBox, 1, wx.ALL|wx.EXPAND, 10)

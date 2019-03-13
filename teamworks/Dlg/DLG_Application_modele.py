@@ -474,8 +474,9 @@ class Panel(wx.Panel):
         nbreTaches = len(listeCreationsTaches)
         
         # Fenêtre de demande de confirmation
-        frm_confirm = DLG_Confirm_appli_modele.Frm_confirm_appli(self, nbreTaches=nbreTaches, dictTaches=dictConfirmations, listeCreationsTaches=listeCreationsTaches, inclureFeries=inclureFeries)
-        frm_confirm.Show()
+        dlg = DLG_Confirm_appli_modele.Dialog(self, nbreTaches=nbreTaches, dictTaches=dictConfirmations, listeCreationsTaches=listeCreationsTaches, inclureFeries=inclureFeries)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     
     def EnregistrementTaches(self, listeCreationsTaches) :
@@ -950,10 +951,10 @@ class listCtrl_Modeles(wx.ListCtrl, CheckListCtrlMixin):
         self.GetGrandParent().GetParent().OnBoutonDupliquer(None)
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------
-        
-class frm_application_modele(wx.Frame):
-    def __init__(self, parent, selectionLignes=[], selectionPersonnes=[], selectionDates=(None, None) ):
-        wx.Frame.__init__(self, parent, -1, title=_(u"Application de modèles"), style=wx.DEFAULT_FRAME_STYLE)
+
+class Dialog(wx.Dialog):
+    def __init__(self, parent, selectionLignes=[], selectionPersonnes=[], selectionDates=(None, None)):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.panel = Panel(self, selectionLignes=selectionLignes, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates)
         
         # Propriétés
@@ -963,7 +964,6 @@ class frm_application_modele(wx.Frame):
             _icon = wx.EmptyIcon()
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        self.MakeModal(True)
         self.SetMinSize((430, 500))
         
         # Layout
@@ -974,9 +974,7 @@ class frm_application_modele(wx.Frame):
         self.CenterOnScreen()
     
     def Fermer(self):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
 
 
@@ -985,7 +983,7 @@ if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
     selectionLignes = [(1, datetime.date(2008, 3, 10)), (1, datetime.date(2008, 3, 11)), (1, datetime.date(2008, 3, 12)), (1, datetime.date(2008, 3, 13)), ]
-    frame1 = frm_application_modele(None, selectionLignes=selectionLignes)
-    app.SetTopWindow(frame1)
-    frame1.Show()
+    dlg = Dialog(None, selectionLignes=selectionLignes)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

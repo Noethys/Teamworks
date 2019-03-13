@@ -106,6 +106,7 @@ class MyDialog(wx.Dialog):
         grid_sizer_base.AddGrowableRow(1)
         grid_sizer_base.Fit(self)
         self.Layout()
+        self.CenterOnScreen()
     
     def OnKillFocusHeures(self, event):
         heures = self.ctrl_temps_heures.GetValue()

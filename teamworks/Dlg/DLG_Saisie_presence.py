@@ -836,7 +836,7 @@ class Dialog(wx.Dialog):
         sizer_base.Add(self.panel, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_base)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
 
     def Fermer(self):
         self.EndModal(wx.ID_CANCEL)

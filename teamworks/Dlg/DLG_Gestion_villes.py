@@ -146,7 +146,7 @@ class Dialog(wx.Dialog):
         self.SetSizer(sizer_base)
         sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
         self.grid_sizer_3 = grid_sizer_3
         self.sizer_SaisieManuelle = sizer_SaisieManuelle
         self.sizer_principal = sizer_principal
