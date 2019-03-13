@@ -307,7 +307,7 @@ class Panel(wx.Panel):
         # Vérifie qu'il y a un delta de 15min entre l'heure de début et de fin
         HMin = datetime.timedelta(hours=int(heureDebut[:2]), minutes=int(heureDebut[3:]))
         HMax = datetime.timedelta(hours=int(heureFin[:2]), minutes=int(heureFin[3:]))
-        delta = ((HMax - HMin).seconds)/60.0
+        delta = ((HMax - HMin).seconds)//60.0
         if delta < 15 :
             message = _(u"La durée de la tâche doit être au minimum de 15 minutes !")
             wx.MessageBox(message, "Erreur de saisie")

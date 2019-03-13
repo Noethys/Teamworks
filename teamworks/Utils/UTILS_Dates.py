@@ -12,6 +12,7 @@
 from Utils.UTILS_Traduction import _
 import datetime
 import time
+import six
 
 
 def DateEngFr(textDate):
@@ -63,7 +64,7 @@ def HeuresEnDecimal(texteHeure="07:00"):
         posTemp = texteHeure.index(":")
         heures = str(texteHeure[0:posTemp])
         minutes = int(texteHeure[posTemp+1:5])
-    minutes = str(minutes * 100 /60)
+    minutes = str(minutes * 100 //60)
     if len(minutes) == 1 : minutes = "0" + minutes
     heure = str(heures + minutes)
     return int(heure)

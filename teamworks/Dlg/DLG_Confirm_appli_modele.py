@@ -196,7 +196,7 @@ class Dialog(wx.Dialog):
             # Avance la gauge de 1
             self.gauge.SetValue(x)
             # Met à jour le label d'information
-            pourcentage = (x * 100) / nbreTaches
+            pourcentage = (x * 100) // nbreTaches
             message =  str(pourcentage) + _(u" % - Veuillez patienter durant la création des tâches... ")
             self.label_confirmation.SetLabel(message)
             

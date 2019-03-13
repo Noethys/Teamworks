@@ -124,7 +124,10 @@ class TreeCtrl(CT.CustomTreeCtrl):
         self.listeCategories = self.Importation()
         tailleImages = (16,16)
         il = wx.ImageList(tailleImages[0], tailleImages[1])
-        self.imgRoot = il.Add(wx.ArtProvider_GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
+        if 'phoenix' in wx.PlatformInfo:
+            self.imgRoot = il.Add(wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
+        else:
+            self.imgRoot = il.Add(wx.ArtProvider_GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, tailleImages))
         for categorie in self.listeCategories:
             ID = categorie[0]
             couleur = self.FormateCouleur(categorie[4])

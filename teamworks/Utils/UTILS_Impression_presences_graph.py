@@ -45,7 +45,7 @@ def ConvertCouleur(couleur):
 
 def minutesEnHeures(dureeMinutes) :
     if dureeMinutes != 0 :
-        nbreHeures = dureeMinutes/60
+        nbreHeures = dureeMinutes//60
         nbreMinutes = dureeMinutes-(nbreHeures*60)
         if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
         duree = str(nbreHeures) + "h" + str(nbreMinutes)

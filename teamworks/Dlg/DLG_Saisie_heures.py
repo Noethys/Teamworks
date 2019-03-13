@@ -213,7 +213,7 @@ class MyDialog(wx.Dialog):
         # Vérifie qu'il y a un delta de 15min entre l'heure de début et de fin
         HMin = datetime.timedelta(hours=int(heureDebut[:2]), minutes=int(heureDebut[3:]))
         HMax = datetime.timedelta(hours=int(heureFin[:2]), minutes=int(heureFin[3:]))
-        delta = ((HMax - HMin).seconds)/60.0
+        delta = ((HMax - HMin).seconds)//60.0
         if delta < 60 :
             message = _(u"L'amplitude horaire doit être au minimum de 1 heure !")
             wx.MessageBox(message, "Erreur de saisie")

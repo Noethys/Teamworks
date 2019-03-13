@@ -83,7 +83,7 @@ def ConvertCouleur(couleur):
 
 def minutesEnHeures(dureeMinutes) :
     if dureeMinutes != 0 :
-        nbreHeures = dureeMinutes/60
+        nbreHeures = dureeMinutes//60
         nbreMinutes = dureeMinutes-(nbreHeures*60)
         if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
         duree = str(nbreHeures) + "h" + str(nbreMinutes)
@@ -349,7 +349,7 @@ class Impression():
             heure_fin = HeureStrEnDatetime(heure_fin)
             HMin = datetime.timedelta(hours=heure_debut.hour, minutes=heure_debut.minute)
             HMax = datetime.timedelta(hours=heure_fin.hour, minutes=heure_fin.minute)
-            duree = ((HMax - HMin).seconds)/60
+            duree = ((HMax - HMin).seconds)//60
             # Création du dict des présences
             if (IDpersonne in dictPresences) == False :
                 dictPresences[IDpersonne] = {}

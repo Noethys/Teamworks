@@ -54,7 +54,6 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonSupprimer, self.bouton_supprimer)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonDupliquer, self.bouton_dupliquer)
 
-        
     def __set_properties(self):
         self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un nouveau scénario")))
         self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
@@ -66,10 +65,13 @@ class Panel(wx.Panel):
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
-        grid_sizer_base2 = wx.FlexGridSizer(rows=1, cols=2, vgap=5, hgap=5)
-        grid_sizer_boutons = wx.FlexGridSizer(rows=6, cols=1, vgap=5, hgap=10)
+
         grid_sizer_base.Add(self.label_introduction, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+
+        grid_sizer_base2 = wx.FlexGridSizer(rows=1, cols=2, vgap=5, hgap=5)
         grid_sizer_base2.Add(self.listCtrl, 1, wx.EXPAND, 0)
+
+        grid_sizer_boutons = wx.FlexGridSizer(rows=6, cols=1, vgap=5, hgap=10)
         grid_sizer_boutons.Add(self.bouton_ajouter, 0, 0, 0)
         grid_sizer_boutons.Add(self.bouton_modifier, 0, 0, 0)
         grid_sizer_boutons.Add(self.bouton_supprimer, 0, 0, 0)
@@ -78,6 +80,7 @@ class Panel(wx.Panel):
         grid_sizer_base2.Add(grid_sizer_boutons, 1, wx.EXPAND, 0)
         grid_sizer_base2.AddGrowableRow(0)
         grid_sizer_base2.AddGrowableCol(0)
+
         if self.GetGrandParent().GetName() == "frm_gestion_scenarios" :
             grid_sizer_base.Add(grid_sizer_base2, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         else:
@@ -253,6 +256,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
         self.selectionID = kwds.pop("selectionID", None)
         # Initialisation du listCtrl
         gizmos.TreeListCtrl.__init__(self, *args, **kwds)
+        self.SetBackgroundColour(wx.WHITE)
         
         self.InitTreeCtrl()
         
@@ -455,7 +459,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
 
 class Dialog(wx.Dialog):
     def __init__(self, parent, title=""):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
+        wx.Dialog.__init__(self, parent, -1, name="frm_gestion_scenarios", style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
 
         self.panel_base = wx.Panel(self, -1)
@@ -485,10 +489,12 @@ class Dialog(wx.Dialog):
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=0, hgap=0)
-        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
+
         sizer_pages = wx.BoxSizer(wx.VERTICAL)
         grid_sizer_base.Add(sizer_pages, 1, wx.ALL|wx.EXPAND, 0)
         sizer_pages.Add(self.panel_contenu, 1, wx.EXPAND | wx.TOP, 10)
+
+        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
         grid_sizer_boutons.Add(self.bouton_aide, 0, 0, 0)
         grid_sizer_boutons.Add((20, 20), 0, wx.EXPAND, 0)
         grid_sizer_boutons.Add(self.bouton_fermer, 0, 0, 0)

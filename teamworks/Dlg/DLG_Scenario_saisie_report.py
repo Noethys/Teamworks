@@ -298,7 +298,7 @@ class MyDialog(wx.Dialog):
             texte = _(u"%s%sh%s") % (signe, hr, mn)
         else:
             # Mode décimal
-            minDecimal = int(mn)*100/60
+            minDecimal = int(mn)*100//60
             texte = u"%s%s.%s" % (signe, hr, minDecimal)
         return texte
     
@@ -455,12 +455,12 @@ class MyDialog(wx.Dialog):
         except :
             return
         if mode == 0 :
-            resultat = min * 60 / 100
+            resultat = min * 60 // 100
             self.label_temps_signe.SetLabel(u"h")
             self.ctrl_temps_minutes.SetValue( "%02d" % resultat)
             self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes (entre 0 et 59)")))
         if mode == 1 :
-            resultat = min * 100 / 60 
+            resultat = min * 100 // 60
             self.label_temps_signe.SetLabel(u".")
             self.ctrl_temps_minutes.SetValue(str(resultat))
             self.ctrl_temps_minutes.SetToolTip(wx.ToolTip(_(u"Saisissez un nombre de minutes au format décimal (entre 0 et 99)")))
@@ -477,7 +477,7 @@ class MyDialog(wx.Dialog):
             heures = int(self.ctrl_temps_heures.GetValue())
             minutes = int(self.ctrl_temps_minutes.GetValue())
             if self.mode_heure == 1 : 
-                minutes = minutes * 60 / 100
+                minutes = minutes * 60 // 100
             report = _(u"M%s%02d:%02d") % (signe, heures, minutes)
             
         else:

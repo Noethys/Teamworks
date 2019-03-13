@@ -296,7 +296,7 @@ class ListCtrl_Legendes(wx.ListCtrl):
                 totalMinutes += dureeMinutes
                 # Format du temps secondes->minutes
                 if dureeMinutes != 0 :
-                    nbreHeures = dureeMinutes/60
+                    nbreHeures = dureeMinutes//60
                     nbreMinutes = dureeMinutes-(nbreHeures*60)
                     if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
                     duree = str(nbreHeures) + "h" + str(nbreMinutes)
@@ -320,7 +320,7 @@ class ListCtrl_Legendes(wx.ListCtrl):
                 
         # Création du total des durées
         if totalMinutes != 0 :
-            nbreHeures = totalMinutes/60
+            nbreHeures = totalMinutes//60
             nbreMinutes = totalMinutes-(nbreHeures*60)
             if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
             duree = str(nbreHeures) + "h" + str(nbreMinutes)

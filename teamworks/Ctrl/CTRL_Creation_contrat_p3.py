@@ -201,7 +201,7 @@ class Page(wx.Panel):
             return
         
         nbreJours = (date_fin - date_debut).days
-        nbreSemaines = nbreJours / 7
+        nbreSemaines = nbreJours // 7
         
         print(nbreJours, nbreSemaines)      
         

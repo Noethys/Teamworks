@@ -812,10 +812,10 @@ class WidgetPlanning(wx.ScrolledWindow):
                 valeurs = self.dictPresences[IDpresence]
                 HMin = datetime.timedelta(hours=valeurs[3].hour, minutes=valeurs[3].minute)
                 HMax = datetime.timedelta(hours=valeurs[4].hour, minutes=valeurs[4].minute)
-                duree = ((HMax - HMin).seconds)/60
+                duree = ((HMax - HMin).seconds)//60
                 dureeMinutes += duree
                 
-                nbreHeures = dureeMinutes/60
+                nbreHeures = dureeMinutes//60
                 nbreMinutes = dureeMinutes-(nbreHeures*60)
                 if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
                 dureeTotale = str(nbreHeures) + "h" + str(nbreMinutes)
@@ -864,10 +864,10 @@ class WidgetPlanning(wx.ScrolledWindow):
                     valeurs = self.dictPresences[IDpresence]
                     HMin = datetime.timedelta(hours=valeurs[3].hour, minutes=valeurs[3].minute)
                     HMax = datetime.timedelta(hours=valeurs[4].hour, minutes=valeurs[4].minute)
-                    duree = ((HMax - HMin).seconds)/60
+                    duree = ((HMax - HMin).seconds)//60
                     dureeMinutes += duree
                     
-        nbreHeures = dureeMinutes/60
+        nbreHeures = dureeMinutes//60
         nbreMinutes = dureeMinutes-(nbreHeures*60)
         if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
         dureeTotale = str(nbreHeures) + "h" + str(nbreMinutes)
@@ -1145,7 +1145,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         for key, valeurs in self.dictPresences.items() :
             HMin = datetime.timedelta(hours=valeurs[3].hour, minutes=valeurs[3].minute)
             HMax = datetime.timedelta(hours=valeurs[4].hour, minutes=valeurs[4].minute)
-            duree = ((HMax - HMin).seconds)/60
+            duree = ((HMax - HMin).seconds)//60
             self.dictCategories[valeurs[5]][4] += duree
             
         self.GetParent().GetGrandParent().panelLegendes.listCtrlLegendes.MAJ()
@@ -1177,8 +1177,8 @@ class WidgetPlanning(wx.ScrolledWindow):
             valeurs = self.dictPresences[IDpresence]
             HMin = datetime.timedelta(hours=valeurs[3].hour, minutes=valeurs[3].minute)
             HMax = datetime.timedelta(hours=valeurs[4].hour, minutes=valeurs[4].minute)
-            dureeMinutes = ((HMax - HMin).seconds)/60
-            nbreHeures = dureeMinutes/60
+            dureeMinutes = ((HMax - HMin).seconds)//60
+            nbreHeures = dureeMinutes//60
             nbreMinutes = dureeMinutes-(nbreHeures*60)
             if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
             dureeStr = str(nbreHeures) + "h" + str(nbreMinutes)
@@ -2626,7 +2626,7 @@ class PanelPlanning(wx.Panel):
         for presence in listePresences :
             HMin = datetime.timedelta(hours=int(presence[3][:2]), minutes=int(presence[3][3:]))
             HMax = datetime.timedelta(hours=int(presence[4][:2]), minutes=int(presence[4][3:]))
-            duree = ((HMax - HMin).seconds)/60
+            duree = ((HMax - HMin).seconds)//60
             self.dictCategories[presence[5]][4] += duree
        
 
@@ -2800,7 +2800,7 @@ class ImpressionPDFvTexte():
                         # Calcul du temps
                         HMin = datetime.timedelta(hours=heureDebut.hour, minutes=heureDebut.minute)
                         HMax = datetime.timedelta(hours=heureFin.hour, minutes=heureFin.minute)
-                        temps = ((HMax - HMin).seconds)/60
+                        temps = ((HMax - HMin).seconds)//60
                         totalTemps += temps
                         txtTemps = txtTemps + self.minutesEnHeures(temps) + "\n"
             
@@ -2862,7 +2862,7 @@ class ImpressionPDFvTexte():
 
     def minutesEnHeures(self, dureeMinutes) :
         if dureeMinutes != 0 :
-            nbreHeures = dureeMinutes/60
+            nbreHeures = dureeMinutes//60
             nbreMinutes = dureeMinutes-(nbreHeures*60)
             if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
             duree = str(nbreHeures) + "h" + str(nbreMinutes)

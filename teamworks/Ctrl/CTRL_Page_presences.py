@@ -663,8 +663,8 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     def CalculeDuree(self, heureMin, heureMax) :
         HMin = datetime.timedelta(hours=int(heureMin[:2]), minutes=int(heureMin[3:]))
         HMax = datetime.timedelta(hours=int(heureMax[:2]), minutes=int(heureMax[3:]))
-        totalMinutes = ((HMax - HMin).seconds)/60
-        nbreHeures = totalMinutes/60
+        totalMinutes = ((HMax - HMin).seconds)//60
+        nbreHeures = totalMinutes//60
         nbreMinutes = totalMinutes-(nbreHeures*60)
         if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
         duree = str(nbreHeures) + "h" + str(nbreMinutes)

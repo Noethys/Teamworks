@@ -995,7 +995,7 @@ class Tableau(gridlib.Grid):
             texte = _(u"%s%sh%s") % (signe, hr, mn)
         else:
             # Mode décimal
-            minDecimal = int(mn)*100/60
+            minDecimal = int(mn)*100//60
             texte = u"%s%s.%s" % (signe, hr, minDecimal)
         return texte
     
@@ -1374,10 +1374,10 @@ class Tableau(gridlib.Grid):
         if operation == "soustraction" : totalMinutes = totalMinutesA - totalMinutesB
         # Formatage du résultat
         if totalMinutes >= 0 :
-            nbreHeures = totalMinutes/60
+            nbreHeures = totalMinutes//60
             nbreMinutes = totalMinutes-(nbreHeures*60)
         else:
-            nbreHeures = -(-totalMinutes/60)
+            nbreHeures = -(-totalMinutes//60)
             nbreMinutes = -(totalMinutes-(nbreHeures*60))
         if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
         duree = str(nbreHeures) + ":" + str(nbreMinutes)
@@ -1710,10 +1710,10 @@ class GetDictColonnes():
         if operation == "soustraction" : totalMinutes = totalMinutesA - totalMinutesB
         # Formatage du résultat
         if totalMinutes >= 0 :
-            nbreHeures = totalMinutes/60
+            nbreHeures = totalMinutes//60
             nbreMinutes = totalMinutes-(nbreHeures*60)
         else:
-            nbreHeures = -(-totalMinutes/60)
+            nbreHeures = -(-totalMinutes//60)
             nbreMinutes = -(totalMinutes-(nbreHeures*60))
         if len(str(nbreMinutes))==1 : nbreMinutes = str("0") + str(nbreMinutes)
         duree = str(nbreHeures) + ":" + str(nbreMinutes)
