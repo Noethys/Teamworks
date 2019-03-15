@@ -14,12 +14,8 @@ import six
 from wx.lib.agw import ultimatelistctrl as ULC
 from Utils import UTILS_Fichiers
 import os
+import GestionDB
 import datetime
-try :
-    import MySQLdb
-except Exception as err :
-    print(err)
-
 
 
 TAILLE_IMAGE = (32, 32)
@@ -277,36 +273,35 @@ class CTRL(ULC.UltimateListCtrl):
         utilisateur = self.codesReseau["utilisateur"]
         motdepasse = self.codesReseau["motdepasse"]
         port = self.codesReseau["port"]
-        try :
-            connexion = MySQLdb.connect(host=hote, user=utilisateur, passwd=motdepasse, port=int(port), use_unicode=True) 
-            connexion.set_character_set('utf8')
-            cursor = connexion.cursor()
-            connexion.close()
-        except Exception as err :
-            return err
+        DB = GestionDB.DB(nomFichier=u"%s;%s;%s;%s[RESEAU]" % (port, hote, utilisateur, motdepasse))
+        if DB.echec == 1 :
+            DB.Close()
+            return DB.erreur
+        DB.Close()
         return True
 
     def GetListeFichiersReseau(self) :
         """ Récupère la liste des fichiers réseau à afficher """
         listeFichiers = []
-        
+
         # Connexion au réseau MySQL
         hote = self.codesReseau["hote"]
         utilisateur = self.codesReseau["utilisateur"]
         motdepasse = self.codesReseau["motdepasse"]
         port = self.codesReseau["port"]
 
-        try :
-            connexion = MySQLdb.connect(host=hote, user=utilisateur, passwd=motdepasse, port=int(port), use_unicode=True) 
-            connexion.set_character_set('utf8')
-            cursor = connexion.cursor()
-        except Exception as err :
+        if hote == "" or utilisateur == "":
             return listeFichiers
-        
+
+        DB = GestionDB.DB(nomFichier=u"%s;%s;%s;%s[RESEAU]" % (port, hote, utilisateur, motdepasse))
+        if DB.echec == 1:
+            DB.Close()
+            return listeFichiers
+
         # Test de connexion à une base de données
         listeDatabases = []
-        cursor.execute("SHOW DATABASES;")
-        listeValeurs = cursor.fetchall()
+        DB.ExecuterReq("SHOW DATABASES;")
+        listeValeurs = DB.ResultatReq()
         for valeurs in listeValeurs :
             listeDatabases.append(valeurs[0])
             
@@ -318,14 +313,6 @@ class CTRL(ULC.UltimateListCtrl):
                 
                 # Taille des 3 bases de données
                 taille = 0
-##                for suffixe in ("data", "documents", "photos") :
-##                    base = u"%s_%s" % (titre, suffixe)
-##                    try :
-##                        cursor.execute("""SELECT table_schema, sum( data_length + index_length) /1024 FROM information_schema.TABLES WHERE table_schema = "%s";""" % base) 
-##                        nom, tailleBase = cursor.fetchone()
-##                        taille += tailleBase
-##                    except :
-##                        pass
                 taille = FormatFileSize(float(taille))
                 
                 # Date de dernière modification
@@ -342,7 +329,7 @@ class CTRL(ULC.UltimateListCtrl):
                 listeFichiers.append({"titre" : titre, "image" : image, "description" : description, "taille" : taille, "dateModif" : dateModif})
 
         # Fermeture connexion
-        connexion.close() 
+        DB.Close()
         
         return listeFichiers
     
@@ -424,20 +411,18 @@ class CTRL(ULC.UltimateListCtrl):
             motdepasse = self.codesReseau["motdepasse"]
             port = self.codesReseau["port"]
 
-            try :
-                connexion = MySQLdb.connect(host=hote, user=utilisateur, passwd=motdepasse, port=int(port), use_unicode=True) 
-                connexion.set_character_set('utf8')
-                cursor = connexion.cursor()
-            except Exception as err :
-                dlg = wx.MessageDialog(self, _(u"Erreur de connexion MySQL !\n\n%s") % err, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
+            DB = GestionDB.DB(nomFichier=u"%s;%s;%s;%s[RESEAU]" % (port, hote, utilisateur, motdepasse))
+            if DB.echec == 1:
+                dlg = wx.MessageDialog(self, _(u"Erreur de connexion MySQL !\n\n%s") % DB.erreur, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
-            
-            for suffixe in ("tdata", "tdocuments", "tphotos") :
-                cursor.execute("""DROP DATABASE IF EXISTS %s_%s;""" % (titre, suffixe))
-            connexion.close()
-        
+
+            for suffixe in ("tdata", "tdocuments", "tphotos"):
+                DB.ExecuterReq("""DROP DATABASE IF EXISTS %s_%s;""" % (titre, suffixe))
+
+            DB.Close()
+
         self.Remplissage() 
         
         

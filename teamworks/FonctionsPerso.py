@@ -326,9 +326,6 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
     
     date_jour = datetime.date.today()
     
-    # Initialisation de la base de données
-    DB = GestionDB.DB()
-        
     for IDpersonne in listeIDpersonnes :
         piecesManquantes = []
         piecesPerimees = []
@@ -422,7 +419,6 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
         
         # Analyse des contrats
         problemesContrats = []
-        DB = GestionDB.DB()        
         req = """SELECT IDpersonne, signature, due
         FROM contrats 
         WHERE IDpersonne = %d
@@ -454,8 +450,6 @@ def Recherche_problemes_personnes(listeIDpersonnes = (), infosPersonne=[]):
 
     # Fin de la fonction    
     DB.Close()
-    
-##    print dictProblemes
 
     return dictNoms, dictProblemes
 

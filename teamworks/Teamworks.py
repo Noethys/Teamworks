@@ -181,7 +181,16 @@ class MyFrame(wx.Frame):
             else: self.afficherAssistant = True
         else:
             self.afficherAssistant = True
-                    
+
+        # Sélection de l'interface MySQL
+        if "interface_mysql" in self.userConfig:
+            interface_mysql = self.userConfig["interface_mysql"]
+            GestionDB.SetInterfaceMySQL(interface_mysql)
+        if GestionDB.IMPORT_MYSQLDB_OK == False and GestionDB.IMPORT_MYSQLCONNECTOR_OK == True:
+            GestionDB.SetInterfaceMySQL("mysql.connector")
+
+        self.userConfig["interface_mysql"] = GestionDB.INTERFACE_MYSQL
+
         # Affiche le titre du fichier en haut de la frame
         self.SetTitleFrame(nomFichier="")
         
@@ -520,7 +529,12 @@ class MyFrame(wx.Frame):
         else:
             taille_fenetre = tuple(self.GetSize())
         self.userConfig["taille_fenetre"] = taille_fenetre
-        
+
+        # Codage du mdp réseau si besoin
+        if "[RESEAU]" in self.userConfig["nomFichier"] and "#64#" not in self.userConfig["nomFichier"]:
+            nom = GestionDB.EncodeNomFichierReseau(self.userConfig["nomFichier"])
+            self.userConfig["nomFichier"] = nom
+
         # Sauvegarde du fichier de configuration
         self.SaveFichierConfig()
         
@@ -530,6 +544,10 @@ class MyFrame(wx.Frame):
         
         # Vidage du répertoire Updates
         FonctionsPerso.VideRepertoireUpdates()
+
+        # Affiche les connexions restées ouvertes
+        GestionDB.AfficheConnexionOuvertes()
+
 
     def On_fichier_Convertir_reseau(self, event):
         nomFichier = self.userConfig["nomFichier"]
@@ -561,7 +579,8 @@ class MyFrame(wx.Frame):
         # Affiche d'une fenêtre d'attente
         message = _(u"Création du nouveau fichier en cours... Veuillez patientez...")
         dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Création d'un fichier"), icon=wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-        wx.Yield() 
+        if 'phoenix' not in wx.PlatformInfo:
+            wx.Yield()
             
         if "[RESEAU]" in nomFichier :
             self.SetStatusText(_(u"Création du fichier '%s' en cours...") % nomFichier[nomFichier.index("[RESEAU]"):])
@@ -728,7 +747,7 @@ class MyFrame(wx.Frame):
             menuBar.FindItemById(108).Enable(False)
 
         # Sauvegarde du fichier de configuration
-        self.SaveFichierConfig(nomFichier=self.nomFichierConfig)
+        self.SaveFichierConfig()
         
         # Boîte de dialogue pour confirmer la création
         if "[RESEAU]" in nomFichier :

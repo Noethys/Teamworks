@@ -214,7 +214,7 @@ class MyDialog(wx.Dialog):
         self.MAJliste() 
         
         # Test de la connexion
-        test = self.ctrl_fichiers.TestConnexionReseau() 
+        test = self.ctrl_fichiers.TestConnexionReseau()
         if test != True  :
             dlg = wx.MessageDialog(self, _(u"Erreur de connexion MySQL :\n\n%s") % test, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()

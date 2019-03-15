@@ -17,6 +17,7 @@ import FonctionsPerso
 from Dlg import DLG_Fiche_individuelle
 import os
 import sys
+import six
 from Utils import UTILS_Fichiers
 from ObjectListView import ObjectListView, ColumnDefn
 

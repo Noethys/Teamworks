@@ -13,36 +13,92 @@ from Utils.UTILS_Traduction import _
 import sys
 import sqlite3
 import wx
-from Utils import UTILS_Fichiers
 import os
-try:
-    import MySQLdb
-except Exception as err:
-    print("Importation de MySQLdb impossible")
-    print(err)
-
+import base64
+import datetime
+import random
+import six
 from Data import DATA_Tables as Tables
+from Utils import UTILS_Fichiers
+
+MODE_TEAMWORKS = True
+DICT_CONNEXIONS = {}
+
+# Import MySQLdb
+try :
+    import MySQLdb
+    from MySQLdb.constants import FIELD_TYPE
+    from MySQLdb.converters import conversions
+    IMPORT_MYSQLDB_OK = True
+except Exception as err :
+    IMPORT_MYSQLDB_OK = False
+
+# import mysql.connector
+try :
+    import mysql.connector
+    from mysql.connector.constants import FieldType
+    from mysql.connector import conversion
+    IMPORT_MYSQLCONNECTOR_OK = True
+except Exception as err :
+    IMPORT_MYSQLCONNECTOR_OK = False
+
+
+# Interface pour Mysql = "mysql.connector" ou "mysqldb"
+# Est modifié automatiquement lors du lancement de Noethys selon les préférences (Menu Paramétrage > Préférences)
+# Peut être également modifié manuellement ici dans le cadre de tests sur des fichiers indépendamment de l'interface principale 
+INTERFACE_MYSQL = "mysql.connector"
+
+
+
+def SetInterfaceMySQL(nom="mysqldb"):
+    """ Permet de sélectionner une interface MySQL """
+    global INTERFACE_MYSQL
+    if nom == "mysqldb" and IMPORT_MYSQLDB_OK == True :
+        INTERFACE_MYSQL = "mysqldb"
+    if nom == "mysql.connector" and IMPORT_MYSQLCONNECTOR_OK == True :
+        INTERFACE_MYSQL = "mysql.connector"
+
+# Vérifie si les certificats SSL sont présents dans le répertoire utilisateur
+def GetCertificatsSSL():
+    dict_certificats = {}
+    liste_fichiers = [("ca", "ca-cert.pem"), ("key", "client-key.pem"), ("cert", "client-cert.pem"),]
+    for nom, fichier in liste_fichiers :
+        chemin_fichier = UTILS_Fichiers.GetRepUtilisateur(fichier)
+        if os.path.isfile(chemin_fichier):
+            dict_certificats[nom] = chemin_fichier
+    return dict_certificats
+
+CERTIFICATS_SSL = GetCertificatsSSL()
+
+
 
 
 class DB:
-    def __init__(self, suffixe="DATA", nomFichier="", modeCreation=False):
+    def __init__(self, suffixe="DATA", nomFichier="", modeCreation=False, IDconnexion=None):
         """ Utiliser GestionDB.DB(suffixe="PHOTOS") pour accéder à un fichier utilisateur """
-        """ Utiliser GestionDB.DB(nomFichier="Geographie.dat", suffixe=None) pour ouvrir un autre type de fichier """
+        """ Utiliser GestionDB.DB(nomFichier=Chemins.GetStaticPath("Databases/Geographie.dat"), suffixe=None) pour ouvrir un autre type de fichier """
         self.nomFichier = nomFichier
-        self.nomFichierCourt = nomFichier
         self.modeCreation = modeCreation
         
-        # Si aucun nom de fichier n'est spécifié, on recherche celui par défaut dans le Config.dat
+        # Mémorisation de l'ouverture de la connexion et des requêtes
+        if IDconnexion == None :
+            self.IDconnexion = random.randint(0, 1000000)
+        else :
+            self.IDconnexion = IDconnexion
+        DICT_CONNEXIONS[self.IDconnexion] = []
+        
+        # Si aucun nom de fichier n'est spécifié, on recherche celui par défaut dans le Config
         if self.nomFichier == "" :
             self.nomFichier = self.GetNomFichierDefaut()
         
         # On ajoute le préfixe de type de fichier et l'extension du fichier
-        if suffixe != "" and suffixe != None :
-            if suffixe[0] != "T" :
+        if MODE_TEAMWORKS == True and suffixe not in ("", None):
+            if suffixe[0] != "T":
                 suffixe = _(u"T%s") % suffixe
-            if suffixe != None :
-                self.nomFichier += u"_%s" % suffixe
-        
+
+        if suffixe != None :
+            self.nomFichier += u"_%s" % suffixe
+
         # Est-ce une connexion réseau ?
         if "[RESEAU]" in self.nomFichier :
             self.isNetwork = True
@@ -53,21 +109,23 @@ class DB:
         
         # Ouverture de la base de données
         if self.isNetwork == True :
-            self.OuvertureFichierReseau(self.nomFichier)
+            self.OuvertureFichierReseau(self.nomFichier, suffixe)
         else:
             self.OuvertureFichierLocal(self.nomFichier)
-            
+    
+    def GetNomPosteReseau(self):
+        if self.isNetwork == False :
+            return None
+        return self.GetParamConnexionReseau()["user"]
         
     def OuvertureFichierLocal(self, nomFichier):
         """ Version LOCALE avec SQLITE """
         # Vérifie que le fichier sqlite existe bien
         if self.modeCreation == False :
             if os.path.isfile(nomFichier)  == False :
-                # Teste si c'est une ancienne version de fichier
-                if os.path.isfile(UTILS_Fichiers.GetRepData(u"%s.twk" % self.nomFichierCourt))  == False :
-                    print("Le fichier SQLITE demande n'est pas present sur le disque dur.")
-                    self.echec = 1
-                    return
+                #print "Le fichier SQLITE demande n'est pas present sur le disque dur."
+                self.echec = 1
+                return
         # Initialisation de la connexion
         try :
             self.connexion = sqlite3.connect(nomFichier.encode('utf-8'))
@@ -89,44 +147,29 @@ class DB:
         dictDonnees = {"port":int(port), "hote":host, "host":host, "user":user, "utilisateur":user, "mdp":passwd, "password":passwd, "fichier":nomFichier}
         return dictDonnees
 
-
-    def OuvertureFichierReseau(self, nomFichier):
+    def OuvertureFichierReseau(self, nomFichier, suffixe):
         """ Version RESEAU avec MYSQL """
         try :
-            from MySQLdb.constants import FIELD_TYPE
-            from MySQLdb.converters import conversions
-
-            # Récupération des paramètres de connexion
-            pos = nomFichier.index("[RESEAU]")
-            paramConnexions = nomFichier[:pos]
-            port, host, user, passwd = paramConnexions.split(";")
-            nomFichier = nomFichier[pos:].replace("[RESEAU]", "")
-            nomFichier = nomFichier.lower() 
-            
-            # Connexion MySQL
-            my_conv = conversions
-            my_conv[FIELD_TYPE.LONG] = int
-            self.connexion = MySQLdb.connect(host=host,user=user, passwd=passwd, port=int(port), use_unicode=True, conv=my_conv) # db=dbParam, 
-            self.connexion.set_character_set('utf8')
+            self.connexion, nomFichier = GetConnexionReseau(nomFichier)
             self.cursor = self.connexion.cursor()
-            
-            # Ouverture ou création de la base MySQL
-            listeDatabases = self.GetListeDatabasesMySQL()
-            if nomFichier in listeDatabases :
-                # Ouverture Database
-                self.cursor.execute("USE %s;" % nomFichier)
-            else:
-                # Création Database
+
+            # Création
+            if self.modeCreation == True :
                 self.cursor.execute("CREATE DATABASE IF NOT EXISTS %s CHARSET utf8 COLLATE utf8_unicode_ci;" % nomFichier)
+            
+            # Utilisation
+            if nomFichier not in ("", None, "_tdata") :
                 self.cursor.execute("USE %s;" % nomFichier)
-                
+            
         except Exception as err:
-            print("La connexion avec la base de donnees MYSQL a echouee : \nErreur detectee :%s" % err)
+            print("La connexion avec la base de donnees MYSQL a echouee. Erreur :")
+            print((err,))
             self.erreur = err
             self.echec = 1
+            #AfficheConnexionOuvertes() 
         else:
             self.echec = 0
-
+    
     def GetNomFichierDefaut(self):
         nomFichier = ""
         try :
@@ -134,7 +177,7 @@ class DB:
             nomWindow = topWindow.GetName()
         except :
             nomWindow = None
-        if nomWindow == "general" :
+        if nomWindow == "general" : 
             # Si la frame 'General' est chargée, on y récupère le dict de config
             nomFichier = topWindow.userConfig["nomFichier"]
         else:
@@ -143,7 +186,7 @@ class DB:
             cfg = UTILS_Config.FichierConfig()
             nomFichier = cfg.GetItemConfig("nomFichier")
         return nomFichier
-
+    
     def GetListeDatabasesMySQL(self):
         # Récupère la liste des databases présentes
         listeDatabases = []
@@ -152,6 +195,14 @@ class DB:
         for valeurs in listeValeurs :
             listeDatabases.append(valeurs[0])
         return listeDatabases
+
+    def GetVersionServeur(self):
+        req = """SHOW VARIABLES LIKE "version";"""
+        self.ExecuterReq(req)
+        listeTemp = self.ResultatReq()
+        if len(listeTemp) > 0:
+            return listeTemp[0][1]
+        return None
 
     def CreationTables(self, dicoDB={}, fenetreParente=None):
         for table in dicoDB:
@@ -165,6 +216,7 @@ class DB:
                 typeChamp = descr[1]
                 # Adaptation à Sqlite
                 if self.isNetwork == False and typeChamp == "LONGBLOB" : typeChamp = "BLOB"
+                if self.isNetwork == False and typeChamp == "BIGINT": typeChamp = "INTEGER"
                 # Adaptation à MySQL :
                 if self.isNetwork == True and typeChamp == "INTEGER PRIMARY KEY AUTOINCREMENT" : typeChamp = "INTEGER PRIMARY KEY AUTO_INCREMENT"
                 if self.isNetwork == True and typeChamp == "FLOAT" : typeChamp = "REAL"
@@ -173,6 +225,8 @@ class DB:
                     nbreCaract = int(typeChamp[typeChamp.find("(")+1:typeChamp.find(")")])
                     if nbreCaract > 255 :
                         typeChamp = "TEXT(%d)" % nbreCaract
+                    if nbreCaract > 20000 :
+                        typeChamp = "MEDIUMTEXT"
                 # ------------------------------
                 req = req + "%s %s, " % (nomChamp, typeChamp)
             req = req[:-2] + ")"
@@ -186,10 +240,18 @@ class DB:
             typeChamp = descr[1]
             # Adaptation à Sqlite
             if self.isNetwork == False and typeChamp == "LONGBLOB" : typeChamp = "BLOB"
+            if self.isNetwork == False and typeChamp == "BIGINT": typeChamp = "INTEGER"
             # Adaptation à MySQL :
             if self.isNetwork == True and typeChamp == "INTEGER PRIMARY KEY AUTOINCREMENT" : typeChamp = "INTEGER PRIMARY KEY AUTO_INCREMENT"
             if self.isNetwork == True and typeChamp == "FLOAT" : typeChamp = "REAL"
             if self.isNetwork == True and typeChamp == "DATE" : typeChamp = "VARCHAR(10)"
+            if self.isNetwork == True and typeChamp.startswith("VARCHAR") :
+                nbreCaract = int(typeChamp[typeChamp.find("(")+1:typeChamp.find(")")])
+                if nbreCaract > 255 :
+                    typeChamp = "TEXT(%d)" % nbreCaract
+                if nbreCaract > 20000 :
+                    typeChamp = "MEDIUMTEXT"
+
             # ------------------------------
             req = req + "%s %s, " % (nomChamp, typeChamp)
         req = req[:-2] + ")"
@@ -202,6 +264,7 @@ class DB:
             req = req.replace("()", "(10000000, 10000001)")
         try:
             self.cursor.execute(req)
+            DICT_CONNEXIONS[self.IDconnexion].append(req)
         except Exception as err:
             print(_(u"Requete SQL incorrecte :\n%s\nErreur detectee:\n%s") % (req, err))
             return 0
@@ -224,9 +287,29 @@ class DB:
             self.connexion.commit()
 
     def Close(self):
-        if self.echec == 1 : return
-        if self.connexion:
+        try :
             self.connexion.close()
+        except Exception as err :
+            pass
+
+        if self.IDconnexion in DICT_CONNEXIONS :
+            del DICT_CONNEXIONS[self.IDconnexion]
+                
+    def Executermany(self, req="", listeDonnees=[], commit=True):
+        """ Executemany pour local ou réseau """    
+        """ Exemple de req : "INSERT INTO table (IDtable, nom) VALUES (?, ?)" """  
+        """ Exemple de listeDonnees : [(1, 2), (3, 4), (5, 6)] """     
+        # Adaptation réseau/local
+        if self.isNetwork == True :
+            # Version MySQL
+            req = req.replace("?", "%s")
+        else:
+            # Version Sqlite
+            req = req.replace("%s", "?")
+        # Executemany
+        self.cursor.executemany(req, listeDonnees)
+        if commit == True :
+            self.connexion.commit()
 
     def Ajouter(self, table, champs, valeurs):
         # champs et valeurs sont des tuples
@@ -234,7 +317,7 @@ class DB:
         self.cursor.execute(req)
         self.connexion.commit()
 
-    def ReqInsert(self, nomTable, listeDonnees):
+    def ReqInsert(self, nomTable="", listeDonnees=[], commit=True):
         """ Permet d'insérer des données dans une table """
         # Préparation des données
         champs = "("
@@ -252,10 +335,14 @@ class DB:
         champs = champs[:-2] + ")"
         interr = interr[:-2] + ")"
         req = "INSERT INTO %s %s VALUES %s" % (nomTable, champs, interr)
-        # Enregistrement
+        
         try:
+            # Enregistrement
             self.cursor.execute(req, tuple(valeurs))
-            self.Commit()
+            if commit == True :
+                self.Commit()
+                
+            # Récupération de l'ID
             if self.isNetwork == True :
                 # Version MySQL
                 self.cursor.execute("SELECT LAST_INSERT_ID();")
@@ -263,6 +350,7 @@ class DB:
                 # Version Sqlite
                 self.cursor.execute("SELECT last_insert_rowid() FROM %s" % nomTable)
             newID = self.cursor.fetchall()[0][0]
+            
         except Exception as err:
             print("Requete sql d'INSERT incorrecte :\n%s\nErreur detectee:\n%s" % (req, err))
         # Retourne l'ID de l'enregistrement créé
@@ -271,8 +359,12 @@ class DB:
     def InsertPhoto(self, IDindividu=None, blobPhoto=None):
         if self.isNetwork == True :
             # Version MySQL
-            sql = "INSERT INTO photos (IDindividu, photo) VALUES (%d, '%s')" % (IDindividu, MySQLdb.escape_string(blobPhoto))
-            self.cursor.execute(sql)
+            if INTERFACE_MYSQL == "mysqldb" :
+                blob = MySQLdb.escape_string(blobPhoto)
+                sql = "INSERT INTO photos (IDindividu, photo) VALUES (%d, '%s')" % (IDindividu, blob)
+                self.cursor.execute(sql)
+            if INTERFACE_MYSQL == "mysql.connector" :
+                self.cursor.execute("INSERT INTO photos (IDindividu, photo) VALUES (%s, %s)", (IDindividu, blobPhoto))
             self.connexion.commit()
             self.cursor.execute("SELECT LAST_INSERT_ID();")
         else:
@@ -284,27 +376,15 @@ class DB:
         newID = self.cursor.fetchall()[0][0]
         return newID
 
-    def Executermany(self, req="", listeDonnees=[], commit=True):
-        """ Executemany pour local ou réseau """    
-        """ Exemple de req : "INSERT INTO table (IDtable, nom) VALUES (?, ?)" """  
-        """ Exemple de listeDonnees : [(1, 2), (3, 4), (5, 6)] """     
-        # Adaptation réseau/local
-        if self.isNetwork == True :
-            # Version MySQL
-            req = req.replace("?", "%s")
-        else:
-            # Version Sqlite
-            req = req.replace("%s", "?")
-        # Executemany
-        self.cursor.executemany(req, listeDonnees)
-        if commit == True :
-            self.connexion.commit()
-
     def MAJPhoto(self, IDphoto=None, IDindividu=None, blobPhoto=None):
         if self.isNetwork == True :
             # Version MySQL
-            sql = "UPDATE photos SET IDindividu=%d, photo='%s' WHERE IDphoto=%d" % (IDindividu, MySQLdb.escape_string(blobPhoto), IDphoto)
-            self.cursor.execute(sql)
+            if INTERFACE_MYSQL == "mysqldb" :
+                blob = MySQLdb.escape_string(blobPhoto)
+                sql = "UPDATE photos SET IDindividu=%d, photo='%s' WHERE IDphoto=%d" % (IDindividu, blob, IDphoto)
+                self.cursor.execute(sql)
+            if INTERFACE_MYSQL == "mysql.connector" :
+                self.cursor.execute("UPDATE photos SET IDindividu=%s, photo=%s WHERE IDphoto=%s", (IDindividu, blobPhoto, IDphoto))
             self.connexion.commit()
         else:
             # Version Sqlite
@@ -317,8 +397,14 @@ class DB:
         """ Enregistre une image dans les modes de règlement ou emetteurs """
         if self.isNetwork == True :
             # Version MySQL
-            sql = "UPDATE %s SET %s='%s' WHERE %s=%d" % (table, nomChampBlob, MySQLdb.escape_string(blobImage), key, IDkey)
-            self.cursor.execute(sql)
+            if INTERFACE_MYSQL == "mysqldb" :
+                blob = MySQLdb.escape_string(blobImage)
+                sql = "UPDATE %s SET %s='%s' WHERE %s=%d" % (table, nomChampBlob, blob, key, IDkey)
+                self.cursor.execute(sql)
+            if INTERFACE_MYSQL == "mysql.connector" :
+                req = "UPDATE %s SET %s=XXBLOBXX WHERE %s=%s" % (table, nomChampBlob, key, IDkey)
+                req = req.replace("XXBLOBXX", "%s")
+                self.cursor.execute(req, (blobImage,))
             self.connexion.commit()
         else:
             # Version Sqlite
@@ -326,7 +412,7 @@ class DB:
             self.cursor.execute(sql, [sqlite3.Binary(blobImage),])
             self.connexion.commit()
 
-    def ReqMAJ(self, nomTable, listeDonnees, nomChampID, ID, IDestChaine=False):
+    def ReqMAJ(self, nomTable, listeDonnees, nomChampID, ID, IDestChaine=False, commit=True):
         """ Permet d'insérer des données dans une table """
         # Préparation des données
         champs = ""
@@ -348,20 +434,22 @@ class DB:
         # Enregistrement
         try:
             self.cursor.execute(req, tuple(valeurs))
-            self.Commit()
+            if commit == True :
+                self.Commit()
         except Exception as err:
             print(_(u"Requete sql de mise a jour incorrecte :\n%s\nErreur detectee:\n%s") % (req, err))
         
-    def ReqDEL(self, nomTable, nomChampID, ID):
+    def ReqDEL(self, nomTable="", nomChampID="", ID="", commit=True):
         """ Suppression d'un enregistrement """
         req = "DELETE FROM %s WHERE %s=%d" % (nomTable, nomChampID, ID)
         try:
             self.cursor.execute(req)
-            self.Commit()
+            if commit == True :
+                self.Commit()
         except Exception as err:
             print(_(u"Requete sql de suppression incorrecte :\n%s\nErreur detectee:\n%s") % (req, err))
         
-    def Modifier(self, table, ID, champs, valeurs, dicoDB):
+    def Modifier(self, table, ID, champs, valeurs, dicoDB, commit=True):
         # champs et valeurs sont des tuples
 
         # Recherche du nom de champ ID de la table
@@ -382,7 +470,8 @@ class DB:
 
         req = "UPDATE %s SET %s WHERE %s=%d" % (table, detail, nomID, ID)
         self.cursor.execute(req)
-        self.connexion.commit()
+        if commit == True :
+            self.connexion.commit()
 
     def Dupliquer(self, nomTable="", nomChampCle="", conditions="", dictModifications={}, renvoieCorrespondances=False, IDmanuel=False):
         """ Dulpliquer un enregistrement d'une table :
@@ -457,19 +546,31 @@ class DB:
             req = "SELECT seq FROM sqlite_sequence WHERE name='%s';" % nomTable
             self.ExecuterReq(req)
             donnees = self.ResultatReq()
+
+            # Renvoie le prochain ID
+            if len(donnees) > 0 :
+                return donnees[0][0] + 1
+
         else:
             # Version MySQL
-            self.ExecuterReq("USE information_schema;")
-            pos = self.nomFichier.index("[RESEAU]")
-            nomFichier = self.nomFichier[pos:].replace("[RESEAU]", "")
-            req = "SELECT auto_increment FROM tables WHERE table_schema='%s' and table_name='%s' ;" % (nomFichier, nomTable)
-            self.ExecuterReq(req)
+            # self.ExecuterReq("USE information_schema;")
+            # pos = self.nomFichier.index("[RESEAU]")
+            # nomFichier = self.nomFichier[pos:].replace("[RESEAU]", "")
+            # req = "SELECT auto_increment FROM tables WHERE table_schema='%s' and table_name='%s' ;" % (nomFichier, nomTable)
+            # self.ExecuterReq(req)
+            # donnees = self.ResultatReq()
+            #
+            # # Se remet sur le fichier normal
+            # if nomFichier not in ("", None, "_data") :
+            #     self.ExecuterReq("USE %s;" % nomFichier)
+
+            # 2ème version
+            self.ExecuterReq("SHOW TABLE STATUS WHERE name='%s';" % nomTable)
             donnees = self.ResultatReq()
-        if len(donnees) > 0 :
-            ID = donnees[0][0] + 1
-            return ID
-        else:
-            return None
+            if len(donnees) > 0 :
+                return donnees[0][10]
+
+        return 1
     
     def IsTableExists(self, nomTable=""):
         """ Vérifie si une table donnée existe dans la base """
@@ -572,98 +673,159 @@ class DB:
         req = "ALTER TABLE %s ADD %s %s;" % (nomTable, nomChamp, typeChamp)
         self.ExecuterReq(req)
         self.Commit()
-        
-    def Importation_table(self, nomTable="", nomFichierdefault="Defaut.dat"):
+
+    def ReparationTable(self, nomTable="", dicoDB=Tables.DB_DATA):
+        """ Réparation d'une table (re-création de la table) """
+        if self.isNetwork == False :
+            # Récupération des noms et types de champs
+            listeChamps = []
+            listeNomsChamps = []
+            for descr in dicoDB[nomTable]:
+                nomChamp = descr[0]
+                typeChamp = descr[1]
+                if self.isNetwork == False and typeChamp == "LONGBLOB" : typeChamp = "BLOB"
+                if self.isNetwork == False and typeChamp == "BIGINT": typeChamp = "INTEGER"
+                listeChamps.append("%s %s" % (nomChamp, typeChamp))
+                listeNomsChamps.append(nomChamp)
+            varChamps = ", ".join(listeChamps)
+##            varNomsChamps = ", ".join(listeNomsChamps)
+
+            # Procédure de mise à jour de la table
+##            req = "BEGIN TRANSACTION;"
+##            req += "CREATE TEMPORARY TABLE %s_backup(%s);" % (nomTable, varChamps)
+##            req += "INSERT INTO %s_backup SELECT %s FROM %s;" % (nomTable, ", ".join(listeNomsChamps[1:]), nomTable)
+##            req += "DROP TABLE %s;" % nomTable
+##            req += "CREATE TABLE %s(%s);" % (nomTable, varChamps)
+##            req += "INSERT INTO %s SELECT %s FROM %s_backup;" % (nomTable, ", ".join(listeNomsChamps[1:]), nomTable)
+##            req += "DROP TABLE %s_backup;" % nomTable
+##            req += "COMMIT;"
+            
+            # Création de la table temporaire
+            req = "BEGIN TRANSACTION;"
+            req += "CREATE TEMPORARY TABLE %s_backup(%s);" % (nomTable, varChamps.replace(" PRIMARY KEY AUTOINCREMENT", ""))
+            req += "INSERT INTO %s_backup SELECT %s FROM %s;" % (nomTable, ", ".join(listeNomsChamps), nomTable)
+            req += "DROP TABLE %s;" % nomTable
+            req += "CREATE TABLE %s(%s);" % (nomTable, varChamps)
+            req += "COMMIT;"
+            self.cursor.executescript(req)
+            
+            # Copie des données dans la table temporaire
+            req = "SELECT %s FROM %s_backup;" % (", ".join(listeNomsChamps[1:]), nomTable)
+            self.cursor.execute(req)
+            listeDonnees = self.cursor.fetchall()
+            
+            for ligne in listeDonnees :
+                temp = []
+                for x in range(0, len(ligne)) :
+                    temp.append("?")
+                req = "INSERT INTO %s (%s) VALUES (%s)" % (nomTable, ", ".join(listeNomsChamps[1:]), ", ".join(temp))
+                self.cursor.execute(req, ligne)
+                self.Commit() 
+            
+            # Suppression de la table temporaire
+            self.cursor.execute("DROP TABLE %s_backup;" % nomTable)
+            self.Commit() 
+            
+            print("Reparation de la table '%s' terminee." % nomTable)
+
+    def Importation_table(self, nomTable="", nomFichierdefault=Chemins.GetStaticPath("Databases/Defaut.dat"), mode="local"):
         """ Importe toutes les données d'une table donnée """
         # Ouverture de la base par défaut
-        try:
-            connexionDefaut = sqlite3.connect(nomFichierdefault.encode('utf-8'))
-        except Exception as err:
-            print("Echec Importation table. Erreur detectee :%s" % err)
-            echec = 1
-        else:
-            cursor = connexionDefaut.cursor()
-            echec = 0
+        if mode == "local" :
+
+            if os.path.isfile(nomFichierdefault)  == False :
+                print("Le fichier n'existe pas.")
+                return (False, _(u"Le fichier n'existe pas"))
+
+            try:
+                connexionDefaut = sqlite3.connect(nomFichierdefault.encode('utf-8'))
+            except Exception as err:
+                print("Echec Importation table. Erreur detectee :%s" % err)
+                return (False, "Echec Importation table. Erreur detectee :%s" % err)
+            else:
+                cursor = connexionDefaut.cursor()
+
+        else :
+            
+            try :
+                connexionDefaut, nomFichier = GetConnexionReseau(nomFichierdefault)
+                cursor = connexionDefaut.cursor()
+                
+                # Ouverture Database
+                cursor.execute("USE %s;" % nomFichier)
+                
+            except Exception as err:
+                print("La connexion avec la base de donnees MYSQL a importer a echouee : \nErreur detectee :%s" % err)
+                return (False, "La connexion avec la base de donnees MYSQL a importer a echouee : \nErreur detectee :%s" % err)
 
         # Recherche des noms de champs de la table
         req = "SELECT * FROM %s" % nomTable
         cursor.execute(req)
         listeDonneesTmp = cursor.fetchall()
-        listeChamps = []
+        listeNomsChamps = []
         for fieldDesc in cursor.description:
-            listeChamps.append(fieldDesc[0])
+            listeNomsChamps.append(fieldDesc[0])
             
         # Préparation des noms de champs pour le transfert
-        txtChamps = "("
-        txtQMarks = "("
-        for nomChamp in listeChamps[0:] :
-            txtChamps += nomChamp + ", "
-            if self.isNetwork == True :
-                # Version MySQL
-                txtQMarks += "%s, "
-            else:
-                # Version Sqlite
-                txtQMarks += "?, "
-        txtChamps = txtChamps[:-2] + ")"
-        txtQMarks = txtQMarks[:-2] + ")"
+        listeChamps = []
+        listeMarks = []
+        dictTypesChamps = GetChampsTable(nomTable)
+        for nomChamp in listeNomsChamps[0:] :
+            if nomChamp in dictTypesChamps:
+                listeChamps.append(nomChamp)
+                if self.isNetwork == True :
+                    # Version MySQL
+                    listeMarks.append("%s")
+                else:
+                    # Version Sqlite
+                    listeMarks.append("?")
 
         # Récupération des données
-        listeDonnees = []
-        for donnees in listeDonneesTmp :
-            listeDonnees.append(donnees[0:])
-        
+        req = "SELECT %s FROM %s" % (", ".join(listeChamps), nomTable)
+        cursor.execute(req)
+        listeDonnees = cursor.fetchall()
+
         # Importation des données vers la nouvelle table
-        req = "INSERT INTO %s %s VALUES %s" % (nomTable, txtChamps, txtQMarks)
-        self.cursor.executemany(req, listeDonnees)
+        req = "INSERT INTO %s (%s) VALUES (%s)" % (nomTable, ", ".join(listeChamps), ", ".join(listeMarks))
+        try :
+            self.cursor.executemany(req, listeDonnees)
+        except Exception as err :
+            print("Erreur dans l'importation de la table %s :" % nomTable)
+            print(err)
+            return (False, "Erreur dans l'importation de la table %s : %s" % (nomTable, err))
         self.connexion.commit()
+        return (True, None)
 
     def Importation_table_reseau(self, nomTable="", nomFichier="", dictTables={}):
         """ Importe toutes les données d'une table donnée dans un fichier réseau """
         # Ouverture de la base réseau
         try :
-            from MySQLdb.constants import FIELD_TYPE
-            from MySQLdb.converters import conversions
-
-            # Récupération des paramètres de connexion
-            pos = nomFichier.index("[RESEAU]")
-            paramConnexions = nomFichier[:pos]
-            port, host, user, passwd = paramConnexions.split(";")
-            nomFichier = nomFichier[pos:].replace("[RESEAU]", "")
-            nomFichier = nomFichier.lower() 
-            
-            # Connexion MySQL
-            my_conv = conversions
-            my_conv[FIELD_TYPE.LONG] = int
-            connexionDefaut = MySQLdb.connect(host=host,user=user, passwd=passwd, port=int(port), use_unicode=True, conv=my_conv) # db=dbParam, 
-            connexionDefaut.set_character_set('utf8')
+            connexionDefaut, nomFichier = GetConnexionReseau(nomFichier)
             cursor = connexionDefaut.cursor()
-            
+
             # Ouverture Database
             cursor.execute("USE %s;" % nomFichier)
-            
+
         except Exception as err:
             print("La connexion avec la base de donnees MYSQL a importer a echouee : \nErreur detectee :%s" % err)
-            erreur = err
-            echec = 1
-        else:
-            echec = 0
+            return (False, "La connexion avec la base de donnees MYSQL a importer a echouee : \nErreur detectee :%s" % err)
 
         # Recherche des noms de champs de la table
         req = "SELECT * FROM %s" % nomTable
         cursor.execute(req)
         listeDonneesTmp = cursor.fetchall()
+
+        # Lecture des champs
         listeChamps = []
-        for fieldDesc in cursor.description:
-            listeChamps.append(fieldDesc[0])
-        
+        req = "SHOW COLUMNS FROM %s;" % nomTable
+        cursor.execute(req)
+        listeTmpChamps = cursor.fetchall()
+        for valeurs in listeTmpChamps:
+            listeChamps.append((valeurs[0], valeurs[1]))
+
         # Préparation des noms de champs pour le transfert
-        txtChamps = "("
-        txtQMarks = "("
-        for nomChamp in listeChamps[0:] :
-            txtChamps += nomChamp + ", "
-            txtQMarks += "?, "
-        txtChamps = txtChamps[:-2] + ")"
-        txtQMarks = txtQMarks[:-2] + ")"
+        txtChamps = "(" + ", ".join([nomChamp for nomChamp, typeChamp in listeChamps]) + ")"
+        txtQMarks = "(" + ", ".join(["?" for nomChamp, typeChamp in listeChamps]) + ")"
 
         # Récupération des données
         listeDonnees = []
@@ -672,18 +834,20 @@ class DB:
             numColonne = 0
             listeValeurs = []
             for donnee in donnees[0:] :
-                typeChamp = dictTables[nomTable][numColonne][1]
-                if typeChamp == "BLOB" :
+                nomChamp, typeChamp = listeChamps[numColonne]
+                if "BLOB" in typeChamp.upper() :
                     if donnee != None :
                         donnee = sqlite3.Binary(donnee)
                 listeValeurs.append(donnee)
                 numColonne += 1
             listeDonnees.append(tuple(listeValeurs))
-        
+
         # Importation des données vers la nouvelle table
         req = "INSERT INTO %s %s VALUES %s" % (nomTable, txtChamps, txtQMarks)
         self.cursor.executemany(req, listeDonnees)
         self.connexion.commit()
+        connexionDefaut.close()
+        return (True, None)
 
     def Importation_valeurs_defaut(self, listeDonnees=[]):
         """ Importe dans la base de données chargée toutes les valeurs de la base des valeurs par défaut """
@@ -705,11 +869,22 @@ class DB:
 
         return True
 
-    def Exportation_vers_base_defaut(self, nomTable="", nomFichierdefault="Defaut.dat"):
+    def ConversionTypeChamp(self, nomTable="", nomChamp="", typeChamp=""):
+        """ Pour convertir le type d'un champ """
+        """ Ne fonctionne qu'avec MySQL """
+        if self.isNetwork == True :
+            req = "ALTER TABLE %s CHANGE %s %s %s;" % (nomTable, nomChamp, nomChamp, typeChamp)
+            self.ExecuterReq(req)
+
+    def Exportation_vers_base_defaut(self, nomTable="", nomFichierdefault=Chemins.GetStaticPath("Databases/Defaut.dat")):
         """ Exporte toutes les données d'une table donnée vers la base défaut """
+        """ ATTENTION, la TABLE défaut sera supprimée !!! """
         # Ouverture de la base par défaut
         connexionDefaut = sqlite3.connect(nomFichierdefault.encode('utf-8'))
         cursorDefaut = connexionDefaut.cursor()
+        
+        # Supprime la table
+        cursorDefaut.execute("DROP TABLE IF EXISTS %s;" % nomTable)
         
         # Création de la table dans la base DEFAUT si elle n'existe pas
         req = "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';" % nomTable
@@ -722,6 +897,7 @@ class DB:
                 nomChamp = descr[0]
                 typeChamp = descr[1]
                 if self.isNetwork == False and typeChamp == "LONGBLOB" : typeChamp = "BLOB"
+                if self.isNetwork == False and typeChamp == "BIGINT": typeChamp = "INTEGER"
                 req = req + "%s %s, " % (nomChamp, typeChamp)
             req = req[:-2] + ")"
             cursorDefaut.execute(req)
@@ -752,54 +928,73 @@ class DB:
         req = "INSERT INTO %s %s VALUES %s" % (nomTable, txtChamps, txtQMarks)
         cursorDefaut.executemany(req, listeDonnees2)
         connexionDefaut.commit()
+        connexionDefaut.close() 
+
+    def CreationIndex(self, nomIndex=""):
+        """ Création d'un index """
+        nomTable = Tables.DB_INDEX[nomIndex]["table"]
+        nomChamp = Tables.DB_INDEX[nomIndex]["champ"]
+        if self.IsTableExists(nomTable) :
+            #print "Creation de l'index : %s" % nomIndex
+            req = "CREATE INDEX %s ON %s (%s);" % (nomIndex, nomTable, nomChamp)
+            self.ExecuterReq(req)
+            self.Commit() 
+    
+    def CreationTousIndex(self):
+        """ Création de tous les index """
+        for nomIndex, temp in Tables.DB_INDEX.items() :
+            self.CreationIndex(nomIndex)
 
 
-# ------------- Fonctions de MAJ de la base de données ---------------------------------------------------------------
-        
-    def ConversionDB(self, versionFichier=(0, 0, 0, 0) ) :
-        """ Adapte un fichier obsolète à la version actuelle du logiciel """
-        
-        # Filtres de conversion
-        
-        # =============================================================
-        
-        # Filtre pour passer de la version 1 à la version 2 de Teamworks
-        versionFiltre = (2, 0, 0, 0)
-        if versionFichier < versionFiltre :   
-            try :
-                from Utils import UTILS_Procedures
-                UTILS_Procedures.A2000(nomFichier=self.nomFichierCourt)
-            except Exception as err :
-                return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
-        
-        # =============================================================
-        
-        versionFiltre = (2, 0, 0, 1)
-        if versionFichier < versionFiltre :   
-            try :
-                if self.IsTableExists("questionnaire_questions") == False : self.CreationTable("questionnaire_questions", Tables.DB_DATA)
-                if self.IsTableExists("questionnaire_categories") == False : self.CreationTable("questionnaire_categories", Tables.DB_DATA)
-                if self.IsTableExists("questionnaire_choix") == False : self.CreationTable("questionnaire_choix", Tables.DB_DATA)
-                if self.IsTableExists("questionnaire_reponses") == False : self.CreationTable("questionnaire_reponses", Tables.DB_DATA)
-                from Utils import UTILS_Procedures
-                UTILS_Procedures.D1051(nomFichier=self.nomFichierCourt)
-            except Exception as err :
-                return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
-        
-        # =============================================================
-
-        versionFiltre = (2, 1, 0, 1)
-        if versionFichier < versionFiltre:
-            try:
-                if self.IsTableExists("profils") == False: self.CreationTable("profils", Tables.DB_DATA)
-                if self.IsTableExists("profils_parametres") == False: self.CreationTable("profils_parametres", Tables.DB_DATA)
-            except Exception as err:
-                return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
-
-        # =============================================================
 
 
-        return True
+
+def GetConnexionReseau(nomFichier=""):
+    pos = nomFichier.index("[RESEAU]")
+    paramConnexions = nomFichier[:pos]
+    port, host, user, passwd = paramConnexions.split(";")
+    nomFichier = nomFichier[pos:].replace("[RESEAU]", "")
+    nomFichier = nomFichier.lower()
+
+    passwd = DecodeMdpReseau(passwd)
+
+    if INTERFACE_MYSQL == "mysqldb":
+        my_conv = conversions
+        my_conv[FIELD_TYPE.LONG] = int
+        connexion = MySQLdb.connect(host=host, user=user, passwd=passwd, port=int(port), use_unicode=True, conv=my_conv, ssl=CERTIFICATS_SSL)
+        connexion.set_character_set('utf8')
+
+    if INTERFACE_MYSQL == "mysql.connector":
+        if "ca" in CERTIFICATS_SSL:
+            ssl_ca = CERTIFICATS_SSL["ca"]
+        else :
+            ssl_ca = ""
+        if "_" in nomFichier :
+            suffixe = nomFichier.split("_")[-1]
+        else :
+            suffixe = ""
+        connexion = mysql.connector.connect(host=host, user=user, passwd=passwd, port=int(port), use_unicode=True, ssl_ca=ssl_ca, pool_name="mypool2%s" % suffixe, pool_size=3)
+
+    return connexion, nomFichier
+
+
+def GetChampsTable(nomTable=""):
+    for dictTables in (Tables.DB_DATA, Tables.DB_PHOTOS, Tables.DB_DOCUMENTS) :
+        if nomTable in dictTables :
+            dictChamps = {}
+            for item in dictTables[nomTable] :
+                dictChamps[item[0]] = item[1]
+            return dictChamps
+    return {}
+
+
+def ConvertConditionChaine(liste=[]):
+    """ Transforme une liste de valeurs en une condition chaine pour requête SQL """
+    if len(liste) == 0 : condition = "()"
+    elif len(liste) == 1 : condition = "(%d)" % liste[0]
+    else : condition = str(tuple(liste))
+    return condition
+
 
 def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None):
     """ Convertit une DB locale en version RESEAU MySQL """
@@ -814,28 +1009,20 @@ def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None)
         # Vérifie la connexion au réseau
         if dictResultats["connexion"][0] == False :
             erreur = dictResultats["connexion"][1]
-            dlg = wx.MessageDialog(None, _(u"La connexion au réseau MySQL est impossible. \n\nErreur : %s") % erreur, "Erreur de connexion", wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
             print("connexion reseau MySQL impossible.")
-            return False
+            return (False, _(u"La connexion au réseau MySQL est impossible"))
+        
         # Vérifie que le fichier n'est pas déjà utilisé
         if dictResultats["fichier"][0] == True :
-            dlg = wx.MessageDialog(None, _(u"Le fichier existe déjà."), "Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
             print("le nom existe deja.")
-            return False
+            return (False, _(u"Le fichier existe déjà"))
         
         # Création de la base de données
         if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Création du fichier réseau..."))
         db = DB(suffixe=suffixe, nomFichier=nouveauFichier, modeCreation=True)
         if db.echec == 1 :
-            erreur = db.erreur
-            dlg = wx.MessageDialog(None, _(u"Erreur dans la création du fichier.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
-            return False
+            message = _(u"Erreur dans la création du fichier.\n\nErreur : %s") % db.erreur
+            return (False, message)
         print("  > Nouveau fichier reseau %s cree..." % suffixe)
         
         # Création des tables
@@ -849,19 +1036,24 @@ def ConversionLocalReseau(nomFichier="", nouveauFichier="", fenetreParente=None)
         for nomTable in listeTables :
             print("  > Importation de la table '%s' (%d/%d)" % (nomTable, index, len(listeTables)))
             if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Importation de la table %d sur %s...") % (index, len(listeTables)))
-            db.Importation_table(nomTable, nomFichierActif)
-            print("     -> ok")
+            resultat = db.Importation_table(nomTable, nomFichierActif)
+            if resultat[0] == False :
+                db.Close()
+                return resultat
+            else :
+                print("     -> ok")
             index += 1
         
-        db.Close() 
+        db.Close()
     
     print("  > Conversion terminee avec succes.")
-            
+    return (True, None)
+
 
 def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None):
     """ Convertit une DB RESEAU MySQL en version LOCALE SQLITE """
     print("Lancement de la procedure de conversion reseau->local :")
-    
+
     for suffixe, dictTables in ( ("TDATA", Tables.DB_DATA), ("TPHOTOS", Tables.DB_PHOTOS), ("TDOCUMENTS", Tables.DB_DOCUMENTS) ) :
         
         nomFichierActif = nomFichier[nomFichier.index("[RESEAU]"):].replace("[RESEAU]", "") 
@@ -869,21 +1061,14 @@ def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None)
         
         # Vérifie que le fichier n'est pas déjà utilisé
         if os.path.isfile(nouveauNom)  == True :
-            dlg = wx.MessageDialog(None, _(u"Le fichier existe déjà."), "Erreur de création de fichier", wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
-            print("le nom existe deja.")
-            return False
+            return (False, _(u"Le fichier existe déjà"))
         
         # Création de la base de données
         if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Création du fichier local..."))
         db = DB(suffixe=suffixe, nomFichier=nouveauFichier, modeCreation=True)
         if db.echec == 1 :
-            erreur = db.erreur
-            dlg = wx.MessageDialog(None, _(u"Erreur dans la création du fichier.\n\nErreur : %s") % erreur, _(u"Erreur de création de fichier"), wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
-            return False
+            message = _(u"Erreur dans la création du fichier.\n\nErreur : %s") % db.erreur
+            return (False, _(u"Le fichier existe déjà"))
         print("  > Nouveau fichier local %s cree..." % suffixe)
         
         # Création des tables
@@ -897,38 +1082,38 @@ def ConversionReseauLocal(nomFichier="", nouveauFichier="", fenetreParente=None)
         for nomTable in listeTables :
             print("  > Importation de la table '%s' (%d/%d)" % (nomTable, index, len(listeTables)))
             if fenetreParente != None : fenetreParente.SetStatusText(_(u"Conversion du fichier en cours... Importation de la table %d sur %s...") % (index, len(listeTables)))
-            db.Importation_table_reseau(nomTable, u"%s_%s" % (nomFichier, suffixe), dictTables)
-            print("     -> ok")
+            resultat = db.Importation_table_reseau(nomTable, u"%s_%s" % (nomFichier, suffixe), dictTables)
+            if resultat[0] == False :
+                db.Close()
+                return resultat
+            else :
+                print("     -> ok")
             index += 1
-        
-        db.Close() 
-    
+
+        db.Close()
+
     print("  > Conversion reseau->local terminee avec succes.")
+    return (True, None)
 
 
 def TestConnexionMySQL(typeTest="fichier", nomFichier=""):
     """ typeTest=fichier ou reseau """
     dictResultats = {}
-    # Récupération du nom de fichier court
-    pos = nomFichier.index("[RESEAU]")
-    paramConnexions = nomFichier[:pos]
-    port, host, user, passwd = paramConnexions.split(";")
-    nomFichier = nomFichier[pos+8:]
-    nomFichier = nomFichier.lower() 
-    
+    cursor = None
+    connexion = None
+
     # Test de connexion au réseau MySQL
     try :
-        connexion = MySQLdb.connect(host=host,user=user, passwd=passwd, port=int(port), use_unicode=True) # db=dbParam, 
-        connexion.set_character_set('utf8')
+        connexion, nomFichier = GetConnexionReseau(nomFichier)
         cursor = connexion.cursor()
         dictResultats["connexion"] =  (True, None)
-        etatConnexion = True
+        connexion_ok = True
     except Exception as err :
         dictResultats["connexion"] =  (False, err)
-        etatConnexion = False
-    
+        connexion_ok = False
+
     # Test de connexion à une base de données
-    if typeTest == "fichier" and etatConnexion == True :
+    if typeTest == "fichier" and connexion_ok == True :
         try :
             listeDatabases = []
             cursor.execute("SHOW DATABASES;")
@@ -938,92 +1123,141 @@ def TestConnexionMySQL(typeTest="fichier", nomFichier=""):
             if nomFichier in listeDatabases :
                 # Ouverture Database
                 cursor.execute("USE %s;" % nomFichier)
-                dictResultats["fichier"] =  (True, None)
+                # Vérification des tables
+                cursor.execute("SHOW TABLES;")
+                listeTables = cursor.fetchall()
+                if not listeTables:
+                    dictResultats["fichier"] = (False, _(u"La base de données est vide."))
+                else:
+                    dictResultats["fichier"] =  (True, None)
             else:
                 dictResultats["fichier"] =  (False, _(u"Accès au fichier impossible."))
         except Exception as err :
             dictResultats["fichier"] =  (False, err)
     
-    try :
-        connexion.close() 
-    except :
-        pass
-    
+    if connexion != None :
+        connexion.close()
     return dictResultats
 
 
 # ----------------------------------------------------------------------------------------------------------------------------------------
-        
-##import MySQLdb
-##base = MySQLdb.connect(host="localhost",user="root", passwd="motdepasse", port=3306, use_unicode=True) # db=dbParam, 
-##cursor = base.cursor()
-##cursor.execute("USE testsql;")
-##cursor.execute("SHOW VARIABLES like 'character_set_%';")
-##base.set_character_set('utf8')
-##print cursor.fetchall()
-##valeur = _(u"2 euros > 2¤")
-##cursor.execute("INSERT INTO t1 (champ1) VALUES ('%s');" % valeur.encode("utf-8") ) 
-##base.commit()
-##base.close()
-
-
-##db = DB()
-##db.Importation_valeurs_defaut()
-##print "valeurs par defaut importees."
-##db.Close()
-
-
-##if __name__ == "__main__":
-##    #blobtestMYSQL()
-##    blobtestSQLITE()
-    
-##    db = DB()
-##    db.AjoutChamp(nomTable = "modeles_planning", nomChamp = "inclureferies", typeChamp = "INTEGER")
-##    db.Close()
-                        
+                                
 def ImporterFichierDonnees() :
-    db = DB(nomFichier="Prenoms.dat", suffixe=None, modeCreation=True)
+    db = DB(nomFichier=Chemins.GetStaticPath("Databases/Prenoms.dat"), suffixe=None, modeCreation=True)
     db.CreationTable("prenoms", DB_DATA2)
     db.Close()
     
     txt = open("prenoms.txt", 'r').readlines()
-    db = DB(nomFichier="Prenoms.dat", suffixe=None)
+    db = DB(nomFichier=Chemins.GetStaticPath("DatabasesPrenoms.dat"), suffixe=None)
     index = 0
     for ligne in txt :
         ID, prenom, genre = ligne.split(";")
-        listeDonnees = [("prenom", prenom.decode("iso-8859-15") ), ("genre", genre.decode("iso-8859-15")),]
+        if six.PY2:
+            prenom = prenom.decode("iso-8859-15")
+            genre = genre.decode("iso-8859-15")
+        listeDonnees = [("prenom", prenom), ("genre", genre),]
         IDprenom = db.ReqInsert("prenoms", listeDonnees)
         index += 1
     db.Close()
 
 
+def CreationBaseAnnonces():
+    """ Création de la base de données sqlite pour les Annonces """
+    DB_DATA_ANNONCES = {
+            "annonces_aleatoires":[             ("IDannonce", "INTEGER PRIMARY KEY AUTOINCREMENT", _(u"ID Annonce")),
+                                                            ("image", "VARCHAR(200)", _(u"Nom de l'image")),
+                                                            ("titre", "VARCHAR(300)", _(u"Titre")),
+                                                            ("texte_html", "VARCHAR(500)", _(u"Texte HTML")),
+                                                            ("texte_xml", "VARCHAR(500)", _(u"texte XML")),
+                                                            ],
 
-# Création des tables tests pour le module RECRUTEMENT
-if __name__ == "__main__":
-                    
-    # Création d'une table données
-    db = DB(suffixe="DATA")
-    listeTables = ("questionnaire_questions", "questionnaire_categories", "questionnaire_choix", "questionnaire_reponses")
-    for nomTable in listeTables :
-        db.CreationTable(nomTable, Tables.DB_DATA)
+            "annonces_dates":[                   ("IDannonce", "INTEGER PRIMARY KEY AUTOINCREMENT", _(u"ID Annonce")),
+                                                            ("date_debut", "DATE", _(u"Date de début")),
+                                                            ("date_fin", "DATE", _(u"Date de fin")),
+                                                            ("image", "VARCHAR(200)", _(u"Nom de l'image")),
+                                                            ("titre", "VARCHAR(300)", _(u"Titre")),
+                                                            ("texte_html", "VARCHAR(500)", _(u"Texte HTML")),
+                                                            ("texte_xml", "VARCHAR(500)", _(u"texte XML")),
+                                                            ],
+
+            "annonces_periodes":[              ("IDannonce", "INTEGER PRIMARY KEY AUTOINCREMENT", _(u"ID Annonce")),
+                                                            ("jour_debut", "INTEGER", _(u"Jour début")),
+                                                            ("mois_debut", "INTEGER", _(u"Mois début")),
+                                                            ("jour_fin", "INTEGER", _(u"Jour fin")),
+                                                            ("mois_fin", "INTEGER", _(u"Mois fin")),
+                                                            ("image", "VARCHAR(200)", _(u"Nom de l'image")),
+                                                            ("titre", "VARCHAR(300)", _(u"Titre")),
+                                                            ("texte_html", "VARCHAR(500)", _(u"Texte HTML")),
+                                                            ("texte_xml", "VARCHAR(500)", _(u"texte XML")),
+                                                            ],
+
+        }
+    db = DB(nomFichier=Chemins.GetStaticPath("Databases/Annonces.dat"), suffixe=None, modeCreation=True)
+    db.CreationTable("annonces_aleatoires", DB_DATA_ANNONCES)
+    db.CreationTable("annonces_dates", DB_DATA_ANNONCES)
+    db.CreationTable("annonces_periodes", DB_DATA_ANNONCES)
     db.Close()
-    print("creation tables ok.")         
-           
-## ----------------------------------------------------------------------
+    
+
+def AfficheConnexionOuvertes():
+    """ Affiche les connexions non fermées """
+    if len(DICT_CONNEXIONS) > 0 :
+        print("--------- Attention, il reste %d connexions encore ouvertes : ---------" % len(DICT_CONNEXIONS))
+        for IDconnexion, requetes in DICT_CONNEXIONS.items() :
+            print(">> IDconnexion = %d (%d requetes) :" % (IDconnexion, len(requetes)))
+            for requete in requetes :
+                print(requete)
+
+
+def DecodeMdpReseau(mdp=None):
+    if mdp not in (None, "") and mdp.startswith("#64#"):
+        try:
+            mdp = base64.b64decode(mdp[4:])
+            if six.PY3:
+                mdp = mdp.decode('utf-8')
+        except:
+            pass
+    return mdp
+
+def EncodeMdpReseau(mdp=None):
+    mdp = u"#64#%s" % base64.b64encode(mdp.encode()).decode('utf-8')
+    return mdp
+
+def EncodeNomFichierReseau(nom_fichier=None):
+    if "[RESEAU]" in nom_fichier and "#64#" not in nom_fichier:
+        donnees = nom_fichier.split(";")
+        mdp = donnees[3].split("[RESEAU]")[0]
+        nouveau_mdp = EncodeMdpReseau(mdp)
+        nom_fichier = nom_fichier.replace(mdp, nouveau_mdp)
+    return nom_fichier
+
+
+
+if __name__ == "__main__":
+                
+    # Création d'une table données
+    # db = DB(suffixe="DATA")
+    # listeTables = ("menus_legendes",)
+    # for nomTable in listeTables :
+    #     db.CreationTable(nomTable, Tables.DB_DATA)
+    # db.Close()
+    # print "creation tables ok."
+
+    ## ----------------------------------------------------------------------
 
 ##    # Création de toutes les tables
-##    db = DB(suffixe="DATA", modeCreation=True)
-##    import Tables
-##    dicoDB = Tables.DB_DATA
-##    db.CreationTables(dicoDB)
-##    db.Close()
-##    print "creation des tables DATA ok."
-##    db = DB(suffixe="PHOTOS", modeCreation=True)
-##    import Tables
-##    dicoDB = Tables.DB_PHOTOS
-##    db.CreationTables(dicoDB)
-##    db.Close()
-##    print "creation des tables PHOTOS ok."
+    # db = DB(suffixe="DATA", modeCreation=True)
+    # import Tables
+    # dicoDB = Tables.DB_DATA
+    # db.CreationTables(dicoDB)
+    # db.Close()
+    # print "creation des tables DATA ok."
+    # db = DB(suffixe="PHOTOS", modeCreation=True)
+    # import Tables
+    # dicoDB = Tables.DB_PHOTOS
+    # db.CreationTables(dicoDB)
+    # db.Close()
+    # print "creation des tables PHOTOS ok."
     
 ##    db = DB(nomFichier="Prenoms.dat", suffixe=None)
 ##    for IDprenom in range(1, 12555):
@@ -1036,7 +1270,43 @@ if __name__ == "__main__":
 ##            db.ReqMAJ("prenoms", listeDonnees, "IDprenom", IDprenom)
 ##    db.Close()
         
+    # # Ajouter un champ
+    # db = DB(suffixe="DATA")
+    # db.AjoutChamp("consommations", "badgeage_fin", "DATETIME")
+    # db.Close()
+
+    # # Exportation d'une table dans la base DEFAUT
+    # db = DB(suffixe="DATA")
+    # db.Exportation_vers_base_defaut(nomTable="portail_elements")
+    # db.Close()
     
-##    db = DB() 
-##    db.AjoutChamp("tarifs", "groupes", "VARCHAR(300)")
-##    db.Close()
+    # Réparation d'une table
+##    db = DB(suffixe="DATA")
+##    db.ReparationTable("tarifs_lignes")
+##    db.Close() 
+    
+    # Test Conversion d'un champ
+##    db = DB(suffixe="DATA")
+##    db.ConversionTypeChamp(nomTable="factures", nomChamp="numero", typeChamp="VARCHAR(100)")
+##    db.Close() 
+    
+    # Création de tous les index
+##    db = DB(suffixe="DATA")
+##    db.CreationTousIndex() 
+##    db.Close() 
+##    db = DB(suffixe="PHOTOS")
+##    db.CreationTousIndex() 
+##    db.Close() 
+    
+    # Test d'une connexion MySQL
+##    hote = ""
+##    utilisateur = ""
+##    motdepasse = ""
+##    DB = DB(nomFichier=u"3306;%s;%s;%s[RESEAU]" % (hote, utilisateur, motdepasse))
+##    if DB.echec == 1 :
+##        print "Echec = ", DB.echec
+##    else :
+##        print "connexion ok"
+##    DB.Close()
+
+    pass

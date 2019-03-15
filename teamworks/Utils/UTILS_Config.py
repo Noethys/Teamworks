@@ -49,7 +49,12 @@ def GenerationFichierConfig():
 
     # Crée les nouvelles données
     if nouveau_fichier == True :
-        dictDonnees = {"nomFichier": "", "derniersFichiers": [], "taille_fenetre": (0, 0)}
+        dictDonnees = {
+            "nomFichier": "",
+            "derniersFichiers": [],
+            "taille_fenetre": (0, 0),
+            "interface_mysql": "mysql.connector",
+        }
 
     # Création d'un nouveau fichier json
     cfg = FichierConfig()
