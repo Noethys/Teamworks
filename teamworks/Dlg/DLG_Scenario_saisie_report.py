@@ -349,6 +349,7 @@ class MyDialog(wx.Dialog):
         req = "SELECT IDcategorie FROM presences WHERE (IDpersonne=%d AND '%s'<=date AND date<='%s') GROUP BY IDcategorie ORDER BY IDcategorie;" % (IDpersonne, date_debut, date_fin)
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         if len(listeDonnees) == 0 : return []
         listeCategoriesUtilisees = []
         for IDcategorie, in listeDonnees :

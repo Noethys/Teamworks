@@ -306,7 +306,7 @@ class MyFrame(wx.Frame):
     def FileSaveAs(self, cheminFichier=None):
         if cheminFichier == None :
             wildcard, types = rt.RichTextBuffer.GetExtWildcard(save=True)
-            dlg = wx.FileDialog(self, _(u"Sauvegardez le fichier"), wildcard=wildcard, style=wx.SAVE)
+            dlg = wx.FileDialog(self, _(u"Sauvegardez le fichier"), wildcard=wildcard, style=wx.FD_SAVE)
             dlg.SetFilterIndex(3)
             if dlg.ShowModal() == wx.ID_OK:
                 cheminFichier = dlg.GetPath()
@@ -664,7 +664,7 @@ class MyFrame(wx.Frame):
 ##
 ##        dlg = wx.FileDialog(self, "Choose a filename",
 ##                            wildcard=wildcard,
-##                            style=wx.SAVE)
+##                            style=wx.FD_SAVE)
 ##        if dlg.ShowModal() == wx.ID_OK:
 ##            path = dlg.GetPath()
 ##            if path:
