@@ -79,7 +79,7 @@ class PanelGraph(wx.Panel):
 
         dlg = wx.FileDialog(self, message=_(u"Enregistrer le graphe sous..."),
                             defaultDir = save_destination, defaultFile="graphe.png",
-                            wildcard=file_choices, style=wx.SAVE)
+                            wildcard=file_choices, style=wx.FD_SAVE)
 
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -1272,66 +1272,8 @@ class Dialog(wx.Dialog):
         
     def ExportExcel(self):
         """ Export de la liste au format Excel """
-        
-        # Demande à l'utilisateur le nom de fichier et le répertoire de destination
-        nomFichier = "ExportExcel.xls"
-        wildcard = "Fichier Excel (*.xls)|*.xls|" \
-                        "All files (*.*)|*.*"
-        sp = wx.StandardPaths.Get()
-        cheminDefaut = sp.GetDocumentsDir()
-        dlg = wx.FileDialog(
-            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
-            defaultFile = nomFichier, 
-            wildcard = wildcard, 
-            style = wx.SAVE
-            )
-        dlg.SetFilterIndex(2)
-        if dlg.ShowModal() == wx.ID_OK:
-            cheminFichier = dlg.GetPath()
-            dlg.Destroy()
-        else:
-            dlg.Destroy()
-            return
-        
-        # Le fichier de destination existe déjà :
-        if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
-            if dlg.ShowModal() == wx.ID_NO :
-                return False
-                dlg.Destroy()
-            else:
-                dlg.Destroy()
-                
-        # Export
-        import pyExcelerator
-        # Création d'un classeur
-        wb = pyExcelerator.Workbook()
-        # Création d'une feuille
-        ws1 = wb.add_sheet("Statistiques")
-        
-        # Remplissage de la feuille
-        tableau = self.ctrl_tableau
-        nbreColonnes = tableau.GetNumberCols()
-        nbreLignes = tableau.GetNumberRows()
-        
-        for numLigne in range(0, nbreLignes) :
-            for numCol in range(0, nbreColonnes) :
-                valeurCase = tableau.GetCellValue(numLigne, numCol)
-                ws1.write(numLigne, numCol, valeurCase)
-                ws1.col(numCol).width = 7000
-                
-        # Finalisation du fichier xls
-        wb.save(cheminFichier)
-        
-        # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = _(u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
-        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
-        reponse = dlgConfirm.ShowModal()
-        dlgConfirm.Destroy()
-        if reponse == wx.ID_NO:
-            return
-        else:
-            FonctionsPerso.LanceFichierExterne(cheminFichier)
+        from Utils import UTILS_Excel
+        UTILS_Excel.Excel(self, tableau=self.ctrl_tableau)
 
     def MAJdonnees(self):
         if self.mode_affichage == 0 :
@@ -2028,6 +1970,7 @@ class Tableau(gridlib.Grid):
         req = "SELECT IDcategorie, nom_categorie, IDcat_parent, ordre, couleur FROM cat_presences"
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         if len(listeDonnees) == 0 : return {}
         dictCategories = {}
         for IDcategorie, nom_categorie, IDcat_parent, ordre, couleur in listeDonnees :

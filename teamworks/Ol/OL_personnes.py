@@ -782,7 +782,7 @@ class ListView(ObjectListView):
             self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
             defaultFile = nomFichier, 
             wildcard = wildcard, 
-            style = wx.SAVE
+            style = wx.FD_SAVE
             )
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
@@ -848,86 +848,10 @@ class ListView(ObjectListView):
             return
         
         # Récupération des valeurs
-        liste_labelsColonnes, listeValeurs = self.GetValeurs()
-        
-        # Selection des lignes
-        from Dlg import DLG_Selection_liste
-        dlg = DLG_Selection_liste.Dialog(self, liste_labelsColonnes, listeValeurs, type="exportExcel")
-        if dlg.ShowModal() == wx.ID_OK:
-            listeSelections = dlg.GetSelections()
-            dlg.Destroy()
-        else:
-            dlg.Destroy()
-            return False
-        
-        nomFichier = "ExportExcel.xls"
-        # Demande à l'utilisateur le nom de fichier et le répertoire de destination
-        wildcard = "Fichier Excel (*.xls)|*.xls|" \
-                        "All files (*.*)|*.*"
-        sp = wx.StandardPaths.Get()
-        cheminDefaut = sp.GetDocumentsDir()
-        dlg = wx.FileDialog(
-            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
-            defaultFile = nomFichier, 
-            wildcard = wildcard, 
-            style = wx.SAVE
-            )
-        dlg.SetFilterIndex(2)
-        if dlg.ShowModal() == wx.ID_OK:
-            cheminFichier = dlg.GetPath()
-            dlg.Destroy()
-        else:
-            dlg.Destroy()
-            return
-        
-        # Le fichier de destination existe déjà :
-        if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
-            if dlg.ShowModal() == wx.ID_NO :
-                return False
-                dlg.Destroy()
-            else:
-                dlg.Destroy()
-                
-        # Export
-        import pyExcelerator
-        # Création d'un classeur
-        wb = pyExcelerator.Workbook()
-        # Création d'une feuille
-        ws1 = wb.add_sheet("Liste des personnes")
-        # Remplissage de la feuille
+        labels_colonnes, liste_valeurs = self.GetValeurs()
+        from Utils import UTILS_Excel
+        UTILS_Excel.Excel(self, labels_colonnes, liste_valeurs)
 
-        # Création des labels de colonnes
-        x = 0
-        y = 0
-        for labelCol, alignement, largeur, nomChamp in liste_labelsColonnes :
-            ws1.write(x, y, labelCol )
-            ws1.col(y).width = largeur*42
-            y += 1
-        
-        x = 1
-        y = 0
-        for valeurs in listeValeurs :
-            if int(valeurs[0]) in listeSelections :
-                for valeur in valeurs :
-                    ws1.write(x, y, valeur )
-                    y += 1
-                x += 1
-                y = 0
-                
-        # Finalisation du fichier xls
-        wb.save(cheminFichier)
-        
-        # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = _(u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
-        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
-        reponse = dlgConfirm.ShowModal()
-        dlgConfirm.Destroy()
-        if reponse == wx.ID_NO:
-            return
-        else:
-            FonctionsPerso.LanceFichierExterne(cheminFichier)
-            
     def Imprimer(self):
         """ Imprimer la liste au format PDF """
         if self.GetNbrePersonnes() == 0 :

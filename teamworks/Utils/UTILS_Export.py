@@ -214,14 +214,13 @@ def ExportExcel(listview=None, grid=None, titre=_(u"Liste"), listeColonnes=None,
         return
 
     # Définit le nom et le chemin du fichier
-    nomFichier = "ExportExcel_%s.xls" % datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    nomFichier = "ExportExcel_%s.xlsx" % datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
     # Mode Enregistrer
     if mode == "enregistrer" :
 
         # Demande à l'utilisateur le nom de fichier et le répertoire de destination
-        wildcard = "Fichier Excel (*.xls)|*.xls|" \
-                        "All files (*.*)|*.*"
+        wildcard = "Fichiers Excel (*.xlsx)|*.xlsx|Tous les fichiers (*.*)|*.*"
         sp = wx.StandardPaths.Get()
         cheminDefaut = sp.GetDocumentsDir()
         dlg = wx.FileDialog(
@@ -241,11 +240,10 @@ def ExportExcel(listview=None, grid=None, titre=_(u"Liste"), listeColonnes=None,
         # Le fichier de destination existe déjà :
         if os.path.isfile(cheminFichier) == True :
             dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
-            if dlg.ShowModal() == wx.ID_NO :
+            reponse = dlg.ShowModal()
+            dlg.Destroy()
+            if reponse == wx.ID_NO:
                 return False
-                dlg.Destroy()
-            else:
-                dlg.Destroy()
 
     # Mode Envoyer par Email
     if mode == "email" :
@@ -253,32 +251,18 @@ def ExportExcel(listview=None, grid=None, titre=_(u"Liste"), listeColonnes=None,
 
 
     # Export
-    import pyExcelerator
+    import xlsxwriter
+
     # Création d'un classeur
-    wb = pyExcelerator.Workbook()
+    workbook = xlsxwriter.Workbook(cheminFichier)
+
     # Création d'une feuille
-    ws1 = wb.add_sheet(titre)
+    worksheet = workbook.add_worksheet(titre)
+
     # Remplissage de la feuille
-
-    al = pyExcelerator.Alignment()
-    al.horz = pyExcelerator.Alignment.HORZ_LEFT
-    al.vert = pyExcelerator.Alignment.VERT_CENTER
-    
-    ar = pyExcelerator.Alignment()
-    ar.horz = pyExcelerator.Alignment.HORZ_RIGHT
-    ar.vert = pyExcelerator.Alignment.VERT_CENTER
-
-    styleEuros = pyExcelerator.XFStyle()
-    styleEuros.num_format_str = '"$"#,##0.00_);("$"#,##'
-    styleEuros.alignment = ar
-
-    styleDate = pyExcelerator.XFStyle()
-    styleDate.num_format_str = 'DD/MM/YYYY'
-    styleDate.alignment = ar
-
-    styleHeure = pyExcelerator.XFStyle()
-    styleHeure.num_format_str = "[hh]:mm"
-    styleHeure.alignment = ar
+    styleEuros = workbook.add_format({'num_format': u'#,##0.00 ¤'})
+    styleDate = workbook.add_format({'num_format': 'DD/MM/YYYY'})
+    styleHeure = workbook.add_format({'num_format': '[hh]:mm'})
 
     # Création des labels de colonnes
     x = 0
@@ -289,8 +273,8 @@ def ExportExcel(listview=None, grid=None, titre=_(u"Liste"), listeColonnes=None,
                 nomChamp = "Coche"
         except :
             pass
-        ws1.write(x, y, labelCol)
-        ws1.col(y).width = largeur*42
+        worksheet.write(x, y, labelCol)
+        worksheet.set_column(y, y, largeur * 0.2)
         y += 1
 
     # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -342,7 +326,6 @@ def ExportExcel(listview=None, grid=None, titre=_(u"Liste"), listeColonnes=None,
                 if separateur != None :
                     heures, minutes = valeur.split(separateur)
                     valeur = datetime.timedelta(minutes= int(heures)*60 + int(minutes))
-                    # valeur = datetime.time(hour=int(valeur.split(separateur)[0]), minute=int(valeur.split(separateur)[1]))
                     return (valeur, styleHeure)
         except :
             pass
@@ -385,7 +368,6 @@ def ExportExcel(listview=None, grid=None, titre=_(u"Liste"), listeColonnes=None,
                     if len(donnees) == 3 :
                         heures, minutes, secondes = donnees
                     valeur = datetime.timedelta(minutes= int(heures)*60 + int(minutes))
-                    # valeur = datetime.time(hour=int(valeur.split(separateur)[0]), minute=int(valeur.split(separateur)[1]))
                     return (valeur, styleHeure)
         except :
             pass
@@ -415,22 +397,16 @@ def ExportExcel(listview=None, grid=None, titre=_(u"Liste"), listeColonnes=None,
                         
                 # Enregistre la valeur
                 if format != None :
-                    ws1.write(x, y, valeur, format)
+                    worksheet.write(x, y, valeur, format)
                 else:
-                    ws1.write(x, y, valeur)
+                    worksheet.write(x, y, valeur)
 
                 y += 1
             x += 1
             y = 0
             
     # Finalisation du fichier xls
-    try :
-        wb.save(cheminFichier)
-    except :
-        dlg = wx.MessageDialog(None, _(u"Il est impossible d'enregistrer le fichier Excel. Veuillez vérifier que ce fichier n'est pas déjà ouvert en arrière-plan."), "Erreur", wx.OK | wx.ICON_ERROR)
-        dlg.ShowModal()
-        dlg.Destroy()
-        return
+    workbook.close()
 
     # Confirmation de création du fichier et demande d'ouverture directe dans Excel
     if mode == "enregistrer" :

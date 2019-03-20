@@ -601,68 +601,8 @@ class Dialog(wx.Dialog):
     
     def ExportExcel(self):
         """ Export de la liste au format Excel """
-        
-        # Demande à l'utilisateur le nom de fichier et le répertoire de destination
-        nomFichier = "ExportExcel.xls"
-        wildcard = "Fichier Excel (*.xls)|*.xls|" \
-                        "All files (*.*)|*.*"
-        sp = wx.StandardPaths.Get()
-        cheminDefaut = sp.GetDocumentsDir()
-        dlg = wx.FileDialog(
-            self, message = _(u"Veuillez sélectionner le répertoire de destination et le nom du fichier"), defaultDir=cheminDefaut, 
-            defaultFile = nomFichier, 
-            wildcard = wildcard, 
-            style = wx.SAVE
-            )
-        dlg.SetFilterIndex(2)
-        if dlg.ShowModal() == wx.ID_OK:
-            cheminFichier = dlg.GetPath()
-            dlg.Destroy()
-        else:
-            dlg.Destroy()
-            return
-        
-        # Le fichier de destination existe déjà :
-        if os.path.isfile(cheminFichier) == True :
-            dlg = wx.MessageDialog(None, _(u"Un fichier portant ce nom existe déjà. \n\nVoulez-vous le remplacer ?"), "Attention !", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_EXCLAMATION)
-            if dlg.ShowModal() == wx.ID_NO :
-                return False
-                dlg.Destroy()
-            else:
-                dlg.Destroy()
-                
-        # Export
-        import pyExcelerator
-        # Création d'un classeur
-        wb = pyExcelerator.Workbook()
-        # Création d'une feuille
-        nomScenario = self.ctrl_nom.GetValue()
-        if nomScenario == None or nomScenario == "" : nomScenario = _(u"Scénario")
-        ws1 = wb.add_sheet(nomScenario)
-        
-        # Remplissage de la feuille
-        tableau = self.ctrl_tableau
-        nbreColonnes = tableau.GetNumberCols()
-        nbreLignes = tableau.GetNumberRows()
-        
-        for numLigne in range(0, nbreLignes) :
-            for numCol in range(0, nbreColonnes) :
-                valeurCase = tableau.GetCellValue(numLigne, numCol)
-                ws1.write(numLigne, numCol, valeurCase)
-                ws1.col(numCol).width = 7000
-                
-        # Finalisation du fichier xls
-        wb.save(cheminFichier)
-        
-        # Confirmation de création du fichier et demande d'ouverture directe dans Excel
-        txtMessage = _(u"Le fichier Excel a été créé avec succès. Souhaitez-vous l'ouvrir dès maintenant ?")
-        dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
-        reponse = dlgConfirm.ShowModal()
-        dlgConfirm.Destroy()
-        if reponse == wx.ID_NO:
-            return
-        else:
-            FonctionsPerso.LanceFichierExterne(cheminFichier)
+        from Utils import UTILS_Excel
+        UTILS_Excel.Excel(self, tableau=self.ctrl_tableau)
 
 
 
@@ -1156,6 +1096,7 @@ class Tableau(gridlib.Grid):
         req = "SELECT IDcategorie, nom_categorie, IDcat_parent, ordre, couleur FROM cat_presences"
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         if len(listeDonnees) == 0 : return {}
         dictCategories = {}
         for IDcategorie, nom_categorie, IDcat_parent, ordre, couleur in listeDonnees :
@@ -1431,6 +1372,7 @@ class Tableau(gridlib.Grid):
         if date_debut_periode == None and date_fin_periode == None : req = "SELECT IDpresence, date, heure_debut, heure_fin FROM presences WHERE (IDpersonne=%d AND IDcategorie=%d) ORDER BY date;" % (IDpersonne, IDcategorie)
         DB.ExecuterReq(req)
         listePresences = DB.ResultatReq()
+        DB.Close()
         if len(listePresences) == 0 : return {"total_heures_realisees" : "+00:00"}, []
 
         dictHeuresRealisees = {}
@@ -1473,6 +1415,7 @@ class Tableau(gridlib.Grid):
         req = "SELECT IDcategorie FROM presences WHERE (IDpersonne=%d AND '%s'<=date AND date<='%s') GROUP BY IDcategorie ORDER BY IDcategorie;" % (IDpersonne, date_debut, date_fin)
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         if len(listeDonnees) == 0 : return []
         listeCategoriesUtilisees = []
         for IDcategorie, in listeDonnees :
@@ -1548,6 +1491,7 @@ class GetDictColonnes():
         req = "SELECT IDcategorie FROM presences WHERE (IDpersonne=%d AND '%s'<=date AND date<='%s') GROUP BY IDcategorie ORDER BY IDcategorie;" % (self.IDpersonne, self.date_debut, self.date_fin)
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.CLose()
         if len(listeDonnees) == 0 : return []
         listeCategoriesUtilisees = []
         for IDcategorie, in listeDonnees :
@@ -1747,6 +1691,7 @@ class GetDictColonnes():
         if date_debut_periode == None and date_fin_periode == None : req = "SELECT IDpresence, date, heure_debut, heure_fin FROM presences WHERE (IDpersonne=%d AND IDcategorie=%d) ORDER BY date;" % (IDpersonne, IDcategorie)
         DB.ExecuterReq(req)
         listePresences = DB.ResultatReq()
+        DB.Close()
         if len(listePresences) == 0 : return {"total_heures_realisees" : "+00:00"}, []
 
         dictHeuresRealisees = {}
