@@ -22,9 +22,6 @@ import wx.lib.agw.hyperlink as Hyperlink
 
 from ObjectListView import FastObjectListView, ColumnDefn, Filter
 
-import urllib2
-import re
-
 
 
 class Track(object):

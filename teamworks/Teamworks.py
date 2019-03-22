@@ -43,6 +43,8 @@ import random
 import sys
 import platform
 
+from six.moves.urllib.request import urlopen
+
 if six.PY2:
     import shelve
     import dbhash
@@ -55,9 +57,10 @@ import wx.lib.agw.pybusyinfo as PBI
 
 # Constantes
 VERSION_APPLICATION = FonctionsPerso.GetVersionTeamworks()
-MAIL_AUTEUR = "teamworks" + "@clsh-lannilis.com"
-ADRESSE_FORUM = "http://teamworks.forumactif.com"
-            
+MAIL_AUTEUR = ""
+ADRESSE_FORUM = "https://www.teamworks.ovh"
+ID_DERNIER_FICHIER = 700
+
             
             
 class Toolbook(wx.Toolbook):
@@ -194,10 +197,12 @@ class MyFrame(wx.Frame):
         # Affiche le titre du fichier en haut de la frame
         self.SetTitleFrame(nomFichier="")
         
-        # Construit la barre de menus
-        self.Build_MenuBar()
+        # Création de la barre des menus
+        self.CreationBarreMenus()
+
         # Construit la barre de status
         self.Build_Statusbar()
+
         # Construit le toolbool
         self.toolBook = Toolbook(self)
 
@@ -207,8 +212,7 @@ class MyFrame(wx.Frame):
         self.__do_layout()
         
         # Désactive les commandes
-        self.menubar.EnableTop(1, False)
-        self.menubar.EnableTop(2, False)
+        self.ActiveBarreMenus(False)
         self.toolBook.ActiveToolBook(False)
 
     def __do_layout(self):
@@ -278,234 +282,194 @@ class MyFrame(wx.Frame):
             nomFichier = " - [" + nomFichier + "]"
         titreFrame = "Teamworks" + " v" + VERSION_APPLICATION + nomFichier
         self.SetTitle(titreFrame)
-    
-    def Build_MenuBar(self):
+
+    def CreationBarreMenus(self):
         """ Construit la barre de menus """
-        menubar = wx.MenuBar()
-        
-        # Menu Fichier
-        menu1 = UTILS_Adaptations.Menu()
-        
-        item = wx.MenuItem(menu1, 100, _(u"Assistant Démarrage"), _(u"Ouvrir l'assistant démarrage"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Assistant.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
-        
-        menu1.AppendSeparator()
-        
-        item = wx.MenuItem(menu1, 101, _(u"Créer un nouveau fichier\tCtrl+N"), _(u"Créer un nouveau fichier"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
-        item = wx.MenuItem(menu1, 102, _(u"Ouvrir un fichier\tCtrl+O"), _(u"Ouvrir un fichier existant"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Modifier.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
-        item = wx.MenuItem(menu1, 103, _(u"Fermer le fichier\tCtrl+F"), _(u"Fermer le fichier ouvert"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Supprimer.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
-        
-        menu1.AppendSeparator()
-        
-        item = wx.MenuItem(menu1, 104, _(u"Créer une sauvegarde\tCtrl+S"), _(u"Créer une sauvegarde globale des données"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Sauvegarder.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
-        item = wx.MenuItem(menu1, 105, _(u"Restaurer une sauvegarde\tCtrl+R"), _(u"Restaurer une sauvegarde"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Restaurer.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
+        self.listeItemsMenu = [
 
-        menu1.AppendSeparator()
+            # Fichier
+            {"code": "menu_fichier", "label": _(u"Fichier"), "items": [
+                {"code": "assistant_demarrage", "label": _(u"Assistant Démarrage"), "infobulle": _(u"Ouvrir l'assistant démarrage"), "image": "Images/16x16/Assistant.png", "action": self.On_fichier_assistant},
+                "-",
+                {"code": "nouveau_fichier", "label": _(u"Créer un nouveau fichier"), "infobulle": _(u"Créer un nouveau fichier"), "image": "Images/16x16/Fichier_nouveau.png", "action": self.On_fichier_nouveau},
+                {"code": "ouvrir_fichier", "label": _(u"Ouvrir un fichier"), "infobulle": _(u"Ouvrir un fichier existant"), "image": "Images/16x16/Fichier_ouvrir.png", "action": self.On_fichier_ouvrir},
+                {"code": "fermer_fichier", "label": _(u"Fermer le fichier"), "infobulle": _(u"Fermer le fichier ouvert"), "image": "Images/16x16/Fichier_fermer.png", "action": self.On_fichier_fermer, "actif": False},
+                "-",
+                {"code": "creer_sauvegarde", "label": _(u"Créer une sauvegarde"), "infobulle": _(u"Créer une sauvegarde"), "image": "Images/16x16/Sauvegarder.png", "action": self.On_fichier_sauvegarder},
+                {"code": "restaurer_sauvegarde", "label": _(u"Restaurer une sauvegarde"), "infobulle": _(u"Restaurer une sauvegarde"), "image": "Images/16x16/Restaurer.png", "action": self.On_fichier_restaurer},
+                "-",
+                {"code": "convertir_fichier_reseau", "label": _(u"Convertir en fichier réseau"), "infobulle": _(u"Convertir le fichier en mode réseau"), "image": "Images/16x16/Conversion_reseau.png", "action": self.On_fichier_convertir_reseau, "actif": False},
+                {"code": "convertir_fichier_local", "label": _(u"Convertir en fichier local"), "infobulle": _(u"Convertir le fichier en mode local"), "image": "Images/16x16/Conversion_local.png", "action": self.On_fichier_convertir_local, "actif": False},
+                "-",
+                {"code": "quitter", "label": _(u"Quitter"), "infobulle": _(u"Quitter Noethys"), "image": "Images/16x16/Quitter.png", "action": self.On_fichier_quitter},
+            ],
+             },
 
-        item = wx.MenuItem(menu1, 107, _(u"Convertir en fichier réseau"), _(u"Convertir le fichier ouvert en fichier réseau"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Conversion_reseau.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
-        item.Enable(False)
-        item = wx.MenuItem(menu1, 108, _(u"Convertir en fichier local"), _(u"Convertir le fichier ouvert en fichier local"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Conversion_local.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
-        item.Enable(False)
-        
-        menu1.AppendSeparator()
-        
-        item = wx.MenuItem(menu1, 106, _(u"Quitter\tCtrl+Q"), _(u"Quitter l'application"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Quitter.png"), wx.BITMAP_TYPE_PNG))
-        menu1.AppendItem(item)
-        
-        menu1.AppendSeparator()
-        
+            # Paramétrage
+            {"code": "menu_parametrage", "label": _(u"Paramétrage"), "items": [
+                #{"code": "preferences", "label": _(u"Préférences"), "infobulle": _(u"Préférences"), "image": "Images/16x16/Mecanisme.png", "action": self.On_param_preferences},
+                {"code": "enregistrement", "label": _(u"Enregistrement"), "infobulle": _(u"Enregistrement"), "image": "Images/16x16/Cle.png", "action": self.On_param_enregistrement},
+                "-",
+                {"code": "gadgets", "label": _(u"Gestion des Gadgets de la page d'accueil"), "infobulle": _(u"Gestion des Gadgets de la page d'accueil"), "image": "Images/16x16/Calendrier_ajout.png", "action": self.On_param_gadgets},
+                ],
+                 },
+
+            # Outils
+            {"code": "menu_outils", "label": _(u"Outils"), "items": [
+                {"code": "photos", "label": _(u"Imprimer des photos individuelles"), "infobulle": _(u"Imprimer des photos individuelles"), "image": "Images/16x16/Importer_photo.png", "action": self.On_outils_photos},
+                {"code": "frais", "label": _(u"Gestion des frais de déplacements"), "infobulle": _(u"Gestion des frais de déplacements"), "image": "Images/16x16/Calculatrice.png", "action": self.On_outils_frais},
+                "-",
+                {"code": "registre", "label": _(u"Registre unique du personnel"), "infobulle": _(u"Registre unique du personnel"), "image": "Images/16x16/Contrat.png", "action": self.On_outils_registre},
+                "-",
+                {"code": "outlook", "label": _(u"Exporter les individus vers MS Outlook"), "infobulle": _(u"Exporter les individus vers MS Outlook"), "image": "Images/16x16/Outlook.png", "action": self.On_outils_outlook},
+                {"code": "mail", "label": _(u"Envoyer un mail groupé avec le client de messagerie"), "infobulle": _(u"Envoyer un mail groupé avec le client de messagerie"), "image": "Images/16x16/Mail.png", "action": self.On_outils_mail},
+                {"code": "publipostage", "label": _(u"Créer des courriers ou des emails par publipostage"), "infobulle": _(u"Créer des courriers ou des emails par publipostage"), "image": "Images/16x16/Mail.png", "action": self.On_outils_publipostage},
+                "-",
+                {"code": "teamword", "label": _(u"Lancer Teamword, l'éditeur de texte"), "infobulle": _(u"Lancer Teamword, l'éditeur de texte"), "image": "Images/16x16/Document.png", "action": self.On_outils_teamword},
+                "-",
+                {"code": "updater", "label": _(u"Rechercher une mise à jour du logiciel"), "infobulle": _(u"Rechercher une mise à jour du logiciel"), "image": "Images/16x16/Updater.png", "action": self.On_outils_updater},
+            ],
+                 },
+
+            # Aide
+            {"code": "menu_aide", "label": _(u"Aide"), "items": [
+                {"code": "aide", "label": _(u"Consulter l'aide"), "infobulle": _(u"Consulter l'aide de Teamworks"), "image": "Images/16x16/Aide.png", "action": self.On_aide_aide},
+                {"code": "acheter_licence", "label": _(u"Acheter une licence pour accéder au manuel de référence"), "infobulle": _(u"Acheter une licence"), "image": "Images/16x16/Acheter_licence.png", "action": self.On_propos_soutenir},
+                "-",
+                {"code": "forum", "label": _(u"Accéder au forum d'entraide"), "infobulle": _(u"Accéder au forum d'entraide"), "image": "Images/16x16/Dialogue.png", "action": self.On_aide_forum},
+                {"code": "tutoriels_videos", "label": _(u"Visionner des tutoriels vidéos"), "infobulle": _(u"Visionner des tutoriels vidéos"), "image": "Images/16x16/Film.png", "action": self.On_aide_videos},
+                #"-",
+                #{"code": "email_auteur", "label": _(u"Envoyer un Email à l'auteur"), "infobulle": _(u"Envoyer un Email à l'auteur"), "image": "Images/16x16/Mail.png", "action": self.On_aide_auteur},
+            ],
+             },
+
+            # A propos
+            {"code": "menu_a_propos", "label": _(u"A propos"), "items": [
+                {"code": "notes_versions", "label": _(u"Notes de versions"), "infobulle": _(u"Notes de versions"), "image": "Images/16x16/Versions.png", "action": self.On_propos_versions},
+                {"code": "licence_logiciel", "label": _(u"Licence"), "infobulle": _(u"Licence du logiciel"), "image": "Images/16x16/Licence.png", "action": self.On_propos_licence},
+                "-",
+                {"code": "soutenir", "label": _(u"Soutenir Teamworks"), "infobulle": _(u"Soutenir Teamworks"), "image": "Images/16x16/Soutenir.png", "action": self.On_propos_soutenir},
+                "-",
+                {"code": "a_propos", "label": _(u"A propos"), "infobulle": _(u"A propos"), "image": "Images/16x16/Information.png", "action": self.On_propos_propos},
+            ],
+             },
+
+        ]
+
+        # Création du menu
+        def CreationItem(menuParent, item):
+            id = wx.Window.NewControlId()
+            if "genre" in item:
+                genre = item["genre"]
+            else:
+                genre = wx.ITEM_NORMAL
+            itemMenu = wx.MenuItem(menuParent, id, item["label"], item["infobulle"], genre)
+            if "image" in item:
+                itemMenu.SetBitmap(wx.Bitmap(Chemins.GetStaticPath(item["image"]), wx.BITMAP_TYPE_PNG))
+            try:
+                menuParent.Append(itemMenu)
+            except:
+                if 'phoenix' in wx.PlatformInfo:
+                    menuParent.Append(itemMenu)
+                else:
+                    menuParent.AppendItem(itemMenu)
+            if "actif" in item:
+                itemMenu.Enable(item["actif"])
+            self.Bind(wx.EVT_MENU, item["action"], id=id)
+            self.dictInfosMenu[item["code"]] = {"id": id, "ctrl": itemMenu}
+
+        def CreationMenu(menuParent, item, sousmenu=False):
+            menu = UTILS_Adaptations.Menu()
+            id = wx.Window.NewControlId()
+            for sousitem in item["items"]:
+                if sousitem == "-":
+                    menu.AppendSeparator()
+                elif "items" in sousitem:
+                    CreationMenu(menu, sousitem, sousmenu=True)
+                else:
+                    CreationItem(menu, sousitem)
+            if sousmenu == True:
+                menuParent.AppendMenu(id, item["label"], menu)
+            else:
+                menuParent.Append(menu, item["label"])
+            self.dictInfosMenu[item["code"]] = {"id": id, "ctrl": menu}
+
+        self.menu = wx.MenuBar()
+        self.dictInfosMenu = {}
+        for item in self.listeItemsMenu:
+            CreationMenu(self.menu, item)
+
+        # -------------------------- AJOUT DES DERNIERS FICHIERS OUVERTS -----------------------------
+        menu_fichier = self.dictInfosMenu["menu_fichier"]["ctrl"]
+
         # Intégration des derniers fichiers ouverts :
-        listeDerniersFichiersTmp = self.userConfig["derniersFichiers"]
-        
+        if "derniersFichiers" in self.userConfig:
+            listeDerniersFichiersTmp = self.userConfig["derniersFichiers"]
+        else:
+            listeDerniersFichiersTmp = []
+        if len(listeDerniersFichiersTmp) > 0:
+            menu_fichier.AppendSeparator()
+
         # Vérification de la liste
         listeDerniersFichiers = []
-        for nomFichier in listeDerniersFichiersTmp :
-            
-            if "[RESEAU]" in nomFichier :
+        for nomFichier in listeDerniersFichiersTmp:
+            if "[RESEAU]" in nomFichier:
                 # Version RESEAU
                 listeDerniersFichiers.append(nomFichier)
             else:
                 # VERSION LOCAL
-                fichier = UTILS_Fichiers.GetRepData(nomFichier + "_TDATA.dat")
+                fichier = UTILS_Fichiers.GetRepData(u"%s_TDATA.dat" % nomFichier)
                 test = os.path.isfile(fichier)
-                if test == True : 
+                if test == True:
                     listeDerniersFichiers.append(nomFichier)
         self.userConfig["derniersFichiers"] = listeDerniersFichiers
-        
-        if len(listeDerniersFichiers) > 0 : 
-            index = 0
-            for nomFichier in listeDerniersFichiers :
-                if "[RESEAU]" in nomFichier :
-                    nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-                item = wx.MenuItem(menu1, 150 + index, str(index+1) + ". " + nomFichier, _(u"Ouvrir le fichier : ") + nomFichier)
-                menu1.AppendItem(item)
-                index += 1
-            self.Bind(wx.EVT_MENU_RANGE, self.MenuDerniersFichiers, id=150, id2=150 + index)
 
-        menubar.Append(menu1, "Fichier")
-        
-        self.Bind(wx.EVT_MENU, self.MenuAssistantDemarrage, id=100)
-        self.Bind(wx.EVT_MENU, self.MenuNouveau, id=101)
-        self.Bind(wx.EVT_MENU, self.MenuOuvrir, id=102)
-        self.Bind(wx.EVT_MENU, self.MenuFermer, id=103)
-        self.Bind(wx.EVT_MENU, self.MenuSauvegarder, id=104)
-        self.Bind(wx.EVT_MENU, self.MenuRestaurer, id=105)
-        self.Bind(wx.EVT_MENU, self.MenuQuitter, id=106)
-        self.Bind(wx.EVT_MENU, self.On_fichier_Convertir_reseau, id=107)
-        self.Bind(wx.EVT_MENU, self.On_fichier_Convertir_local, id=108)
-        
-        # Menu Affichage
-        menu2 = UTILS_Adaptations.Menu()
-        
-        item = wx.MenuItem(menu2, 201, _(u"Gestion des Gadgets de la page d'accueil"), _(u"Gestion des Gadgets de la page d'accueil"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calendrier_ajout.png"), wx.BITMAP_TYPE_PNG))
-        menu2.AppendItem(item)
-        
-        menubar.Append(menu2, "Affichage")
-        
-        self.Bind(wx.EVT_MENU, self.MenuGadgets, id=201)
-        
-        # Menu Outils
-        menu3 = UTILS_Adaptations.Menu()
-        
-        item = wx.MenuItem(menu3, 305, _(u"Imprimer des photos de personnes"), _(u"Imprimer des photos de personnes"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Personnes.png"), wx.BITMAP_TYPE_PNG))
-        menu3.AppendItem(item)
-        item = wx.MenuItem(menu3, 304, _(u"Gestion des frais de déplacements"), _(u"Gestion des frais de déplacements"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calculatrice.png"), wx.BITMAP_TYPE_PNG))
-        menu3.AppendItem(item)
-        menu3.AppendSeparator()
-        item = wx.MenuItem(menu3, 320, _(u"Registre unique du personnel"), _(u"Registre unique du personnel"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Contrat.png"), wx.BITMAP_TYPE_PNG))
-        menu3.AppendItem(item)
-        menu3.AppendSeparator()
-        item = wx.MenuItem(menu3, 301, _(u"Exporter les personnes dans MS Outlook"), _(u"Exporter les personnes dans MS Outlook"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Outlook.png"), wx.BITMAP_TYPE_PNG))
-        menu3.AppendItem(item)
-        if "linux" in sys.platform :
-            item.Enable(False)
-        menu3.AppendSeparator()
-        item = wx.MenuItem(menu3, 303, _(u"Envoyer un mail groupé avec votre client de messagerie"), _(u"Envoyer un mail groupé à un panel de personnes"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG))
-        menu3.AppendItem(item)
-        item = wx.MenuItem(menu3, 306, _(u"Créer des courriers ou des emails par publipostage"), _(u"Créer des courriers ou des emails par publipostage"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG))
-        menu3.AppendItem(item)
-        menu3.AppendSeparator()
-        item = wx.MenuItem(menu3, 307, _(u"Lancer Teamword, l'éditeur de texte"), _(u"Lancer Teamword, l'éditeur de texte"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
-        menu3.AppendItem(item)
-                
-        menubar.Append(menu3, "Outils")
-        
-        self.Bind(wx.EVT_MENU, self.MenuExportOutlook, id=301)
-        self.Bind(wx.EVT_MENU, self.MenuEnvoiMailGroupe, id=303)
-        self.Bind(wx.EVT_MENU, self.MenuGestionFrais, id=304)
-        self.Bind(wx.EVT_MENU, self.MenuListeContrats, id=320)
-        self.Bind(wx.EVT_MENU, self.MenuImprimerPhotos, id=305)
-        self.Bind(wx.EVT_MENU, self.MenuPublipostage, id=306)
-        self.Bind(wx.EVT_MENU, self.MenuTeamword, id=307)
-        
-        # Menu Internet
-        menu6 = UTILS_Adaptations.Menu()
-        
-        item = wx.MenuItem(menu6, 601, _(u"Rechercher des mises à jour du logiciel"), _(u"Rechercher des mises à jour du logiciel"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Updater.png"), wx.BITMAP_TYPE_PNG))
-        menu6.AppendItem(item)
-        
-        menubar.Append(menu6, _(u"Internet"))
-        
-        self.Bind(wx.EVT_MENU, self.MenuUpdater, id=601)
-        
-        # Menu Aide
-        menu4 = UTILS_Adaptations.Menu()
-        
-        item = wx.MenuItem(menu4, 401, _(u"Consulter l'aide intégrée\tCtrl+A"), _(u"Consulter l'aide de TeamWorks"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_PNG))
-        menu4.AppendItem(item)
-        
-        item = wx.MenuItem(menu4, 404, _(u"Télécharger le guide de l'utilisateur (248 pages - PDF)"), _(u"Télécharger le guide de l'utilisateur (248 pages - PDF)"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Guide.png"), wx.BITMAP_TYPE_PNG))
-        menu4.AppendItem(item)
-        
-        item = wx.MenuItem(menu4, 403, _(u"Accéder au forum TeamWorks"), _(u"Accéder au forum TeamWorks"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Planete.png"), wx.BITMAP_TYPE_PNG))
-        menu4.AppendItem(item)
-        
-        menu4.AppendSeparator()
-        
-        item = wx.MenuItem(menu4, 402, _(u"Envoyer un mail à l'auteur"), _(u"Envoyer un mail à l'auteur de Teamworks"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG))
-        menu4.AppendItem(item)
-        
-        menubar.Append(menu4, "Aide")
-        
-        self.Bind(wx.EVT_MENU, self.MenuAide, id=401)
-        self.Bind(wx.EVT_MENU, self.MenuForum, id=403)
-        self.Bind(wx.EVT_MENU, self.MenuMailAuteur, id=402)
-        self.Bind(wx.EVT_MENU, self.MenuTelechargerGuide, id=404)
-        
-        # Menu A Propos
-        menu7 = UTILS_Adaptations.Menu()
-        
-        item = wx.MenuItem(menu7, 701, _(u"Pourquoi et comment faire un don de soutien ?"), _(u"Pourquoi et comment faire un don de soutien ?"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Smile.png"), wx.BITMAP_TYPE_PNG))
-        menu7.AppendItem(item)
-        
-        self.Bind(wx.EVT_MENU, self.MenuDons, id=701)
-        
-        menubar.Append(menu7, _(u"Soutenir Teamworks"))
-        
-        # Menu A Propos
-        menu5 = UTILS_Adaptations.Menu()
-        
-        item = wx.MenuItem(menu5, 501, _(u"Notes de versions"), _(u"Notes de versions"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
-        menu5.AppendItem(item)
-        item = wx.MenuItem(menu5, 502, _(u"Licence"), _(u"Licence du logiciel"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
-        menu5.AppendItem(item)
-        menu5.AppendSeparator()
-        item = wx.MenuItem(menu5, 503, _(u"A propos"), _(u"A propos"))
-        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Document.png"), wx.BITMAP_TYPE_PNG))
-        menu5.AppendItem(item)
-        
-        self.Bind(wx.EVT_MENU, self.MenuVersions, id=501)
-        self.Bind(wx.EVT_MENU, self.MenuLicence, id=502)
-        self.Bind(wx.EVT_MENU, self.MenuApropos, id=503)
-        
-        menubar.Append(menu5, "A propos")
-        
-        
-        
+        if len(listeDerniersFichiers) > 0:
+            index = 0
+            for nomFichier in listeDerniersFichiers:
+                if "[RESEAU]" in nomFichier:
+                    nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
+                item = wx.MenuItem(menu_fichier, ID_DERNIER_FICHIER + index, u"%d. %s" % (index + 1, nomFichier), _(u"Ouvrir le fichier : '%s'") % nomFichier)
+                try:
+                    menu_fichier.Append(item)
+                except:
+                    if 'phoenix' in wx.PlatformInfo:
+                        menu_fichier.Append(item)
+                    else:
+                        menu_fichier.AppendItem(item)
+                index += 1
+            self.Bind(wx.EVT_MENU_RANGE, self.On_fichier_DerniersFichiers, id=ID_DERNIER_FICHIER, id2=ID_DERNIER_FICHIER + index)
+
         # Finalisation Barre de menu
-        self.SetMenuBar(menubar)
-        self.menubar = menubar #.EnableTop(1, False)
-        
-        
+        self.SetMenuBar(self.menu)
+
+    def RechercherPositionItemMenu(self, codeMenu="", codeItem=""):
+        menu = self.dictInfosMenu[codeMenu]["ctrl"]
+        IDitem = self.dictInfosMenu[codeItem]["id"]
+        index = 0
+        for item in menu.GetMenuItems():
+            if item.GetId() == IDitem:
+                return index
+            index += 1
+        return 0
+
+    def On_fichier_DerniersFichiers(self, event):
+        """ Ouvre un des derniers fichiers ouverts """
+        idMenu = event.GetId()
+        nomFichier = self.userConfig["derniersFichiers"][idMenu - ID_DERNIER_FICHIER]
+        self.OuvrirFichier(nomFichier)
+
+    def ActiveBarreMenus(self, etat=True):
+        """ Active ou non des menus de la barre """
+        for numMenu in range(2, 3):
+            self.menu.EnableTop(numMenu, etat)
+
     def Build_Statusbar(self):
         self.statusbar = self.CreateStatusBar(2, 0)
-        self.statusbar.SetStatusWidths( [400, -1] )
+        self.statusbar.SetStatusWidths([400, -1])
         
     def OnSize(self, event):
-        #self.SetTitle(_(u"Taille de la fenêtre : %s") % event.GetSize())
-        event.Skip()      
+        event.Skip()
 
     def GetFichierConfig(self):
         """ Récupère le dictionnaire du fichier de config """
@@ -548,20 +512,369 @@ class MyFrame(wx.Frame):
         # Affiche les connexions restées ouvertes
         GestionDB.AfficheConnexionOuvertes()
 
+    def OuvrirDernierFichier(self):
+        # Chargement du dernier fichier chargé si assistant non affiché
+        if "assistant_demarrage" in self.userConfig:
+            nePasAfficherAssistant = self.userConfig["assistant_demarrage"]
+            if nePasAfficherAssistant == True:
+                if self.nomDernierFichier != "":
+                    self.OuvrirFichier(self.nomDernierFichier)
 
-    def On_fichier_Convertir_reseau(self, event):
+    def OuvrirFichier(self, nomFichier):
+        """ Suite de la commande menu Ouvrir """
+        self.SetStatusText(_(u"Ouverture d'un fichier en cours..."))
+
+        # Vérifie que le fichier n'est pas déjà ouvert
+        if self.userConfig["nomFichier"] == nomFichier:
+            if "[RESEAU]" in nomFichier:
+                nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
+            dlg = wx.MessageDialog(self, _(u"Le fichier '") + nomFichier + _(u"' est déjà ouvert !"), _(u"Ouverture de fichier"), wx.OK | wx.ICON_INFORMATION)
+            dlg.ShowModal()
+            dlg.Destroy()
+            self.SetStatusText(_(u"Le fichier '%s' est déjà ouvert.") % nomFichier)
+            return False
+
+        # Teste l'existence du fichier :
+        if self.TesterUnFichier(nomFichier) == False:
+            if "[RESEAU]" in nomFichier:
+                nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
+            self.SetStatusText(_(u"Impossible d'ouvrir le fichier '%s'.") % nomFichier)
+            return False
+
+        # Vérification du mot de passe
+        if nomFichier != "":
+            if self.Verif_Password(nomFichier) == False:
+                if "[RESEAU]" in nomFichier:
+                    nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
+                self.SetStatusText(_(u"Echec de l'ouverture du fichier '%s' : Mot de passe incorrect.") % nomFichier)
+                return False
+
+        # Vérifie si la version du fichier est à jour
+        if nomFichier != "":
+            if self.ValidationVersionFichier(nomFichier) == False:
+                if "[RESEAU]" in nomFichier:
+                    nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
+                self.SetStatusText(_(u"Echec de l'ouverture du fichier '%s'.") % nomFichier)
+                return False
+
+        # Applique le changement de fichier en cours
+        self.userConfig["nomFichier"] = nomFichier
+
+        # Remplissage de la table DIVERS pour la date de dernière ouverture
+        if nomFichier != "":
+            date_jour = str(datetime.date.today())
+            listeDonnees = [("date_derniere_ouverture", date_jour), ]
+            db = GestionDB.DB()
+            db.ReqMAJ("divers", listeDonnees, "IDdivers", 1)
+            db.Close()
+
+        # Vérifie que le répertoire de destination de sauvegarde auto existe vraiment
+        if nomFichier != "":
+            self.VerifDestinationSaveAuto()
+
+        # Met à jour l'affichage
+        self.MAJAffichage()
+        self.SetTitleFrame(nomFichier=nomFichier)
+
+        # Met à jour la liste des derniers fichiers ouverts dans le CONFIG de la page
+        self.MAJlisteDerniersFichiers(nomFichier)
+
+        # Met à jour le menu
+        self.MAJmenuDerniersFichiers()
+
+        # Désactive le menu Conversion Réseau s'il s'agit déjà d'un fichier réseau
+        self.dictInfosMenu["fermer_fichier"]["ctrl"].Enable(True)
+        if "[RESEAU]" in nomFichier:
+            self.dictInfosMenu["convertir_fichier_reseau"]["ctrl"].Enable(False)
+            self.dictInfosMenu["convertir_fichier_local"]["ctrl"].Enable(True)
+        else:
+            self.dictInfosMenu["convertir_fichier_reseau"]["ctrl"].Enable(True)
+            self.dictInfosMenu["convertir_fichier_local"]["ctrl"].Enable(False)
+
+        # Sauvegarde du fichier de configuration
+        self.SaveFichierConfig()
+
+        # Active les items du toolbook et sélectionne la page accueil
+        self.toolBook.ActiveToolBook(True)
+        self.ActiveBarreMenus(True)
+
+        # Confirmation de succès
+        if "[RESEAU]" in nomFichier:
+            nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
+        self.SetStatusText(_(u"Le fichier '%s' a été ouvert avec succès.") % nomFichier)
+
+    def VerifDestinationSaveAuto(self):
+        """ Vérifie que le répertoire de destination existe vraiment """
+        try:
+            DB = GestionDB.DB()
+            req = "SELECT save_destination FROM divers WHERE IDdivers=1;"
+            DB.ExecuterReq(req)
+            listeDonnees = DB.ResultatReq()
+            if len(listeDonnees) != 0:
+                save_destination_defaut = listeDonnees[0][0]
+                test = os.path.isdir(save_destination_defaut)
+                if test == False:
+                    standardPath = wx.StandardPaths.Get()
+                    save_destination = standardPath.GetDocumentsDir()
+                    save_destination = save_destination.replace("\\", "/")
+                    listeDonnees = [("save_destination", save_destination), ]
+                    DB.ReqMAJ("divers", listeDonnees, "IDdivers", 1)
+            DB.Close()
+        except:
+            print("pb dans la fonction verifDestinationSaveAuto de teamworks.py")
+
+    def MenuDerniersFichiers(self, event):
+        """ Ouvre un des derniers fichiers ouverts """
+        idMenu = event.GetId()
+        nomFichier = self.userConfig["derniersFichiers"][idMenu - 150]
+        self.OuvrirFichier(nomFichier)
+
+    def MAJmenuDerniersFichiers(self):
+        """ Met à jour la liste des derniers fichiers dans le menu """
+        # Suppression de la liste existante
+        menuFichier = self.dictInfosMenu["menu_fichier"]["ctrl"]
+        for index in range(ID_DERNIER_FICHIER, ID_DERNIER_FICHIER + 10):
+            item = self.menu.FindItemById(index)
+            if item == None:
+                break
+            else:
+                if 'phoenix' in wx.PlatformInfo:
+                    menuFichier.Remove(self.menu.FindItemById(index))
+                else:
+                    menuFichier.RemoveItem(self.menu.FindItemById(index))
+                self.Disconnect(index, -1, 10014)  # Annule le Bind
+
+        # Ré-intégration des derniers fichiers ouverts :
+        listeDerniersFichiers = self.userConfig["derniersFichiers"]
+        if len(listeDerniersFichiers) > 0:
+            index = 0
+            for nomFichier in listeDerniersFichiers:
+                # Version Reseau
+                if "[RESEAU]" in nomFichier:
+                    nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
+                item = wx.MenuItem(menuFichier, ID_DERNIER_FICHIER + index, u"%d. %s" % (index + 1, nomFichier), _(u"Ouvrir le fichier : '%s'") % nomFichier)
+                if 'phoenix' in wx.PlatformInfo:
+                    menuFichier.Append(item)
+                else:
+                    menuFichier.AppendItem(item)
+                index += 1
+            self.Bind(wx.EVT_MENU_RANGE, self.On_fichier_DerniersFichiers, id=ID_DERNIER_FICHIER, id2=ID_DERNIER_FICHIER + index)
+
+    def MAJlisteDerniersFichiers(self, nomFichier):
+        """ MAJ la liste des derniers fichiers ouverts dans le config et la barre des menus """
+
+        # MAJ de la liste des derniers fichiers ouverts :
+        listeFichiers = self.userConfig["derniersFichiers"]
+        nbreFichiersMax = 3  # Valeur à changer en fonction des souhaits
+
+        # Si le nom est déjà dans la liste, on le supprime :
+        if nomFichier in listeFichiers: listeFichiers.remove(nomFichier)
+
+        # On ajoute le nom du fichier en premier dans la liste :
+        listeFichiers.insert(0, nomFichier)
+        listeFichiers = listeFichiers[:nbreFichiersMax]
+
+        # On enregistre dans le Config :
+        self.userConfig["derniersFichiers"] = listeFichiers
+
+    def TesterUnFichier(self, nomFichier):
+        """ Fonction pour tester l'existence d'un fichier """
+        if "[RESEAU]" in nomFichier:
+            # Version RESEAU
+            pos = nomFichier.index("[RESEAU]")
+            paramConnexions = nomFichier[:pos]
+            port, host, user, passwd = paramConnexions.split(";")
+            nomFichierCourt = nomFichier[pos:].replace("[RESEAU]", "")
+            nomFichierCourt = nomFichierCourt.lower()
+
+            # Si c'est une nouvelle version de fichier
+            serveurValide = True
+            fichierValide = True
+            dictResultats = GestionDB.TestConnexionMySQL(typeTest='fichier', nomFichier=_(u"%s_tdata") % nomFichier)
+
+            if dictResultats["connexion"][0] == False:
+                serveurValide = False
+            else:
+                if dictResultats["fichier"][0] == False:
+                    fichierValide = False
+
+            if serveurValide == True and fichierValide == True:
+                return True
+
+            # Si c'est une ancienne version de fichier
+            dictResultats = GestionDB.TestConnexionMySQL(typeTest='fichier', nomFichier=nomFichier)
+            if dictResultats["connexion"][0] == True and dictResultats["fichier"][0] == True:
+                # Création de la nouvelle base
+                self.SetStatusText(_(u"Conversion pour Teamworks 2 : Création de la nouvelle base..."))
+                DB = GestionDB.DB(nomFichier=nomFichier, modeCreation=True)
+                DB.Close()
+
+                # Importation des anciennes tables de données
+                DB = GestionDB.DB(suffixe="", nomFichier=nomFichier)
+                listeTables = DB.GetListeTables()
+                for (nomTable,) in listeTables:
+                    self.SetStatusText(_(u"Conversion pour Teamworks 2 : Transfert de la table %s....") % nomTable)
+                    req = "RENAME TABLE %s.%s TO %s_tdata.%s;" % (nomFichierCourt, nomTable, nomFichierCourt, nomTable)
+                    DB.ExecuterReq(req)
+                DB.Commit()
+                DB.Close()
+
+                # Suppression de l'ancienne table
+                self.SetStatusText(_(u"Conversion pour Teamworks 2 : Suppression de l'ancienne base..."))
+                DB = GestionDB.DB(nomFichier=nomFichier)
+                req = "DROP DATABASE %s;" % nomFichierCourt
+                DB.ExecuterReq(req)
+                DB.Close()
+
+                return True
+
+            if serveurValide == False:
+                # Connexion impossible au serveur MySQL
+                erreur = dictResultats["connexion"][1]
+                dlg = wx.MessageDialog(self, _(
+                    u"Il est impossible de se connecter au serveur MySQL.\n\nErreur : %s") % erreur,
+                                       "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+                return False
+
+            if fichierValide == False:
+                # Ouverture impossible du fichier MySQL demandé
+                erreur = dictResultats["fichier"][1]
+                dlg = wx.MessageDialog(self, _(
+                    u"La connexion avec le serveur MySQL fonctionne mais il est impossible d'ouvrir le fichier MySQL demandé.\n\nErreur : %s") % erreur,
+                                       "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+                return False
+
+            return True
+
+        # SQLITE
+        else:
+            # Test de validité du fichier SQLITE :
+            valide = False
+            if os.path.isfile(UTILS_Fichiers.GetRepData(u"%s_TDATA.dat" % nomFichier)):
+                valide = True
+            else:
+                cheminFichier = UTILS_Fichiers.GetRepData(u"%s.twk" % nomFichier)
+                if os.path.isfile(cheminFichier):
+                    valide = True
+                    # Si c'est une version TW1 : Renommage du fichier DATA pour TW2
+                    os.rename(cheminFichier, UTILS_Fichiers.GetRepData(u"%s_TDATA.dat" % nomFichier))
+
+            if valide == False:
+                dlg = wx.MessageDialog(self, _(u"Il est impossible d'ouvrir le fichier demandé !"),
+                                       "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+                return False
+            else:
+                return True
+
+    def ConvertVersionTuple(self, texteVersion=""):
+        """ Convertit un numéro de version texte en tuple """
+        tupleTemp = []
+        for num in texteVersion.split("."):
+            tupleTemp.append(int(num))
+        return tuple(tupleTemp)
+
+    def ValidationVersionFichier(self, nomFichier):
+        """ Vérifie que la version du fichier est à jour avec le logiciel """
+        # Récupère le numéro de version du logiciel
+        versionLogiciel = self.ConvertVersionTuple(VERSION_APPLICATION)
+
+        # Récupère le numéro de version du fichier
+        if UTILS_Parametres.TestParametre(categorie="fichier", nom="version", nomFichier=nomFichier) == True:
+            versionFichier = self.ConvertVersionTuple(
+                UTILS_Parametres.Parametres(mode="get", categorie="fichier", nom="version", valeur=VERSION_APPLICATION,
+                                            nomFichier=nomFichier))
+        else:
+            # Pour compatibilité avec version 1 de Teamworks
+            versionFichier = (1, 0, 5, 2)
+
+        # Compare les deux versions
+        if versionFichier < versionLogiciel:
+            # Fait la conversion à la nouvelle version
+            info = "Lancement de la conversion %s -> %s..." % (
+            ".".join([str(x) for x in versionFichier]), ".".join([str(x) for x in versionLogiciel]))
+            self.SetStatusText(info)
+            print(info)
+
+            # Affiche d'une fenêtre d'attente
+            message = _(u"Mise à jour de la base de données en cours... Veuillez patientez...")
+            dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Mise à jour"),
+                                        icon=wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"),
+                                                       wx.BITMAP_TYPE_ANY))
+            wx.Yield()
+
+            DB = GestionDB.DB(nomFichier=nomFichier)
+            resultat = DB.ConversionDB(versionFichier)
+            DB.Close()
+
+            # Fermeture de la fenêtre d'attente
+            del dlgAttente
+
+            if resultat != True:
+                print(resultat)
+                dlg = wx.MessageDialog(self, _(u"Le logiciel n'arrive pas à convertir le fichier '") + nomFichier + _(
+                    u":\n\nErreur : ") + resultat + _(u"\n\nVeuillez contacter le développeur du logiciel..."),
+                                       _(u"Erreur de conversion de fichier"), wx.OK | wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+                return False
+
+            # Mémorisation de la version actuelle du fichier
+            UTILS_Parametres.Parametres(mode="set", categorie="fichier", nom="version",
+                                        valeur=".".join([str(x) for x in versionLogiciel]), nomFichier=nomFichier)
+            info = "Conversion %s -> %s reussie." % (
+            ".".join([str(x) for x in versionFichier]), ".".join([str(x) for x in versionLogiciel]))
+            self.SetStatusText(info)
+            print(info)
+
+        return True
+
+    def On_fichier_fermer(self, event):
+        """ Fermer le fichier ouvert """
+        # Vérifie qu'un fichier est chargé
+        if self.userConfig["nomFichier"] == "":
+            dlg = wx.MessageDialog(self, _(u"Il n'y a aucun fichier à fermer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return
+
+        # change le nom de fichier
+        self.userConfig["nomFichier"] = ""
+        self.SetTitleFrame()
+
+        # Désactive les items du toolbook et sélectionne la page accueil
+        self.toolBook.ActiveToolBook(False)
+
+        # Désactive certains menus
+        self.ActiveBarreMenus(False)
+
+        # Désactive la commande FERMER du menu Fichier
+        self.dictInfosMenu["fermer_fichier"]["ctrl"].Enable(False)
+        self.dictInfosMenu["convertir_fichier_reseau"]["ctrl"].Enable(False)
+        self.dictInfosMenu["convertir_fichier_local"]["ctrl"].Enable(False)
+
+
+    def On_fichier_convertir_reseau(self, event):
         nomFichier = self.userConfig["nomFichier"]
         from Utils import UTILS_Conversion_fichier
         resultat = UTILS_Conversion_fichier.ConversionLocalReseau(self, nomFichier)
         print("Succes de la procedure : ", resultat)
 
-    def On_fichier_Convertir_local(self, event):
+    def On_fichier_convertir_local(self, event):
         nomFichier = self.userConfig["nomFichier"]
         from Utils import UTILS_Conversion_fichier
         resultat = UTILS_Conversion_fichier.ConversionReseauLocal(self, nomFichier)
         print("Succes de la procedure : ", resultat)
 
-    def MenuNouveau(self, event):
+    def On_fichier_assistant(self, event):
+        self.Assistant_demarrage(mode="menu")
+
+    def On_fichier_nouveau(self, event):
         """ Créé une nouvelle base de données """
         from Data import DATA_Tables as Tables
         
@@ -733,18 +1046,16 @@ class MyFrame(wx.Frame):
         self.MAJmenuDerniersFichiers()
         
         # Active les items du toolbook et sélectionne la page accueil
-        self.toolBook.ActiveToolBook(True) 
-        self.menubar.EnableTop(1, True)
-        self.menubar.EnableTop(2, True)
+        self.toolBook.ActiveToolBook(True)
+        self.ActiveBarreMenus(True)
 
         # Désactive le menu Conversion Réseau s'il s'agit déjà d'un fichier réseau
-        menuBar = self.GetMenuBar()
-        if "[RESEAU]" in nomFichier :
-            menuBar.FindItemById(107).Enable(False)
-            menuBar.FindItemById(108).Enable(True)
+        if "[RESEAU]" in nomFichier:
+            self.dictInfosMenu["convertir_fichier_reseau"]["ctrl"].Enable(False)
+            self.dictInfosMenu["convertir_fichier_local"]["ctrl"].Enable(True)
         else:
-            menuBar.FindItemById(107).Enable(True)
-            menuBar.FindItemById(108).Enable(False)
+            self.dictInfosMenu["convertir_fichier_reseau"]["ctrl"].Enable(True)
+            self.dictInfosMenu["convertir_fichier_local"]["ctrl"].Enable(False)
 
         # Sauvegarde du fichier de configuration
         self.SaveFichierConfig()
@@ -768,7 +1079,7 @@ class MyFrame(wx.Frame):
             dlg.Destroy()
 
 
-    def MenuOuvrir(self, event):
+    def On_fichier_ouvrir(self, event):
         """ Ouvrir un fichier présent dur le disque dur """    
         # Boîte de dialogue pour demander le nom du fichier à ouvrir
         from Dlg import DLG_Ouvrir_fichier
@@ -781,164 +1092,20 @@ class MyFrame(wx.Frame):
             return False
         # Ouverture du fichier
         self.OuvrirFichier(nomFichier)
-    
-    def OuvrirDernierFichier(self):
-        # Chargement du dernier fichier chargé si assistant non affiché
-        if "assistant_demarrage" in self.userConfig :
-            nePasAfficherAssistant = self.userConfig["assistant_demarrage"]
-            if nePasAfficherAssistant == True :
-                if self.nomDernierFichier != "" :
-                    self.OuvrirFichier(self.nomDernierFichier)
-    
-    def OuvrirFichier(self, nomFichier):
-        """ Suite de la commande menu Ouvrir """
-        self.SetStatusText(_(u"Ouverture d'un fichier en cours..."))
-        
-##        if "[RESEAU]" in nomFichier :
-##            pos = nomFichier.index("[RESEAU]")
-##            isNetwork = True
-##            fichierComplet = nomFichier
-##            paramConnexions = nomFichier[:pos]
-##            nomFichier = nomFichier[pos:]
-##        else:
-##            isNetwork = False
-        
-        # Vérifie que le fichier n'est pas déjà ouvert
-        if self.userConfig["nomFichier"] == nomFichier :
-            if "[RESEAU]" in nomFichier :
-                nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-            dlg = wx.MessageDialog(self, _(u"Le fichier '") + nomFichier + _(u"' est déjà ouvert !"), _(u"Ouverture de fichier"), wx.OK | wx.ICON_INFORMATION)
-            dlg.ShowModal()
-            dlg.Destroy()
-            self.SetStatusText(_(u"Le fichier '%s' est déjà ouvert.") % nomFichier)
-            return False
 
-        # Teste l'existence du fichier :
-        if self.TesterUnFichier(nomFichier) == False :
-            if "[RESEAU]" in nomFichier :
-                nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-            self.SetStatusText(_(u"Impossible d'ouvrir le fichier '%s'.") % nomFichier)
-            return False
-        
-                
-        # Vérification du mot de passe
-        if nomFichier != "" :
-            if self.Verif_Password(nomFichier) == False :
-                if "[RESEAU]" in nomFichier :
-                    nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-                self.SetStatusText(_(u"Echec de l'ouverture du fichier '%s' : Mot de passe incorrect.") % nomFichier)
-                return False
-        
-        # Vérifie si la version du fichier est à jour
-        if nomFichier != "" :
-            if self.ValidationVersionFichier(nomFichier) == False :
-                if "[RESEAU]" in nomFichier :
-                    nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-                self.SetStatusText(_(u"Echec de l'ouverture du fichier '%s'.") % nomFichier)
-                return False
-
-        # Applique le changement de fichier en cours
-        self.userConfig["nomFichier"] = nomFichier
-
-        # Remplissage de la table DIVERS pour la date de dernière ouverture
-        if nomFichier != "" :
-            date_jour =  str(datetime.date.today())  
-            listeDonnees = [("date_derniere_ouverture",  date_jour),]
-            db = GestionDB.DB()
-            db.ReqMAJ("divers", listeDonnees, "IDdivers", 1)
-            db.Close()
-
-        # Vérifie que le répertoire de destination de sauvegarde auto existe vraiment
-        if nomFichier != "" :
-            self.VerifDestinationSaveAuto()
-
-        # Met à jour l'affichage 
-        self.MAJAffichage()
-        self.SetTitleFrame(nomFichier=nomFichier)
-
-        # Met à jour la liste des derniers fichiers ouverts dans le CONFIG de la page
-        self.MAJlisteDerniersFichiers(nomFichier) 
-        
-        # Met à jour le menu
-        self.MAJmenuDerniersFichiers()
-        
-        # Désactive le menu Conversion Réseau s'il s'agit déjà d'un fichier réseau
-        menuBar = self.GetMenuBar()
-        if "[RESEAU]" in nomFichier :
-            menuBar.FindItemById(107).Enable(False)
-            menuBar.FindItemById(108).Enable(True)
-        else:
-            menuBar.FindItemById(107).Enable(True)
-            menuBar.FindItemById(108).Enable(False)
-
-        # Sauvegarde du fichier de configuration
-        self.SaveFichierConfig()
-        
-        # Active les items du toolbook et sélectionne la page accueil
-        self.toolBook.ActiveToolBook(True)
-        self.menubar.EnableTop(1, True)
-        self.menubar.EnableTop(2, True)
-
-        # Confirmation de succès
-        if "[RESEAU]" in nomFichier :
-                nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-        self.SetStatusText(_(u"Le fichier '%s' a été ouvert avec succès.") % nomFichier)       
-        
-        
-    def VerifDestinationSaveAuto(self):
-        """ Vérifie que le répertoire de destination existe vraiment """
-        try :
-            DB = GestionDB.DB()
-            req = "SELECT save_destination FROM divers WHERE IDdivers=1;"
-            DB.ExecuterReq(req)
-            listeDonnees = DB.ResultatReq()
-            if len(listeDonnees) != 0 :
-                save_destination_defaut = listeDonnees[0][0]
-                test = os.path.isdir(save_destination_defaut) 
-                if test == False :
-                    standardPath = wx.StandardPaths.Get()
-                    save_destination = standardPath.GetDocumentsDir()
-                    save_destination =  save_destination.replace("\\", "/")
-                    listeDonnees = [("save_destination",  save_destination),]
-                    DB.ReqMAJ("divers", listeDonnees, "IDdivers", 1)
-            DB.Close()
-        except :
-            print("pb dans la fonction verifDestinationSaveAuto de teamworks.py")
-
-    def MenuFermer(self, event) :
-        """ Fermer le fichier ouvert """
-        # Vérifie qu'un fichier est chargé
-        if self.userConfig["nomFichier"] == "" :
-            dlg = wx.MessageDialog(self, _(u"Il n'y a aucun fichier à fermer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
-            return
-        
-        # change le nom de fichier
-        self.userConfig["nomFichier"] = ""
-        self.SetTitleFrame()
-        # Désactive les items du toolbook et sélectionne la page accueil
-        self.toolBook.ActiveToolBook(False)
-        # Désactive certains menus
-        self.menubar.EnableTop(1, False)
-        self.menubar.EnableTop(2, False)
-        menuBar = self.GetMenuBar()
-        menuItem = menuBar.FindItemById(107)
-        menuItem.Enable(False)
-        menuItem = menuBar.FindItemById(108)
-        menuItem.Enable(False)
-        
-    def MenuSauvegarder(self, event):
+    def On_fichier_sauvegarder(self, event):
         """ Sauvegarder occasionnelle """
         from Dlg import DLG_Sauvegarde
         dlg = DLG_Sauvegarde.Dialog(self)
-        dlg.ShowModal() 
+        dlg.ShowModal()
         dlg.Destroy()
-        # Version TW1
-##        frameSave = DLG_Config_sauvegarde.Saisie_sauvegarde_occasionnelle(self)
-##        frameSave.Show()
-        
-    def MenuRestaurer(self, event):
+
+    def On_fichier_quitter(self, event):
+        self.Quitter()
+        self.Destroy()
+        event.Skip()
+
+    def On_fichier_restaurer(self, event):
         """ Restaurer une sauvegarde """
         from Dlg import DLG_Restauration
         fichier = DLG_Restauration.SelectionFichier()
@@ -950,286 +1117,37 @@ class MyFrame(wx.Frame):
             else:
                 # Version TW2
                 dlg = DLG_Restauration.Dialog(self, fichier=fichier)
-                dlg.ShowModal() 
-                dlg.Destroy()
-
-        
-        # Version TW1 :
-##        # Demande l'emplacement du fichier
-##        wildcard = "Sauvegarde TWorks (*.twz)|*.twz"
-##        dlg = wx.FileDialog(self, message=_(u"Veuillez sélectionner le fichier de sauvegarde à restaurer"), defaultDir=os.getcwd(), defaultFile="", wildcard=wildcard, style=wx.OPEN)
-##        if dlg.ShowModal() == wx.ID_OK:
-##            fichier = dlg.GetPath()
-##        else:
-##            return
-##        dlg.Destroy()
-##        
-##        # Vérifie la validité du fichier sélectionné
-##        if fichier.endswith(".twz") == False :
-##            dlg = wx.MessageDialog(self, _(u"Le fichier n'est pas valide."), "Erreur", wx.OK| wx.ICON_ERROR)  
-##            dlg.ShowModal()
-##            dlg.Destroy()
-##            return
-##        
-##        # Lance la restauration
-##        frameResto = DLG_Config_sauvegarde.Restauration(self, fichier)
-##        frameResto.Show()
-         
-    def MenuDerniersFichiers(self, event):
-        """ Ouvre un des derniers fichiers ouverts """
-        idMenu = event.GetId()
-        nomFichier = self.userConfig["derniersFichiers"][idMenu - 150]
-        self.OuvrirFichier(nomFichier)
-        
-    def MAJmenuDerniersFichiers(self):
-        """ Met à jour la liste des derniers fichiers dans le menu """
-        # Met à jour la liste des derniers fichiers dans la BARRE DES MENUS
-        menuBar = self.GetMenuBar()
-        menuItem = menuBar.FindItemById(106)
-        # Suppression de la liste existante
-        menu = menuItem.GetMenu()
-        for index in range(150, 160) :
-            item = menuBar.FindItemById(index)
-            if item == None : 
-                break
-            else:
-                if 'phoenix' in wx.PlatformInfo:
-                    menu.Remove(menuBar.FindItemById(index))
-                else:
-                    menu.RemoveItem(menuBar.FindItemById(index))
-                self.Disconnect(index, -1, 10014) # Annule le Bind
-        
-        # Ré-intégration des derniers fichiers ouverts :
-        listeDerniersFichiers = self.userConfig["derniersFichiers"]
-        if len(listeDerniersFichiers) > 0 : 
-            index = 0
-            for nomFichier in listeDerniersFichiers :
-                # Version Reseau
-                if "[RESEAU]" in nomFichier :
-                    nomFichier = nomFichier[nomFichier.index("[RESEAU]"):]
-                item = wx.MenuItem(menu, 150 + index, str(index+1) + ". " + nomFichier, _(u"Ouvrir le fichier : ") + nomFichier)
-                menu.AppendItem(item)
-                index += 1
-            self.Bind(wx.EVT_MENU_RANGE, self.MenuDerniersFichiers, id=150, id2=150 + index)
-        
-        
-    def MAJlisteDerniersFichiers(self, nomFichier) :
-        """ MAJ la liste des derniers fichiers ouverts dans le config et la barre des menus """
-        
-        # MAJ de la liste des derniers fichiers ouverts :
-        listeFichiers = self.userConfig["derniersFichiers"]
-        nbreFichiersMax = 3 # Valeur à changer en fonction des souhaits
-        
-        # Si le nom est déjà dans la liste, on le supprime :
-        if nomFichier in listeFichiers : listeFichiers.remove(nomFichier)
-           
-        # On ajoute le nom du fichier en premier dans la liste :
-        listeFichiers.insert(0, nomFichier)
-        listeFichiers = listeFichiers[:nbreFichiersMax]
-        
-        # On enregistre dans le Config :
-        self.userConfig["derniersFichiers"] = listeFichiers
-        
-        
-    def TesterUnFichier(self, nomFichier):
-        """ Fonction pour tester l'existence d'un fichier """
-        if "[RESEAU]" in nomFichier :
-            # Version RESEAU
-            pos = nomFichier.index("[RESEAU]")
-            paramConnexions = nomFichier[:pos]
-            port, host, user, passwd = paramConnexions.split(";")
-            nomFichierCourt = nomFichier[pos:].replace("[RESEAU]", "")
-            nomFichierCourt = nomFichierCourt.lower() 
-            
-            # Si c'est une nouvelle version de fichier
-            serveurValide = True
-            fichierValide = True
-            dictResultats = GestionDB.TestConnexionMySQL(typeTest='fichier', nomFichier=_(u"%s_tdata") % nomFichier)
-            
-            if dictResultats["connexion"][0] == False :
-                serveurValide = False
-            else :
-                if dictResultats["fichier"][0] == False :
-                    fichierValide = False
-
-            if serveurValide == True and fichierValide == True : 
-                return True
-            
-            # Si c'est une ancienne version de fichier
-            dictResultats = GestionDB.TestConnexionMySQL(typeTest='fichier', nomFichier=nomFichier)
-            if dictResultats["connexion"][0] == True and dictResultats["fichier"][0] == True :
-                # Création de la nouvelle base
-                self.SetStatusText(_(u"Conversion pour Teamworks 2 : Création de la nouvelle base..."))
-                DB = GestionDB.DB(nomFichier=nomFichier, modeCreation=True)
-                DB.Close() 
-                
-                # Importation des anciennes tables de données
-                DB = GestionDB.DB(suffixe="", nomFichier=nomFichier)
-                listeTables = DB.GetListeTables()
-                for (nomTable,) in listeTables :
-                    self.SetStatusText(_(u"Conversion pour Teamworks 2 : Transfert de la table %s....") % nomTable)
-                    req = "RENAME TABLE %s.%s TO %s_tdata.%s;" % (nomFichierCourt, nomTable, nomFichierCourt, nomTable)
-                    DB.ExecuterReq(req)
-                DB.Commit()
-                DB.Close() 
-
-                # Suppression de l'ancienne table
-                self.SetStatusText(_(u"Conversion pour Teamworks 2 : Suppression de l'ancienne base..."))
-                DB = GestionDB.DB(nomFichier=nomFichier)
-                req = "DROP DATABASE %s;" % nomFichierCourt
-                DB.ExecuterReq(req)
-                DB.Close() 
-                
-                return True
-            
-            if serveurValide == False :
-                # Connexion impossible au serveur MySQL
-                erreur = dictResultats["connexion"][1]
-                dlg = wx.MessageDialog(self, _(u"Il est impossible de se connecter au serveur MySQL.\n\nErreur : %s") % erreur, "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
-                return False
-            
-            if fichierValide == False :
-                # Ouverture impossible du fichier MySQL demandé
-                erreur = dictResultats["fichier"][1]
-                dlg = wx.MessageDialog(self, _(u"La connexion avec le serveur MySQL fonctionne mais il est impossible d'ouvrir le fichier MySQL demandé.\n\nErreur : %s") % erreur, "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
-                dlg.ShowModal()
-                dlg.Destroy()
-                return False
-            
-            return True
-        
-        # SQLITE
-        else:
-            # Test de validité du fichier SQLITE :
-            valide = False
-            if os.path.isfile(UTILS_Fichiers.GetRepData(u"%s_TDATA.dat" % nomFichier)):
-                valide = True
-            else :
-                cheminFichier = UTILS_Fichiers.GetRepData(u"%s.twk" % nomFichier)
-                if os.path.isfile(cheminFichier) :
-                    valide = True
-                    # Si c'est une version TW1 : Renommage du fichier DATA pour TW2
-                    os.rename(cheminFichier, UTILS_Fichiers.GetRepData(u"%s_TDATA.dat" % nomFichier))
-            
-            if valide == False :
-                dlg = wx.MessageDialog(self, _(u"Il est impossible d'ouvrir le fichier demandé !"), "Erreur d'ouverture de fichier", wx.OK | wx.ICON_ERROR)
-                dlg.ShowModal()
-                dlg.Destroy()
-                return False
-            else:
-                return True
 
-##    def GetVersionDBApplication(self):
-##        # Obtient le numéro de version de la db du logiciel
-##        versionApplication = VERSION_APPLICATION
-##        tmp = versionApplication.split(".")
-##        versionDBApplication = int(tmp[2])
-##        return versionDBApplication
+    def On_param_preferences(self, event):
+        from Dlg import DLG_Preferences
+        dlg = DLG_Preferences.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
 
-    def ConvertVersionTuple(self, texteVersion=""):
-        """ Convertit un numéro de version texte en tuple """
-        tupleTemp = []
-        for num in texteVersion.split(".") :
-            tupleTemp.append(int(num))
-        return tuple(tupleTemp)
+    def On_param_enregistrement(self, event):
+        from Dlg import DLG_Enregistrement
+        dlg = DLG_Enregistrement.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
 
-##    def ValidationVersionFichier(self, nomFichier):
-##        """ Vérifie que la version du fichier est à jour avec le logiciel """
-##        # Obtient le numéro de version de la db du logiciel
-##        versionApplication = self.GetVersionDBApplication()
-##        
-##        # Obtient le numéro de version du fichier
-##        DB = GestionDB.DB(nomFichier = nomFichier)        
-##        req = "SELECT version_DB FROM divers WHERE IDdivers=1;"
-##        DB.ExecuterReq(req)
-##        versionFichier = DB.ResultatReq()[0][0]
-##        DB.Close()
-##
-##        # Compare les deux versions
-##        if versionFichier < versionApplication :
-##            print "conversion de fichier necessaire."
-##            # Fait la conversion à la nouvelle version
-##            DB = GestionDB.DB(nomFichier = nomFichier)        
-##            nouvelleVersionDB = DB.ConversionDB(versionDB_fichier=versionFichier)
-##            DB.Close()
-##            print "nouvelleVersionDB=", nouvelleVersionDB
-##            if type(nouvelleVersionDB) == str :
-##                dlg = wx.MessageDialog(self, _(u"Le logiciel n'arrive pas à convertir le fichier '") + nomFichier + _(u":\n\nErreur : ") + nouvelleVersionDB + _(u"\n\nVeuillez contacter le développeur du logiciel..."), _(u"Erreur de conversion de fichier"), wx.OK | wx.ICON_ERROR)
-##                dlg.ShowModal()
-##                dlg.Destroy()
-##                return False
-##            else:
-##                print "conversion reussie."
-##                return True
+    def On_param_gadgets(self, event):
+        """ Configuration des gadgets de la page d'accueil """
+        # Vérifie qu'un fichier est chargé
+        if self.userConfig["nomFichier"] == "":
+            dlg = wx.MessageDialog(self, _(u"Vous n'avez chargé aucun fichier."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return
 
-    def ValidationVersionFichier(self, nomFichier):
-        """ Vérifie que la version du fichier est à jour avec le logiciel """
-        # Récupère le numéro de version du logiciel
-        versionLogiciel = self.ConvertVersionTuple(VERSION_APPLICATION)
-        
-        # Récupère le numéro de version du fichier
-        if UTILS_Parametres.TestParametre(categorie="fichier", nom="version", nomFichier=nomFichier) == True :
-            versionFichier = self.ConvertVersionTuple(UTILS_Parametres.Parametres(mode="get", categorie="fichier", nom="version", valeur=VERSION_APPLICATION, nomFichier=nomFichier))
-        else:
-            # Pour compatibilité avec version 1 de Teamworks
-            versionFichier = (1, 0, 5, 2)
-        
-        # Compare les deux versions
-        if versionFichier < versionLogiciel :
-            # Fait la conversion à la nouvelle version
-            info = "Lancement de la conversion %s -> %s..." %(".".join([str(x) for x in versionFichier]), ".".join([str(x) for x in versionLogiciel]))
-            self.SetStatusText(info)
-            print(info)
-            
-            # Affiche d'une fenêtre d'attente
-            message = _(u"Mise à jour de la base de données en cours... Veuillez patientez...")
-            dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Mise à jour"), icon=wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-            wx.Yield() 
-            
-            DB = GestionDB.DB(nomFichier = nomFichier)        
-            resultat = DB.ConversionDB(versionFichier)
-            DB.Close()
-            
-            # Fermeture de la fenêtre d'attente
-            del dlgAttente
-            
-            if resultat != True :
-                print(resultat)
-                dlg = wx.MessageDialog(self, _(u"Le logiciel n'arrive pas à convertir le fichier '") + nomFichier + _(u":\n\nErreur : ") + resultat + _(u"\n\nVeuillez contacter le développeur du logiciel..."), _(u"Erreur de conversion de fichier"), wx.OK | wx.ICON_ERROR)
-                dlg.ShowModal()
-                dlg.Destroy()
-                return False
+        from Dlg import DLG_Config_gadgets
+        dlg = DLG_Config_gadgets.Dialog(None)
+        if dlg.ShowModal() == wx.ID_YES:
+            self.toolBook.GetPage(0).MAJpanel()
+        dlg.Destroy()
 
-            # Mémorisation de la version actuelle du fichier
-            UTILS_Parametres.Parametres(mode="set", categorie="fichier", nom="version", valeur=".".join([str(x) for x in versionLogiciel]), nomFichier=nomFichier)
-            info = "Conversion %s -> %s reussie." %(".".join([str(x) for x in versionFichier]), ".".join([str(x) for x in versionLogiciel]))
-            self.SetStatusText(info)
-            print(info)
-            
-        return True
-
-    def MenuQuitter(self, event):
-        self.Quitter()
-        self.Destroy()
-        event.Skip()
-
-
-    def MenuAide(self, event):
-        """ Affiche l'aide complète """
-        FonctionsPerso.Aide()
-
-    def MenuForum(self, event):
-        """ Ouvre le forum TeamWorks """
-        FonctionsPerso.LanceFichierExterne(ADRESSE_FORUM)
-        
-    def MenuMailAuteur(self, event):
-        """ Envoyer un mail à l'auteur avec le client de messagerie par défaut """
-        FonctionsPerso.EnvoyerMail(adresses = (MAIL_AUTEUR,))
-        
-    def MenuExportOutlook(self ,event):
-        
+    def On_outils_outlook(self ,event):
         # Vérifie qu'un fichier est chargé
         if self.userConfig["nomFichier"] == "" :
             dlg = wx.MessageDialog(self, _(u"Vous n'avez chargé aucun fichier."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
@@ -1263,25 +1181,7 @@ class MyFrame(wx.Frame):
         dlg.ShowModal()
         dlg.Destroy()
 
-    def MenuGadgets(self, event):
-        """ Configuration des gadgets de la page d'accueil """
-        
-        # Vérifie qu'un fichier est chargé
-        if self.userConfig["nomFichier"] == "" :
-            dlg = wx.MessageDialog(self, _(u"Vous n'avez chargé aucun fichier."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
-            return
-        
-        from Dlg import DLG_Config_gadgets
-        dlg = DLG_Config_gadgets.Dialog(None)
-        if dlg.ShowModal() == wx.ID_YES :
-            self.toolBook.GetPage(0).MAJpanel()
-        dlg.Destroy()
-
-        
-
-    def MenuUpdater(self, event):
+    def On_outils_updater(self, event):
         """Mises à jour internet """
         from Dlg import DLG_Updater
         dlg = DLG_Updater.Dialog(self)
@@ -1292,7 +1192,7 @@ class MyFrame(wx.Frame):
             self.Quitter(videRepertoiresTemp=False)
             self.Destroy()
         
-    def MenuEnvoiMailGroupe(self, event):
+    def On_outils_mail(self, event):
         """ Envoi d'un mail groupé """
         from Dlg import DLG_Envoi_email_groupe
         dlg = DLG_Envoi_email_groupe.MyDialog(self)
@@ -1305,20 +1205,20 @@ class MyFrame(wx.Frame):
         # Création du mail
         FonctionsPerso.EnvoyerMail(adresses=listeAdresses)
 
-    def MenuGestionFrais(self, event):
+    def On_outils_frais(self, event):
         """ Gestion globale des frais de déplacements """
         from Dlg import DLG_Gestion_frais
         dlg = DLG_Gestion_frais.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
-    def MenuListeContrats(self, event):
+    def On_outils_registre(self, event):
         from Dlg import DLG_Liste_contrats
         dlg = DLG_Liste_contrats.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
-    def MenuImprimerPhotos(self, event):
+    def On_outils_photos(self, event):
         """ Imprimer les photos des personnes """
         # Ouverture de la frame d'impression des photos  
         from Dlg import DLG_Impression_photo
@@ -1326,46 +1226,66 @@ class MyFrame(wx.Frame):
         dlg.ShowModal()
         dlg.Destroy()
 
-    def MenuPublipostage(self, event):
+    def On_outils_publipostage(self, event):
         """ Imprimer par publipostage """
         from Dlg import DLG_Publiposteur_Choix
         dlg = DLG_Publiposteur_Choix.Dialog(None)
         dlg.ShowModal()
         dlg.Destroy()
 
-    def MenuTeamword(self, event):
+    def On_outils_teamword(self, event):
         """ Lancer Teamword """
         from Dlg import DLG_Teamword
         frame = DLG_Teamword.MyFrame(None)
         frame.Show()
-        
-    def MenuVersions(self, event):
+
+    def On_aide_aide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide(None)
+
+    def On_aide_forum(self, event):
+        """ Accéder au forum d'entraide """
+        FonctionsPerso.LanceFichierExterne("https://teamworks.ovh/index.php/assistance/le-forum")
+
+    def On_aide_videos(self, event):
+        """ Accéder au tutoriels vidéos """
+        FonctionsPerso.LanceFichierExterne("https://teamworks.ovh/index.php/assistance/les-tutoriels-videos")
+
+    def On_propos_versions(self, event):
         """ A propos : Notes de versions """
-        import  wx.lib.dialogs
-        txtLicence = open("Versions.txt", "r")
+        # Lecture du fichier
+        txtLicence = open(Chemins.GetMainPath("Versions.txt"), "r")
         msg = txtLicence.read()
         txtLicence.close()
+        from Dlg import DLG_Messagebox
         if six.PY2:
             msg = msg.decode("iso-8859-15")
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, _(u"Notes de versions"), size=(420, 400))
+        dlg = DLG_Messagebox.Dialog(self, titre=_(u"Notes de versions"), introduction=_("Liste des versions du logiciel :"), detail=msg, icone=wx.ICON_INFORMATION, boutons=[_(u"Fermer"), ], defaut=0)
         dlg.ShowModal()
-        
-    def MenuLicence(self, event):
+        dlg.Destroy()
+
+    def On_propos_licence(self, event):
         """ A propos : Licence """
-        import  wx.lib.dialogs
-        txtLicence = open("Licence.txt", "r")
+        import wx.lib.dialogs
+        txtLicence = open(Chemins.GetMainPath("Licence.txt"), "r")
         msg = txtLicence.read()
         txtLicence.close()
         if six.PY2:
             msg = msg.decode("iso-8859-15")
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, _(u"A propos"), size=(420, 400))
+        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, _(u"A propos"), size=(500, 500))
         dlg.ShowModal()
 
-    def MenuApropos(self, event):
+    def On_propos_soutenir(self, event):
+        """ A propos : Soutenir """
+        from Dlg import DLG_Financement
+        dlg = DLG_Financement.Dialog(None, code="documentation")
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_propos_propos(self, event):
         """ A propos : A propos """
         texte = u"""
-"TeamWorks - Gestion d'équipes"
-Logiciel de gestion d'équipes pour les centres de loisirs et de vacances.
+"Teamworks - gestion d'équipe
 Copyright © 2008-2019 Ivan LUCAS
 
 Remerciements :
@@ -1385,27 +1305,16 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
         dlg = wx.MessageDialog(self, texte, "A propos", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
-    
-    def MenuDons(self, event):
-        FonctionsPerso.LanceFichierExterne(_(u"http://teamworks.forumactif.com/faire-un-don-de-soutien-f2/pourquoi-et-comment-faire-un-don-de-soutien-t129.htm"))
-    
-    def MenuTelechargerGuide(self, event):
-        FonctionsPerso.LanceFichierExterne(_(u"http://www.clsh-lannilis.com/teamworks/aide/guide-utilisateur-tw.pdf"))
-        
-    def MenuAssistantDemarrage(self, event):
-        self.Assistant_demarrage(mode="menu")
-        
+
+
     def MAJAffichage(self):
         # Mise à jour des panels :
         self.toolBook.GetPage(0).MAJpanel() 
-##        self.toolBook.GetPage(1).MAJpanel() 
-##        self.toolBook.GetPage(2).MAJpanel()
-##        self.toolBook.GetPage(3).MAJpanel()
 
     
     def GetVersionApplication(self):
         return VERSION_APPLICATION
-    
+
     def RechercheMAJinternet(self):
         """ Recherche une mise à jour sur internet """
         # Récupère la version de l'application
@@ -1414,24 +1323,34 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
         try :
             if "linux" in sys.platform :
                 # Version Debian
-                fichierVersions = urllib.urlopen('http://www.clsh-lannilis.com/teamworks/debian/Versions.txt')
+                fichierVersions = urlopen('https://raw.githubusercontent.com/Noethys/Teamworks/master/teamworks/Versions.txt', timeout=5)
             else:
                 # Version Windows
-                fichierVersions = urllib.urlopen('http://www.clsh-lannilis.com/teamworks/Versions.txt')
+                fichierVersions = urlopen('https://www.teamworks.ovh/fichiers/windows/Versions.txt', timeout=5)
             texteNouveautes= fichierVersions.read()
             fichierVersions.close()
+            if six.PY3:
+                texteNouveautes = texteNouveautes.decode("iso-8859-15")
             pos_debut_numVersion = texteNouveautes.find("n")
             if "(" in texteNouveautes[:50] :
                 pos_fin_numVersion = texteNouveautes.find("(")
             else:
                 pos_fin_numVersion = texteNouveautes.find(":")
             versionMaj = texteNouveautes[pos_debut_numVersion+1:pos_fin_numVersion].strip()
-        except :
-            print("Pb dans la recuperation du num de version de la MAJ sur internet")
+        except Exception as err:
+            print(err)
+            print("Recuperation du num de version de la MAJ sur internet impossible.")
             versionMaj = "0.0.0.0"
         # Compare les deux versions et renvois le résultat
-        resultat = FonctionsPerso.CompareVersions(versionApp=versionApplication, versionMaj=versionMaj)
-        return resultat
+        try :
+            if self.ConvertVersionTuple(versionMaj) > self.ConvertVersionTuple(VERSION_APPLICATION) :
+                self.versionMAJ = versionMaj
+                return True
+            else:
+                return False
+        except :
+            return False
+
 
     def GetVersionAnnonce(self):
         if "annonce" in self.userConfig :
@@ -1482,10 +1401,10 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
         self.userConfig["assistant_demarrage"] = checkAffichage
         # Charge la commande demandée
         if choix != None :
-            if choix == 1 : FonctionsPerso.LanceFichierExterne(_(u"http://teamworks.forumactif.com/caracteristiques-f1/a-la-video-de-presentation-t121.htm"))
-            if choix == 2 : self.MenuNouveau(None)
-            if choix == 3 : FonctionsPerso.LanceFichierExterne("http://teamworks.forumactif.com")
-            if choix == 4 : self.MenuOuvrir(None)
+            if choix == 1 : FonctionsPerso.LanceFichierExterne(_(u"https://www.teamworks.ovh"))
+            if choix == 2 : self.On_fichier_nouveau(None)
+            if choix == 3 : FonctionsPerso.LanceFichierExterne("https://teamworks.ovh/index.php/assistance/les-tutoriels-videos")
+            if choix == 4 : self.On_fichier_ouvrir(None)
             if choix == 5 : self.OuvrirFichier(nomFichier="Exemple")
             if choix == 6 : self.OuvrirFichier(nomFichier=self.nomDernierFichier)
         else :

@@ -115,9 +115,14 @@ class TreeCtrl(CT.CustomTreeCtrl):
 
     def CreationImage(self, tailleImages, r, v, b):
         """ Création des images pour le TreeCtrl """
-        bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
-        bmp.SetRGBRect((0, 0, 16, 16), 255, 255, 255)
-        bmp.SetRGBRect((6, 4, 8, 8), r, v, b)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Image(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGB((0, 0, 16, 16), 255, 255, 255)
+            bmp.SetRGB((6, 4, 8, 8), r, v, b)
+        else:
+            bmp = wx.EmptyImage(tailleImages[0], tailleImages[1], True)
+            bmp.SetRGBRect((0, 0, 16, 16), 255, 255, 255)
+            bmp.SetRGBRect((6, 4, 8, 8), r, v, b)
         return bmp.ConvertToBitmap()
 
     def Remplissage(self):

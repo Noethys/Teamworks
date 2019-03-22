@@ -202,7 +202,10 @@ class MyDialog(wx.Dialog):
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """
-        selections = self.checkListBox.GetChecked()
+        if 'phoenix' in wx.PlatformInfo:
+            selections = self.checkListBox.GetCheckedItems()
+        else:
+            selections = self.checkListBox.GetChecked()
         
         # Validation de la sélection
         if len(selections) == 0 :

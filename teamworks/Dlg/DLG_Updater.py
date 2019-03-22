@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 #------------------------------------------------------------------------
-# Application :    Teamworks
+# Application :    Noethys, gestion multi-activités
+# Site internet :  www.noethys.com
 # Auteur:           Ivan LUCAS
-# Copyright:       (c) 2010-11 Ivan LUCAS
+# Copyright:       (c) 2010-16 Ivan LUCAS
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+
 import Chemins
+from Utils import UTILS_Adaptations
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
@@ -15,21 +18,36 @@ import FonctionsPerso
 import sys 
 from time import sleep 
 from threading import Thread 
-import urllib
-import urllib2
+from six.moves.urllib.request import Request, urlopen, urlretrieve
 import os
-from Utils import UTILS_Fichiers
+import six
 import zipfile
 import glob
 
 from Ctrl import CTRL_Bandeau
+from Utils import UTILS_Fichiers
+
+
+
+#------------------------------------------------------------------------------------------
+# Pour les tests, mettre sur True
+DEBUG = False
+#------------------------------------------------------------------------------------------
+
+
+
 
 
 def AffichetailleFichier(fichierURL):
+    tailleFichier = 0
     try :
-        fichier = urllib.URLopener().open(fichierURL)
-        tailleFichier = (fichier.info().getheaders('Content-Length'))
-        tailleFichier = tailleFichier[0]
+        fichier = urlopen(fichierURL)
+        if six.PY3:
+            tailleFichier = fichier.headers['Content-Length']
+        else:
+            infoFichier = (fichier.info().getheaders('Content-Length'))
+            if len(infoFichier) > 0 :
+                tailleFichier = infoFichier[0]
     except IOError :
         tailleFichier = 0
     return tailleFichier
@@ -43,9 +61,9 @@ def FormateTailleFichier(taille):
     if 0 <= taille <1000 :
         texte = str(taille) + " octets"
     elif 1000 <= taille < 1000000 :
-        texte = str(taille/1000) + " Ko"
+        texte = str(taille//1000) + " Ko"
     else :
-        texte = str(taille/1000000) + " Mo"
+        texte = str(taille//1000000) + " Mo"
     return texte
 
 
@@ -125,11 +143,11 @@ class Download(Thread):
         #print "Telechargement de la nouvelle version : etape 4"
 
     def _hook(self, nb_blocs, taille_bloc, taille_fichier):
-        #print _(u"Telecharge="), nb_blocs*taille_bloc, _(u"/ total="), taille_fichier
+        #print "Telecharge=", nb_blocs*taille_bloc, _(u"/ total="), taille_fichier
         if nb_blocs*taille_bloc >= taille_fichier:
             #print "Le telechargement est termine !"
             self.succes = True
-            self.zoneTexte.SetLabel(_(u"Le téléchargement est terminé. Veuillez patientez..."))
+            self.zoneTexte.SetLabel(_(u"Le téléchargement est terminé. Veuillez patienter..."))
             self.frameParente.SetTitle(_(u"Mises à jour Internet"))
             raise Abort
         if self.stop: 
@@ -142,14 +160,14 @@ class Download(Thread):
                 texteInfo = _(u"Téléchargement en cours...  ") + FormateTailleFichier(nb_blocs*taille_bloc)+" / "+FormateTailleFichier(taille_fichier)
                 if texteInfo != self.zoneTexte.GetLabel() :
                     self.zoneTexte.SetLabel(texteInfo)
-            self.frameParente.SetTitle(AffichePourcentage(nb_blocs*taille_bloc, taille_fichier) + _(u" | Téléchargement d'une mise à jour"))
+                self.frameParente.SetTitle(AffichePourcentage(nb_blocs*taille_bloc, taille_fichier) + _(u" | Téléchargement d'une mise à jour"))
 
     def run(self): 
         #print "Telechargement de la nouvelle version : etape 5"
         try: 
             if "linux" in sys.platform :
                 self.zoneTexte.SetLabel(_(u"Téléchargement en cours..."))
-            urllib.urlretrieve(self.fichierURL, self.fichierDest, self._hook) 
+            urlretrieve(self.fichierURL, self.fichierDest, self._hook)
         except Abort as KeyBoardInterrupt: 
             #print 'Aborted ici !' 
             if self.succes == True :
@@ -179,7 +197,7 @@ class Page_recherche(wx.Panel):
         
         # Création des widgets
         texteIntro = _(u"Cliquez sur le bouton 'Rechercher' pour lancer la recherche.")
-        self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
+        self.label_introduction = wx.StaticText(self, -1, texteIntro) #FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         self.gauge = wx.Gauge(self, -1)
         
         # Règlages pour la gauge
@@ -189,7 +207,7 @@ class Page_recherche(wx.Panel):
                 
         # Boutons
         self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Rechercher.png"), wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Rechercher"), cheminImage=Chemins.GetStaticPath("Images/32x32/Loupe.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
         
         self.__set_properties()
@@ -247,9 +265,9 @@ class Page_recherche(wx.Panel):
         
     def GetVersionLogiciel(self):
         """ Recherche du numéro de version du logiciel """
-        fichierVersion = open("Versions.txt", "r")
+        fichierVersion = open(Chemins.GetMainPath("Versions.txt"), "r")
         txtVersion = fichierVersion.readlines()[0]
-        fichierVersion.close() 
+        fichierVersion.close()
         pos_debut_numVersion = txtVersion.find("n")
         if "(" in txtVersion[:50] :
             pos_fin_numVersion = txtVersion.find("(")
@@ -277,30 +295,32 @@ class Page_recherche(wx.Panel):
         try :
             if "linux" in sys.platform :
                 # Version Debian
-                fichierVersions = urllib.urlopen('http://www.clsh-lannilis.com/teamworks/debian/Versions.txt')
+                fichierVersions = urlopen('https://raw.githubusercontent.com/Noethys/Teamworks/master/teamworks/Versions.txt', timeout=10)
             else:
                 # Version Windows
-                fichierVersions = urllib.urlopen('http://www.clsh-lannilis.com/teamworks/Versions.txt')
+                fichierVersions = urlopen('http://www.teamworks.ovh/fichiers/windows/Versions.txt', timeout=10)
             self.texteNouveautes= fichierVersions.read()
             fichierVersions.close()
         except :
             self.Suite(etat="erreur") 
             return
-        
+
         # Recherche du numéro de version
+        if six.PY3:
+            self.texteNouveautes = self.texteNouveautes.decode("iso-8859-15")
         pos_debut_numVersion = self.texteNouveautes.find("n")
         if "(" in self.texteNouveautes[:50] :
             pos_fin_numVersion = self.texteNouveautes.find("(")
         else:
             pos_fin_numVersion = self.texteNouveautes.find(":")
         self.versionFichier = self.texteNouveautes[pos_debut_numVersion+1:pos_fin_numVersion].strip()
-        
+
         # Si la mise à jour n'est pas nécessaire :
         versionLogiciel = self.ConvertVersionTuple(self.GetVersionLogiciel())
         versionInternet = self.ConvertVersionTuple(self.versionFichier)
         
-##        print "versionLogiciel=", versionLogiciel, " | versionInternet=", versionInternet
-        if versionInternet <= versionLogiciel :
+        print("versionLogiciel=", versionLogiciel, " | versionInternet=", versionInternet)
+        if versionInternet <= versionLogiciel and DEBUG == False :
             self.Suite(etat="aucune")
             return
 
@@ -332,25 +352,27 @@ class Page_recherche(wx.Panel):
         if etat == "trouvee" :
             # Une mise à jour a été trouvée !
             self.parent.versionFichier = self.versionFichier
-            self.parent.fichierDest = UTILS_Fichiers.GetRepUpdates(self.parent.versionFichier)
-            if "win" in sys.platform : self.parent.fichierDest = self.parent.fichierDest.replace("/", "\\")
+            self.parent.fichierDest = UTILS_Fichiers.GetRepUpdates(fichier=self.parent.versionFichier)
+            if sys.platform.startswith("win") : self.parent.fichierDest = self.parent.fichierDest.replace("/", "\\")
             # Vérifie qu'elle n'a pas déjà été téléchargée sur le disque dur
             fichierAverifier = self.parent.fichierDest+ "/" + self.parent.nomFichier
-            if "win" in sys.platform : fichierAverifier = fichierAverifier.replace("/", "\\")
+            if sys.platform.startswith("win") : fichierAverifier = fichierAverifier.replace("/", "\\")
             if os.path.isfile(fichierAverifier) == True :
                 tailleFichierAverifier = os.path.getsize(fichierAverifier)  
                 tailleFichierOrigin = self.parent.tailleFichier
                 if tailleFichierAverifier == tailleFichierOrigin :
                     # Ok le fichier existe bien déjà
                     texteIntro1 = _(u"La mise à jour ") + self.versionFichier + _(u" a déjà été téléchargée précédemment.")
-                    self.parent.page_fin_telechargement.label_introduction1.SetLabel(texteIntro1)
+                    self.parent.GetPage("page_fin_telechargement").label_introduction1.SetLabel(texteIntro1)
                     self.parent.Active_page("page_fin_telechargement")
             else:
                 # Sinon, on la télécharge...
                 texteIntro1 = _(u"La version ") + self.versionFichier + " de Teamworks est disponible (" + self.tailleFichier + ")."
-                self.parent.page_disponible.label_introduction1.SetLabel(texteIntro1)
+                self.parent.GetPage("page_disponible").label_introduction1.SetLabel(texteIntro1)
                 texteNouveautes = self.texteNouveautes
-                self.parent.page_disponible.textCtrl_nouveautes.SetValue(texteNouveautes.decode("iso-8859-15"))
+                if six.PY2:
+                    texteNouveautes = texteNouveautes.decode("iso-8859-15")
+                self.parent.GetPage("page_disponible").textCtrl_nouveautes.SetValue(texteNouveautes)
                 self.parent.Active_page("page_disponible")
               
 
@@ -365,14 +387,14 @@ class Page_disponible(wx.Panel):
         
         # Création des widgets
         texteIntro1 = ""
-        self.label_introduction1 = FonctionsPerso.StaticWrapText(self, -1, texteIntro1)
+        self.label_introduction1 = wx.StaticText(self, -1, texteIntro1) # FonctionsPerso.StaticWrapText(self, -1, texteIntro1)
         texteIntro2 = _(u"Souhaitez-vous la télécharger maintenant ?")
-        self.label_introduction2 = FonctionsPerso.StaticWrapText(self, -1, texteIntro2)
+        self.label_introduction2 = wx.StaticText(self, -1, texteIntro2) # FonctionsPerso.StaticWrapText(self, -1, texteIntro2)
         self.textCtrl_nouveautes = wx.TextCtrl(self, -1,"", size=(-1, 50), style=wx.TE_MULTILINE)
         
         # Boutons
         self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Telecharger_L95.png"), wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Télécharger"), cheminImage=Chemins.GetStaticPath("Images/32x32/Telecharger.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
         
         self.__set_properties()
@@ -436,12 +458,12 @@ class Page_telechargement(wx.Panel):
         
         # Création des widgets
         texteIntro = _(u"Le téléchargement va commencer dans quelques instants...")
-        self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
+        self.label_introduction = wx.StaticText(self, -1, texteIntro) # FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         self.gauge = wx.Gauge(self, -1)
         
         # Boutons
         self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Telecharger_L95.png"), wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Télécharger"), cheminImage=Chemins.GetStaticPath("Images/32x32/Telecharger.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
         self.bouton_ok.Show(False)
         
@@ -513,6 +535,12 @@ class Page_telechargement(wx.Panel):
         
         # Téléchargement terminé
         if succes == True :
+            # On attribue un ID unique qui permet de compter les téléchargements
+            IDfichier = FonctionsPerso.GetIDfichier()
+            if len(IDfichier) > 7 :
+                id = IDfichier[-7:]
+            else :
+                id = ""
             # On envoie le signal pour le compteur de téléchargement
             if "linux" in sys.platform :
                 typeFichier = "linux"
@@ -520,9 +548,9 @@ class Page_telechargement(wx.Panel):
                 typeFichier = "windows"
             try :
                 versionFichier = self.parent.versionFichier
-                fichier = "%s-%s" % (typeFichier, versionFichier)
-                req = urllib2.Request("http://www.clsh-lannilis.com/teamworks/telechargement.cgi?fichier=%s" % fichier)
-                handle = urllib2.urlopen(req)
+                fichier = "%s-%s-%s" % (typeFichier, versionFichier, id)
+                req = Request("http://www.teamworks.ovh/fichiers/telechargement.cgi?fichier=%s" % fichier)
+                handle = urlopen(req)
             except :
                 pass
             # Si téléchargement complet, on passe à la page de fin de téléchargement
@@ -570,6 +598,12 @@ class Page_telechargement(wx.Panel):
             self.downloader.abort()
             self.label_introduction.SetLabel(_(u"Vous avez interrompu le téléchargement."))
             self.bouton_ok.Show(True)
+
+            # Pour le debug, passe à la page suivante
+            if DEBUG :
+                self.parent.Active_page("page_fin_telechargement")
+                return
+
         else:
             # Si le téléchargement n'est pas en cours, on ferme la fenêtre
             self.parent.Fermer()
@@ -588,13 +622,13 @@ class Page_fin_telechargement(wx.Panel):
         
         # Création des widgets
         texteIntro1 = _(u"La mise à jour a été téléchargée avec succès.")
-        self.label_introduction1 = FonctionsPerso.StaticWrapText(self, -1, texteIntro1)
+        self.label_introduction1 = wx.StaticText(self, -1, texteIntro1) # FonctionsPerso.StaticWrapText(self, -1, texteIntro1)
         texteIntro2 = _(u"Souhaitez-vous l'installer maintenant ?")
-        self.label_introduction2 = FonctionsPerso.StaticWrapText(self, -1, texteIntro2)
+        self.label_introduction2 = wx.StaticText(self, -1, texteIntro2) # FonctionsPerso.StaticWrapText(self, -1, texteIntro2)
         
         # Boutons
         self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Installer_L72.png"), wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Installer"), cheminImage=Chemins.GetStaticPath("Images/32x32/Installation.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
         
         self.__set_properties()
@@ -642,6 +676,7 @@ class Page_fin_telechargement(wx.Panel):
 
     def Activation(self):
         self.SetSize((500, 600))
+        #self.SendSizeEvent()
         self.Refresh()
         
         
@@ -656,12 +691,12 @@ class Page_installation(wx.Panel):
         
         # Création des widgets
         texteIntro = _(u"Installation de la mise à jour en cours...")
-        self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
+        self.label_introduction = wx.StaticText(self, -1, texteIntro) # FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         self.journal = wx.TextCtrl(self, -1,"", size=(-1, 10), style=wx.TE_MULTILINE)
         
         # Boutons
         self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Installer_L72.png"), wx.BITMAP_TYPE_ANY))
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Installer"), cheminImage=Chemins.GetStaticPath("Images/32x32/Installation.png"))
         self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
         
         self.__set_properties()
@@ -708,6 +743,7 @@ class Page_installation(wx.Panel):
     def Activation(self):
         # Pour contrer bug de Layout
         self.SetSize((500, 700))
+        self.Refresh()
         self.Installation()
     
     def Installation(self):
@@ -717,38 +753,51 @@ class Page_installation(wx.Panel):
         self.bouton_annuler.Enable(False)
         
         # Lancement de la sauvegarde
-##        dlg = wx.MessageDialog(self, _(u"Souhaitez-vous faire une sauvegarde de sécurité complète ?"), _(u"Sauvegarde"), wx.YES_NO|wx.YES_DEFAULT|wx.CANCEL|wx.ICON_INFORMATION)
-##        reponse = dlg.ShowModal()
-##        dlg.Destroy()
-##        if reponse == wx.ID_YES :
-        self._Sauvegarde()
-##        else:
-##            # Lance la suite de l'installation
-##            self._Installation()
+        #self._Sauvegarde()
+
+        wx.CallLater(5, self._Installation)
         
     def _Sauvegarde(self):
         """ Procédure de sauvegarde globale du répertoire """
-        self.label_introduction.SetLabel(_(u"Sauvegarde globale des données en cours..."))
+        self.label_introduction.SetLabel(_(u"Sauvegarde des données locales en cours..."))
         if "linux" not in sys.platform :
-            self.journal.WriteText(_(u"> Sauvegarde globale des données :\n\n"))
+            self.journal.WriteText(_(u"> Sauvegarde des données locales :\n\n"))
         
         fichierDest = self.parent.fichierDest + "/global_save.zip"
-        if "win" in sys.platform : fichierDest = fichierDest.replace("/", "\\")
+        if sys.platform.startswith("win") : fichierDest = fichierDest.replace("/", "\\")
         repApplication = os.getcwd()
         
-        save = zipdirectory(self, self.journal, fichierDest, repApplication)
+        save = zipdirectory(self, self.journal, fichierDest, repApplication + "/Data")
         save.start()
         
     def _Installation(self):
         """ Procédure d'installation """
         self.label_introduction.SetLabel(_(u"Chargement de l'installeur..."))
-        self.journal.WriteText(_(u"\n\nInstalleur en cours de chargement. Veuillez patienter..."))
-        
+        self.journal.WriteText(_(u"Installeur en cours de chargement. Veuillez patienter..."))
+
+        sleep(1)
+
         # Lancement de l'installeur
         fichierMAJ = self.parent.fichierDest + "/" + self.parent.nomFichier
-        FonctionsPerso.LanceFichierExterne(fichierMAJ)
+        if "linux" in sys.platform :
+            dirTemp = UTILS_Fichiers.GetRepTemp()
+            self.journal.WriteText(_(u"\n\nExtraction des fichiers. Veuillez patienter..."))
+            os.system("unzip -d " + dirTemp + " " + fichierMAJ)
+            self.journal.WriteText(_(u"\n\nCopie des fichiers. Veuillez patienter..."))
+            os.system("cp -a " + dirTemp +"/Teamworks-master/teamworks/* .")
+            self.journal.WriteText(_(u"\n\nEffacement fichiers temporaires. Veuillez patienter..."))
+            os.system("rm -rf " + dirTemp +"/Teamworks-master")
+        else :
+            try :
+                FonctionsPerso.LanceFichierExterne(fichierMAJ)
+            except :
+                self.journal.WriteText(_(u"\nErreur : Impossible d'ouvrir l'installeur."))
+                dlg = wx.MessageDialog(self, _(u"Teamworks n'a pas réussi à ouvrir l'installeur.\n\nCe blocage peut peut-être venir de votre antivirus. Essayez éventuellement de le désactiver le temps de l'installation de la mise à jour."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+                return False
         
-        # Fermeture 
+        # Fermeture de Teamworks
         try :
             topWindow = wx.GetApp().GetTopWindow()
             nomWindow = topWindow.GetName()
@@ -766,29 +815,38 @@ class Page_installation(wx.Panel):
 
 class Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
+        wx.Dialog.__init__(self, parent, -1, name="DLG_Updater", style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.installation = False
         
         intro = _(u"Vous pouvez ici télécharger et installer une mise à jour pour Teamworks. Ces mises à jour vous permettent bien-sûr de gagner en stabilité et en fonctionnalités.")
         titre = _(u"Mise à jour du logiciel")
-        self.ctrl_bandeau = CTRL_Bandeau.Bandeau(self, titre=titre, texte=intro, hauteurHtml=30, nomImage=Chemins.GetStaticPath("Images/32x32/telecharger.png"))
+        self.ctrl_bandeau = CTRL_Bandeau.Bandeau(self, titre=titre, texte=intro, hauteurHtml=30, nomImage=Chemins.GetStaticPath("Images/32x32/Telecharger.png"))
         
         self.page_active = ""
         
         # Changer ci-dessous pour ne pas afficher la page de recherche (1ere page)
         self.afficher_page_recherche = True 
-        
+
+        # Vider répertoire Updates
+        FonctionsPerso.VideRepertoireUpdates(forcer=True)
+
+        # Met en pause le serveur Connecthys si besoin
+        try :
+            self.parent.ctrl_serveur_portail.PauseServeur()
+        except:
+            pass
+
         # Fichiers
         if "linux" in sys.platform :
             # Version Debian
-            self.nomFichier = "teamworks.deb"
-            self.fichierURL = "http://www.clsh-lannilis.com/teamworks/debian/" + self.nomFichier
+            self.nomFichier = "master.zip"
+            self.fichierURL = "https://github.com/Noethys/Teamworks/archive/" + self.nomFichier
         else:
             # Version Windows
-            self.nomFichier = "teamworks.exe"
-            self.fichierURL = "http://www.clsh-lannilis.com/teamworks/" + self.nomFichier
-
+            self.nomFichier = "Teamworks.exe"
+            self.fichierURL = "http://www.teamworks.ovh/fichiers/windows/" + self.nomFichier
+            
         self.fichierDest = ""
         self.tailleFichier = 0
         self.versionFichier = ""
@@ -799,12 +857,13 @@ class Dialog(wx.Dialog):
         self.sizer_base.AddGrowableCol(0)
         
         # Création des pages dans le sizer
-        self.Creation_page("page_recherche", "Page_recherche")
-        self.Creation_page("page_disponible", "Page_disponible")
-        self.Creation_page("page_telechargement", "Page_telechargement")
-        self.Creation_page("page_fin_telechargement", "Page_fin_telechargement")
-        self.Creation_page("page_installation", "Page_installation")
-        
+        self.dictPages = {}
+        self.Creation_page("page_recherche", Page_recherche)
+        self.Creation_page("page_disponible", Page_disponible)
+        self.Creation_page("page_telechargement", Page_telechargement)
+        self.Creation_page("page_fin_telechargement", Page_fin_telechargement)
+        self.Creation_page("page_installation", Page_installation)
+
         self.sizer_base.AddGrowableRow(1)
         self.sizer_base.AddGrowableRow(2)
         self.sizer_base.AddGrowableRow(3)
@@ -818,8 +877,8 @@ class Dialog(wx.Dialog):
         self.SetSizer(self.sizer_base)
         self.Layout()
         
-        self.SetMinSize((450, 350))
-        self.SetSize((450, 350))
+        self.SetMinSize((600, 500))
+        self.SetSize((600, 500))
         self.CentreOnScreen()
         
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -827,44 +886,62 @@ class Dialog(wx.Dialog):
     def GetEtat(self):
         return self.installation
     
-    def Creation_page(self, nomPage="", nomClasse=""):
+    def Creation_page(self, nomPage="", classe=None):
         """ Création d'une page """
-        exec("self." + nomPage + " = " + nomClasse + "(self)")
-        exec("self.sizer_base.Add(self." + nomPage + ", 1, wx.EXPAND, 0)")
-        exec("self." + nomPage +".Show(False)")
-    
+        page = classe(self)
+        self.sizer_base.Add(page, 1, wx.EXPAND, 0)
+        page.Show(False)
+        self.dictPages[nomPage] = page
+
+    def GetPage(self, nomPage=""):
+        return self.dictPages[nomPage]
+
     def Active_page(self, choixPage=""):
         """ Active une page choisie """
         # Faire disparaître la page actuelle
-        if self.page_active != "" : 
-            exec("self." + self.page_active + ".Show(False)")
+        if self.page_active != "" :
+            self.dictPages[self.page_active].Show(False)
         # Faire apparaître et active la page choisie
         if choixPage != "" :
             self.page_active = choixPage
-            exec("self." + choixPage + ".Show(True)")
-            exec("self." + choixPage + ".Activation()")
+            self.dictPages[self.page_active].Show(True)
+            self.dictPages[self.page_active].Activation()
             self.Layout()
     
     def Aide(self):
-        FonctionsPerso.Aide(28)
-        
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Rechercherunemisejourdulogiciel")
+
+    def SurFermeture(self):
+        # Relance serveur Connecthys si besoin
+        if self.GetEtat() == False :
+            try :
+                self.parent.ctrl_serveur_portail.RepriseServeur()
+            except:
+                pass
+
     def Fermer(self):
+        self.SurFermeture()
+
         # Fermeture de la fenêtre
         self.EndModal(wx.ID_OK)
 
     def OnClose(self, event):
+        self.SurFermeture()
+
         if self.page_active == "page_telechargement" :
             self.page_telechargement.Arreter_telechargement()
         elif self.page_active == "page_installation" :
             pass
         else:
             self.Fermer()
-            #event.Skip()
-        
+
+
                
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
+    DEBUG = True
     frame_1 = Dialog(None)
     app.SetTopWindow(frame_1)
     frame_1.ShowModal()

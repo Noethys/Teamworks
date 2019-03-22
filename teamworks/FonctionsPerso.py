@@ -36,7 +36,7 @@ def SortItems(items, sorter):
     if six.PY3:
         items.sort(key=functools.cmp_to_key(sorter))
     else:
-        items = FonctionsPerso.SortItems(items, sorter)
+        items = SortItems(items, sorter)
     return items
 
 
@@ -1058,19 +1058,26 @@ def AfficheStatsProgramme():
     nbreLignesTotal = 0
     # Recherche les fichiers python
     print("Lancement de l'analyse...")
-    listeFichiers = os.listdir("")
-    for nomFichier in listeFichiers :
-        if nomFichier.endswith(".py") :
-            # Compte le nombre de lignes de chaque fichier Python
-            fichier = open(nomFichier, 'r')
-            nbreLignes = 0
-            for line in fichier :
-                nbreLignes += 1
-            fichier.close()
-            # Mémorise les résultats
-            listeResultats.append((nomFichier, nbreLignes))
-            nbreLignesTotal += nbreLignes
-    
+
+    listeFichiers = {}
+    for rep in ("Dlg", "Ctrl", "Ol", "Utils"):
+        if rep not in listeFichiers:
+            listeFichiers[rep] = []
+        listeFichiers[rep] = os.listdir(os.getcwd() + "/" + rep)
+
+    for rep, liste in listeFichiers.items() :
+        for nomFichier in liste:
+            if nomFichier.endswith(".py") :
+                fichier = open(rep + "/" + nomFichier, 'r')
+
+                nbreLignes = 0
+                for line in fichier :
+                    nbreLignes += 1
+                fichier.close()
+                # Mémorise les résultats
+                listeResultats.append((nomFichier, nbreLignes))
+                nbreLignesTotal += nbreLignes
+
     # Affiche les résultats
     for nomFichier, nbreLignes in listeResultats :
         print("%s ---> %d lignes" % (nomFichier, nbreLignes))
@@ -1082,7 +1089,7 @@ def AfficheStatsProgramme():
 
 def GetVersionTeamworks():
     """ Recherche du numéro de version de TW """
-    fichierVersion = open("Versions.txt", "r")
+    fichierVersion = open(Chemins.GetMainPath("Versions.txt"), "r")
     txtVersion = fichierVersion.readlines()[0]
     fichierVersion.close() 
     pos_debut_numVersion = txtVersion.find("n")
@@ -1432,6 +1439,4 @@ def InsertCodeToolTip():
 
 
 if __name__ == "__main__":
-    pass
-    
-    #InsertCodeToolTip()
+    AfficheStatsProgramme()

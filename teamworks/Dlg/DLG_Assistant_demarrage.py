@@ -18,7 +18,7 @@ from Ctrl import CTRL_Platebtn # L'event ON ERASE BACKGROUND a été désactivé car
 
 
 
-class MyFrame(wx.Dialog):
+class Dialog(wx.Dialog):
     def __init__(self, parent, checkAffichage=False, afficherDernierFichier=True, nomDernierFichier=""):
         wx.Dialog.__init__(self, parent, -1, title=_(u"Assistant de démarrage"), size=(730, -1))
         self.parent = parent
@@ -134,6 +134,6 @@ class MyFrame(wx.Dialog):
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frm = MyFrame(None, checkAffichage=False)
+    frm = Dialog(None, checkAffichage=False)
     frm.ShowModal()
     app.MainLoop()

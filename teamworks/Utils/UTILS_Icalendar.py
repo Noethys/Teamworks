@@ -10,8 +10,9 @@
 
 from Utils.UTILS_Traduction import _
 import icalendar
-import urllib2
+from six.moves.urllib.request import urlopen
 import datetime
+import FonctionsPerso
 
 
 class Calendrier():
@@ -19,7 +20,7 @@ class Calendrier():
         try :
             # Ouverture du calendrier
             if url != None :
-                fichier = urllib2.urlopen(url, timeout=5)
+                fichier = urlopen(url, timeout=5)
             if nomFichier != None :
                 fichier = open(nomFichier, "rb")
             # Lecture du fichier
@@ -77,8 +78,8 @@ class Calendrier():
                         listeResultats.append({"annee" : annee, "nom" : nomFinal, "date_debut" : date_debut, "date_fin" : date_fin})
         
         # Tri par date de début
-        listeResultats.sort(lambda x,y: cmp(x["date_debut"], y["date_debut"]))
-        
+        listeResultats = sorted(listeResultats, key=lambda periode: periode["date_debut"])
+
         return listeResultats
         
         

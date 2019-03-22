@@ -465,8 +465,9 @@ class Panel(wx.Panel):
                 
         
     def AjouterCoord(self, event):
-        frameCoords = DLG_Saisie_coords.FrameCoords(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=0, IDpersonne=self.IDcandidat)
-        frameCoords.Show()
+        dlg = DLG_Saisie_coords.Dialog(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=0, IDpersonne=self.IDcandidat)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def ModifierCoord(self, event):
         """ Modification de coordonnées """
@@ -477,8 +478,9 @@ class Panel(wx.Panel):
             dlg.Destroy()
             return
         varIDcoord = self.ctrl_coords.GetItemData(index)
-        frameCoords = DLG_Saisie_coords.FrameCoords(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=varIDcoord, IDpersonne=self.IDcandidat)
-        frameCoords.Show()
+        dlg = DLG_Saisie_coords.Dialog(self, -1, _(u"Coordonnées"), size=(280, 290), IDcoord=varIDcoord, IDpersonne=self.IDcandidat)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def SupprimerCoord(self, event):
         """ Suppression d'une coordonnée """

@@ -8,10 +8,10 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+import Chemins
 from Utils.UTILS_Traduction import _
 from PIL import Image
 import wx
-from Ctrl import CTRL_Bouton_image
 import os
 
 
@@ -20,7 +20,7 @@ def ConvertirImagePNG(fichier="") :
     image = Image.open(fichier)
     image.load() 
     profile = image.info.get("icc_profile")
-    
+
     if profile != None :
         # Créée une image sans icc_profile
         nouvelleImage = Image.new("RGBA", image.size)
@@ -28,7 +28,7 @@ def ConvertirImagePNG(fichier="") :
         
         # Supprime l'image ancienne
         os.remove(fichier)
-        
+
         # Sauvegarde la nouvelle image
         nouveauFichier = fichier
         nouvelleImage.save(nouveauFichier, format="png")
@@ -41,7 +41,7 @@ def ConvertirToutesImagesPNG():
     """ Convertit toutes les images PNG du répertoire Noethys """
     racine = "Images"
     # Recherche les PNG présents
-    tree = os.walk(racine)
+    tree = os.walk(Chemins.GetStaticPath("Images"))
     listeFichiersPNG = []
     for repertoire, listeRepertoires, listeFichiers in tree :
         for fichier in listeFichiers :

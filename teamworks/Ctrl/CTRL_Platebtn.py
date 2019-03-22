@@ -131,9 +131,7 @@ class PlateButton(wx.PyControl):
         :keyword `style`: Button style
 
         """
-        super(PlateButton, self).__init__(parent, id, pos, size,
-                                          wx.BORDER_NONE|wx.TRANSPARENT_WINDOW,
-                                          name=name)
+        super(wx.PyControl, self).__init__(parent, id, pos, size, wx.BORDER_NONE|wx.TRANSPARENT_WINDOW, name=name)
 
         # Attributes
         self.InheritAttributes()
@@ -568,9 +566,12 @@ class PlateButton(wx.PyControl):
         if (self._style & PB_STYLE_TOGGLE):
             self._pressed = not self._pressed
 
-        pos = evt.GetPositionTuple()
+        pos = evt.GetPosition()
         self._SetState(PLATE_PRESSED)
-        size = self.GetSizeTuple()
+        if 'phoenix' in wx.PlatformInfo:
+            size = self.GetSize()
+        else:
+            size = self.GetSizeTuple()
         if pos[0] >= size[0] - 16:
             if self._menu is not None:
                 self.ShowMenu()
@@ -589,8 +590,11 @@ class PlateButton(wx.PyControl):
 
         """
         if self._state['cur'] == PLATE_PRESSED:
-            pos = evt.GetPositionTuple()
-            size = self.GetSizeTuple()
+            pos = evt.GetPosition()
+            if 'phoenix' in wx.PlatformInfo:
+                size = self.GetSize()
+            else:
+                size = self.GetSizeTuple()
             if not (self._style & PB_STYLE_DROPARROW and pos[0] >= size[0] - 16):
                 self.__PostEvent()
 

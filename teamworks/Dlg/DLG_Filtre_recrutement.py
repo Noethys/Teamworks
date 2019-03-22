@@ -150,8 +150,8 @@ class MyDialog(wx.Dialog):
         for label, nomControle, typeControle, listeChoix, motSQL, valeur in self.listeControles :
             ctrl_label = wx.StaticText(self, -1, u"%s :" % label)
             grid_sizer_contenu.Add(ctrl_label, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 0)
+            typeControle = eval(typeControle)
             if listeChoix != None :
-                typeControle = eval(typeControle)
                 setattr(self, "ctrl_%s" % nomControle, typeControle(self, valeur=valeur, nomFiltre=label, listeChoix=listeChoix, motSQL=motSQL))
             else:
                 setattr(self, "ctrl_%s" % nomControle, typeControle(self, valeur=valeur, nomFiltre=label, motSQL=motSQL))
