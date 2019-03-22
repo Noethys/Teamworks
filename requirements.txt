@@ -1,0 +1,13 @@
+wxPython
+reportlab
+matplotlib
+Pillow
+python-dateutil
+six
+appdirs
+pycryptodome
+pypiwin32
+mysql-connector-python
+XlsxWriter
+icalendar
+numpy
