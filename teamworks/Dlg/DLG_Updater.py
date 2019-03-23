@@ -319,7 +319,6 @@ class Page_recherche(wx.Panel):
         versionLogiciel = self.ConvertVersionTuple(self.GetVersionLogiciel())
         versionInternet = self.ConvertVersionTuple(self.versionFichier)
         
-        print("versionLogiciel=", versionLogiciel, " | versionInternet=", versionInternet)
         if versionInternet <= versionLogiciel and DEBUG == False :
             self.Suite(etat="aucune")
             return
@@ -515,7 +514,8 @@ class Page_telechargement(wx.Panel):
         self.timer.Start(1)
 
     def __del__(self):
-        self.timer.Stop()
+        if hasattr(self, "timer"):
+            self.timer.Stop()
 
     def TimerHandler(self, event):
         self.count = self.count + 1
