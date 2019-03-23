@@ -586,9 +586,10 @@ class Dialog(wx.Dialog):
         self.MAJ_apercu() 
         
     def OnBoutonAide(self, event):
-        print("Aide...")
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
-    def OnBoutonAnnuler(self, event): 
+    def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)
     
     def GetLabel(self):

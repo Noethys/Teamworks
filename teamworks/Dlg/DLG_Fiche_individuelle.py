@@ -395,7 +395,8 @@ class Dialog(wx.Dialog):
         event.Skip()
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(57)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Laficheindividuelle")
 
     def OnBoutonOk(self, event):
         self.AnnulationImpossible = False

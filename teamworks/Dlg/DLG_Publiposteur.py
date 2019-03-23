@@ -120,7 +120,8 @@ class Dialog(wx.Dialog):
         dlg = wx.MessageDialog(self, _(u"L'aide pour ce nouveau module est en cours de rédaction."), _(u"Aide indisponible"), wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
-        # FonctionsPerso.Aide(37)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Imprimeruncontrat")
 
     def Onbouton_retour(self, event):
         # rend invisible la page affichée

@@ -219,7 +219,8 @@ class Dialog(wx.Dialog):
             index += 1
         
     def OnBoutonAide(self, event):
-        print("Aide...")
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def OnBoutonOk(self, event):
 

@@ -151,7 +151,8 @@ class Dialog(wx.Dialog):
         self.sizer_pages = sizer_pages
 
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(24)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lestypesdesituations")
             
     def Onbouton_annuler(self, event):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Classification

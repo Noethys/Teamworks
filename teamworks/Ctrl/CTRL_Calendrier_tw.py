@@ -837,7 +837,8 @@ class Calendrier(wx.ScrolledWindow):
 
     def OnPopup2(self, event):
         """ Aide sur le calendrier """
-        FonctionsPerso.Aide(51)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lecalendrier")
 
 
     def OnPopup3(self, event):

@@ -261,7 +261,8 @@ class Panel(wx.Panel):
         DB.Close()
     
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(17) 
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lasauvegardeautomatique")
 
 
 
@@ -335,7 +336,8 @@ class MyFrame(wx.Frame):
         event.Skip()
         
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(17)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lasauvegardeautomatique")
             
     def Onbouton_annuler(self, event):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
@@ -514,7 +516,8 @@ class Saisie_sauvegarde_auto(wx.Frame):
         event.Skip()
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(17)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lasauvegardeautomatique")
 
     def OnBoutonAnnuler(self, event):
         self.MakeModal(False)
@@ -715,7 +718,8 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         event.Skip()
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(18)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Creerunesauvegarde")
 
     def OnBoutonAnnuler(self, event):
         self.MakeModal(False)
@@ -1009,7 +1013,8 @@ class Restauration(wx.Frame):
         event.Skip()
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(19)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Restaurerunesauvegarde")
 
     def OnBoutonAnnuler(self, event):
         self.MakeModal(False)

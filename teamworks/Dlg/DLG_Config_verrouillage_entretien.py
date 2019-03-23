@@ -108,11 +108,9 @@ class Panel(wx.Panel):
                 dlg.Destroy()
             
     def OnBoutonAide(self, event):
-##        FonctionsPerso.Aide(26) 
-        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()  
-        
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Laprotectionparmotdepasse")
+
         
 class SaisiePassword(wx.Dialog):
     def __init__(self, parent, id=-1, title=_(u"Saisie du code de déverrouillage")):

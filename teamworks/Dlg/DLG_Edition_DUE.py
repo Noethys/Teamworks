@@ -585,7 +585,8 @@ class Dialog(wx.Dialog):
         self.CenterOnScreen()
 
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(2)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("ImprimeruneDUE")
 
     def Onbouton_annuler(self, event):
         self.EndModal(wx.ID_CANCEL)

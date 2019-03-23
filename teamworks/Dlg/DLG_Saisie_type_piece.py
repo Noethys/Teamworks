@@ -182,7 +182,8 @@ class Dialog(wx.Dialog):
             self.ListeDiplomesPourLBox.append(nom)
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(50)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lestypesdepices")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

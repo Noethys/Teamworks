@@ -2027,7 +2027,8 @@ class BarreOptions(wx.Panel):
         event.Skip()
     
     def Com_Aide(self, event):
-        FonctionsPerso.Aide(1)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Leplanning")
 
     def Menu_Outils(self, event):
         """Ouverture du menu contextuel des outils du planning """

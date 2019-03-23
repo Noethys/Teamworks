@@ -1437,6 +1437,90 @@ def InsertCodeToolTip():
     print("Fini !!!!!!!!!!!!!!!!!")
 
 
+def InsertCode():
+    """ Pour insérer  dans tous les fichiers """
+    import re
+    x = re.compile(r'(FonctionsPerso.Aide\()(.*?)\)')
+
+    for repertoire in ("Ctrl", "Dlg", "Ol", "Utils") :
+        # Création du répertoire temporaire
+        if not os.path.isdir("%s/New" % repertoire):
+            os.mkdir("%s/New" % repertoire)
+
+        # Get fichiers
+        listeFichiers = os.listdir(os.path.join(os.getcwd(), repertoire))
+        indexFichier = 0
+        for nomFichier in listeFichiers :
+            if nomFichier.endswith("py") :
+                #print "%d/%d :  %s..." % (indexFichier, len(listeFichiers), nomFichier)
+
+                # Ouverture des fichiers
+                fichier = open(os.path.join(repertoire, nomFichier), "r")
+                dirty = False
+
+                listeLignes = []
+                for ligne in fichier :
+
+                    # # Insertion de l'import Chemins
+                    # if "import Chemins" in ligne :
+                    #     ligne = "import Chemins\nfrom Utils import UTILS_Adaptations\n"
+                    #     dirty = True
+
+                    # # Remplacement de wx.Menu
+                    # if "wx.Menu()" in ligne :
+                    #     ligne = ligne.replace("wx.Menu()", "UTILS_Adaptations.Menu()")
+                    #     dirty = True
+
+                    # # Modification de UTILS_Traduction
+                    # if "UTILS_Traduction" in ligne and repertoire != "Utils" :
+                    #     ligne = ligne.replace("UTILS_Traduction", "Utils.UTILS_Traduction")
+                    #     dirty = True
+                    #     print "Traduction:", ligne
+                    #
+                    # # Modification from ... import
+                    # for rep in ("CTRL", "DATA", "DLG", "OL", "UTILS") :
+                    #     chaine = "from %s_" % rep
+                    #     if chaine in ligne and rep.capitalize() != repertoire and "UTILS_Traduction" not in ligne :
+                    #         ligne = ligne.replace(chaine, "from %s.%s_" % (rep.capitalize(), rep))
+                    #         dirty = True
+                    #         print "from:", ligne
+                    #
+                    # # Modification import
+                    # for rep in ("CTRL", "DATA", "DLG", "OL", "UTILS") :
+                    #     chaine = "import %s_" % rep
+                    #     if chaine in ligne and rep.capitalize() != repertoire and "from" not in ligne and "UTILS_Traduction" not in ligne :
+                    #         ligne = ligne.replace(chaine, "from %s import %s_" % (rep.capitalize(), rep))
+                    #         dirty = True
+                    #         print "Import:", ligne
+
+                    # Modification Aide
+                    m = x.search(ligne)
+                    if m:
+                        chaine = m.group(2)
+                        numero_aide = int(chaine)
+                        code_aide = dictAide[numero_aide][0]
+                        listeLignes.append('        from Utils import UTILS_Aide\n')
+                        ligne = '        UTILS_Aide.Aide("%s")\n' % code_aide
+                        dirty = True
+                        print("----------------------------")
+                        print(ligne)
+
+                    listeLignes.append(ligne)
+
+                # Clôture des fichiers
+                fichier.close()
+
+                # Ecriture du nouveau fichier
+                if dirty == True :
+                    nouveauFichier = open(os.path.join(repertoire, "New", nomFichier), "w")
+                    for ligne in listeLignes :
+                        nouveauFichier.write(ligne)
+                    nouveauFichier.close()
+
+            indexFichier += 1
+
+    print("Fini !!!!!!!!!!!!!!!!!")
+
 
 if __name__ == "__main__":
-    AfficheStatsProgramme()
+    InsertCode()

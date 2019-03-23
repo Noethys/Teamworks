@@ -112,10 +112,11 @@ class Dialog(wx.Dialog):
     def OnBoutonDescendre(self, event): 
         self.ctrl_questionnaire.Descendre()
 
-    def OnBoutonAide(self, event): 
-        print("Aide...")
+    def OnBoutonAide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
-    def OnBoutonFermer(self, event): 
+    def OnBoutonFermer(self, event):
         self.EndModal(wx.ID_OK)
 
 

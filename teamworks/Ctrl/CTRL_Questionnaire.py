@@ -105,9 +105,9 @@ class DLG_Choix_creation(wx.Dialog):
     def OnBoutonQuestion(self, event): 
         self.EndModal(200)
 
-    def OnBoutonAide(self, event): 
-        print("Aide...")
-
+    def OnBoutonAide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 

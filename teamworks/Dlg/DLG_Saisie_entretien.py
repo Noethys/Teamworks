@@ -185,9 +185,8 @@ class Dialog(wx.Dialog):
         return ID
 
     def OnBoutonAide(self, event):
-        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

@@ -485,7 +485,8 @@ class SaisieDeplacement(wx.Dialog):
 
     def OnBoutonAide(self, event):
         """ Aide """
-        FonctionsPerso.Aide(44)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Enregistrerundplacement")
         
     def OnBoutonOk(self, event):
         """ Validation des données saisies """

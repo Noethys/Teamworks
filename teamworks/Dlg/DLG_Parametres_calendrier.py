@@ -406,7 +406,8 @@ class Dialog(wx.Dialog):
         DB.Close()
 
     def OnBoutonAide(self, event):
-        print("Aide")
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

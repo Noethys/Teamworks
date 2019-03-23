@@ -197,7 +197,8 @@ class Dialog(wx.Dialog):
         self.ctrl_villes.Supprimer() 
 
     def OnBoutonAide(self, event):
-        print("Aide...")
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
     
     def GetIDcategorieTarif(self):
         return self.IDcategorie_tarif

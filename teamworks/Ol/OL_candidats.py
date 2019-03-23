@@ -587,10 +587,8 @@ class ListView(ObjectListView):
         self.Options()
 
     def Menu_Aide(self, event):
-##        self.GetGrandParent().GetParent().OnBoutonAide(None)
-        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
         
     def Menu_Mail(self, event):
         FonctionsPerso.EnvoyerMail(adresses = (self.adresseMail,))

@@ -374,8 +374,9 @@ class Dialog(wx.Dialog):
         # MAJ de la liste des données
         self.ctrl_donnees.MAJ() 
 
-    def OnBoutonAide(self, event): 
-        print("Aide...")
+    def OnBoutonAide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

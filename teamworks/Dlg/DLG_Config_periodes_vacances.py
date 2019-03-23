@@ -149,7 +149,8 @@ class Panel(wx.Panel):
         self.listCtrl.MAJListeCtrl() 
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(43)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lespriodesdevacances")
 
 
 
@@ -459,7 +460,8 @@ class Dialog(wx.Dialog):
         self.sizer_pages = sizer_pages
 
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(43)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lespriodesdevacances")
             
     def Onbouton_annuler(self, event):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points

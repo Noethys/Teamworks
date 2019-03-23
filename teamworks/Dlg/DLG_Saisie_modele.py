@@ -216,7 +216,8 @@ class Dialog(wx.Dialog):
             self.inclureFeries = True
     
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(14)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Appliquerunmodledeprsences")
         
     def OnBoutonAnnuler(self, event):
         """ Bouton annuler """        

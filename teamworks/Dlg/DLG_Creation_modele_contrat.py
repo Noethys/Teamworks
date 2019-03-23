@@ -133,7 +133,8 @@ class Dialog(wx.Dialog):
         self.sizer_pages = sizer_pages
 
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(31)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lesmodlesdecontrats")
 
     def Onbouton_retour(self, event):
         # rend invisible la page affichée

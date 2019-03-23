@@ -392,7 +392,8 @@ class Dialog(wx.Dialog):
         self.CenterOnScreen()
                         
     def OnBoutonAide(self, event):
-        print("Aide")
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def GetBmp(self):
         return self.imgbox.bmp

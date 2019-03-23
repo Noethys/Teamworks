@@ -252,7 +252,8 @@ class MyDialog(wx.Dialog):
         self.ctrl_fichiers.SupprimerFichier(titre)
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(47)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Ouvrirunfichier")
 
     def OnBoutonAnnuler(self, event): 
         self.EndModal(wx.ID_CANCEL)

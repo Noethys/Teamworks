@@ -99,7 +99,8 @@ class Panel(wx.Panel):
             self.Enable(False)
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(60)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lagestiondesutilisateurs")
         
     def OnBoutonAjouter(self, event):
         dlg = DLG_Saisie_utilisateur_reseau.Dialog(self, nomUtilisateur="", nomHote="", nomBase=self.nomBase)
@@ -417,7 +418,8 @@ class Dialog(wx.Dialog):
         self.sizer_pages = sizer_pages
 
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(60)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lagestiondesutilisateurs")
             
     def Onbouton_annuler(self, event):
         self.MAJparents()

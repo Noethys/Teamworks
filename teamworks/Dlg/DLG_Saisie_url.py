@@ -79,7 +79,8 @@ class MyDialog(wx.Dialog):
         return self.ctrl_url.GetValue()
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(7)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """

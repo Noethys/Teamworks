@@ -191,8 +191,9 @@ class Dialog(wx.Dialog):
             self.bouton_capture.SetBitmapLabel(wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Capturer_photo.png"), wx.BITMAP_TYPE_ANY))
             self.bouton_ok.Enable(False)
 
-    def OnBoutonAide(self, event): 
-        print("Aide...")
+    def OnBoutonAide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def OnBoutonOptions(self, event): 
         # Création du menu contextuel

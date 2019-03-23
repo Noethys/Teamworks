@@ -72,7 +72,8 @@ class MyDialog(wx.Dialog):
         self.CenterOnScreen() 
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(34)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lesjoursfris")
 
     def OnBoutonAnnuler(self, event): 
         self.EndModal(wx.ID_CANCEL)

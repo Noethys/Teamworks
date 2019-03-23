@@ -418,7 +418,8 @@ class Dialog(wx.Dialog):
             return
         
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(30)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Imprimerdesphotosdepersonnes")
 
     def Onbouton_annuler(self, event):
         self.EndModal(wx.ID_CANCEL)
@@ -563,7 +564,8 @@ class DialogSelectionPersonnes(wx.Dialog):
             return
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(30)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Imprimerdesphotosdepersonnes")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

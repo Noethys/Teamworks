@@ -279,7 +279,8 @@ class Dialog(wx.Dialog):
         self.sizer_pages = sizer_pages
 
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(53)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lalistedespersonnes")
             
     def Onbouton_annuler(self, event):
         self.EndModal(wx.ID_CANCEL)

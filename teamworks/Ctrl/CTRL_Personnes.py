@@ -453,7 +453,8 @@ class PanelPersonnes(wx.Panel):
         self.listCtrl_personnes.Options() 
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(12)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Personnes")
         
     def AffichePanelResume(self, etat=True):
         """ Affiche ou fait disparaître le panel Résumé """

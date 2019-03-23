@@ -85,8 +85,9 @@ class Dialog(wx.Dialog):
         self.SetSize((400, -1))
         self.CenterOnScreen() 
         
-    def OnBoutonAide(self, event): 
-        print("Aide...")
+    def OnBoutonAide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def OnBoutonAnnuler(self, event): 
         self.EndModal(wx.ID_CANCEL)

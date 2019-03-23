@@ -110,7 +110,8 @@ class Dialog(wx.Dialog):
         self.Centre()       
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(49)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Assistantdemarrage")
         
     def OnBoutonCommande(self, event):
         self.choix = event.GetId()

@@ -116,7 +116,8 @@ class Dialog(wx.Dialog):
         self.ctrl_deplacements.MAJListeCtrl()
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(22)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Imprimerunefichedefrais")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

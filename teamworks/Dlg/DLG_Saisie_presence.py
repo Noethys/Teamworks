@@ -200,7 +200,8 @@ class Panel(wx.Panel):
         event.Skip()
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(33)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Saisirunetcheunique")
 
     def OnBoutonAnnuler(self, event):
         self.Fermer()

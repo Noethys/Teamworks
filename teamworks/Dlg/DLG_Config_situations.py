@@ -209,7 +209,8 @@ class Panel(wx.Panel):
         self.listCtrl_Situations.MAJListeCtrl()
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(24)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lestypesdesituations")
         
 
 class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorterMixin):
@@ -478,7 +479,8 @@ class Dialog(wx.Dialog):
         event.Skip()
         
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(24)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lestypesdesituations")
             
     def Onbouton_annuler(self, event):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Classification

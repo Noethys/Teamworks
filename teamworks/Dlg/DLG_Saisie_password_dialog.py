@@ -85,7 +85,8 @@ class MyDialog(wx.Dialog):
         return varPassword
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(7)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Laprotectionparmotdepasse")
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """

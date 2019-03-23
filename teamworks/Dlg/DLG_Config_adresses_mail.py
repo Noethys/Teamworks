@@ -164,7 +164,8 @@ class Panel(wx.Panel):
         self.listCtrl.MAJListeCtrl() 
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(27)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lesvaleursdepoints")
     
     def OnBoutonDefaut(self, event):
         self.SetDefaut() 

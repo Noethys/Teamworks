@@ -206,7 +206,8 @@ class Panel_TypesDiplomes(wx.Panel):
         self.listCtrl_TypesDiplomes.MAJListeCtrl()
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(48)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lestypesdequalifications")
         
 
 class ListCtrlTypesDiplomes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorterMixin):

@@ -198,7 +198,8 @@ class MyDialog(wx.Dialog):
             return
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(3)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Envoyerunmailgroup")
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """

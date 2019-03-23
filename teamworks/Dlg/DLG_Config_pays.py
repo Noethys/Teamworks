@@ -161,7 +161,8 @@ class Panel(wx.Panel):
         self.listCtrl.MAJListeCtrl() 
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(15)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lespaysetnationalits")
 
 
 
@@ -497,7 +498,8 @@ class Dialog(wx.Dialog):
         self.sizer_pages = sizer_pages
 
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(15)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lespaysetnationalits")
             
     def Onbouton_annuler(self, event):
         self.EndModal(wx.ID_CANCEL)

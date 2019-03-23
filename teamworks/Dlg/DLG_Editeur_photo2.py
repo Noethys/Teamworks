@@ -274,10 +274,8 @@ class MyDialog(wx.Dialog):
         return self.imgbox.bmp
                 
     def OnBoutonAide(self, event):
-        dlg = wx.MessageDialog(self, _(u"L'aide pour ce nouveau module est en cours de rédaction."), _(u"Aide indisponible"), wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
-        return
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def OnBoutonOk(self, event): 
         # Ferme la boîte de dialogue

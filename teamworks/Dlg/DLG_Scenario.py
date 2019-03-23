@@ -391,7 +391,8 @@ class Dialog(wx.Dialog):
         self.OnBoutonAnnuler(None)
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(58)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lagestiondesscnarios")
 
     def OnBoutonAnnuler(self, event):
         txtMessage = six.text_type((_(u"Voulez-vous vraiment annuler ? \n\nSi vous avez effectué des modifications dans ce scénario, elles seront annulées.")))

@@ -258,7 +258,8 @@ class Dialog(wx.Dialog):
             self.text_date_fin.Enable(False)
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(29)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Crerunepice")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

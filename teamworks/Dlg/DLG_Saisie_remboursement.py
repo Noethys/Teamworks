@@ -313,7 +313,8 @@ class SaisieRemboursement(wx.Dialog):
 
     def OnBoutonAide(self, event):
         """ Aide """
-        FonctionsPerso.Aide(36)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Enregistrerunremboursement")
         
     def OnBoutonOk(self, event):
         """ Validation des données saisies """

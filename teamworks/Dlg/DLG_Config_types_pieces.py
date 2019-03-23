@@ -204,7 +204,8 @@ class Panel_TypesPieces(wx.Panel):
         self.listCtrl_TypesPieces.MAJListeCtrl()
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(16)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lestypesdepices")
         
                 
 

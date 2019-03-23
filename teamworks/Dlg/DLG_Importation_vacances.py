@@ -280,7 +280,8 @@ class Dialog(wx.Dialog):
         self.ctrl_periodes.MAJ(zone)
 
     def OnBoutonAide(self, event): 
-        FonctionsPerso.Aide(43)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lespriodesdevacances")
 
     def OnBoutonOk(self, event): 
         tracks = self.ctrl_periodes.GetTracksCoches() 

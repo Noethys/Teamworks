@@ -198,7 +198,8 @@ class Dialog(wx.Dialog):
         self.EndModal(wx.ID_CANCEL)
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(21)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Ladresse")
 
     def ExportManuelVille(self):
         """ Commande d'export manuel de ville + code postal """

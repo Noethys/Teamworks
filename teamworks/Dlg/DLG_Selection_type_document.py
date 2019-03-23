@@ -82,10 +82,12 @@ class Dialog(wx.Dialog):
     def OnBoutonAide(self, event):
         # Si impression présences :
         if self.type == "presences" :
-            FonctionsPerso.Aide(5)
+            from Utils import UTILS_Aide
+            UTILS_Aide.Aide("Imprimerunelistedeprsences")
         # Si impression contrat ou DUE :
         if self.type == "contrats" :
-            FonctionsPerso.Aide(6)
+            from Utils import UTILS_Aide
+            UTILS_Aide.Aide("Lescontrats")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

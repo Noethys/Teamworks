@@ -171,7 +171,8 @@ class Dialog(wx.Dialog):
         self.couleur = (reponse[0], reponse[1], reponse[2])
 
     def OnBouton_aide(self, event):
-        FonctionsPerso.Aide(11)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lescatgoriesdeprsences")
 
     def OnBouton_annuler(self, event):
         self.EndModal(wx.ID_CANCEL)

@@ -476,7 +476,8 @@ class BarreAffichage(wx.Panel):
         event.Skip()
     
     def Com_Aide(self, event):
-        FonctionsPerso.Aide(1)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Leplanning")
 
     def Menu_Outils(self, event):
         """Ouverture du menu contextuel des options d'affichage du planning """
@@ -838,10 +839,8 @@ class Panel(wx.Panel):
         getattr(self, "listCtrl_%s" % MODE_AFFICHAGE).Options()
 
     def OnBoutonAide(self, event):
-##        FonctionsPerso.Aide(12)
-        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
         
     def AffichePanelResume(self, etat=True):
         """ Affiche ou fait disparaître le panel Résumé """

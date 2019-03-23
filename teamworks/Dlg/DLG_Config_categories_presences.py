@@ -249,7 +249,8 @@ class Panel_CatPresences(wx.Panel):
         self.treeCtrl_categories.MAJtree()
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(8)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lescatgoriesdeprsences")
 
 
 
@@ -631,7 +632,8 @@ class Dialog(wx.Dialog):
         self.CenterOnScreen()
 
     def Onbouton_aide(self, event):
-        FonctionsPerso.Aide(8)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lescatgoriesdeprsences")
             
     def Onbouton_annuler(self, event):
         self.EndModal(wx.ID_CANCEL)

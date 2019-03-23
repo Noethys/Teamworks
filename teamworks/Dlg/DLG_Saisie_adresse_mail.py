@@ -216,7 +216,8 @@ class MyDialog(wx.Dialog):
         return len(listeDonnees)
     
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(27)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lesvaleursdepoints")
         
     def OnBoutonOk(self, event):
         """ Validation des données saisies """

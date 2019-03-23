@@ -202,7 +202,8 @@ class Panel(wx.Panel):
         self.bouton_dupliquer.Enable(supprimer)
         
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(40)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Appliquerunmodledeprsences")
 
     def OnBoutonAnnuler(self, event):
         self.Fermer()

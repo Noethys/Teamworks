@@ -370,10 +370,8 @@ class Dialog(wx.Dialog):
         self.CentreOnScreen()
                     
     def OnBoutonAide(self, event):
-        dlg = wx.MessageDialog(self, _(u"L'aide pour ce nouveau module est en cours de rédaction."), _(u"Aide indisponible"), wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
-        #FonctionsPerso.Aide(47)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
     def Onbouton_annuler(self, event):
         self.EndModal(wx.ID_CANCEL)

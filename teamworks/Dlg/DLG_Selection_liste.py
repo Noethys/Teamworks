@@ -127,11 +127,14 @@ class Dialog(wx.Dialog):
 
     def OnBoutonAide(self, event):
         if self.type == "exportTexte" :
-            FonctionsPerso.Aide(55)
+            from Utils import UTILS_Aide
+            UTILS_Aide.Aide("Lalistedespersonnes")
         if self.type == "exportExcel" :
-            FonctionsPerso.Aide(55)
+            from Utils import UTILS_Aide
+            UTILS_Aide.Aide("Lalistedespersonnes")
         if self.type == "imprimerListePersonnes" :
-            FonctionsPerso.Aide(56)
+            from Utils import UTILS_Aide
+            UTILS_Aide.Aide("Lalistedespersonnes")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

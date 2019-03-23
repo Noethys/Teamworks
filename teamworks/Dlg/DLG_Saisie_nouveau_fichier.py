@@ -241,7 +241,8 @@ class MyDialog(wx.Dialog):
         
                 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(4)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Creerunnouveaufichier")
 
     def OnBoutonOk(self, event):
         """ Validation des données saisies """

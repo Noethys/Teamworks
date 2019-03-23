@@ -139,7 +139,8 @@ class Dialog(wx.Dialog):
         self.panel_pageFrais.ctrl_remboursements.MAJListeCtrl()
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(25)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Gestiondesfraisdedplacements")
 
     def OnBoutonOk(self, event):        
         self.EndModal(wx.ID_OK)

@@ -182,7 +182,8 @@ class Dialog(wx.Dialog):
         return ID
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(9)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lespriodesdevacances")
 
     def OnBoutonAnnuler(self, event):
         self.EndModal(wx.ID_CANCEL)

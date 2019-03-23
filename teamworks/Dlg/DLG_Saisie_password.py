@@ -94,7 +94,8 @@ class Dialog(wx.Dialog):
         DB.Close()
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(7)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Laprotectionparmotdepasse")
 
     def OnBoutonAnnuler(self, event):
         self.GetParent().checkBox.SetValue(False)

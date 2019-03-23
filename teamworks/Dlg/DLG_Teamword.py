@@ -342,7 +342,8 @@ class MyFrame(wx.Frame):
         dlg.ShowModal()
         dlg.Destroy()
         return
-        FonctionsPerso.Aide(37)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Imprimeruncontrat")
     
     def OnFileViewHTML(self, evt):
         # Get an instance of the html file handler, use it to save the

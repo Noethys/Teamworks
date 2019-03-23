@@ -76,9 +76,9 @@ class Dialog(wx.Dialog):
     def OnBoutonScanner(self, event): 
         self.EndModal(200)
 
-    def OnBoutonAide(self, event): 
-        print("Aide...")
-
+    def OnBoutonAide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
 
 if __name__ == "__main__":
     app = wx.App(0)

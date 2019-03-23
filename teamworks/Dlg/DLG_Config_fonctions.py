@@ -236,11 +236,9 @@ class Panel(wx.Panel):
         self.listCtrl.MAJListeCtrl() 
 
     def OnBoutonAide(self, event):
-##        FonctionsPerso.Aide(38)
-        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
-        
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lesclassifications")
+
 
 class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorterMixin):
     def __init__(self, parent):
@@ -530,7 +528,8 @@ class Dialog(wx.Dialog):
         event.Skip()
         
     def Onbouton_aide(self, event):
-##        FonctionsPerso.Aide(38)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lesclassifications")
         dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()

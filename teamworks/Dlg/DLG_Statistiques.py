@@ -974,7 +974,8 @@ class Dialog(wx.Dialog):
                 self.ctrl_personne.SetSelection(index)
 
     def OnBoutonAide(self, event):
-        FonctionsPerso.Aide(59)
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lesstatistiques")
     
     def TestGraph(self):
         # TEST DE GRAPHS
