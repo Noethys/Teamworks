@@ -6,10 +6,12 @@ Pour Windows, Mac OS et Linux.
 Plus d'infos sur https://www.teamworks.ovh
 
 
+
 Télécharger Teamworks
 ------------------
 
-Cliquez sur le bouton *Clone or Download* ci-dessus puis sélectionnez *Download* pour télécharger l'intégralité du code source.
+Cliquez sur le bouton *Clone or Download* ci-dessus puis sélectionnez *Download* pour télécharger l'intégralité du code source. Décompressez le zip dans le répertoire de votre choix.
+
 
 
 Installer Teamworks sous Linux
@@ -28,6 +30,7 @@ cd Teamworks/
 ```
 pip install -r requirements.txt
 ```
+
 
 
 Installer Teamworks sous Windows
