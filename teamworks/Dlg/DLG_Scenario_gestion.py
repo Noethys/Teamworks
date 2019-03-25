@@ -17,7 +17,7 @@ import wx.gizmos as gizmos
 import wx.lib.agw.hypertreelist as HTL
 from Dlg import DLG_Scenario
 from Utils import UTILS_Adaptations
-
+import six
 
 
 DICT_PERSONNES = {}
@@ -137,6 +137,7 @@ class Panel(wx.Panel):
         req = "SELECT IDscenario_cat, IDscenario, IDcategorie, prevision, report, date_debut_realise, date_fin_realise FROM scenarios_cat;"
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         nbreReports = 0
         for IDscenario_cat, IDscenarioTmp, IDcategorie, prevision, report, date_debut_realise, date_fin_realise in listeDonnees :
             if report != "" and report != None :

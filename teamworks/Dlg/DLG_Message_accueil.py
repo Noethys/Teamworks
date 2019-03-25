@@ -38,7 +38,7 @@ sur le forum dédié :
 <A HREF="Saisie">Cliquez ici pour accéder au forum</A>.
 </FONT>
 </CENTER>
-""" % Chemins.GetStaticPath(u"Images/80x80/Logo_tw.png", VERSION_LOGICIEL)
+""" % (Chemins.GetStaticPath(u"Images/80x80/Logo_tw.png"), VERSION_LOGICIEL)
 
 
 

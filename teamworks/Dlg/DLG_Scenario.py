@@ -1195,6 +1195,7 @@ class Tableau(gridlib.Grid):
                 req = "SELECT IDscenario_cat, IDscenario, IDcategorie, prevision, report, date_debut_realise, date_fin_realise FROM scenarios_cat WHERE IDscenario=%d AND IDcategorie=%d;" % (IDscenario, IDcategorie)
                 DB.ExecuterReq(req)
                 listeDonnees = DB.ResultatReq()
+                DB.Close()
                 if len(listeDonnees) == 0 : 
                     dictDonnees["IDscenario_cat"] = None
                     dictDonnees["IDcategorie"] = IDcategorie
@@ -1481,6 +1482,7 @@ class GetDictColonnes():
         req = "SELECT IDscenario_cat, IDscenario, IDcategorie, prevision, report, date_debut_realise, date_fin_realise FROM scenarios_cat WHERE IDscenario=%d;" % self.IDscenario
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         if len(listeDonnees) == 0 : return []
         listeID = []
         for valeurs in listeDonnees :
@@ -1528,6 +1530,7 @@ class GetDictColonnes():
                 req = "SELECT IDscenario_cat, IDscenario, IDcategorie, prevision, report, date_debut_realise, date_fin_realise FROM scenarios_cat WHERE IDscenario=%d AND IDcategorie=%d;" % (IDscenario, IDcategorie)
                 DB.ExecuterReq(req)
                 listeDonnees = DB.ResultatReq()
+                DB.Close()
                 if len(listeDonnees) == 0 : 
                     dictDonnees["IDscenario_cat"] = None
                     dictDonnees["IDcategorie"] = IDcategorie
@@ -1732,6 +1735,7 @@ class GetDictColonnes():
             req = "SELECT IDscenario_cat, IDscenario, IDcategorie, prevision, report, date_debut_realise, date_fin_realise FROM scenarios_cat WHERE IDscenario=%d;" % IDscenario
             DB.ExecuterReq(req)
             listeDonnees = DB.ResultatReq()
+            DB.Close()
             if len(listeDonnees) == 0 : return dictVirtualDB
             # Importation des données de base de la colonne
             for IDscenario_cat, IDscenario, IDcategorie, prevision, report, date_debut_realise, date_fin_realise in listeDonnees :

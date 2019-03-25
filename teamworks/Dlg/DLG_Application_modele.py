@@ -92,15 +92,9 @@ class Panel(wx.Panel):
 
     def __set_properties(self):
         self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un modèle")))
-        self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
         self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier le modèle sélectionné dans la liste")))
-        self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
         self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer le modèle sélectionné dans la liste")))
-        self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
         self.bouton_dupliquer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour dupliquer le modèle sélectionné dans la liste")))
-        self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 
     def __do_layout(self):
         sizer_base_1 = wx.BoxSizer(wx.VERTICAL)
@@ -957,7 +951,8 @@ class Dialog(wx.Dialog):
     def __init__(self, parent, selectionLignes=[], selectionPersonnes=[], selectionDates=(None, None)):
         wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.panel = Panel(self, selectionLignes=selectionLignes, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates)
-        
+        self.SetTitle(_(u"Application d'un modèle"))
+
         # Propriétés
         if 'phoenix' in wx.PlatformInfo:
             _icon = wx.Icon()

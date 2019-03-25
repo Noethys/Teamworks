@@ -326,6 +326,7 @@ class MyDialog(wx.Dialog):
         req = "SELECT IDscenario_cat, IDscenario, IDcategorie, prevision, report, date_debut_realise, date_fin_realise FROM scenarios_cat WHERE IDscenario=%d;" % IDscenario
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         listeCategories = []
         for valeurs in listeDonnees :
             IDcategorie = valeurs[2]

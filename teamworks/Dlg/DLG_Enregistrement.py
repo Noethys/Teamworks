@@ -73,7 +73,7 @@ def GetValidite(identifiant="", code=""):
             date = None
     else :
         date = None
-    
+
     # Affiche l'état
     if date == None :
         return False

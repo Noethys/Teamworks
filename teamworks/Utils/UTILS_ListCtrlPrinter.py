@@ -103,7 +103,7 @@ import math
 
 import wx
 
-from WordWrapRenderer import WordWrapRenderer
+from ObjectListView.WordWrapRenderer import WordWrapRenderer
 
 # Ajout Perso :
 LISTINTRO = u""

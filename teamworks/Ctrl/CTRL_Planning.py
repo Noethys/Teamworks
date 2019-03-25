@@ -548,8 +548,6 @@ class WidgetPlanning(wx.ScrolledWindow):
             self.dictIDs[IDobjet] = ("tache", IDpresence)
     
     def Impression(self):
-        print("lancement de l'impression...")
-        
         if len(self.listePresences) == 0 :
             dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucune présence à imprimer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()

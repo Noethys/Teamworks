@@ -344,13 +344,14 @@ class Dialog(wx.Dialog):
             dlg.Destroy() 
             return
         
-        frame_SaisiePresences = DLG_Saisie_presence.Frm_SaisiePresences(self, mode="modele")
-        frame_SaisiePresences.Show()
-        frame_SaisiePresences.panel.sizer_1.Hide(False)
-        frame_SaisiePresences.panel.sizer_donnees_staticbox.Hide()
-        frame_SaisiePresences.panel.grid_sizer_base.Layout()
-        frame_SaisiePresences.SetMinSize((400, 320))
-        frame_SaisiePresences.SetSize((400, 320))
+        dlg = DLG_Saisie_presence.Dialog(self, mode="modele")
+        dlg.panel.sizer_1.Hide(False)
+        dlg.panel.sizer_donnees_staticbox.Hide()
+        dlg.panel.grid_sizer_base.Layout()
+        dlg.SetMinSize((400, 320))
+        dlg.SetSize((400, 320))
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def Sauvegarde(self, donnees) :
         
@@ -559,7 +560,6 @@ class TreeCtrlPlanning(wx.TreeCtrl):
             numJour += 1
 
     def CreationTaches(self, rootJour, numJour) :
-        print(self.listeTaches)
         for tache in self.listeTaches :
             ID = tache[0]
             type = tache[2]
@@ -613,15 +613,18 @@ class TreeCtrlPlanning(wx.TreeCtrl):
     def OnSelChanged(self, event):
         self.item = event.GetItem()
         textItem = self.GetItemText(self.item)
-        data = self.GetPyData(self.item)
+        if 'phoenix' in wx.PlatformInfo:
+            data = self.GetItemData(self.item)
+        else:
+            data = self.GetPyData(self.item)
         self.selection = data
         if data == None : 
             mode = "aucun"
-        if data >= 100000 : 
+        elif data >= 100000 :
             mode = "jour"
             if str(data)[1] == "0" : 
                 mode = "aucun"
-        if 0 < data < 100000 : mode = "tache"
+        elif 0 < data < 100000 : mode = "tache"
         
         if mode == "jour" :
             self.GetGrandParent().ActivationBoutons(True, False, False)
@@ -635,7 +638,10 @@ class TreeCtrlPlanning(wx.TreeCtrl):
 
     def OnActivate(self, event):
         self.item = event.GetItem()
-        data = self.GetPyData(self.item)
+        if 'phoenix' in wx.PlatformInfo:
+            data = self.GetItemData(self.item)
+        else:
+            data = self.GetPyData(self.item)
         self.selection = data
         if data == None : 
             mode = "aucun"
@@ -655,7 +661,10 @@ class TreeCtrlPlanning(wx.TreeCtrl):
         # Recherche et sélection de l'item pointé avec la souris
         item = self.FindTreeItem(event.GetPosition())
         if item == None : return
-        data = self.GetPyData(item)
+        if 'phoenix' in wx.PlatformInfo:
+            data = self.GetItemData(item)
+        else:
+            data = self.GetPyData(item)
         if data == None : return
         if data >= 100000 : 
             mode = "jour"

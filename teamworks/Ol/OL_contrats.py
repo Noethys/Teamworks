@@ -18,7 +18,7 @@ import sys
 from Utils import UTILS_Fichiers
 from Utils import UTILS_Adaptations
 
-from CTRL_ObjectListView import FastObjectListView, ColumnDefn, Filter, CTRL_Outils
+from Ctrl.CTRL_ObjectListView import FastObjectListView, ColumnDefn, Filter, CTRL_Outils
 
 
 # Liste sans nom du candidat
