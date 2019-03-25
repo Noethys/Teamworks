@@ -24,6 +24,7 @@ from Utils import UTILS_Parametres
 from Utils import UTILS_Fichiers
 from Utils import UTILS_Customize
 from Utils import UTILS_Adaptations
+from Utils import UTILS_Rapport_bugs
 
 from Ctrl import CTRL_Accueil
 from Ctrl import CTRL_Personnes
@@ -32,13 +33,13 @@ from Ctrl import CTRL_Recrutement
 from Ctrl import CTRL_Configuration
 
 from Dlg import DLG_Config_sauvegarde
+from Dlg import DLG_Enregistrement
 
 import FonctionsPerso
 import GestionDB
 import os
 import datetime
 #import locale
-import urllib
 import random
 import sys
 import platform
@@ -148,7 +149,7 @@ class MyFrame(wx.Frame):
         else :
             version_python = "3"
         print(("-------- %s | %s | Python %s | wxPython %s | %s --------" % (dateDuJour, VERSION_APPLICATION, version_python, wx.version(), systeme)))
-        
+
         # try : locale.setlocale(locale.LC_ALL, 'FR')
         # except : pass
         
@@ -774,6 +775,8 @@ class MyFrame(wx.Frame):
 
     def ConvertVersionTuple(self, texteVersion=""):
         """ Convertit un numéro de version texte en tuple """
+        if type(texteVersion) == list:
+            return tuple(texteVersion)
         tupleTemp = []
         for num in texteVersion.split("."):
             tupleTemp.append(int(num))
@@ -1363,7 +1366,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
         """ Création une annonce au premier démarrage du logiciel """
         nomFichier = sys.executable
         if nomFichier.endswith("python.exe") == False :
-            versionAnnonce = self.GetVersionAnnonce()
+            versionAnnonce = self.ConvertVersionTuple(self.GetVersionAnnonce())
             versionLogiciel = self.ConvertVersionTuple(VERSION_APPLICATION)
             if versionAnnonce < versionLogiciel :
                 from Dlg import DLG_Message_accueil
@@ -1413,10 +1416,62 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
             
         return True
     
-    
-    
-    
-    
+    def EstFichierExemple(self):
+        """ Vérifie si c'est un fichier EXEMPLE qui est ouvert actuellement """
+        if self.userConfig["nomFichier"] != None :
+            if "EXEMPLE_" in self.userConfig["nomFichier"] :
+                return True
+        return False
+
+    def AnnonceFinancement(self):
+        # Vérifie si identifiant saisi et valide
+        identifiant = UTILS_Config.GetParametre("enregistrement_identifiant", defaut=None)
+        if identifiant != None:
+            # Vérifie nbre jours restants
+            code = UTILS_Config.GetParametre("enregistrement_code", defaut=None)
+            validite = DLG_Enregistrement.GetValidite(identifiant, code)
+            if validite != False:
+                date_fin_validite, nbreJoursRestants = validite
+                dateDernierRappel = UTILS_Config.GetParametre("enregistrement_dernier_rappel", defaut=None)
+
+                if nbreJoursRestants < 0:
+                    # Licence périmée
+                    if dateDernierRappel != None:
+                        UTILS_Config.SetParametre("enregistrement_dernier_rappel", None)
+
+                elif nbreJoursRestants <= 30:
+                    # Licence bientôt périmée
+                    UTILS_Config.SetParametre("enregistrement_dernier_rappel", datetime.date.today())
+                    if dateDernierRappel != None:
+                        nbreJoursDepuisRappel = (dateDernierRappel - datetime.date.today()).days
+                    else:
+                        nbreJoursDepuisRappel = None
+                    if nbreJoursDepuisRappel == None or nbreJoursDepuisRappel >= 10:
+                        from Dlg import DLG_Messagebox
+                        image = wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Cle.png"), wx.BITMAP_TYPE_ANY)
+                        introduction = _(u"Votre licence d'accès au manuel de référence en ligne se termine dans %d jours. \n\nSi vous le souhaitez, vous pouvez continuer à bénéficier de cet accès et prolonger votre soutien financier au projet Teamworks en renouvelant votre abonnement Classic ou Premium.") % nbreJoursRestants
+                        dlg = DLG_Messagebox.Dialog(self, titre=_(u"Enregistrement"),
+                                                    introduction=introduction, detail=None,
+                                                    icone=image, boutons=[(u"Renouveler mon abonnement"), _(u"Fermer")], defaut=0)
+                        reponse = dlg.ShowModal()
+                        dlg.Destroy()
+                        if reponse == 0:
+                            FonctionsPerso.LanceFichierExterne(Chemins.GetStaticPath("Images/Special/Bon_commande_documentation.pdf"))
+                        return True
+
+                else:
+                    # Licence valide
+                    if dateDernierRappel != None:
+                        UTILS_Config.SetParametre("enregistrement_dernier_rappel", None)
+
+        if random.randrange(1, 100) <= 10:
+            from Dlg import DLG_Financement
+            dlg = DLG_Financement.Dialog(self)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return True
+        else:
+            return False
 
 
 class SaisiePassword(wx.Dialog):
@@ -1511,6 +1566,10 @@ class MyApp(wx.App):
         else:
             frame.OuvrirDernierFichier()
 
+        # Après ouverture d'un fichier :
+        if frame.EstFichierExemple() == False:
+            financement = frame.AnnonceFinancement()
+
         # Affiche le temps de démarrage de TW
         duree = time.time()-heure_debut
 
@@ -1543,6 +1602,9 @@ if __name__ == "__main__":
 
     # Initialisation du fichier de customisation
     CUSTOMIZE = UTILS_Customize.Customize()
+
+    # Crash report
+    UTILS_Rapport_bugs.Activer_rapport_erreurs(version=VERSION_APPLICATION)
 
     # Log
     nomJournal = UTILS_Fichiers.GetRepUtilisateur(CUSTOMIZE.GetValeur("journal", "nom", "journal.log"))
