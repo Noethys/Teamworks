@@ -179,6 +179,16 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # Remplissage avec les valeurs
         self.remplissage = True
         for IDdeplacement, date, objet, trajet, dist, tarif_km, montantStr, remboursement in self.listeDonnees :
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, str(IDdeplacement))
+                self.SetItem(index, 1, date)
+                self.SetItem(index, 2, objet)
+                self.SetItem(index, 3, trajet)
+                self.SetItem(index, 4, dist)
+                self.SetItem(index, 5, tarif_km)
+                self.SetItem(index, 6, montantStr)
+                self.SetItem(index, 7, remboursement)
+            else:
                 index = self.InsertStringItem(six.MAXSIZE, str(IDdeplacement))
                 self.SetStringItem(index, 1, date)
                 self.SetStringItem(index, 2, objet)
@@ -187,17 +197,17 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
                 self.SetStringItem(index, 5, tarif_km)
                 self.SetStringItem(index, 6, montantStr)
                 self.SetStringItem(index, 7, remboursement)
+
+            self.SetItemData(index, IDdeplacement)
                 
-                self.SetItemData(index, IDdeplacement)
-                
-                # Check
-                if remboursement == "":
-                    self.CheckItem(index) 
-                    
-                # On sélectionne le dernier
-                if index == self.nbreLignes-1 :
-                    self.EnsureVisible(index)
-        
+            # Check
+            if remboursement == "":
+                self.CheckItem(index)
+
+            # On sélectionne le dernier
+            if index == self.nbreLignes-1 :
+                self.EnsureVisible(index)
+
         self.remplissage = False
 
     def MAJListeCtrl(self, select=None):

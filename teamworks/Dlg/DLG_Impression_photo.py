@@ -251,11 +251,9 @@ class Dialog(wx.Dialog):
         _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
-        self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetToolTip(wx.ToolTip("Cliquez ici pour visualiser le document au format PDF"))
-        self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTip(wx.ToolTip("Cliquez ici pour annuler et fermer"))
-        self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
+        self.SetMinSize((570, 500))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -303,7 +301,6 @@ class Dialog(wx.Dialog):
         sizer_base.Add(self.panel_base, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_base)
         self.Layout()
-        self.SetMinSize((570, 500))
         self.CenterOnScreen()
     
     def OnComboDisposition(self, evt):
