@@ -725,6 +725,10 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
     # These methods are callbacks for implementing the
     # "virtualness" of the list...
 
+    def OnGetItemImage(self, item):
+        """ Affichage des images en début de ligne """
+        return -1
+
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index = self.itemIndexMap[item]
@@ -813,4 +817,28 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
         self.parent.SupprimerRemboursement()
 
 
-    
+
+class MyFrame(wx.Frame):
+    def __init__(self, *args, **kwds):
+        wx.Frame.__init__(self, *args, **kwds)
+        self.panel = Panel(self)
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_1.Add(self.panel, 1, wx.ALL | wx.EXPAND)
+        self.SetSizer(sizer_1)
+        self.Layout()
+        self.SetMinSize((600, 400))
+
+        IDpersonne = 1
+        self.panel.IDpersonne = IDpersonne
+        self.panel.ctrl_deplacements.IDpersonne = IDpersonne
+        self.panel.ctrl_remboursements.IDpersonne = IDpersonne
+        self.panel.ctrl_deplacements.MAJListeCtrl()
+        self.panel.ctrl_remboursements.MAJListeCtrl()
+
+
+if __name__ == '__main__':
+    app = wx.App(0)
+    frame_1 = MyFrame(None, -1)
+    app.SetTopWindow(frame_1)
+    frame_1.Show()
+    app.MainLoop()
