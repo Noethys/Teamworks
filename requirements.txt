@@ -11,3 +11,4 @@ mysql-connector-python
 XlsxWriter
 icalendar
 numpy
+opencv-python
