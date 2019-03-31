@@ -66,7 +66,7 @@ def GetPhoto(IDindividu=None, nomFichier=None, taillePhoto=(128, 128), qualite=w
                 dc.DrawBitmap(photo, 0, 0, l, h)
                 
                 # Dessin du cadre de décoration
-                fichierCadre = u"Images/CadresPhotos/%s.png" % cadrePhoto
+                fichierCadre = Chemins.GetStaticPath(u"Images/CadresPhotos/%s.png" % cadrePhoto)
                 if os.path.isfile(fichierCadre):
                     masque = wx.Bitmap(fichierCadre, wx.BITMAP_TYPE_PNG)
                     l, h = masque.GetSize() 
@@ -92,7 +92,7 @@ def GetCadreEtTexte(IDindividu=None):
     """ Récupère le nom du cadre de déco + le texte de la photo """
     if IDindividu == None :
         return "", ""
-    DB = GestionDB.DB()        
+    DB = GestionDB.DB()
     req = "SELECT cadre_photo, texte_photo FROM personnes WHERE IDpersonne=%d;" % IDindividu
     DB.ExecuterReq(req)
     donnees = DB.ResultatReq()
@@ -269,12 +269,17 @@ class CTRL_Photo(wx.StaticBitmap):
 
     def Capture_image(self):
         """ Capture la photo à partir d'une caméra """
-        from Dlg import DLG_Capture_video
-        dlg = DLG_Capture_video.Dialog(self)
-        resultat = dlg.ShowModal() 
+        from Dlg import DLG_Capture_video_opencv_2 as dlg
+        image = None
+        dlg = dlg.Dialog(self)
+        if dlg.ShowModal() == wx.ID_OK :
+            image = dlg.GetImage()
+            listeVisages = dlg.GetListeVisages()
         dlg.Destroy()
-        if resultat == wx.ID_OK:
-            self.ChargeEditeurPhoto(UTILS_Fichiers.GetRepTemp("capture_video.jpg"))
+        if image != None :
+            fichier = UTILS_Fichiers.GetRepTemp(fichier="capture_video.jpg")
+            image.SaveFile(fichier, type=wx.BITMAP_TYPE_JPEG)
+            self.ChargeEditeurPhoto(fichier)
 
     def Menu_Supprimer(self, event):
         """ Suppression de la photo """

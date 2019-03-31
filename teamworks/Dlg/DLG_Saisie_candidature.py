@@ -345,8 +345,9 @@ class Panel(wx.Panel):
         dictDonnees = UTILS_Publipostage_donnees.GetDictDonnees(categorie="candidature", listeID=[self.IDcandidature,])
         # Ouvre le publiposteur
         from Dlg import DLG_Publiposteur
-        frm = DLG_Publiposteur.MyWizard(self, "", dictDonnees=dictDonnees)
-        frm.Show()
+        dlg = DLG_Publiposteur.Dialog(self, "", dictDonnees=dictDonnees)
+        dlg.ShowModal()
+        dlg.Destroy()
         
     def OnContextMenu(self, event):
         pass

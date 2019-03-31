@@ -624,6 +624,8 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
         else:
             item1 = self.parent.dictPersonnes[key1][0] + " " + self.parent.dictPersonnes[key1][1]
             item2 = self.parent.dictPersonnes[key2][0] + " " + self.parent.dictPersonnes[key2][1]
+        if item1 == None: item1 = ""
+        if item2 == None: item2 = ""
         if item1 == item2:
             return 0
         elif item1 < item2:

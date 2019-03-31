@@ -1458,7 +1458,7 @@ class ListCtrlCoords(wx.ListCtrl):
         self.popupIndex = -1       
 
         self.Bind(wx.EVT_SIZE, self.OnSize)
-        if "linux" not in sys.platform :
+        if 'phoenix' not in wx.PlatformInfo and "linux" not in sys.platform :
             # Désactive la fenetre popup sous Linux
             self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
        
@@ -1496,7 +1496,10 @@ class ListCtrlCoords(wx.ListCtrl):
             categorie = valeurs[2]
             texte = valeurs[3]
             # Création de l'item
-            self.InsertStringItem(index, texte)
+            if 'phoenix' in wx.PlatformInfo:
+                self.InsertItem(index, texte)
+            else:
+                self.InsertStringItem(index, texte)
             # Intégration de l'image
             if categorie == "Fixe":
                 self.SetItemImage(index, self.imgMaison)

@@ -195,8 +195,7 @@ class MyDialog(wx.Dialog):
         for item in self.dictControles[self.categorie] :
             nomControle = item[1]
             getattr(self, "ctrl_%s" % nomControle).valeur = None
-            nomControle = eval(nomControle)
-            getattr(self, "ctrl_%s" % nomControle).SetLabel(nomControle.GetLabel())
+            getattr(self, "ctrl_%s" % nomControle).SetLabel(_(u"Sans importance"))
             index += 1
             
                     

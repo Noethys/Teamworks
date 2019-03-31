@@ -713,7 +713,6 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.OnItemExpanded, self)
         self.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.OnItemCollapsed, self)
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnSelChanged, self)
-        self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnActivate, self)
 
     def FormateCouleur(self, texte):
         pos1 = texte.index(",")
@@ -797,19 +796,14 @@ class TreeCtrlCategories(wx.TreeCtrl):
             pass
 
     def OnSelChanged(self, event):
-        self.item = event.GetItem()
-        textItem = self.GetItemText(self.item)
+        item = event.GetItem()
         if 'phoenix' in wx.PlatformInfo:
-            data = self.GetItemData(self.item)
+            data = self.GetItemData(item)
         else:
-            data = self.GetPyData(self.item)
+            data = self.GetPyData(item)
         self.selection = data
         event.Skip()
 
-    def OnActivate(self, event):
-        if self.item:
-            #print ("OnActivate: %s\n" % self.GetItemText(self.item))
-            pass
 
 
         

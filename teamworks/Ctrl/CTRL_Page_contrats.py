@@ -219,7 +219,10 @@ class Panel_Contrats(wx.Panel):
         DB.Close()
         
         # MAJ du listCtrl
-        self.list_ctrl_contrats.SetStringItem(index, 4, etatSignature)
+        if 'phoenix' in wx.PlatformInfo:
+            self.list_ctrl_contrats.SetItem(index, 4, etatSignature)
+        else:
+            self.list_ctrl_contrats.SetStringItem(index, 4, etatSignature)
         self.MAJ_barre_problemes()
 
     def OnBoutonDue(self, event):
@@ -247,7 +250,10 @@ class Panel_Contrats(wx.Panel):
         DB.Close()
         
         # MAJ du listCtrl
-        self.list_ctrl_contrats.SetStringItem(index, 5, etatDue)
+        if 'phoenix' in wx.PlatformInfo:
+            self.list_ctrl_contrats.SetItem(index, 5, etatDue)
+        else:
+            self.list_ctrl_contrats.SetStringItem(index, 5, etatDue)
         self.MAJ_barre_problemes()
         
     def OnBoutonImprimer(self, event):

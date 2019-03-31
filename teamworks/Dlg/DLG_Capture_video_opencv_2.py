@@ -8,74 +8,34 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+
 import Chemins
+from Utils import UTILS_Adaptations
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-import threading
-from PIL import Image
-from VideoCapture import Device
-from Utils import UTILS_Fichiers
+import cv2 as cv
 from Ctrl import CTRL_Bandeau
-from Utils import UTILS_Adaptations
+import numpy as np
 
 
 CAMERA = None
+CASCADE = None
+RATIO = 1
 DEFAULT_DEVICE_WIDTH = 0
 DEFAULT_DEVICE_HEIGHT = 0
 
-def InitCamera():
+def InitCamera(port=0):
     """ Initialisation de la webcam """
-    global CAMERA, DEFAULT_DEVICE_WIDTH, DEFAULT_DEVICE_HEIGHT
-    for x in range(0, 10) :
-        try :
-            CAMERA = Device(0)
-            #buffer, width, height = CAMERA.getBuffer()
-            width, height = 640, 480
-            CAMERA.setResolution(width, height)
-            DEFAULT_DEVICE_WIDTH  = width
-            DEFAULT_DEVICE_HEIGHT = height
-            return True
-        except :
-            pass
-    return False
-
-
-class VideoCaptureThread(threading.Thread):
-    def __init__(self, control):
-        self.width = DEFAULT_DEVICE_WIDTH
-        self.height = DEFAULT_DEVICE_HEIGHT
-        self.control = control
-        self.isRunning =True
-        self.buffer = wx.NullBitmap
-
-        threading.Thread.__init__(self)
-
-    def stop(self):
-        self.isRunning = False
-
-    def run(self):
-        while self.isRunning:
-            buffer, width, height = CAMERA.getBuffer()
-            im = Image.frombytes('RGB', (width, height), buffer, 'raw', 'BGR', 0, -1)
-            buff = im.tobytes()
-            self.buffer = wx.BitmapFromBuffer(width, height, buff)
-            x, y = (0, 0)
-            try:
-                width, height = self.control.GetSize()
-                if width > self.width:
-                    x = (width - self.width) / 2
-                if height > self.height:
-                    y = (height - self.height) / 2
-                dc = wx.BufferedDC(wx.ClientDC(self.control), wx.NullBitmap, wx.BUFFER_VIRTUAL_AREA)
-                dc.SetBackground(wx.Brush(wx.Colour(0, 0, 0)))
-                dc.Clear()
-                dc.DrawBitmap(self.buffer, x, y)
-            except TypeError:
-                pass
-            except wx.PyDeadObjectError:
-                pass
-        self.isRunning = False
+    global CAMERA, CASCADE, DEFAULT_DEVICE_WIDTH, DEFAULT_DEVICE_HEIGHT
+    CAMERA = cv.VideoCapture(port)
+    resultat, frame = CAMERA.read()
+    if resultat == False :
+        return False
+    DEFAULT_DEVICE_WIDTH = frame.shape[0]
+    DEFAULT_DEVICE_HEIGHT = frame.shape[1]
+    CASCADE = cv.CascadeClassifier(Chemins.GetStaticPath("Divers/haarcascade_frontalface_alt2.xml"))
+    return True
 
 
 # -----------------------------------------------------------------------------------------------------------------------------
@@ -84,21 +44,83 @@ class CTRL_Video(wx.Panel):
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.SUNKEN_BORDER):
         wx.Panel.__init__(self, parent, id, pos, size, style)
         self.SetBackgroundColour(wx.Colour(0, 0, 0))
+        self.timer = wx.Timer(self, -1)
+        self.fps = 30
+        self.width = DEFAULT_DEVICE_WIDTH
+        self.height = DEFAULT_DEVICE_HEIGHT
+        self.bmp = wx.NullBitmap
+        self.listeVisages = []
+
         self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
+        self.Bind(wx.EVT_PAINT, self.OnPaint)
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnErase)
 
     def OnClose(self, event):
-        try : self.Device.stop()
+        try : self.StopVideo()
         except : pass
-
-    def StopVideo(self):
-        self.Device.stop()
-
-    def StartVideo(self):
-        self.Device = VideoCaptureThread(self)
-        self.Device.start()
     
     def IsRunning(self):
-        return self.Device.isRunning
+        return self.timer.IsRunning()
+
+    def StopVideo(self):
+        """Stop moving the text"""
+        if self.timer.IsRunning() :
+            self.timer.Stop()
+    
+    def SetFPS(self, fps=30):
+        if self.timer.IsRunning():
+            self.StopVideo() 
+        self.fps = fps
+        self.StartVideo() 
+
+    def GetFrame(self):
+        return_value, frame = CAMERA.read()
+        if return_value:
+            largeur_frame, hauteur_frame = frame.shape[:2]
+        return return_value, frame
+
+    def StartVideo(self):
+        """Starts the text moving"""
+        if not self.timer.IsRunning():
+            # Création du premier bitmap
+            return_value, frame = self.GetFrame()
+            height, width = frame.shape[:2]
+            frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+            self.bmp = wx.Bitmap.FromBuffer(width, height, frame)
+
+            # Lancement du timer
+            self.timer.Start(1000 / self.fps)
+
+    def OnTimer(self, event):
+        return_value, frame = self.GetFrame()
+        if return_value:
+            # Récupération de l'image en cours
+            image_couleur = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+            self.bmp.CopyFromBuffer(image_couleur)
+
+            # Détection des visages
+            image_nb = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+            image_nb = np.array(image_nb, dtype='uint8')
+            self.listeVisages = CASCADE.detectMultiScale(image_nb, 1.3, 5)
+
+            # Met à jour l'affichage
+            self.Refresh()
+
+    def OnPaint(self, evt):
+        dc = wx.BufferedPaintDC(self)
+        if self.bmp != wx.NullBitmap:
+            dc.DrawBitmap(self.bmp, 0, 0)
+
+            if len(self.listeVisages) > 0:
+                for (x, y, w, h) in self.listeVisages :
+                    dc.SetBrush(wx.TRANSPARENT_BRUSH)
+                    dc.SetPen(wx.Pen(wx.Colour(255, 0, 0), 2))
+                    dc.DrawRectangle(x, y, w, h)
+
+    def OnErase(self, evt):
+        """Noop because of double buffering"""
+        pass
 
 
 # -----------------------------------------------------------------------------------------------------------------------------
@@ -107,9 +129,11 @@ class Dialog(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, -1, name="DLG_Depots", style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
+        self.port = 0
+        self.image = None
 
         # Bandeau
-        intro = _(u"Vous pouvez ici capturer une photo à partir d'une webcam connectée à votre ordinateur. Cliquez sur le bouton 'Prendre une photo' pour capturer l'image puis sur 'Ok' pour valider et ouvrir l'éditeur photo qui vous permettra d'effectuer un recadrage avant l'insertion dans la fiche individuelle.")
+        intro = _(u"Vous pouvez ici capturer une photo à partir d'une webcam connectée. Cliquez sur le bouton 'Prendre une photo' pour capturer l'image puis sur 'Ok' pour valider et ouvrir l'éditeur photo qui vous permettra d'effectuer un recadrage avant l'insertion dans la fiche individuelle.")
         titre = _(u"Capture d'une photo")
         self.SetTitle(titre)
         self.ctrl_bandeau = CTRL_Bandeau.Bandeau(self, titre=titre, texte=intro, hauteurHtml=30, nomImage=Chemins.GetStaticPath("Images/32x32/Webcam.png"))
@@ -135,17 +159,20 @@ class Dialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOptions, self.bouton_options)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
         
         # Lancement de la capture vidéo
         wx.CallLater(10, self.Initialisation)
+        
+    def SetPort(self, port=0):
+        self.port = port
     
     def Initialisation(self):
-        etat = InitCamera()
+        self.ctrl_video.StopVideo()
+        etat = InitCamera(self.port)
         if etat == True :
             self.ctrl_video.StartVideo()
         else:
-            self.bouton_capture.Enable(False)
-            self.bouton_options.Enable(False)
             dlg = wx.MessageDialog(self, _(u"Noethys n'a pas réussi à se connecter à la caméra.\nVeuillez vérifier que celle-ci est bien installée..."), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
@@ -156,10 +183,10 @@ class Dialog(wx.Dialog):
         self.bouton_options.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour définir les propriétés de la capture vidéo")))
         self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
         self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour annuler")))
-        self.SetMinSize((700, 720))
+        self.SetMinSize((670, 700))
 
     def __do_layout(self):
-        grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
+        grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
         grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=5, vgap=10, hgap=10)
         grid_sizer_base.Add(self.ctrl_bandeau, 0, wx.EXPAND, 0)
         grid_sizer_base.Add(self.ctrl_video, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 10)
@@ -183,43 +210,99 @@ class Dialog(wx.Dialog):
         """ Capture de la photo """
         if self.ctrl_video.IsRunning() :
             self.ctrl_video.StopVideo()
-            CAMERA.saveSnapshot(UTILS_Fichiers.GetRepTemp("capture_video.jpg"), quality=100)
+            self.image = self.ctrl_video.bmp
+            self.listeVisages = self.ctrl_video.listeVisages
             self.bouton_capture.SetBitmapLabel(wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Capturer_photo2.png"), wx.BITMAP_TYPE_ANY))
             self.bouton_ok.Enable(True)
         else:
             self.ctrl_video.StartVideo()
             self.bouton_capture.SetBitmapLabel(wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Capturer_photo.png"), wx.BITMAP_TYPE_ANY))
             self.bouton_ok.Enable(False)
-
-    def OnBoutonAide(self, event):
+    
+    def GetImage(self):
+        return self.image
+    
+    def GetListeVisages(self):
+        return self.listeVisages
+    
+    def OnBoutonAide(self, event): 
         from Utils import UTILS_Aide
-        UTILS_Aide.Aide("")
+        UTILS_Aide.Aide("Photo")
 
     def OnBoutonOptions(self, event): 
         # Création du menu contextuel
         menuPop = UTILS_Adaptations.Menu()
         
-        menuPop.AppendItem(wx.MenuItem(menuPop, 10, _(u"Propriétés du flux vidéo")))
-        self.Bind(wx.EVT_MENU, self.Menu_proprietes_pin, id=10)
-        
-        menuPop.AppendItem(wx.MenuItem(menuPop, 20, _(u"Propriétés de la capture vidéo")))
-        self.Bind(wx.EVT_MENU, self.Menu_proprietes_filter, id=20)
-        
+        sousMenuPort = UTILS_Adaptations.Menu()
+        for index in range(0, 10) :
+            id = 10000 + index
+            item = wx.MenuItem(sousMenuPort, id, _(u"Port n°%d") % index, _(u"Port n°%d") % index, wx.ITEM_CHECK)
+            sousMenuPort.AppendItem(item)
+            self.Bind(wx.EVT_MENU, self.Menu_port, id=id)
+            if self.port == index : item.Check(True)
+        menuPop.AppendMenu(10, _(u"Port de connexion"), sousMenuPort)
+
+        sousMenuFPS = UTILS_Adaptations.Menu()
+        for index in (5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100) :
+            id = 20000 + index
+            item = wx.MenuItem(sousMenuFPS, id, u"%d" % index, _(u"%d images par secondes") % index, wx.ITEM_CHECK)
+            sousMenuFPS.AppendItem(item)
+            self.Bind(wx.EVT_MENU, self.Menu_fps, id=id)
+            if self.ctrl_video.fps == index : item.Check(True)
+        menuPop.AppendMenu(20, _(u"Nombres d'images par secondes"), sousMenuFPS)
+
         self.PopupMenu(menuPop)
         menuPop.Destroy()
     
+    def Menu_port(self, event):
+        id = event.GetId() - 10000
+        self.SetPort(id)
+        self.Initialisation()
+
+    def Menu_fps(self, event):
+        id = event.GetId() - 20000
+        self.ctrl_video.SetFPS(id)
+
     def Menu_proprietes_pin(self, event):
+        if self.ctrl_video.IsRunning() == False :
+            dlg = wx.MessageDialog(self, _(u"La caméra n'est pas connectée !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return False
         CAMERA.displayCapturePinProperties() 
     
     def Menu_proprietes_filter(self, event):
+        if self.ctrl_video.IsRunning() == False :
+            dlg = wx.MessageDialog(self, _(u"La caméra n'est pas connectée !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return False
         CAMERA.displayCaptureFilterProperties() 
+    
+    def FermeVideo(self):
+        self.ctrl_video.StopVideo()
+        # time.sleep(1)
+        CAMERA.release()
+        cv.destroyAllWindows()
 
     def OnBoutonOk(self, event): 
+        if self.image == None :
+            dlg = wx.MessageDialog(self, _(u"Vous devez d'abord capturer une image !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return False
+        self.FermeVideo() 
         self.EndModal(wx.ID_OK)
 
     def OnBoutonAnnuler(self, event): 
+        self.FermeVideo() 
         self.EndModal(wx.ID_CANCEL)
 
+    def OnClose(self, event):
+        self.OnBoutonAnnuler(None)
+    
+    
+    
 
 if __name__ == "__main__":
     app = wx.App(0)

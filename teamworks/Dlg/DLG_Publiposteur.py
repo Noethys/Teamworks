@@ -2074,8 +2074,11 @@ class Grid_noms_fichiers(gridlib.Grid):
             indexLigne += 1
         
         # test all the events
-        self.Bind(gridlib.EVT_GRID_CELL_CHANGE, self.OnCellChange)
-    
+        if 'phoenix' in wx.PlatformInfo:
+            self.Bind(gridlib.EVT_GRID_CELL_CHANGED, self.OnCellChange)
+        else :
+            self.Bind(gridlib.EVT_GRID_CELL_CHANGE, self.OnCellChange)
+
     def GetDictNomsFichiers(self):
         return self.dict_noms_fichiers
         

@@ -367,8 +367,9 @@ class Panel(wx.Panel):
         dictDonnees = UTILS_Publipostage_donnees.GetDictDonnees(categorie="candidat", listeID=[self.IDcandidat,])
         # Ouvre le publiposteur
         from Dlg import DLG_Publiposteur
-        frm = DLG_Publiposteur.MyWizard(self, "", dictDonnees=dictDonnees)
-        frm.Show()
+        dlg = DLG_Publiposteur.Dialog(self, "", dictDonnees=dictDonnees)
+        dlg.ShowModal()
+        dlg.Destroy()
         
     def OnContextMenu(self, event):
         pass
@@ -1084,7 +1085,7 @@ class ListCtrlCoords(wx.ListCtrl):
         self.popupIndex = -1
 
         self.Bind(wx.EVT_SIZE, self.OnSize)
-        if "linux" not in sys.platform :
+        if 'phoenix' not in wx.PlatformInfo and "linux" not in sys.platform :
             # Désactive la fenetre popup sous Linux
             self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
        

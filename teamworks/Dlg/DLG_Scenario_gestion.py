@@ -293,11 +293,8 @@ class TreeListCtrl(gizmos.TreeListCtrl):
         self.root = self.AddRoot("Racine")
         self.SetItemText(self.root, u"", 1)
         self.SetItemText(self.root, u"", 2)
-        self.SetItemImage(self.root, self.img_scenario, wx.TreeItemIcon_Normal)
-        self.SetItemImage(self.root, self.img_scenario, wx.TreeItemIcon_Expanded)
-        
+
         # Création des branches
-        
         if self.IDpersonne == None :
             listeIDPersonnes = list(self.dictScenarios.keys())
             listeNomsPersonnes = []
@@ -333,7 +330,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
                     
                     if self.selectionID == IDscenario : 
                         self.EnsureVisible(last)
-                        self.SelectItem(last, last, True)
+                        self.SelectItem(last, last)
                 
                 self.Expand(child)
         
@@ -354,7 +351,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
                     
                     if self.selectionID == IDscenario : 
                         self.EnsureVisible(last)
-                        self.SelectItem(last, last, True)
+                        self.SelectItem(last, last)
             
         self.Expand(self.root)
 
@@ -412,7 +409,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
         data = self.GetPyData(item)
         if data > 100000 :
             return
-        self.SelectItem(item, item, True)
+        self.SelectItem(item, item)
         
         # Création du menu contextuel
         menuPop = UTILS_Adaptations.Menu()

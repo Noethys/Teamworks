@@ -145,7 +145,7 @@ class ListView(ObjectListView):
             self.Bind(wx.EVT_CONTEXT_MENU, self.OnContextMenu)
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
         
-        if "linux" not in sys.platform and self.activePopup == True :
+        if 'phoenix' not in wx.PlatformInfo and "linux" not in sys.platform and self.activePopup == True :
             # Désactive la fenetre popup sous Linux
             self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         
@@ -800,8 +800,9 @@ class ListView(ObjectListView):
         dictDonnees = UTILS_Publipostage_donnees.GetDictDonnees(categorie="candidat", listeID=listeID)
         # Ouvre le publiposteur
         from Dlg import DLG_Publiposteur
-        frm = DLG_Publiposteur.MyWizard(self, "", dictDonnees=dictDonnees)
-        frm.Show()
+        dlg = DLG_Publiposteur.Dialog(self, "", dictDonnees=dictDonnees)
+        dlg.ShowModal()
+        dlg.Destroy()
         
         
     def ExportTexte(self):

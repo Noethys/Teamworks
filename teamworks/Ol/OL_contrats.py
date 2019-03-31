@@ -677,8 +677,9 @@ class ListView(FastObjectListView):
         dictDonnees = UTILS_Publipostage_donnees.GetDictDonnees(categorie="candidature", listeID=listeID)
         # Ouvre le publiposteur
         from Dlg import DLG_Publiposteur
-        frm = DLG_Publiposteur.MyWizard(self, "", dictDonnees=dictDonnees)
-        frm.Show()
+        dlg = DLG_Publiposteur.Dialog(self, "", dictDonnees=dictDonnees)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnMouseMotion(self, event):
         # Panel flottant

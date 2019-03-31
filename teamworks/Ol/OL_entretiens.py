@@ -79,13 +79,15 @@ class Track(object):
             self.avis = donnees[4]
             self.remarques = donnees[5]
         self.IDpersonne = donnees[6]
-        
-        if self.IDpersonne == 0 or self.IDpersonne == None :
+
+        self.nom_candidat = ""
+        if self.IDpersonne == 0 or self.IDpersonne == None:
             civilite, nom, prenom = NOMS_CANDIDATS[self.IDcandidat]
             self.nom_candidat = u"%s %s" % (nom, prenom)
         else:
-            civilite, nom, prenom = NOMS_PERSONNES[self.IDpersonne]
-            self.nom_candidat = u"%s %s" % (nom, prenom)
+            if self.IDpersonne in NOMS_PERSONNES:
+                civilite, nom, prenom = NOMS_PERSONNES[self.IDpersonne]
+                self.nom_candidat = u"%s %s" % (nom, prenom)
             
         self.date_heure_nom = self.date_heure + ";" + self.nom_candidat
     
@@ -303,9 +305,10 @@ class ListView(ObjectListView):
                     valide = False
             if valide == True :
                 track = Track(item)
-                listeListeView.append(track)
-                if self.selectionID == item[0] :
-                    self.selectionTrack = track
+                if track.nom_candidat != "":
+                    listeListeView.append(track)
+                    if self.selectionID == item[0] :
+                        self.selectionTrack = track
         return listeListeView
 
     def Importation_candidats(self):
@@ -633,7 +636,7 @@ class ListView(ObjectListView):
 
     def Rechercher(self):
         # Récupération des filtres souhaités
-        from Dlg import DLG_filtre_recrutement
+        from Dlg import DLG_Filtre_recrutement
         dlg = DLG_Filtre_recrutement.MyDialog(self, categorie="entretiens", listeValeursDefaut=self.listeFiltres, title=_(u"Sélection de filtres de liste"))
         if dlg.ShowModal() == wx.ID_OK:
             listeFiltres = dlg.GetListeFiltres()

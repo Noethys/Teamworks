@@ -14,7 +14,6 @@ import GestionDB
 import  wx.grid as gridlib
 import FonctionsPerso
 from reportlab.pdfgen import canvas
-from Dlg import DLG_Attente
 import threading
 from Utils import UTILS_Fichiers
 import sys
@@ -364,14 +363,8 @@ class CreationPDF(threading.Thread) :
         # Sauvegarde sur le disque dur
         c.save()
         
-        try: 
-            if "linux" not in sys.platform :
-                self.parent.frmAttente.stop()
-            # Ouverture du fichier
-            FonctionsPerso.LanceFichierExterne(cheminFichier)
-        except :
-            pass
-        
+        FonctionsPerso.LanceFichierExterne(cheminFichier)
+
         
 class Grid(gridlib.Grid): 
     def __init__(self, parent):
@@ -593,11 +586,6 @@ class Dialog(wx.Dialog):
 
     def Onbouton_ok(self, event):
         """ Affichage du PDF """
-        if "linux" not in sys.platform :
-            self.frmAttente = DLG_Attente.Dialog(None, label=_(u"Création du document PDF en cours..."))
-            self.frmAttente.ShowModal()
-            self.frmAttente.Destroy()
-
         pdf = CreationPDF(self, champs)
         pdf.start()
 
