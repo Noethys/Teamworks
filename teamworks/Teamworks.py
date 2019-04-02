@@ -777,6 +777,8 @@ class MyFrame(wx.Frame):
         """ Convertit un numéro de version texte en tuple """
         if type(texteVersion) == list:
             return tuple(texteVersion)
+        if type(texteVersion) == tuple:
+            return texteVersion
         tupleTemp = []
         for num in texteVersion.split("."):
             tupleTemp.append(int(num))
