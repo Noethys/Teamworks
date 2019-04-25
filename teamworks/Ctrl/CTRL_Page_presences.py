@@ -677,10 +677,13 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         listmix.ColumnSorterMixin.__init__(self, self.nbreColonnes)
         self.SetSelection(self.indexEnCours)
     
-    def SetSelection(self, index=0, selection=True) :
-        self.EnsureVisible(index)
-        if selection == True :
-            self.Select(index)
+    def SetSelection(self, index=0, selection=True):
+        try:
+            self.EnsureVisible(index)
+            if selection == True :
+                self.Select(index)
+        except:
+            pass
            
     def OnItemActivated(self, event):
         self.parent.Modifier()

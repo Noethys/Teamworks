@@ -91,7 +91,7 @@ class Page_documentation(wx.Panel):
 
     def OnBoutonImprimer(self, event):
         try:
-            FonctionsPerso.LanceFichierExterne(Chemins.GetStaticPath("Images/Special/Bon_commande_documentation.pdf"))
+            FonctionsPerso.LanceFichierExterne("https://teamworks.ovh/public/bon_commande_documentation.pdf")
         except:
             dlg = wx.MessageDialog(None, _(u"Teamworks ne peut pas ouvrir le PDF !\n\nVeuillez vérifier qu'un autre PDF n'est pas déjà ouvert en arrière-plan..."),_(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()

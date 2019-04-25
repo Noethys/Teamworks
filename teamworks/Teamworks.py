@@ -1259,7 +1259,8 @@ class MyFrame(wx.Frame):
     def On_propos_versions(self, event):
         """ A propos : Notes de versions """
         # Lecture du fichier
-        txtLicence = open(Chemins.GetMainPath("Versions.txt"), "r")
+        import codecs
+        txtLicence = codecs.open(Chemins.GetMainPath("Versions.txt"), encoding='utf-8', mode='r')
         msg = txtLicence.read()
         txtLicence.close()
         from Dlg import DLG_Messagebox
@@ -1458,7 +1459,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
                         reponse = dlg.ShowModal()
                         dlg.Destroy()
                         if reponse == 0:
-                            FonctionsPerso.LanceFichierExterne(Chemins.GetStaticPath("Images/Special/Bon_commande_documentation.pdf"))
+                            FonctionsPerso.LanceFichierExterne("https://teamworks.ovh/public/bon_commande_documentation.pdf")
                         return True
 
                 else:

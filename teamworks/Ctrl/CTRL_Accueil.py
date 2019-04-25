@@ -109,6 +109,7 @@ class MyHtmlWindow(html.HtmlWindow):
             sel = html.HtmlSelection()
             #self.log.WriteText('     %s\n' % cell.ConvertToText(sel))
         super(MyHtmlWindow, self).OnCellClicked(cell, x, y, evt)
+        return True
                 
     def Alignement(self, c):
         """ Aligne tout les gadgets en haut """
