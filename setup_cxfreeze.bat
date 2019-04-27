@@ -1,0 +1,1 @@
+cmd /k "cd /d %cd%\venv\Scripts & activate & cd /d    %cd% & python setup.py build"
