@@ -1,11 +1,14 @@
-Version 2.1.0.2 :
+Version 2.1.0.3 :
 
 - Ajout du registre unique du personnel
-- Ajout du calcul automatique des jours fÈriÈs variables
-- Ajout de l'importation des pÈriodes de vacances depuis Internet
-- RÈorganisation complËte des fichiers
-- Mise ‡ jour de la librairie graphique (3.0.1.0.)
-- AmÈlioration de la fenÍtre d'ouverture des fichiers
+- Ajout du calcul automatique des jours f√©ri√©s variables
+- Ajout de l'importation des p√©riodes de vacances depuis Internet
+- Am√©lioration de la fen√™tre d'ouverture des fichiers
+- R√©organisation compl√®te des fichiers
+- Compatibilit√© avec Python 3.7
+- Compatibilit√© avec wxPython Phoenix
+- Mise √† jour de toutes les d√©pendances
+- Mise √† jour de l'installeur
 - Correction de divers bugs
 
 Version 2.0.0.4 :
@@ -14,66 +17,66 @@ Version 2.0.0.4 :
 
 Version 2.0.0.3 :
 
-- Correction d'un bug sur la restauration de fichiers rÈseau
+- Correction d'un bug sur la restauration de fichiers r√©seau
 - Correction d'un bug sur la conversion tw1>tw2
 - [TECHN] Migration vers Python 2.7
-- [TECHN] Mise ‡ jour de toutes les bibliothËques
+- [TECHN] Mise √† jour de toutes les biblioth√®ques
 
 Version 2.0.0.2 :
 
 - Ajout de la restauration des anciennes sauvegardes twz
-- Prise en compte de la rupture des contrats dans l'Ètat des dossiers
+- Prise en compte de la rupture des contrats dans l'√©tat des dossiers
 
 Version 2.0.0.1 :
 
 - Ajout du questionnaire dans les fiches individuelles
-- Ajout du rattachement de documents aux piËces
-- Correction d'un bug sur l'ouverture des fichiers rÈseau
-- Correction d'un bug sur les conversions local<>rÈseau
+- Ajout du rattachement de documents aux pi√®ces
+- Correction d'un bug sur l'ouverture des fichiers r√©seau
+- Correction d'un bug sur les conversions local<>r√©seau
 
 Version 2.0.0.0 :
 
 IL EST CONSEILLE DE SAUVEGARDER VOS DONNEES
 AVANT L'INSTALLATION DE CETTE MISE A JOUR !!!
 
-- Nouveaux systËmes de sauvegarde et de restauration
+- Nouveaux syst√®mes de sauvegarde et de restauration
 - Ajout du cryptage des fichiers sauvegarde
 - Ajout de l'envoi des sauvegardes par email
-- Ajout de la conversion de fichiers rÈseau en local
-- Optimisation du systËme de gestion de la base de donnÈes
-- IntÈgration des photos dans la base de donnÈes
-- Ajout de la capture vidÈo des photos individuelles
+- Ajout de la conversion de fichiers r√©seau en local
+- Optimisation du syst√®me de gestion de la base de donn√©es
+- Int√©gration des photos dans la base de donn√©es
+- Ajout de la capture vid√©o des photos individuelles
 - Upgrade de la librairie graphique 2.8.11.0.
 - Ajout de la base Documents
-- AmÈlioration du paramÈtrage des utilisateurs rÈseau
-- Ajout d'une nouvelle fenÍtre de dÈmarrage
-- SystËme de conversion de fichiers tw1 -> tw2
+- Am√©lioration du param√©trage des utilisateurs r√©seau
+- Ajout d'une nouvelle fen√™tre de d√©marrage
+- Syst√®me de conversion de fichiers tw1 -> tw2
 
 Version 1.0.5.1 :
 
-- Ajout de l'Ètat 'Planning mensuel' dans le panneau des prÈsences
-- Mise ‡ jour de l'aide intÈgrÈe
-- Modification de la fenÍtre d'accueil
+- Ajout de l'√©tat 'Planning mensuel' dans le panneau des pr√©sences
+- Mise √† jour de l'aide int√©gr√©e
+- Modification de la fen√™tre d'accueil
 - Ajout du lien des dons de soutien
 - Ajout du lien vers le PDF 'Le guide de l'utilisateur'
-- Correction du bug civilitÈ de la fiche candidat
-- Correction du bug de focus du panneau prÈsences
+- Correction du bug civilit√© de la fiche candidat
+- Correction du bug de focus du panneau pr√©sences
 
 Version 1.0.5.0 :
 
-- Ajout de Teamword, l'Èditeur de texte et de mail intÈgrÈ
-- Ajout d'une option 'Inclure les jours fÈriÈs' dans les modËles de planning
-- Ajout d'une fonction de conversion d'un fichier local en fichier rÈseau
-- Correction d'un bug dans la liste des utilisateurs rÈseau
-- Optimisation du systËme de mise ‡ jour de la structure de la base de donnÈes
+- Ajout de Teamword, l'√©diteur de texte et de mail int√©gr√©
+- Ajout d'une option 'Inclure les jours f√©ri√©s' dans les mod√®les de planning
+- Ajout d'une fonction de conversion d'un fichier local en fichier r√©seau
+- Correction d'un bug dans la liste des utilisateurs r√©seau
+- Optimisation du syst√®me de mise √† jour de la structure de la base de donn√©es
 
 Version 1.0.4.0 :
 
 - Ajout du module Publiposteur
-- Modification de l'arborescence du rÈpertoire Documents
-- Ajout de l'option d'affichage 'DÈfinir l'amplitude horaire affichÈe par dÈfaut' dans le planning
-- Ajout de la persistence des options d'affichage de la liste des personnes du panneau PrÈsences
-- Mise ‡ jour de la librairie graphique wxPython (version 2.8.10.1.)
+- Modification de l'arborescence du r√©pertoire Documents
+- Ajout de l'option d'affichage 'D√©finir l'amplitude horaire affich√©e par d√©faut' dans le planning
+- Ajout de la persistence des options d'affichage de la liste des personnes du panneau Pr√©sences
+- Mise √† jour de la librairie graphique wxPython (version 2.8.10.1.)
 
 Version 1.0.3.4 :
 
@@ -81,29 +84,29 @@ Version 1.0.3.4 :
 
 Version 1.0.3.3 :
 
-- Ajout du total mensuel dans l'Ètat Planning Annuel
+- Ajout du total mensuel dans l'√©tat Planning Annuel
 
 Version 1.0.3.2 :
 
-- Ajout de l'Ètat Planning Annuel
+- Ajout de l'√©tat Planning Annuel
 
 Version 1.0.3.1 :
 
 - Ajout d'une option d'affichage des temps sur le planning
-- Correction d'un bug sur la fermeture de fenÍtres du module Recrutement
+- Correction d'un bug sur la fermeture de fen√™tres du module Recrutement
 - Correction d'un bug sur la persistence des options d'affichages du planning
 
 Version 1.0.3.0 :
 
 - Ajout du module Recrutement
 - Ajout d'une colonne Qualifications dans la liste des personnes
-- Ajout de la DLL msvcp71 pour une meilleure compatibilitÈ avec tous les systËmes
+- Ajout de la DLL msvcp71 pour une meilleure compatibilit√© avec tous les syst√®mes
 
 Version 1.0.2.6 :
 
-- Ajout d'une commande de duplication de modËle de planning
-- Correction d'un bug (fetchall>tuple) sur la version RÈseau
-- Correction d'un bug de formatage des heures sur la liste des prÈsences de la fiche individuelle
+- Ajout d'une commande de duplication de mod√®le de planning
+- Correction d'un bug (fetchall>tuple) sur la version R√©seau
+- Correction d'un bug de formatage des heures sur la liste des pr√©sences de la fiche individuelle
 
 Version 1.0.2.5 :
 
@@ -111,20 +114,20 @@ Version 1.0.2.5 :
 
 Version 1.0.2.4 :
 
-- Correction d'un bug sur l'outil de mise ‡ jour automatique sous Windows Vista
+- Correction d'un bug sur l'outil de mise √† jour automatique sous Windows Vista
 
 Version 1.0.2.3 :
 
-- IntÈgration du mode multi-postes avec gestion des rÈseaux locaux ou distants (internet)
+- Int√©gration du mode multi-postes avec gestion des r√©seaux locaux ou distants (internet)
 - Ajout de l'impression des statistiques en modes tableau et graphe
-- Ajout de l'impression des scÈnarios
-- Correction d'un bug du gestionnaire de base de donnÈes Sqlite
+- Ajout de l'impression des sc√©narios
+- Correction d'un bug du gestionnaire de base de donn√©es Sqlite
 - Correction d'un bug d'impression des PDF sous windows Vista
 
 Version 1.0.2.2 :
 
-- Correction d'un bug sur les codes postaux ‡ 4 chiffres
-- IntÈgration de la compatibilitÈ Linux
+- Correction d'un bug sur les codes postaux √† 4 chiffres
+- Int√©gration de la compatibilit√© Linux
 
 Version 1.0.2.1 :
 
@@ -133,13 +136,13 @@ Version 1.0.2.1 :
 Version 1.0.2.0 :
 
 - Ajout du module Statistiques
-- Ajout du module ScÈnarios
-- Correction d'un bug sur la suppression d'une t‚che dans le planning des prÈsences
-- RÈ-Ècriture de la sÈquence d'ouverture des fichiers (correction de plusieurs bugs)
-- Optimisation du temps de dÈmarrage du logiciel
-- Correction d'un bug d'affichage dans la configuration des pays et nationalitÈs
+- Ajout du module Sc√©narios
+- Correction d'un bug sur la suppression d'une t√¢che dans le planning des pr√©sences
+- R√©-√©criture de la s√©quence d'ouverture des fichiers (correction de plusieurs bugs)
+- Optimisation du temps de d√©marrage du logiciel
+- Correction d'un bug d'affichage dans la configuration des pays et nationalit√©s
 - Correction d'un bug d'unicode lors de l'impression des frais
-- Optimisation de la sauvegarde automatique des donnÈes
+- Optimisation de la sauvegarde automatique des donn√©es
 - Ajout d'un label pour le filtre d'affichage de la liste des personnes du panneau Personnes
 
 Version 1.0.1.9 :
@@ -152,28 +155,28 @@ Version 1.0.1.8 :
 
 Version 1.0.1.7 :
 
-- IntÈgration du systËme d'aide
+- Int√©gration du syst√®me d'aide
 
 Version 1.0.1.6 :
 
-- Ajout d'une commande d'impression de la liste des mots-clÈs dans l'assistants d'Èdition de contrats.
-- Ajout d'un label info dans l'Èditeur de D.U.E..
+- Ajout d'une commande d'impression de la liste des mots-cl√©s dans l'assistants d'√©dition de contrats.
+- Ajout d'un label info dans l'√©diteur de D.U.E..
 - Ajout de commandes aide pour chaque page du panneau configuration.
-- Correction d'un bug d'affichage dans la gestion des modËles de contrats.
-- Correction d'un bug d'affichage dans la gestion des catÈgories de prÈsences.
+- Correction d'un bug d'affichage dans la gestion des mod√®les de contrats.
+- Correction d'un bug d'affichage dans la gestion des cat√©gories de pr√©sences.
 
 Version 1.0.1.5 :
 
-- Correction bug sur ajout legende ‡ partir du menu contextuel du planning
+- Correction bug sur ajout legende √† partir du menu contextuel du planning
 
 Version 1.0.1.4 :
 
-- Ajout sÈlection personne sÈlectionnÈe dans prÈsences
+- Ajout s√©lection personne s√©lectionn√©e dans pr√©sences
 - Correction de plusieurs bugs
 
 Version 1.0.1.3 :
 
-- Correction d'un bug sur la mise ‡ jour par internet
+- Correction d'un bug sur la mise √† jour par internet
 
 Version 1.0.1.2 :
 
@@ -181,8 +184,8 @@ Version 1.0.1.2 :
 
 Version 1.0.1.1 :
 
-- AmÈlioration du systËme de mise ‡ jour
-- IntÈgration des bases dÈpartements et rÈgions dans la fiche individuelle.
+- Am√©lioration du syst√®me de mise √† jour
+- Int√©gration des bases d√©partements et r√©gions dans la fiche individuelle.
 
 Version 1.0.1.0 :
 
