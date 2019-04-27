@@ -1009,7 +1009,7 @@ class Page4(wx.Panel):
         wx.Panel.__init__(self, *args, **kwds)
         self.repCourant = os.getcwd()
         self.nomFichier = ""
-        self.cheminDest = self.repCourant  + "/Documents/Modeles"
+        self.cheminDest = UTILS_Fichiers.GetRepModeles()
         self.choixLogiciel = 1
         self.choixModele = ""
         
@@ -1112,7 +1112,7 @@ class Page4(wx.Panel):
                 
         # Récupération du chemin des documents
         sp = wx.StandardPaths.Get()
-        cheminDefaut = self.repCourant  + "/Documents/Modeles" #sp.GetDocumentsDir()
+        cheminDefaut = UTILS_Fichiers.GetRepModeles()
         # Ouverture dela fenêtre de dialogue
         dlg = wx.FileDialog(
             self, message=_(u"Choisissez un document"),
@@ -1135,7 +1135,7 @@ class Page4(wx.Panel):
         # os.chdir(self.repCourant)
         
         # Définit le répertoire des modèles de contrats
-        self.cheminDest = self.repCourant  + "/Documents/Modeles"
+        self.cheminDest = UTILS_Fichiers.GetRepModeles()
         
         # Vérifie qu'un fichier du même nom n'existe pas déjà
         exists = self.FichierExists(self.cheminDest, nomFichierCourt)
@@ -1335,7 +1335,7 @@ La liste des mots-clés disponibles est présentée dans le cadre ci-contre. Double
         if dlg.ShowModal() == wx.ID_NO :
             return
         # Suppression
-        fichier = self.repCourant  + "/Documents/Modeles/" + self.nomFichier
+        fichier = UTILS_Fichiers.GetRepModeles() + "/" + self.nomFichier
         os.remove(fichier)
         #MAJ affichage
         self.MAJ_ListCtrl()
@@ -1598,7 +1598,7 @@ class ListCtrl_fichiers(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.Col
         
     def GetListeDocuments(self):
         """ Récupère la liste des documents présents dans le répertoire donné """
-        cheminRep = self.parent.repCourant + "/Documents/Modeles"
+        cheminRep = UTILS_Fichiers.GetRepModeles()
         contenuRep = os.listdir(cheminRep)
         
         if self.parent.choixLogiciel == 1 : listeExtensions = [".doc",]
@@ -1634,7 +1634,7 @@ class Page5(wx.Panel):
         wx.Panel.__init__(self, *args, **kwds)
         
         self.choixLogiciel = 1
-        self.repertoire = os.getcwd() + "/Documents/Editions"
+        self.repertoire = UTILS_Fichiers.GetRepEditions()
         self.dictParamMail = {}
         
         self.sizer_contenu_staticbox = wx.StaticBox(self, -1, _(u"Options d'édition"))
@@ -1917,7 +1917,7 @@ class Page5(wx.Panel):
                 
         # Récupération du chemin des documents
         repCourant = os.getcwd() 
-        cheminDefaut = repCourant  + "/Documents/Contrats/Editions"
+        cheminDefaut = UTILS_Fichiers.GetRepEditions()
         # Ouverture dela fenêtre de dialogue
         dlg = wx.DirDialog(self, _(u"Sélectionnez un répertoire de destination"), defaultPath=cheminDefaut, style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
         if dlg.ShowModal() == wx.ID_OK:
@@ -2118,7 +2118,7 @@ class Page6(wx.Panel):
         wx.Panel.__init__(self, *args, **kwds)
         
         self.choixLogiciel = 1
-        self.repertoire = os.getcwd() + "/Documents/Editions"
+        self.repertoire = UTILS_Fichiers.GetRepEditions()
         self.nomFichier = ""
         self.pause = False
         self.termine = False
@@ -2897,7 +2897,8 @@ class Publipostage_Teamword():
     
     def RemplacementValeurs(self, listeValeurs=[]):
         """ Remplacements des mots-clés par les valeurs """
-        wx.Yield()
+        if 'phoenix' not in wx.PlatformInfo:
+            wx.Yield()
         try :
             listeValeurs2 = []
             for motcle, valeur in listeValeurs :

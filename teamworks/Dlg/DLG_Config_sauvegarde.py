@@ -19,11 +19,12 @@ import datetime
 from Utils import UTILS_Fichiers
 
 
-LISTE_SOURCES = [    [_(u"Les fichiers de données"), UTILS_Fichiers.GetRepData(), "DATA"],
-                                    [_(u"Les contrats édités"), "Documents/Editions/", "CONE"], 
-                                    [_(u"Les modèles de contrats"), "Documents/Modeles/", "CONM"],
-                                    [_(u"Les photos des personnes"), "Photos/", "PHOT"],
-                                    ] # Type Source, répertoire, code extension
+LISTE_SOURCES = [
+    [_(u"Les fichiers de données"), UTILS_Fichiers.GetRepData(), "DATA"],
+    [_(u"Les contrats édités"), UTILS_Fichiers.GetRepEditions(), "CONE"],
+    [_(u"Les modèles de contrats"), UTILS_Fichiers.GetRepModeles(), "CONM"],
+    [_(u"Les photos des personnes"), "Photos/", "PHOT"],
+    ] # Type Source, répertoire, code extension
                                     
 LISTE_INDESIRABLES = [
             "Thumbs.db",

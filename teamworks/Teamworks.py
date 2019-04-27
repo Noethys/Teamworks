@@ -37,6 +37,7 @@ from Dlg import DLG_Enregistrement
 
 import FonctionsPerso
 import GestionDB
+import UpgradeDB
 import os
 import datetime
 #import locale
@@ -808,13 +809,12 @@ class MyFrame(wx.Frame):
 
             # Affiche d'une fenêtre d'attente
             message = _(u"Mise à jour de la base de données en cours... Veuillez patientez...")
-            dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Mise à jour"),
-                                        icon=wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"),
-                                                       wx.BITMAP_TYPE_ANY))
-            wx.Yield()
+            dlgAttente = PBI.PyBusyInfo(message, parent=None, title=_(u"Mise à jour"), icon=wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
+            if 'phoenix' not in wx.PlatformInfo:
+                wx.Yield()
 
-            DB = GestionDB.DB(nomFichier=nomFichier)
-            resultat = DB.ConversionDB(versionFichier)
+            DB = UpgradeDB.DB(nomFichier=nomFichier)
+            resultat = DB.Upgrade(versionFichier)
             DB.Close()
 
             # Fermeture de la fenêtre d'attente
@@ -1372,6 +1372,13 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
             versionAnnonce = self.ConvertVersionTuple(self.GetVersionAnnonce())
             versionLogiciel = self.ConvertVersionTuple(VERSION_APPLICATION)
             if versionAnnonce < versionLogiciel :
+                # Déplace les fichiers exemples vers le répertoire des fichiers de données
+                try :
+                    UTILS_Fichiers.DeplaceExemples()
+                except Exception as err:
+                    print("Erreur dans UTILS_Fichiers.DeplaceExemples :")
+                    print((err,))
+                # Affiche le message d'accueil
                 from Dlg import DLG_Message_accueil
                 dlg = DLG_Message_accueil.Dialog(self)
                 dlg.ShowModal()
@@ -1541,18 +1548,12 @@ class MyApp(wx.App):
         heure_debut = time.time()
         # wx.Locale(wx.LANGUAGE_FRENCH)
 
-        # # Vérifie l'existence des répertoires
-        # for rep in ("Aide", "Temp", "Updates", "Data", "Lang", "Documents/Editions") :
-        #     if os.path.isdir(rep) == False :
-        #         os.makedirs(rep)
-        #         print "Creation du repertoire : ", rep
-
         # AdvancedSplashScreen
         bmp = wx.Bitmap(Chemins.GetStaticPath("Images/Special/Logo_splash.png"), wx.BITMAP_TYPE_PNG)
         frame = AS.AdvancedSplash(None, bitmap=bmp, timeout=1000, agwStyle=AS.AS_TIMEOUT | AS.AS_CENTER_ON_SCREEN)
         frame.Refresh()
         frame.Update()
-        if six.PY2:
+        if 'phoenix' not in wx.PlatformInfo:
             wx.Yield()
 
         # Création de la frame principale
@@ -1595,7 +1596,7 @@ class Redirect(object):
 
 if __name__ == "__main__":
     # Vérifie l'existence des répertoires dans le répertoire Utilisateur
-    for rep in ("Temp", "Updates", "Sync", "Lang") :
+    for rep in ("Temp", "Updates", "Sync", "Lang", "Modeles", "Editions") :
         rep = UTILS_Fichiers.GetRepUtilisateur(rep)
         if os.path.isdir(rep) == False :
             os.makedirs(rep)

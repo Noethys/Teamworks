@@ -77,6 +77,14 @@ def GetRepSync(fichier=""):
     chemin = GetRepUtilisateur("Sync")
     return os.path.join(chemin, fichier)
 
+def GetRepModeles(fichier=""):
+    chemin = GetRepUtilisateur("Modeles")
+    return os.path.join(chemin, fichier)
+
+def GetRepEditions(fichier=""):
+    chemin = GetRepUtilisateur("Editions")
+    return os.path.join(chemin, fichier)
+
 def GetRepUtilisateur(fichier=""):
     """ Recherche le répertoire Utilisateur pour stockage des fichiers de config et provisoires """
     chemin = None
@@ -138,12 +146,23 @@ def DeplaceFichiers():
 
 def DeplaceExemples():
     """ Déplace les fichiers exemples vers le répertoire des fichiers de données """
+    # Déplacement des fichiers exemples
     if GetRepData() != "Data/" :
         chemin = Chemins.GetStaticPath("Exemples")
         for nomFichier in os.listdir(chemin) :
-            if nomFichier.endswith(".dat") and "EXEMPLE_" in nomFichier :
+            if nomFichier.endswith(".dat") and "Exemple_" in nomFichier :
                 # Déplace le fichier vers le répertoire des fichiers de données
                 shutil.copy(os.path.join(chemin, nomFichier), GetRepData(nomFichier))
+
+    # Déplacement des modèles de documents
+    chemin = Chemins.GetStaticPath("Documents")
+    for nomFichier in os.listdir(chemin):
+        if os.path.isfile(GetRepModeles(nomFichier)) == False:
+            # Si le modèle n'existe pas, on l'importe dans le répertoire Modèles de l'utilisateur
+            shutil.copy(os.path.join(chemin, nomFichier), GetRepModeles(nomFichier))
+
+
+
 
 def OuvrirRepertoire(rep):
     if platform.system() == "Windows":
@@ -160,9 +179,11 @@ if __name__ == "__main__":
     # DeplaceFichiers()
 
     # Répertoire utilisateur
-    print((GetRepUtilisateur()))
+    # print((GetRepUtilisateur()))
 
     # Répertoire des données
-    chemin = GetRepData()
-    print((1, os.path.join(chemin, u"Testé.pdf")))
-    print((2, os.path.join(chemin, "Test.pdf")))
+    # chemin = GetRepData()
+    # print((1, os.path.join(chemin, u"Testé.pdf")))
+    # print((2, os.path.join(chemin, "Test.pdf")))
+
+    DeplaceExemples()
