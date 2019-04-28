@@ -123,7 +123,7 @@ def CoordEnHeures(coordX):
 def AroundHeure(heure):
     """ Arrondit une heure datetime.time donnée aux 5 minutes inférieures ou supérieures """
     minutes = heure.minute
-    newMinutes = round((minutes/5)*5, 2)
+    newMinutes = round((minutes//5)*5, 2)
     resultatH = datetime.time(heure.hour, int(newMinutes))
     return resultatH
 
@@ -1272,7 +1272,10 @@ class WidgetPlanning(wx.ScrolledWindow):
             coord = HeuresEnCoords(heureD)
             if heureD < self.contraintes[2] or heureD > self.contraintes[3] :
                 xMouse = self.dictPresences[IDpresence][8]+self.selectEcart+1
-                yMouse = self.ScreenToClientXY(xMouse, wx.GetMousePosition()[1])[1]
+                if 'phoenix' in wx.PlatformInfo:
+                    yMouse = self.ScreenToClient(xMouse, wx.GetMousePosition()[1])[1]
+                else:
+                    yMouse = self.ScreenToClientXY(xMouse, wx.GetMousePosition()[1])[1]
                 self.WarpPointer(xMouse, yMouse)
                 return            
             self.dictPresences[IDpresence][4] = heureD
@@ -1285,7 +1288,10 @@ class WidgetPlanning(wx.ScrolledWindow):
             coord = HeuresEnCoords(heureG)
             if heureG < self.contraintes[0] or heureG > self.contraintes[1] : 
                 xMouse = self.dictPresences[IDpresence][7]+self.selectEcart+1
-                yMouse = self.ScreenToClientXY(xMouse, wx.GetMousePosition()[1])[1]
+                if 'phoenix' in wx.PlatformInfo:
+                    yMouse = self.ScreenToClient(xMouse, wx.GetMousePosition()[1])[1]
+                else:
+                    yMouse = self.ScreenToClientXY(xMouse, wx.GetMousePosition()[1])[1]
                 self.WarpPointer(xMouse, yMouse)
                 return
             self.dictPresences[IDpresence][3] = heureG
@@ -1304,21 +1310,23 @@ class WidgetPlanning(wx.ScrolledWindow):
             coordG = HeuresEnCoords(heureG)
             if heureG < self.contraintes[0] :
                 xMouse = self.dictPresences[IDpresence][7]+self.selectEcart[0]
-                yMouse = self.ScreenToClientXY(xMouse, wx.GetMousePosition()[1])[1]
+                if 'phoenix' in wx.PlatformInfo:
+                    yMouse = self.ScreenToClient(xMouse, wx.GetMousePosition()[1])[1]
+                else:
+                    yMouse = self.ScreenToClientXY(xMouse, wx.GetMousePosition()[1])[1]
                 self.WarpPointer(xMouse, yMouse)
                 return
             # posD
             heureDtmp = datetime.datetime(1,1,1, heureG.hour, heureG.minute, 00) + duree
             heureD = datetime.time(heureDtmp.hour, heureDtmp.minute)
             coordD = HeuresEnCoords(heureD)
-            
-            # Ancienne méthode
-##            heureD = AroundHeure(CoordEnHeures(x+self.selectEcart[1]))
-##            coordD = HeuresEnCoords(heureD)
-            
+
             if heureD > self.contraintes[3] : 
                 xMouse = self.dictPresences[IDpresence][8]-self.selectEcart[1]+1
-                yMouse = self.ScreenToClientXY(xMouse, wx.GetMousePosition()[1])[1]
+                if 'phoenix' in wx.PlatformInfo:
+                    yMouse = self.ScreenToClient(xMouse, wx.GetMousePosition()[1])[1]
+                else:
+                    yMouse = self.ScreenToClientXY(xMouse, wx.GetMousePosition()[1])[1]
                 self.WarpPointer(xMouse, yMouse)
                 return
             # Mémorisation des nouvelles valeurs

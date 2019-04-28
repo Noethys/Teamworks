@@ -13,7 +13,6 @@ from Ctrl import CTRL_Bouton_image
 import GestionDB
 import FonctionsPerso
 import datetime
-import wx.gizmos as gizmos
 import wx.lib.agw.hypertreelist as HTL
 from Dlg import DLG_Scenario
 from Utils import UTILS_Adaptations
@@ -29,16 +28,7 @@ class Panel(wx.Panel):
         texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer des scénarios.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
 
-        if 'phoenix' in wx.PlatformInfo:
-            TR_COLUMN_LINES = HTL.TR_COLUMN_LINES
-        else :
-            TR_COLUMN_LINES = wx.TR_COLUMN_LINES
-
-        if IDpersonne == None :
-            style = wx.BORDER_THEME | wx.TR_FULL_ROW_HIGHLIGHT  | TR_COLUMN_LINES | wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT | wx.TR_SINGLE
-        else:
-            style = wx.BORDER_THEME | wx.TR_FULL_ROW_HIGHLIGHT  | TR_COLUMN_LINES | wx.TR_HIDE_ROOT | wx.TR_SINGLE
-        self.listCtrl = TreeListCtrl(self, -1, IDpersonne=IDpersonne, style=style)
+        self.listCtrl = TreeListCtrl(self, -1, IDpersonne=IDpersonne)
         self.listCtrl.SetMinSize((20, 20))        
         self.bouton_ajouter = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_modifier = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Modifier.png"), wx.BITMAP_TYPE_ANY))
@@ -176,6 +166,8 @@ class Panel(wx.Panel):
     def OnBoutonDupliquer(self, event):
         item = self.listCtrl.GetSelection()
         IDscenario = self.listCtrl.GetPyData(item)
+        if IDscenario == None:
+            return False
 
         # Vérifie qu'un item a bien été sélectionné
         if IDscenario > 100000 or IDscenario == None or IDscenario == -1 :
@@ -250,15 +242,16 @@ class Panel(wx.Panel):
 
 
 
-class TreeListCtrl(gizmos.TreeListCtrl):
+class TreeListCtrl(HTL.HyperTreeList):
     def __init__(self, *args, **kwds):
         # Récupération des paramètres perso
         self.IDpersonne = kwds.pop("IDpersonne", None)
         self.selectionID = kwds.pop("selectionID", None)
         # Initialisation du listCtrl
-        gizmos.TreeListCtrl.__init__(self, *args, **kwds)
+        HTL.HyperTreeList.__init__(self, *args, **kwds)
         self.SetBackgroundColour(wx.WHITE)
-        
+
+        self.SetAGWWindowStyleFlag(wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | HTL.TR_COLUMN_LINES |wx.TR_HAS_VARIABLE_ROW_HEIGHT | wx.TR_FULL_ROW_HIGHLIGHT | wx.TR_SINGLE)
         self.InitTreeCtrl()
         
         self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnActivated)
@@ -353,7 +346,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
                         self.EnsureVisible(last)
                         self.SelectItem(last, last)
             
-        self.Expand(self.root)
+        #self.Expand(self.root)
 
     def MAJ(self, selectionID=None):
         self.DeleteAllItems()
@@ -407,7 +400,7 @@ class TreeListCtrl(gizmos.TreeListCtrl):
         # Recherche et sélection de l'item pointé avec la souris
         item = event.GetItem()
         data = self.GetPyData(item)
-        if data > 100000 :
+        if data == None or data > 100000 :
             return
         self.SelectItem(item, item)
         

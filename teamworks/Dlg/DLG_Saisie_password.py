@@ -2,6 +2,7 @@
 # -*- coding: iso-8859-15 -*-
 
 import Chemins
+from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
 import GestionDB

@@ -975,11 +975,7 @@ class Panel(wx.Panel):
         sizerOptions.Add(self.ctrl_annee, 0, wx.EXPAND, 0)
         sizerOptions.Add(self.spin, 0, wx.EXPAND, 0)
         sizerOptions.AddGrowableCol(1)
-##        
-##        if self.panelSansBord==True :
-##            bordLateral = 0
-##        else:
-##            bordLateral = bordLateral
+
         sizer.Add((0, bordHaut), 0, wx.EXPAND|wx.ALL, 0) # Espace haut
         sizer.Add(sizerOptions, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, bordLateral)
         sizer.Add(self.calendrier, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, bordLateral)
@@ -1042,7 +1038,7 @@ class Panel(wx.Panel):
                 self.GetGrandParent().GetParent().Centre()
             
             # Si l'appel vient du planning
-            if self.GetGrandParent().GetName() == "splitter" :
+            if "splitter" in self.GetGrandParent().GetName() :
                 self.GetGrandParent().SetSashPosition(450, True)
                 self.GetParent().SetSashPosition(0, 400)
                 
@@ -1051,7 +1047,7 @@ class Panel(wx.Panel):
             self.combo_mois.Enable(True)
             self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
             
-            if self.GetGrandParent().GetName() == "splitter" :
+            if "splitter" in self.GetGrandParent().GetName():
                 self.GetGrandParent().SetSashPosition(240, True)
                 self.GetParent().SetSashPosition(0, 220)
     

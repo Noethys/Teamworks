@@ -122,124 +122,6 @@ class CTRL_Annee(wx.SpinCtrl):
 
 
 
-class PanelCalendrierArchive(wx.Panel):
-    def __init__(self, parent, ID=-1):
-        wx.Panel.__init__(self, parent, ID)
-
-        # Création Widgets
-        self.calendrier = Calendrier.Calendrier(self, -1)
-        self.calendrier.SetBackgroundColour(couleurFondPanneau)
-        # Attribution des couleurs au calendrier
-        self.calendrier.couleurNormal = couleurFondWidgets
-        self.calendrier.couleurWE = (198, 211, 249)
-        self.calendrier.couleurSelect = (255, 162, 0)
-        
-        self.listeMois = [_(u"Janvier"), _(u"Février"), _(u"Mars"), _(u"Avril"), _(u"Mai"), _(u"Juin"), _(u"Juillet"), _(u"Août"), _(u"Septembre"), _(u"Octobre"), _(u"Novembre"), _(u"Décembre")]
-        self.combo_mois = wx.ComboBox(self, -1, "" , (-1, -1) , (-1, -1), self.listeMois , wx.CB_READONLY)
-        
-        self.spin = wx.SpinButton(self, -1, size=(30, 20),  style=wx.SP_HORIZONTAL)
-        self.spin.SetRange(-1, 1)
-        
-        self.ctrl_annee = CTRL_Annee(self)
-        
-        dateJour = datetime.datetime.today()
-        numMois = dateJour.month
-        numAnnee = dateJour.year
-        self.combo_mois.SetSelection(numMois-1)
-        self.ctrl_annee.SetAnnee(numAnnee)
-        
-        self.MAJPeriodeCalendrier()
-        # Sélection de Aujourdh'ui
-        self.calendrier.SelectJours( [datetime.date.today(),] )
-        
-        self.bouton_CalendrierAnnuel = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Calendrier_jour.png"), wx.BITMAP_TYPE_PNG), size=(28, 21))
-        self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
-        
-        self.barreTitre = FonctionsPerso.BarreTitre(self, _(u"Calendrier"), _(u"Ceci est l'info-bulle !"))
-
-        # Layout
-        sizer =  wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.barreTitre, 0, wx.EXPAND, 0)
-        sizerOptions = wx.FlexGridSizer(rows=1, cols=8, vgap=0, hgap=5)
-        sizerOptions.Add(self.bouton_CalendrierAnnuel, 0)
-        sizerOptions.Add(self.combo_mois, 0, wx.EXPAND, 0)
-        sizerOptions.Add(self.ctrl_annee, 0)
-        sizerOptions.Add(self.spin, 0)
-        sizerOptions.AddGrowableCol(1)
-        
-        sizer.Add(sizerOptions, 0, wx.EXPAND|wx.ALL, 10)
-        sizer.Add(self.calendrier, 1, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 10)
-        
-        self.SetSizer(sizer)
-        
-        # Bind
-        self.Bind(wx.EVT_SPIN, self.OnSpin, self.spin)
-        self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuel, self.bouton_CalendrierAnnuel)
-        self.Bind(wx.EVT_COMBOBOX, self.OnComboMois, self.combo_mois)
-        self.ctrl_annee.Bind(wx.EVT_SPINCTRL, self.OnComboAnnee)
-                
-    def MAJselectionDates(self, listeDates) :
-        global selectionDates
-        selectionDates = listeDates
-        self.GetGrandParent().GetParent().MAJpanelPlanning()
-        self.GetGrandParent().GetParent().panelPersonnes.listCtrlPersonnes.CreateCouleurs()
-
-    def OnSpin(self, event):
-        x = event.GetPosition()
-        if self.combo_mois.IsEnabled() == True :
-            # Changement du mois
-            mois = self.combo_mois.GetSelection() + 1
-            annee = self.ctrl_annee.GetAnnee()
-            mois = mois + x
-            if mois == 0 :
-                mois = 12
-                annee = annee - 1
-            if mois == 13 :
-                mois = 1
-                annee = annee + 1
-            self.combo_mois.SetSelection(mois-1)
-            self.ctrl_annee.SetAnnee(annee)
-        else:
-            # Changement de l'année uniquement
-            annee = self.ctrl_annee.GetAnnee() + x
-            self.ctrl_annee.SetAnnee(annee)
-        self.spin.SetValue(0)
-        self.MAJPeriodeCalendrier()
-        
-    def OnBoutonAnnuel(self, event) :
-        if self.calendrier.GetTypeCalendrier() == "mensuel" :
-            self.calendrier.SetTypeCalendrier("annuel")
-            self.combo_mois.Enable(False)
-            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier mensuel")))
-            self.GetGrandParent().SetSashPosition(450, True)
-            self.GetParent().SetSashPosition(0, 400)
-        else:
-            self.calendrier.SetTypeCalendrier("mensuel")
-            self.combo_mois.Enable(True)
-            self.bouton_CalendrierAnnuel.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour afficher le calendrier annuel")))
-            self.GetGrandParent().SetSashPosition(230, True)
-            self.GetParent().SetSashPosition(0, 220)
-    
-    def MAJPeriodeCalendrier(self) :
-        mois = self.combo_mois.GetSelection() + 1
-        annee = int(self.combo_annee.GetValue())
-        self.calendrier.SetMoisAnneeCalendrier(mois, annee)
-        
-    def OnComboMois(self, event) :
-        self.MAJPeriodeCalendrier()
-
-    def OnComboAnnee(self, event) :
-        self.MAJPeriodeCalendrier()
- 
-    def MAJpanel(self):
-        self.calendrier.MAJpanel()
-        
-    def MAJcontrolesNavigation(self, mois, annee):
-        self.combo_mois.SetSelection(mois-1)
-        self.ctrl_annee.SetAnnee(annee)
-        
-
-
 # ===========================================================================================================================
 
 
@@ -260,12 +142,8 @@ class ListCtrl_Legendes(wx.ListCtrl):
         self.Remplissage()
 
         # Binds
-##        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnItemSelected)
-##        self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
-        #self.Bind(wx.EVT_CONTEXT_MENU, self.OnContextMenu)
         self.Bind(wx.EVT_SIZE, self.OnSize)
-        #self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
-    
+
     def Importation(self):
         self.DictCategories = self.GetGrandParent().GetGrandParent().panelPlanning.DCplanning.dictCategories
         

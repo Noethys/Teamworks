@@ -1510,7 +1510,7 @@ class SaisiePassword(wx.Dialog):
         return nomFichier
 
     def __set_properties(self):
-        self.text_password.SetToolTipString(_(u"Saisissez votre mot de passe ici"))
+        self.text_password.SetToolTip(wx.ToolTip(_(u"Saisissez votre mot de passe ici")))
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
 

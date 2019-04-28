@@ -329,8 +329,8 @@ class Gadget_Updater(wx.Panel):
         self.SetBackgroundColour(couleurFondUpdater)
         
         self.bouton_telecharger = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Telecharger_L140.png"), wx.BITMAP_TYPE_ANY), size=(-1, 60))
-        self.bouton_telecharger.SetToolTipString(_(u"Cliquez ici pour télécharger et installer\nla nouvelle version de TeamWorks"))
-        
+        self.bouton_telecharger.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour télécharger et installer\nla nouvelle version de TeamWorks")))
+
         #font = wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL) 
         #self.contenu.SetFont(font)
         
