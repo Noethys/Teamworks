@@ -200,7 +200,6 @@ class Panel(wx.Panel):
         topWindow = wx.GetApp().GetTopWindow() 
         try : topWindow.SetStatusText(_(u"Chargement du module des statistiques en cours. Veuillez patientez..."))
         except : pass
-        print("lancement fonction Stats...")
         try :
             from Dlg import DLG_Statistiques
             dlg = DLG_Statistiques.Dialog(self, listeDates=[], listePersonnes=[self.IDpersonne,])
@@ -220,6 +219,7 @@ class Panel(wx.Panel):
         dlg = Dialog_application_modele(self, IDpersonne=self.IDpersonne)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJpanel()
         
     def OnBoutonRecherche(self, event):
         self.Rechercher()
@@ -287,7 +287,7 @@ class Dialog_saisie(wx.Dialog):
         
         # Panel Calendrier
         self.panel_calendrier = wx.Panel(self.panel_base, -1)
-        self.calendrier = CTRL_Calendrier_tw.Panel(self.panel_calendrier, afficheBoutonAnnuel=True)
+        self.calendrier = CTRL_Calendrier_tw.Panel(self.panel_calendrier, afficheBoutonAnnuel=True, callbacksenddates=self.SendDates)
         self.staticbox_calendrier = wx.StaticBox(self.panel_calendrier, -1, _(u"Dates"))
         sizer_calendrier = wx.StaticBoxSizer(self.staticbox_calendrier, wx.VERTICAL)
         sizer_calendrier.Add(self.calendrier, 1, wx.ALL|wx.EXPAND, 5)
@@ -317,7 +317,7 @@ class Dialog_saisie(wx.Dialog):
         
         # Bind
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
     def OnClose(self, event):
         self.Fermer()
         event.Skip()
@@ -346,11 +346,12 @@ class Dialog_saisie(wx.Dialog):
 
 
 class Dialog_application_modele(wx.Dialog):
-    def __init__(self, parent, title=_(u"Application d'un modèle"), IDpersonne=0):
+    def __init__(self, parent, IDpersonne=0):
         wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
         self.parent = parent
         self.IDpersonne = IDpersonne
         self.panel_base = wx.Panel(self, -1, name="panel_applicModele_FicheInd")
+        self.SetTitle((u"Application d'un modèle"))
 
         self.selectionLignes = []
         self.selectionPersonnes = [IDpersonne,]
@@ -358,7 +359,7 @@ class Dialog_application_modele(wx.Dialog):
 
         # Panel Calendrier
         self.panel_calendrier = wx.Panel(self.panel_base, -1)
-        self.calendrier = CTRL_Calendrier_tw.Panel(self.panel_calendrier, afficheBoutonAnnuel=True)
+        self.calendrier = CTRL_Calendrier_tw.Panel(self.panel_calendrier, afficheBoutonAnnuel=True, callbacksenddates=self.SendDates)
         self.staticbox_calendrier = wx.StaticBox(self.panel_calendrier, -1, _(u"Veuillez sélectionner une ou plusieurs dates"))
         sizer_calendrier = wx.StaticBoxSizer(self.staticbox_calendrier, wx.VERTICAL)
         sizer_calendrier.Add(self.calendrier, 1, wx.ALL|wx.EXPAND, 5)
@@ -388,7 +389,6 @@ class Dialog_application_modele(wx.Dialog):
         self.CenterOnScreen()
 
     def Fermer(self):
-        self.parent.MAJpanel()
         self.EndModal(wx.ID_CANCEL)
 
     def SendDates(self, listeDates=[]):

@@ -19,6 +19,7 @@ import sys
 from Dlg import DLG_Saisie_emploi
 from Utils import UTILS_Fichiers
 from ObjectListView import ObjectListView, ColumnDefn
+import six
 
 
 NOMS_CANDIDATS = {}

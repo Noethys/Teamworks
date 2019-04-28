@@ -13,7 +13,7 @@ from Utils import UTILS_Adaptations
 from Dlg import DLG_Saisie_piece
 import GestionDB
 import datetime
-
+import six
 
 
 def DateEngFr(textDate):

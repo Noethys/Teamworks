@@ -1708,9 +1708,10 @@ class WidgetPlanning(wx.ScrolledWindow):
         else:
             selectionDates=(None, None)
    
-        dlg = DLG_Application_modele.Dialog(self, selectionLignes=selectionsLignes, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates )
+        dlg = DLG_Application_modele.Dialog(self, selectionLignes=selectionsLignes, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates)
         dlg.ShowModal()
         dlg.Destroy()
+        self.GetGrandParent().GetParent().MAJpanelPlanning()
 
     def SousMenuCategories(self, IDparent, menu, titre, couleurTitre):
         # make a submenu avec self.dictCategories

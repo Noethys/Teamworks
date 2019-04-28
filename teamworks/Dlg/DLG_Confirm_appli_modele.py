@@ -32,6 +32,7 @@ class Dialog(wx.Dialog):
         self.dictTaches = dictTaches
         self.listeCreationsTaches = listeCreationsTaches
         self.inclureFeries = inclureFeries
+        self.etat = None
         
         self.panel_base_1 = wx.Panel(self, -1)
         self.panel_base_2 = wx.Panel(self.panel_base_1, -1)
@@ -86,30 +87,13 @@ class Dialog(wx.Dialog):
         self.Layout()
         self.CenterOnScreen()
 
-    def OnBoutonAnnuler(self, event) :
-        
-        try :
+    def OnBoutonAnnuler(self, event):
+        if hasattr(self, "thread1"):
             if self.thread1.isAlive():
-                # Arret du processus
                 self.thread1.abort()
-            else:
-                # Fermeture après la fin du processus
-                FonctionsPerso.SetModalFrameParente(self)
-                if self.GetParent().GetName() == "panel_applicModele" :
-                    self.GetParent().Fermer()
-                else:
-                    self.GetParent().Destroy()
-                try :
-                    self.GetGrandParent().GetGrandParent().GetGrandParent().MAJpanelPlanning()
-                except :
-                    pass
-                self.EndModal(wx.ID_CANCEL)
-        except :
-            # Fermeture de la fenêtre avant lancement du processus
-            self.EndModal(wx.ID_CANCEL)
-        
+        self.EndModal(wx.ID_CANCEL)
+
     def OnBoutonOk(self, event):
-  
         self.thread1 = threadAction(self, self.listeCreationsTaches)
         self.thread1.start()
         
@@ -219,6 +203,10 @@ class Dialog(wx.Dialog):
         else:
             self.AffichageExceptions()
         self.bouton_annuler.SetBitmapLabel(wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Ok_L72.png"), wx.BITMAP_TYPE_ANY))
+        self.etat = "termine"
+
+    def GetEtat(self):
+        return self.etat
 
     def AffichageExceptions(self) :
         # Lecture de la liste des exceptions
@@ -326,14 +314,19 @@ class TreeCtrlTaches(wx.TreeCtrl):
             IDpersonne = key[0]
             nomPersonne = key[1]
             itemPersonne = self.AppendItem(self.root, nomPersonne)
-            self.SetPyData(itemPersonne, IDpersonne)
+            if 'phoenix' in wx.PlatformInfo:
+                self.SetItemData(itemPersonne, IDpersonne)
+            else:
+                self.SetPyData(itemPersonne, IDpersonne)
             # Image
             self.SetItemImage(itemPersonne, self.imgPersonne, wx.TreeItemIcon_Normal)
-            
-            
+
             for date in self.dictTaches[key]:
-                itemDate = self.AppendItem(itemPersonne, str(date)) 
-                self.SetPyData(itemDate, None)
+                itemDate = self.AppendItem(itemPersonne, str(date))
+                if 'phoenix' in wx.PlatformInfo:
+                    self.SetItemData(itemDate, None)
+                else:
+                    self.SetPyData(itemDate, None)
                 # Image
                 self.SetItemImage(itemDate, self.imgDate, wx.TreeItemIcon_Normal)
                 # Mémorisation de l'item Date du TreeCtrl
@@ -348,8 +341,11 @@ class TreeCtrlTaches(wx.TreeCtrl):
                     if intitule != "" :
                         detailTache += " (" + intitule + ")"
                     itemTache = self.AppendItem(itemDate, detailTache)
-                    self.SetPyData(itemTache, None)
-                    
+                    if 'phoenix' in wx.PlatformInfo:
+                        self.SetItemData(itemTache, None)
+                    else:
+                        self.SetPyData(itemTache, None)
+
                     # Mémorisation de l'item TreeCtrl
                     self.dictItemsTree[ (IDpersonne, date, tache[0][0], tache[0][1]) ] = itemTache
                     

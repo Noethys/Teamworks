@@ -14,6 +14,7 @@ import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
 from Utils import UTILS_Adaptations
+import six
 
 
 class Panel(wx.Panel):
@@ -219,7 +220,7 @@ class Panel(wx.Panel):
 ##            return
 
         # Demande de confirmation
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette affectation ? \n\n> ") + Nom))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette affectation ? \n\n> ") + Nom))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()
@@ -379,7 +380,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
     def OnGetItemText(self, item, col):
         """ Affichage des valeurs dans chaque case du ListCtrl """
         index=self.itemIndexMap[item]
-        valeur = unicode(self.itemDataMap[index][col])
+        valeur = six.text_type(self.itemDataMap[index][col])
         return valeur
 
     def OnGetItemImage(self, item):

@@ -22,6 +22,7 @@ from Dlg import DLG_Selection_candidat
 from Utils import UTILS_Fichiers
 from Utils import UTILS_Adaptations
 from ObjectListView import ObjectListView, ColumnDefn
+import six
 
 
 NOMS_CANDIDATS = {}

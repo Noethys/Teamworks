@@ -14,6 +14,7 @@ import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
 from Utils import UTILS_Adaptations
+import six
 
 
 class Panel(wx.Panel):
@@ -524,7 +525,6 @@ class Dialog(wx.Dialog):
         self.sizer_pages = sizer_pages
 
     def OnClose(self, event):
-        FonctionsPerso.SetModalFrameParente(self)
         event.Skip()
         
     def Onbouton_aide(self, event):
@@ -538,15 +538,13 @@ class Dialog(wx.Dialog):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Fonctions
         self.MAJparents()
         # Fermeture
-        FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
         
     def Onbouton_ok(self, event):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Fonctions
         self.MAJparents()
         # Fermeture
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.Destroy()
 
     def MAJparents(self):
         if FonctionsPerso.FrameOuverte("panel_candidature") != None :

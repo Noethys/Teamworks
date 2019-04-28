@@ -19,8 +19,9 @@ from Utils import UTILS_Adaptations
 
 
 class Calendrier(wx.ScrolledWindow):
-    def __init__(self,parent,ID=-1):
-        wx.ScrolledWindow.__init__(self,parent,ID, style = wx.NO_BORDER)
+    def __init__(self,parent,ID=-1, callbacksenddates=None):
+        wx.ScrolledWindow.__init__(self, parent, ID, style=wx.NO_BORDER)
+        self.callbacksenddates = callbacksenddates
         
         # Variables à ne surtout pas changer
         self.caseSurvol = None
@@ -349,17 +350,12 @@ class Calendrier(wx.ScrolledWindow):
         try :
             self.GetParent().MAJselectionDates(self.listeSelections)
         except : pass
-        
-        try :
-            if self.GetGrandParent().GetGrandParent().GetName() == "frm_saisiePresences_FicheInd" :
-                self.GetGrandParent().GetGrandParent().SendDates(self.listeSelections)
-        except : pass
-        
-        try :
-            if self.GetGrandParent().GetGrandParent().GetName() == "frm_applicModele_FicheInd" :
-                self.GetGrandParent().GetGrandParent().SendDates(self.listeSelections)
-        except : pass
-        
+
+        if self.callbacksenddates != None:
+            try:
+                self.callbacksenddates(self.listeSelections)
+            except:
+                pass
 
     def OnLeave(self, event):
         if self.onLeave == True:
@@ -929,12 +925,12 @@ class CTRL_Annee(wx.SpinCtrl):
 
 
 class Panel(wx.Panel):
-    def __init__(self, parent, ID=-1, afficheBoutonAnnuel=True, afficheAujourdhui=True, bordHaut=0, bordBas=0, bordLateral=0):
+    def __init__(self, parent, ID=-1, afficheBoutonAnnuel=True, afficheAujourdhui=True, bordHaut=0, bordBas=0, bordLateral=0, callbacksenddates=None):
         wx.Panel.__init__(self, parent, ID, name="panel_calendrier")
         self.afficheBoutonAnnuel = afficheBoutonAnnuel
         
         # Création du contrôle calendrier
-        self.calendrier = Calendrier(self, -1)
+        self.calendrier = Calendrier(self, -1, callbacksenddates=callbacksenddates)
         
         # Attribution des couleurs au calendrier
         couleurFondPanneau = None

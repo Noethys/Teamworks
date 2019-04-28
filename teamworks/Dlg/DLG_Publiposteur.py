@@ -25,6 +25,7 @@ from Dlg import DLG_Saisie_champs_publipostage
 from Dlg import DLG_Parametres_mail
 from Utils import UTILS_Fichiers
 from Utils import UTILS_Adaptations
+import six
 
 if "win" in sys.platform :
     import win32com.client
@@ -3036,7 +3037,10 @@ class listCtrl_Actions(wx.ListCtrl):
     
     def MAJitem(self, IDdocument, etat, info):
         indexLigne = IDdocument-1
-        self.SetStringItem(indexLigne, 1, info)
+        if 'phoenix' in wx.PlatformInfo:
+            self.SetItem(indexLigne, 1, info)
+        else:
+            self.SetStringItem(indexLigne, 1, info)
         self.ChangeImage(indexLigne, etat)
         
         

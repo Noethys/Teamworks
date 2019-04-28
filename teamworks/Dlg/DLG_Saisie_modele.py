@@ -327,7 +327,6 @@ class Dialog(wx.Dialog):
 
         self.EndModal(wx.ID_OK)
             
-        
     def OnBoutonAjouter(self, event):
         """ Ajouter une tâche """
         treeSelection = self.tree_planning.selection
@@ -350,11 +349,16 @@ class Dialog(wx.Dialog):
         dlg.panel.grid_sizer_base.Layout()
         dlg.SetMinSize((400, 320))
         dlg.SetSize((400, 320))
-        dlg.ShowModal()
+        if dlg.ShowModal() == wx.ID_OK:
+            valide = self.Sauvegarde(dlg.panel.GetDonneesModele())
+            if valide == False :
+                dlg2 = wx.MessageDialog(self, _(u"Les horaires que vous avez saisis chevauchent déjà une autre tâche sur la même journée."), "Erreur de saisie", wx.OK)
+                dlg2.ShowModal()
+                dlg2.Destroy()
+                return False
         dlg.Destroy()
 
     def Sauvegarde(self, donnees) :
-        
         ID = donnees[0]
         if ID == 0 :
             IDtache = self.GetNumID()
@@ -414,7 +418,6 @@ class Dialog(wx.Dialog):
         
     def GetPeriodeJour(self, selectionData):
         data = str(selectionData)
-        print(data)
         periode = int(data[0])
         jour =  int(data[1])
         return periode, jour
@@ -433,14 +436,20 @@ class Dialog(wx.Dialog):
                 listeDonnees = [tache[0], tache[1], tache[2], tache[3], tache[4], tache[5], tache[6], tache[7], tache[8]]
                 break              
         
-        frame_SaisiePresences = DLG_Saisie_presence.Frm_SaisiePresences(self, listeDonnees=listeDonnees, IDmodif=IDmodif, mode="modele")
-        frame_SaisiePresences.Show()
-        frame_SaisiePresences.panel.sizer_1.Hide(False)
-        frame_SaisiePresences.panel.sizer_donnees_staticbox.Hide()
-        frame_SaisiePresences.panel.grid_sizer_base.Layout()
-        frame_SaisiePresences.SetMinSize((400, 320))
-        frame_SaisiePresences.SetSize((400, 320))
-        
+        dlg = DLG_Saisie_presence.Dialog(self, listeDonnees=listeDonnees, IDmodif=IDmodif, mode="modele")
+        dlg.panel.sizer_1.Hide(False)
+        dlg.panel.sizer_donnees_staticbox.Hide()
+        dlg.panel.grid_sizer_base.Layout()
+        dlg.SetMinSize((400, 320))
+        dlg.SetSize((400, 320))
+        if dlg.ShowModal() == wx.ID_OK:
+            valide = self.Sauvegarde(dlg.panel.GetDonneesModele())
+            if valide == False :
+                dlg2 = wx.MessageDialog(self, _(u"Les horaires que vous avez saisis chevauchent déjà une autre tâche sur la même journée."), "Erreur de saisie", wx.OK)
+                dlg2.ShowModal()
+                dlg2.Destroy()
+                return False
+        dlg.Destroy()
 
 
     def OnBoutonSupprimer(self, event):
@@ -554,9 +563,10 @@ class TreeCtrlPlanning(wx.TreeCtrl):
             listeJours = (_(u"Tous les jours"),)
         
         numJour = 1    
-        for jour in listeJours :
-            exec("self.P" + str(numPeriode) + "J" + str(numJour) + " = self.AppendItem(rootPeriode, jour)")
-            exec("self.SetPyData(self.P" + str(numPeriode) + "J" + str(numJour) + " , (numPeriode*100000) + (numJour*10000)) ")
+        for jour in listeJours:
+            nom_ctrl = "P" + str(numPeriode) + "J" + str(numJour)
+            setattr(self, nom_ctrl, self.AppendItem(rootPeriode, jour))
+            self.SetItemData(getattr(self, nom_ctrl), (numPeriode*100000) + (numJour*10000))
             numJour += 1
 
     def CreationTaches(self, rootJour, numJour) :
@@ -575,8 +585,10 @@ class TreeCtrlPlanning(wx.TreeCtrl):
             if self.GetGrandParent().type == type and self.GetGrandParent().periodes[numPeriode-1] == True and etat != "suppr" :
                 txtTache = heure_debut + "-" + heure_fin + " : " + nom_categorie
                 if intitule != "" : txtTache += " (" + intitule + ")"
-                exec("self.P" + str(numPeriode) + "J" + str(numJour) + "T" + str(ID) + " = self.AppendItem(self.P" + str(numPeriode) + "J" + str(numJour) + ", txtTache)")
-                exec("self.SetPyData(self.P" + str(numPeriode) + "J" + str(numJour) + "T" + str(ID) + " , ID)")
+
+                nom_ctrl = "P" + str(numPeriode) + "J" + str(numJour) + "T" + str(ID)
+                setattr(self, nom_ctrl, self.AppendItem(getattr(self, "P" + str(numPeriode) + "J" + str(numJour)), txtTache))
+                self.SetItemData(getattr(self, nom_ctrl), ID)
 
     def Importation_taches(self, IDmodele=0):
         """ Récupération de la liste des catégories dans la base """

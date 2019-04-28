@@ -812,48 +812,6 @@ def Aide(numItem=None):
         Popen(commande)
 
 
-
-class Aide_archive():
-    def __init__(self, frameParente, sujet=""):
-        self.frameParente = frameParente
-        
-        # Création du widget
-        self.frameParente.frmAide = wx.html.HtmlHelpController()
-        
-        # Création des pages
-        self.CreationPages()
-            
-        # Choix de la page affichée
-        if sujet == "" : self.frameParente.frmAide.DisplayContents()
-        else: self.frameParente.frmAide.Display(sujet)
-        
-        # Réglages des propriétés de la frame Help
-        self.frameAide = self.frameParente.frmAide.GetFrame()
-        self.Proprietes()
-        
-        # Bind
-        self.frameAide.Bind(wx.EVT_CLOSE, self.OnClose )
-    
-    def Proprietes(self):
-        if 'phoenix' in wx.PlatformInfo:
-            _icon = wx.Icon()
-        else :
-            _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-        self.frameAide.SetIcon(_icon)
-        self.frameAide.SetTitle(_(u"Aide de TeamWorks"))
-        self.frameParente.frmAide.SetTitleFormat(_(u"Aide de TeamWorks"))
-        self.frameAide.MakeModal(True)
-        
-    def CreationPages(self):
-        self.frameParente.frmAide.AddBook("Aide/testing.hhp")
-        self.frameParente.frmAide.AddBook("Aide/another.hhp")
-        
-    def OnClose(self, event):
-        self.frameAide.MakeModal(False)
-        self.frameParente.MakeModal(True)
-        event.Skip()
-    
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 

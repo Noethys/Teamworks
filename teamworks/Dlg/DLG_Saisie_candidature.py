@@ -12,7 +12,7 @@ import wx
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 import datetime
-import FonctionsPerso
+import six
 if 'phoenix' in wx.PlatformInfo:
     from wx.adv import BitmapComboBox
 else :
@@ -544,7 +544,7 @@ class Panel(wx.Panel):
         # Demande de confirmation
         formatDate = "%d/%m/%Y"
         texteDates = _(u"Du %s au %s") % (date_debut.strftime(formatDate), date_fin.strftime(formatDate))
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer cette période de disponibilité ? \n\n> %s") % texteDates))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette période de disponibilité ? \n\n> %s") % texteDates))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()

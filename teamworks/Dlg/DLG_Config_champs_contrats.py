@@ -175,7 +175,7 @@ class Panel(wx.Panel):
             return
 
         # Demande de confirmation
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce champ ? \n\n> ") + Nom))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer ce champ ? \n\n> ") + Nom))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()

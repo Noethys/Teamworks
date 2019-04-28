@@ -271,8 +271,7 @@ class MyFrame(wx.Frame):
     def __init__(self, parent, title="" ):
         wx.Frame.__init__(self, parent, -1, title=title, name="frm_config_sauvegarde", style=wx.DEFAULT_FRAME_STYLE)
         self.parent = parent
-        self.MakeModal(True)
-        
+
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
@@ -332,8 +331,6 @@ class MyFrame(wx.Frame):
         
         
     def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         event.Skip()
         
     def Onbouton_aide(self, event):
@@ -344,17 +341,13 @@ class MyFrame(wx.Frame):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
         self.MAJparents()
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
         
     def Onbouton_ok(self, event):
         # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
         self.MAJparents()
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
-        self.Destroy()     
+        self.Destroy()
         
     def MAJparents(self):
         if FonctionsPerso.FrameOuverte("frm_creation_contrats") != None :
@@ -371,8 +364,6 @@ class MyFrame(wx.Frame):
 class Saisie_sauvegarde_auto(wx.Frame):
     def __init__(self, parent, title=""):
         wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-        
         self.panel_base = wx.Panel(self, -1)
         self.staticbox = wx.StaticBox(self.panel_base, -1, _(u"Paramètres"))
         self.label_frequence = wx.StaticText(self.panel_base, -1, _(u"Fréquence :"))
@@ -512,8 +503,6 @@ class Saisie_sauvegarde_auto(wx.Frame):
         
         
     def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         event.Skip()
         
     def OnBoutonAide(self, event):
@@ -521,8 +510,6 @@ class Saisie_sauvegarde_auto(wx.Frame):
         UTILS_Aide.Aide("Lasauvegardeautomatique")
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
 
     def OnBoutonOk(self, event):
@@ -579,8 +566,6 @@ class Saisie_sauvegarde_auto(wx.Frame):
             self.GetParent().MAJpanel()
 
         # Fermeture
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
         
 
@@ -592,8 +577,6 @@ class Saisie_sauvegarde_auto(wx.Frame):
 class Saisie_sauvegarde_occasionnelle(wx.Frame):
     def __init__(self, parent, title=""):
         wx.Frame.__init__(self, parent, -1, title=title, style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
-        
         self.panel_base = wx.Panel(self, -1)
         texteIntro = _(u"Vous pouvez ici créer une sauvegarde occasionnelle de vos données. Cela peut vous être utile si vous souhaitez par exemple sauvegarder certaines données sur une clé USB ou si vous allez changer d'ordinateur. Dans ce dernier cas, il vous suffira ensuite de restaurer la sauvegarde sur votre nouvel ordinateur...")
         self.label_introduction = FonctionsPerso.StaticWrapText(self.panel_base, -1, texteIntro)
@@ -714,8 +697,6 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         
         
     def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         event.Skip()
         
     def OnBoutonAide(self, event):
@@ -723,8 +704,6 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
         UTILS_Aide.Aide("Creerunesauvegarde")
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
 
     def OnBoutonOk(self, event):
@@ -780,8 +759,6 @@ class Saisie_sauvegarde_occasionnelle(wx.Frame):
             dlg = wx.MessageDialog(self, _(u"La sauvegarde a été créée avec succès."), "Confirmation", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy()
-            self.MakeModal(False)
-            FonctionsPerso.SetModalFrameParente(self)
             self.Destroy()
         elif etat == False :
             # Sauvegarde non faite : Ne fait rien
@@ -944,7 +921,6 @@ class Sauvegarde_auto():
 class Restauration(wx.Frame):
     def __init__(self, parent, fichierRestauration=""):
         wx.Frame.__init__(self, parent, -1, title="", style=wx.DEFAULT_FRAME_STYLE)
-        self.MakeModal(True)
         self.fichierRestauration = fichierRestauration
         self.panel_base = wx.Panel(self, -1)
         texteIntro = _(u"Veuillez sélectionner les éléments à restaurer :")
@@ -1009,8 +985,6 @@ class Restauration(wx.Frame):
         
         
     def OnClose(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         event.Skip()
         
     def OnBoutonAide(self, event):
@@ -1018,8 +992,6 @@ class Restauration(wx.Frame):
         UTILS_Aide.Aide("Restaurerunesauvegarde")
 
     def OnBoutonAnnuler(self, event):
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
 
     def OnBoutonOk(self, event):
@@ -1089,8 +1061,6 @@ class Restauration(wx.Frame):
         dlg.Destroy()
         
         # Fermeture de la fenêtre
-        self.MakeModal(False)
-        FonctionsPerso.SetModalFrameParente(self)
         self.Destroy()
         
 

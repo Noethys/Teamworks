@@ -15,6 +15,7 @@ import GestionDB
 import FonctionsPerso
 from Utils import UTILS_Adaptations
 from Dlg import DLG_Saisie_adresse_mail
+import six
 
 
 class Panel(wx.Panel):

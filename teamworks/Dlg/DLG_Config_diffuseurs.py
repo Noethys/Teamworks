@@ -14,6 +14,7 @@ import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
 from Utils import UTILS_Adaptations
+import six
 
 
 class Panel(wx.Panel):

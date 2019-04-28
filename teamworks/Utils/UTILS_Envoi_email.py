@@ -9,7 +9,7 @@
 
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import os
 import GestionDB
 import FonctionsPerso

@@ -969,6 +969,7 @@ class PanelPersonnes(FonctionsPerso.PanelArrondi):
         dlg = DLG_Application_modele.Dialog(self, selectionPersonnes=selectionPersonnes, selectionDates=selectionDates )
         dlg.ShowModal()
         dlg.Destroy()
+        self.GetGrandParent().GetParent().MAJpanelPlanning()
 
     def Menu_80(self,event):
         """ Ouvre la liste des présences de la personne sélectionnée """

@@ -206,7 +206,6 @@ class Panel(wx.Panel):
         if self.parent.GetName() == "panel_applicModele_FicheInd" :
             # Si appellée à partir de la fiche individuelle
             self.parent.GetParent().Fermer()
-            
         else:
             # Sinon...
             self.parent.Fermer()
@@ -471,9 +470,14 @@ class Panel(wx.Panel):
         # Fenêtre de demande de confirmation
         dlg = DLG_Confirm_appli_modele.Dialog(self, nbreTaches=nbreTaches, dictTaches=dictConfirmations, listeCreationsTaches=listeCreationsTaches, inclureFeries=inclureFeries)
         dlg.ShowModal()
+        etat = dlg.etat
         dlg.Destroy()
+        if etat == "termine":
+            if self.parent.GetName() == "panel_applicModele_FicheInd":
+                self.GetGrandParent().EndModal(wx.ID_OK)
+            else:
+                self.GetParent().EndModal(wx.ID_OK)
 
-    
     def EnregistrementTaches(self, listeCreationsTaches) :
         """ Enregistrement des taches dans la base de données """        
         listeExceptions = []
@@ -822,12 +826,16 @@ class listCtrl_Modeles(wx.ListCtrl, CheckListCtrlMixin):
 
         # Remplissage avec les valeurs
         for key, valeurs in self.dictModeles.items():
+            if 'phoenix' in wx.PlatformInfo:
+                index = self.InsertItem(six.MAXSIZE, valeurs[0])
+                self.SetItem(index, 1, valeurs[1])
+            else:
                 index = self.InsertStringItem(six.MAXSIZE, valeurs[0])
                 self.SetStringItem(index, 1, valeurs[1])
-                self.SetItemData(index, key)
-                # Sélection
-                if key in self.selections :
-                    self.CheckItem(index)                    
+            self.SetItemData(index, key)
+            # Sélection
+            if key in self.selections :
+                self.CheckItem(index)
 
         # Ajustement tailles colonnes
         self.SetColumnWidth(0, wx.LIST_AUTOSIZE)

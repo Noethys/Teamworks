@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 #-----------------------------------------------------------
-# Auteur:        Ivan LUCAS
-# Copyright:    (c) 2008-15 Ivan LUCAS
+# Auteur:       Ivan LUCAS
+# Copyright:    (c) 2008-19 Ivan LUCAS
 # Licence:      Licence GNU GPL
 #-----------------------------------------------------------
 

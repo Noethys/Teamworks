@@ -110,7 +110,6 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAnnuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def __set_properties(self):
         self.treeCtrl_categories.SetMinSize((200, 180))
@@ -186,29 +185,18 @@ class Panel(wx.Panel):
         for IDpersonne, date in listeDonnees :
             self.dictDonnees[ID] = [IDpersonne, date, True] # True pour dire que à sélectionner
             ID += 1
-                
-    def Fermer(self):
-        if self.parent.GetName() == "panel_saisiePresences_FicheInd" :
-            # Si appellée à partir de la fiche individuelle
-            self.parent.GetParent().Fermer()
-        else:
-            # Sinon...
-            self.parent.Fermer()
-        
-    def OnClose(self, event):
-        self.Fermer()
-        event.Skip()
-        
+
     def OnBoutonAide(self, event):
         from Utils import UTILS_Aide
         UTILS_Aide.Aide("Saisirunetcheunique")
 
     def OnBoutonAnnuler(self, event):
-        self.Fermer()
-        event.Skip()
+        try:
+            self.parent.EndModal(wx.ID_CANCEL)
+        except:
+            self.GetGrandParent().EndModal(wx.ID_CANCEL)
 
     def OnBoutonOk(self, event):
-        
         # Validation des données
         validation = self.ValidationDonnees()
         if validation == False : return
@@ -234,14 +222,12 @@ class Panel(wx.Panel):
                 if self.GetGrandParent().GetName() == "frm_saisiePresences_FicheInd" :
                     print("ok")
         
-        if self.mode == "modele" :
-            etat = self.SauvegardeModele()
-            if etat == "PasOk" : return
+        # if self.mode == "modele" :
+        #     etat = self.SauvegardeModele()
+        #     if etat == "PasOk" : return
              
         # Fermeture de la fenêtre
-        self.Fermer()
-        event.Skip()
-        
+        self.parent.EndModal(wx.ID_OK)
         
     def ValidationDonnees(self):
         """ Validation des données """
@@ -316,7 +302,8 @@ class Panel(wx.Panel):
             return False
 
         # Vérifie qu'une catégorie a été sélectionnée
-        IDcategorie = self.treeCtrl_categories.selection
+        IDcategorie = self.treeCtrl_categories.GetDataSelection()
+
         if IDcategorie == None :
             message = _(u"Vous devez sélectionner une catégorie dans la liste proposée.")
             wx.MessageBox(message, "Erreur de saisie")
@@ -421,14 +408,15 @@ class Panel(wx.Panel):
         date = self.donneesModif[2]
         heureDebut = self.text_heure_debut.GetValue()
         heureFin = self.text_heure_fin.GetValue()
-        IDcategorie = self.treeCtrl_categories.selection
+        IDcategorie = self.treeCtrl_categories.GetDataSelection()
         intitule = self.text_intitule.GetValue()
                 
-        listeDonnees = [      ("heure_debut",     heureDebut),
-                                            ("heure_fin",           heureFin),
-                                            ("IDcategorie",         IDcategorie),
-                                            ("intitule",                   intitule),
-                        ]
+        listeDonnees = [
+            ("heure_debut", heureDebut),
+            ("heure_fin", heureFin),
+            ("IDcategorie", IDcategorie),
+            ("intitule", intitule),
+            ]
         
         # Vérifie qu'aucune tâche n'existe déjà à ce moment dans la base de données
         req = """
@@ -485,7 +473,7 @@ class Panel(wx.Panel):
                 DB.ExecuterReq(req)
                 listePresences = DB.ResultatReq()
                 nbreResultats = len(listePresences)
-                print(nbreResultats)
+
                 if nbreResultats != 0 :
 
                     # Un ou des présences existent à ce moment, donc pas d'enregistrement
@@ -499,7 +487,7 @@ class Panel(wx.Panel):
                                         ("date",            date),
                                         ("heure_debut",     heureDebut),
                                         ("heure_fin",       heureFin),
-                                        ("IDcategorie",     self.treeCtrl_categories.selection),
+                                        ("IDcategorie",     self.treeCtrl_categories.GetDataSelection()),
                                         ("intitule",        self.text_intitule.GetValue()),
                                     ]
 
@@ -532,12 +520,12 @@ class Panel(wx.Panel):
             dlg = wx.lib.dialogs.ScrolledMessageDialog(self, message, _(u"Rapport d'erreurs"))
             dlg.ShowModal()
 
-    def SauvegardeModele(self):
+    def GetDonneesModele(self):
         """ Envoie les données au formulaire de saisie des modèles """
         ID = self.IDmodif
         heureDebut = self.text_heure_debut.GetValue()
         heureFin = self.text_heure_fin.GetValue()
-        IDcategorie = self.treeCtrl_categories.selection
+        IDcategorie = self.treeCtrl_categories.GetDataSelection()
         intitule = self.text_intitule.GetValue()
         
         if ID != 0 :
@@ -550,15 +538,15 @@ class Panel(wx.Panel):
             type = None
             periode = None
             jour = None
-        
-        # Envoi des données au form de saisie des modèles
-        valid = self.GetGrandParent().Sauvegarde((ID, IDmodele, type, periode, jour, heureDebut, heureFin, IDcategorie, intitule))
-        if valid == False : 
-            dlg = wx.MessageDialog(self, _(u"Les horaires que vous avez saisis chevauchent déjà une autre tâche sur la même journée."), "Erreur de saisie", wx.OK)  
-            dlg.ShowModal()
-            dlg.Destroy() 
-            return "PasOk"       
-        return "Ok"       
+        return (ID, IDmodele, type, periode, jour, heureDebut, heureFin, IDcategorie, intitule)
+        # # Envoi des données au form de saisie des modèles
+        # valid = self.GetGrandParent().Sauvegarde()
+        # if valid == False :
+        #     dlg = wx.MessageDialog(self, _(u"Les horaires que vous avez saisis chevauchent déjà une autre tâche sur la même journée."), "Erreur de saisie", wx.OK)
+        #     dlg.ShowModal()
+        #     dlg.Destroy()
+        #     return "PasOk"
+        # return "Ok"
         
     def ImportPersonnes(self):
         """ Récupération des noms des personnes """
@@ -688,7 +676,6 @@ class TreeCtrlCategories(wx.TreeCtrl):
         self.parent = parent
 
         self.listeCategories = self.Importation()
-        self.selection = None
 
         tailleImages = (16,16)
         il = wx.ImageList(tailleImages[0], tailleImages[1])
@@ -712,7 +699,7 @@ class TreeCtrlCategories(wx.TreeCtrl):
         
         self.Bind(wx.EVT_TREE_ITEM_EXPANDED, self.OnItemExpanded, self)
         self.Bind(wx.EVT_TREE_ITEM_COLLAPSED, self.OnItemCollapsed, self)
-        self.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnSelChanged, self)
+        # self.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnSelChanged, self)
 
     def FormateCouleur(self, texte):
         pos1 = texte.index(",")
@@ -796,15 +783,24 @@ class TreeCtrlCategories(wx.TreeCtrl):
             pass
 
     def OnSelChanged(self, event):
-        item = event.GetItem()
+        print("OnSelChanged")
+        # item = event.GetItem()
+        # if 'phoenix' in wx.PlatformInfo:
+        #     data = self.GetItemData(item)
+        # else:
+        #     data = self.GetPyData(item)
+        # self.selection = data
+        # event.Skip()
+
+    def GetDataSelection(self):
+        item = self.GetSelection()
+        if item.IsOk() == False:
+            return None
         if 'phoenix' in wx.PlatformInfo:
-            data = self.GetItemData(item)
+            IDcategorie = self.GetItemData(item)
         else:
-            data = self.GetPyData(item)
-        self.selection = data
-        event.Skip()
-
-
+            IDcategorie = self.GetPyData(item)
+        return IDcategorie
 
         
 class Dialog(wx.Dialog):

@@ -188,7 +188,7 @@ class Panel_TypesDiplomes(wx.Panel):
         # Demande de confirmation
         IDtype_diplome = int(self.listCtrl_TypesDiplomes.GetItem(index, 0).GetText())
         NomDiplome = self.listCtrl_TypesDiplomes.GetItem(index, 1).GetText()
-        txtMessage = unicode((_(u"Voulez-vous vraiment supprimer ce type de qualification ? \n\n> ") + NomDiplome))
+        txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer ce type de qualification ? \n\n> ") + NomDiplome))
         dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
         reponse = dlgConfirm.ShowModal()
         dlgConfirm.Destroy()

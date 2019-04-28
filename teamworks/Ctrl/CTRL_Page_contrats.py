@@ -15,6 +15,7 @@ import FonctionsPerso
 from Dlg import DLG_Edition_DUE
 from Dlg import DLG_Creation_contrat
 from Utils import UTILS_Adaptations
+import six
 
 
 def DateEngFr(textDate):

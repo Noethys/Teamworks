@@ -19,7 +19,7 @@ from Ctrl import CTRL_Saisie_date
 import sys
 import datetime
 import wx.propgrid as wxpg
-
+import six
 import GestionDB
 from Utils import UTILS_Dates
 from Utils import UTILS_Parametres

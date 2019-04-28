@@ -14,6 +14,7 @@ from Utils import UTILS_Adaptations
 import GestionDB
 import FonctionsPerso
 from Dlg import DLG_Saisie_cat_presences
+import six
 
 
 class Panel_CatPresences(wx.Panel):

@@ -13,7 +13,7 @@ import wx
 import GestionDB
 import operator
 import FonctionsPerso
-import os
+import six
 import sys
 from Utils import UTILS_Fichiers
 from Utils import UTILS_Adaptations
