@@ -14,7 +14,6 @@ SQLiteSpy.exe
 SQLiteSpy.db3
 TODO.xlsx
 nologin.txt
-setup.py
 PackagerLinux.py
 CreateurANNONCES.py
 CreateurMAJ.py
@@ -84,18 +83,18 @@ docs/_build/
 
 # PyBuilder
 target/
-source/Static/Images/128x128/Thumbs.db
-source/Static/Images/128x128/Thumbs.db
-source/Static/Images/128x128/Thumbs.db
-source/Static/Images/128x128/Thumbs.db
-source/Static/Images/16x16/Thumbs.db
-source/Static/Images/22x22/Thumbs.db
-source/Static/Images/32x32/Thumbs.db
-source/Static/Images/48x48/Thumbs.db
-source/Static/Images/80x80/Thumbs.db
-source/Static/Images/Badgeage/Thumbs.db
-source/Static/Images/BoutonsImages/Thumbs.db
-source/Static/Images/Special/Thumbs.db
+teamworks/Static/Images/128x128/Thumbs.db
+teamworks/Static/Images/128x128/Thumbs.db
+teamworks/Static/Images/128x128/Thumbs.db
+teamworks/Static/Images/128x128/Thumbs.db
+teamworks/Static/Images/16x16/Thumbs.db
+teamworks/Static/Images/22x22/Thumbs.db
+teamworks/Static/Images/32x32/Thumbs.db
+teamworks/Static/Images/48x48/Thumbs.db
+teamworks/Static/Images/80x80/Thumbs.db
+teamworks/Static/Images/Badgeage/Thumbs.db
+teamworks/Static/Images/BoutonsImages/Thumbs.db
+teamworks/Static/Images/Special/Thumbs.db
 
 # =========================
 # Operating System Files
