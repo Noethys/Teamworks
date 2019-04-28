@@ -90,8 +90,9 @@ class Panel(wx.Panel):
         self.Ajouter()
 
     def Ajouter(self):
-        frm = DLG_Saisie_adresse_mail.MyDialog(self, adresse=None)
-        frm.ShowModal()
+        dlg = DLG_Saisie_adresse_mail.MyDialog(self, adresse=None)
+        dlg.ShowModal()
+        dlg.Destroy()
         self.listCtrl.MAJListeCtrl()
 
     def OnBoutonModifier(self, event):
@@ -105,8 +106,10 @@ class Panel(wx.Panel):
             dlg.Destroy()
             return
         ID = int(self.listCtrl.GetItem(index, 0).GetText())
-        frm = DLG_Saisie_adresse_mail.MyDialog(self, adresse=ID)
-        frm.Show()
+        dlg = DLG_Saisie_adresse_mail.MyDialog(self, adresse=ID)
+        dlg.ShowModal()
+        dlg.Destroy()
+        self.listCtrl.MAJListeCtrl()
         
     def OnBoutonSupprimer(self, event):
         self.Supprimer()

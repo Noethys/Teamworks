@@ -31,43 +31,36 @@ import os
 from Dlg import DLG_Saisie_url
 from Dlg import DLG_Parametres_mail
 
+# Toolbar 1
+ID_NOUVEAU = wx.Window.NewControlId()
+ID_OUVRIR = wx.Window.NewControlId()
+ID_SAUVEGARDER = wx.Window.NewControlId()
+ID_MAIL = wx.Window.NewControlId()
+ID_IMPRIMER = wx.Window.NewControlId()
+ID_APERCU = wx.Window.NewControlId()
+ID_RECHERCHER = wx.Window.NewControlId()
+ID_REMPLACER =wx.Window.NewControlId()
 
-REPERTOIRE_IMAGES = Chemins.GetStaticPath("Images/Teamword/")
-IMAGES = {
-    "nouveau" : "nouveau.png", 
-    "ouvrir" : "ouvrir.png",
-    "sauvegarder" : "sauvegarder.png",
-    "couper" : "couper.png",
-    "copier" : "copier.png",
-    "coller" : "coller.png",
-    "annuler" : "annuler.png",
-    "repeter" : "repeter.png",
-    "gras" : "gras.png",
-    "italique" : "italique.png",
-    "souligne" : "souligne.png",
-    "aligner_gauche" : "aligner_gauche.png",
-    "aligner_centre" : "aligner_centre.png",
-    "aligner_droit" : "aligner_droit.png",
-    "retrait_gauche" : "retrait_gauche.png",
-    "retrait_droit" : "retrait_droit.png",
-    "police" : "police.png",
-    "police_couleur" : "police_couleur.png",
-    "augmenter_police" : "augmenter_police.png",
-    "diminuer_police" : "diminuer_police.png",
-    "importer_image" : "importer_image.png",
-    "espaceParagrapheMoins" : "espaceParagrapheMoins.png",
-    "espaceParagraphePlus" : "espaceParagraphePlus.png",
-    "interligne_simple" : "interligne_simple.png",
-    "interligne_demi" : "interligne_demi.png",
-    "interligne_double" : "interligne_double.png",
-    "imprimer" : "imprimer.png",
-    "apercu" : "Apercu.png",
-    "mail" : "mail.png",
-    "rechercher" : "rechercher.png",
-    "remplacer" : "remplacer.png",
-    "inserer_url" : "url.png",
-    }
-    
+# Toolbar 2
+ID_POLICE = wx.Window.NewControlId()
+ID_COULEUR_POLICE = wx.Window.NewControlId()
+ID_GRAS = wx.Window.NewControlId()
+ID_ITALIQUE = wx.Window.NewControlId()
+ID_SOULIGNE = wx.Window.NewControlId()
+ID_ALIGNER_GAUCHE = wx.Window.NewControlId()
+ID_ALIGNER_CENTRE = wx.Window.NewControlId()
+ID_ALIGNER_DROIT = wx.Window.NewControlId()
+ID_RETRAIT_GAUCHE = wx.Window.NewControlId()
+ID_RETRAIT_DROIT = wx.Window.NewControlId()
+ID_PARA_MOINS = wx.Window.NewControlId()
+ID_PARA_PLUS = wx.Window.NewControlId()
+ID_INTER_SIMPLE = wx.Window.NewControlId()
+ID_INTER_DEMI = wx.Window.NewControlId()
+ID_INTER_DOUBLE = wx.Window.NewControlId()
+ID_URL = wx.Window.NewControlId()
+ID_IMAGE = wx.Window.NewControlId()
+
+
 
 class Printer(HtmlEasyPrinting):
     def __init__(self, source="", titre=""):
@@ -410,8 +403,7 @@ class MyFrame(wx.Frame):
         self._mgr.GetPane("mail").Show()
         self._mgr.Update()
                 
-    def Mailer(self, listeValeurs=[], adresseExpediteur="",listeDestinataires=[],
-                    listeDestinairesCC=[], objet="", listePiecesJointes=[], nomServeur="") :
+    def Mailer(self, listeValeurs=[], adresseExpediteur="", listeDestinataires=[], listeDestinairesCC=[], objet="", listePiecesJointes=[], nomServeur="") :
         # Récupération de la source HTML
         handler = rt.RichTextHTMLHandler()
         handler.SetFlags(rt.RICHTEXT_HANDLER_SAVE_IMAGES_TO_BASE64)
@@ -438,7 +430,7 @@ class MyFrame(wx.Frame):
             texteHtml = self.RemplacementMotscles(texteHtml, listeValeurs)
 
         # Crée le mail
-        FonctionsPerso.Envoi_mail_smtp(adresseExpediteur, listeDestinaires, listeDestinairesCC, objet, texteHtml, listePiecesJointes, nomServeur)
+        FonctionsPerso.Envoi_mail_smtp(adresseExpediteur, listeDestinataires, listeDestinairesCC, objet, texteHtml, listePiecesJointes, nomServeur)
         
         # Efface les images temporaires
         handler.DeleteTemporaryImages() 
@@ -454,7 +446,6 @@ class MyFrame(wx.Frame):
         printout = wx.richtext.RichTextPrintout()
         printout.SetRichTextBuffer(self.rtc.GetBuffer()) 
         data = wx.PrintDialogData() 
-        data.SetAllPages(True)
         data.SetCollate(True) # Pour assembler les pages
         # définit les paramètres de l'impression
         datapr = wx.PrintData()
@@ -478,14 +469,13 @@ class MyFrame(wx.Frame):
         printout2 = wx.richtext.RichTextPrintout()
         printout2.SetRichTextBuffer(self.rtc.GetBuffer()) 
         data = wx.PrintDialogData() 
-        data.SetAllPages(True)
         data.SetCollate(True) # Pour assembler les pages
         # définit les paramètres de l'impression
         datapr = wx.PrintData()
         data.SetPrintData(datapr)
         # Impression
         preview = wx.PrintPreview(printout1, printout2, data)
-        if not preview.Ok():
+        if not preview.IsOk():
             print("Probleme dans le preview du richTextCtrl.")
             return
         pfrm = wx.PreviewFrame(preview, self, _(u"Aperçu avant impression"))
@@ -498,7 +488,6 @@ class MyFrame(wx.Frame):
         printout = wx.richtext.RichTextPrintout() #wx.html.HtmlPrintout() 
         printout.SetRichTextBuffer(self.rtc.GetBuffer()) 
         data = wx.PrintDialogData() 
-        data.SetAllPages(True)
         data.SetCollate(True) # Pour assembler les pages
         # définit les paramètres de l'impression
         datapr = wx.PrintData()
@@ -627,56 +616,12 @@ class MyFrame(wx.Frame):
             dlg.ShowModal()
             dlg.Destroy()
 
-
     def OnFindClose(self, evt):
         self.positionDepartRecherche = 0
         evt.GetDialog().Destroy()
 
-# ---------------------------------------
-
     def OnURL(self, evt):
         wx.MessageBox(evt.GetString(), "URL Clicked")
-
-
-##    def OnFileOpen(self, evt):
-##        # This gives us a string suitable for the file dialog based on
-##        # the file handlers that are loaded
-##        wildcard, types = rt.RichTextBuffer.GetExtWildcard(save=False)
-##        dlg = wx.FileDialog(self, "Choose a filename",
-##                            wildcard=wildcard,
-##                            style=wx.OPEN)
-##        if dlg.ShowModal() == wx.ID_OK:
-##            path = dlg.GetPath()
-##            if path:
-##                fileType = types[dlg.GetFilterIndex()]
-##                self.rtc.LoadFile(path, fileType)
-##        dlg.Destroy()
-##
-##
-##    def OnFileSave(self, evt):
-##        if not self.rtc.GetFilename():
-##            self.OnFileSaveAs(evt)
-##            return
-##        self.rtc.SaveFile()
-##
-##
-##    def OnFileSaveAs(self, evt):
-##        wildcard, types = rt.RichTextBuffer.GetExtWildcard(save=True)
-##
-##        dlg = wx.FileDialog(self, "Choose a filename",
-##                            wildcard=wildcard,
-##                            style=wx.FD_SAVE)
-##        if dlg.ShowModal() == wx.ID_OK:
-##            path = dlg.GetPath()
-##            if path:
-##                fileType = types[dlg.GetFilterIndex()]
-##                ext = rt.RichTextBuffer.FindHandlerByType(fileType).GetExtension()
-##                if not path.endswith(ext):
-##                    path += '.' + ext
-##                self.rtc.SaveFile(path, fileType)
-##        dlg.Destroy()
-
-
 
     def OnBold(self, evt):
         self.rtc.ApplyBoldToSelection()
@@ -931,7 +876,7 @@ class MyFrame(wx.Frame):
 
     def ActiveOutils(self, etat=True):
         # Menu
-        menuBar = self.GetMenuBar() 
+        menuBar = self.GetMenuBar()
         for id in range(300, 323+1):
             menuBar.Enable(id, etat)
         menuBar.Enable(wx.ID_CUT, etat)
@@ -939,18 +884,23 @@ class MyFrame(wx.Frame):
         menuBar.Enable(wx.ID_PASTE, etat)
         menuBar.Enable(wx.ID_CLEAR, etat)
         menuBar.Enable(wx.ID_UNDO, etat)
-        menuBar.Enable(wx.ID_REDO, etat) 
+        menuBar.Enable(wx.ID_REDO, etat)
         menuBar.Enable(wx.ID_SELECTALL, etat)
+
         # Toolbar 1
-        for id in range(100, 105+1):
+        ids = [
+            ID_SAUVEGARDER, ID_MAIL, ID_IMPRIMER, ID_APERCU, ID_RECHERCHER, ID_REMPLACER,
+            wx.ID_CUT, wx.ID_COPY, wx.ID_PASTE, wx.ID_UNDO, wx.ID_REDO,
+            ]
+        for id in ids:
             self.toolbar1.EnableTool(id, etat)
-        self.toolbar1.EnableTool(wx.ID_CUT, etat)
-        self.toolbar1.EnableTool(wx.ID_COPY, etat)
-        self.toolbar1.EnableTool(wx.ID_PASTE, etat)
-        self.toolbar1.EnableTool(wx.ID_UNDO, etat)
-        self.toolbar1.EnableTool(wx.ID_REDO, etat) 
+
         # Toolbar 2
-        for id in range(200, 222+1):
+        ids = [
+            ID_POLICE, ID_COULEUR_POLICE, ID_GRAS, ID_ITALIQUE, ID_SOULIGNE, ID_ALIGNER_GAUCHE, ID_ALIGNER_CENTRE, ID_ALIGNER_DROIT,
+            ID_RETRAIT_GAUCHE, ID_RETRAIT_DROIT, ID_PARA_MOINS, ID_PARA_PLUS, ID_INTER_SIMPLE, ID_INTER_DEMI, ID_INTER_DOUBLE, ID_URL, ID_IMAGE,
+            ]
+        for id in ids:
             self.toolbar2.EnableTool(id, etat)
 
     def MakeMenuBar(self):
@@ -1027,36 +977,46 @@ class MyFrame(wx.Frame):
         mb.Append(aideMenu, _(u"Aide"))
         self.SetMenuBar(mb)
 
-    def CreateImage(self, nomImage):
-        return wx.Bitmap(REPERTOIRE_IMAGES + IMAGES[nomImage], wx.BITMAP_TYPE_ANY)
-        
+    def AddTool(self, barre=None, ID=None, chemin_image=None, kind=wx.ITEM_NORMAL, label="", handler=None, updateUI=None):
+        if 'phoenix' in wx.PlatformInfo:
+            item = barre.AddTool(toolId=ID, label=label, bitmap=wx.Bitmap(Chemins.GetStaticPath(chemin_image), wx.BITMAP_TYPE_ANY), shortHelp=label, kind=kind)
+        else:
+            if kind == wx.ITEM_CHECK:
+                isToggle = True
+            else:
+                isToggle = False
+            item = barre.AddTool(id=ID, bitmap=wx.Bitmap(Chemins.GetStaticPath(chemin_image), wx.BITMAP_TYPE_ANY), shortHelpString=label, isToggle=isToggle)
+        barre.Bind(wx.EVT_TOOL, handler, item)
+        if updateUI is not None:
+            barre.Bind(wx.EVT_UPDATE_UI, updateUI, item)
+
     def MakeToolBar1(self):
         def doBind(item, handler, updateUI=None):
             self.Bind(wx.EVT_TOOL, handler, item)
             if updateUI is not None:
                 self.Bind(wx.EVT_UPDATE_UI, updateUI, item)
-        
-        tbar = UTILS_Adaptations.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize, wx.TB_FLAT | wx.TB_NODIVIDER)
-        tbar.SetToolBitmapSize(wx.Size(16,16))
-        doBind( tbar.AddTool(405, self.CreateImage("nouveau"), shortHelpString=_(u"Créer un nouveau document")), self.OnFileCreate)
-        doBind( tbar.AddTool(406, self.CreateImage("ouvrir"), shortHelpString=_(u"Ouvrir un document")), self.OnFileOpen)
-        doBind( tbar.AddTool(100, self.CreateImage("sauvegarder"), shortHelpString=_(u"Sauvegarder le document")), self.OnFileSave)
-        tbar.AddSeparator()
-        doBind( tbar.AddTool(101, self.CreateImage("mail"), shortHelpString=_(u"Envoyer par mail")), self.OnMail)
-        tbar.AddSeparator()
-        doBind( tbar.AddTool(102, self.CreateImage("imprimer"), shortHelpString=_(u"Imprimer le document")), self.OnPrint)
-        doBind( tbar.AddTool(103, self.CreateImage("apercu"), shortHelpString=_(u"Aperçu avant impression")), self.OnPreview)
-        tbar.AddSeparator()
-        doBind( tbar.AddTool(wx.ID_CUT, self.CreateImage("couper"), shortHelpString=_(u"Couper")), self.ForwardEvent, self.ForwardEvent)
-        doBind( tbar.AddTool(wx.ID_COPY, self.CreateImage("copier"), shortHelpString=_(u"Copier")), self.ForwardEvent, self.ForwardEvent)
-        doBind( tbar.AddTool(wx.ID_PASTE, self.CreateImage("coller"), shortHelpString=_(u"Coller")), self.ForwardEvent, self.ForwardEvent)
-        tbar.AddSeparator()
-        doBind( tbar.AddTool(wx.ID_UNDO, self.CreateImage("annuler"), shortHelpString=_(u"Annuler")), self.ForwardEvent, self.ForwardEvent)
-        doBind( tbar.AddTool(wx.ID_REDO, self.CreateImage("repeter"), shortHelpString=_(u"Répéter")), self.ForwardEvent, self.ForwardEvent)
-        tbar.AddSeparator()
-        doBind( tbar.AddTool(104, self.CreateImage("rechercher"), shortHelpString=_(u"Rechercher dans ce document")), self.OnRechercher)
-        doBind( tbar.AddTool(105, self.CreateImage("remplacer"), shortHelpString=_(u"Rechercher et remplacer...")), self.OnRemplacer)
 
+        tbar = wx.ToolBar(self, -1, style= wx.TB_FLAT | wx.TB_NODIVIDER) #UTILS_Adaptations.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize, wx.TB_FLAT | wx.TB_NODIVIDER)
+        tbar.SetToolBitmapSize(wx.Size(16,16))
+
+        self.AddTool(tbar, ID_NOUVEAU, "Images/Teamword/nouveau.png", label=_(u"Créer un nouveau document"), handler=self.OnFileCreate)
+        self.AddTool(tbar, ID_OUVRIR, "Images/Teamword/ouvrir.png", label=_(u"Ouvrir un document"), handler=self.OnFileOpen)
+        self.AddTool(tbar, ID_SAUVEGARDER, "Images/Teamword/sauvegarder.png", label=_(u"Sauvegarder le document"), handler=self.OnFileSave)
+        tbar.AddSeparator()
+        self.AddTool(tbar, ID_MAIL, "Images/Teamword/mail.png", label=_(u"Envoyer par mail"), handler=self.OnMail)
+        tbar.AddSeparator()
+        self.AddTool(tbar, ID_IMPRIMER, "Images/Teamword/imprimer.png", label=_(u"Imprimer le document"), handler=self.OnPrint)
+        self.AddTool(tbar, ID_APERCU, "Images/Teamword/apercu.png", label=_(u"Aperçu avant impression"), handler=self.OnPreview)
+        tbar.AddSeparator()
+        self.AddTool(tbar, wx.ID_CUT, "Images/Teamword/couper.png", label=_(u"Couper"), handler=self.ForwardEvent, updateUI=self.ForwardEvent)
+        self.AddTool(tbar, wx.ID_COPY, "Images/Teamword/copier.png", label=_(u"Copier"), handler=self.ForwardEvent, updateUI=self.ForwardEvent)
+        self.AddTool(tbar, wx.ID_PASTE, "Images/Teamword/coller.png", label=_(u"Coller"), handler=self.ForwardEvent, updateUI=self.ForwardEvent)
+        tbar.AddSeparator()
+        self.AddTool(tbar, wx.ID_UNDO, "Images/Teamword/annuler.png", label=_(u"Annuler"), handler=self.ForwardEvent, updateUI=self.ForwardEvent)
+        self.AddTool(tbar, wx.ID_REDO, "Images/Teamword/repeter.png", label=_(u"Répéter"), handler=self.ForwardEvent, updateUI=self.ForwardEvent)
+        tbar.AddSeparator()
+        self.AddTool(tbar, ID_RECHERCHER, "Images/Teamword/rechercher.png", label=_(u"Rechercher dans ce document"), handler=self.OnRechercher)
+        self.AddTool(tbar, ID_REMPLACER, "Images/Teamword/remplacer.png", label=_(u"Rechercher et remplacer"), handler=self.OnRemplacer)
         tbar.Realize()
         return tbar
 
@@ -1066,33 +1026,32 @@ class MyFrame(wx.Frame):
             if updateUI is not None:
                 self.Bind(wx.EVT_UPDATE_UI, updateUI, item)
         
-        tbar = UTILS_Adaptations.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize, wx.TB_FLAT | wx.TB_NODIVIDER)
+        tbar = wx.ToolBar(self, -1, style= wx.TB_FLAT | wx.TB_NODIVIDER) #UTILS_Adaptations.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize, wx.TB_FLAT | wx.TB_NODIVIDER)
         tbar.SetToolBitmapSize(wx.Size(16,16))
 
-        doBind( tbar.AddTool(200, self.CreateImage("police"), shortHelpString=_(u"Police")), self.OnFont)
-        doBind( tbar.AddTool(201, self.CreateImage("police_couleur"), shortHelpString=_(u"Couleur de la police")), self.OnColour)
+        self.AddTool(tbar, ID_POLICE, "Images/Teamword/police.png", label=_(u"Police de caractère"), handler=self.OnFont)
+        self.AddTool(tbar, ID_COULEUR_POLICE, "Images/Teamword/police_couleur.png", label=_(u"Couleur de la police"), handler=self.OnColour)
         tbar.AddSeparator()
-        doBind( tbar.AddTool(202, self.CreateImage("gras"), isToggle=True, shortHelpString=_(u"Gras")), self.OnBold, self.OnUpdateBold)
-        doBind( tbar.AddTool(203, self.CreateImage("italique"), isToggle=True, shortHelpString=_(u"Italique")), self.OnItalic, self.OnUpdateItalic)
-        doBind( tbar.AddTool(204, self.CreateImage("souligne"), isToggle=True, shortHelpString=_(u"Souligné")), self.OnUnderline, self.OnUpdateUnderline)
+        self.AddTool(tbar, ID_GRAS, "Images/Teamword/gras.png", kind=wx.ITEM_CHECK, label=_(u"Gras"), handler=self.OnBold, updateUI=self.OnUpdateBold)
+        self.AddTool(tbar, ID_ITALIQUE, "Images/Teamword/italique.png", kind=wx.ITEM_CHECK, label=_(u"Italique"), handler=self.OnItalic, updateUI=self.OnUpdateItalic)
+        self.AddTool(tbar, ID_SOULIGNE, "Images/Teamword/souligne.png", kind=wx.ITEM_CHECK, label=_(u"Souligné"), handler=self.OnUnderline, updateUI=self.OnUpdateUnderline)
         tbar.AddSeparator()
-        doBind( tbar.AddTool(205, self.CreateImage("aligner_gauche"), isToggle=True, shortHelpString=_(u"Aligner à gauche")), self.OnAlignLeft, self.OnUpdateAlignLeft)
-        doBind( tbar.AddTool(206, self.CreateImage("aligner_centre"), isToggle=True, shortHelpString=_(u"Centrer")), self.OnAlignCenter, self.OnUpdateAlignCenter)
-        doBind( tbar.AddTool(207, self.CreateImage("aligner_droit"), isToggle=True, shortHelpString=_(u"Aligner à droite")), self.OnAlignRight, self.OnUpdateAlignRight)
+        self.AddTool(tbar, ID_ALIGNER_GAUCHE, "Images/Teamword/aligner_gauche.png", kind=wx.ITEM_CHECK, label=_(u"Aligner à gauche"), handler=self.OnAlignLeft, updateUI=self.OnUpdateAlignLeft)
+        self.AddTool(tbar, ID_ALIGNER_CENTRE, "Images/Teamword/aligner_centre.png", kind=wx.ITEM_CHECK, label=_(u"Centrer"), handler=self.OnAlignCenter, updateUI=self.OnUpdateAlignCenter)
+        self.AddTool(tbar, ID_ALIGNER_DROIT, "Images/Teamword/aligner_droit.png", kind=wx.ITEM_CHECK, label=_(u"Aligner à droite"), handler=self.OnAlignRight, updateUI=self.OnUpdateAlignRight)
         tbar.AddSeparator()
-        doBind( tbar.AddTool(208, self.CreateImage("retrait_gauche"), shortHelpString=_(u"Diminuer le retrait")), self.OnIndentLess)
-        doBind( tbar.AddTool(209, self.CreateImage("retrait_droit"), shortHelpString=_(u"Augmenter le retrait")), self.OnIndentMore)
+        self.AddTool(tbar, ID_RETRAIT_GAUCHE, "Images/Teamword/retrait_gauche.png", label=_(u"Diminuer le retrait"), handler=self.OnIndentLess)
+        self.AddTool(tbar, ID_RETRAIT_DROIT, "Images/Teamword/retrait_droit.png", label=_(u"Augmenter le retrait"), handler=self.OnIndentMore)
         tbar.AddSeparator()
-        doBind( tbar.AddTool(210, self.CreateImage("espaceParagraphePlus"), shortHelpString=_(u"Augmenter l'espacement des paragraphes")), self.OnParagraphSpacingMore)
-        doBind( tbar.AddTool(211, self.CreateImage("espaceParagrapheMoins"), shortHelpString=_(u"Dininuer l'espacement des paragraphes")), self.OnParagraphSpacingLess)
+        self.AddTool(tbar, ID_PARA_MOINS, "Images/Teamword/espaceParagrapheMoins.png", label=_(u"Diminuer l'espacement des paragraphes"), handler=self.OnParagraphSpacingLess)
+        self.AddTool(tbar, ID_PARA_PLUS, "Images/Teamword/espaceParagraphePlus.png", label=_(u"Augmenter l'espacement des paragraphes"), handler=self.OnParagraphSpacingMore)
         tbar.AddSeparator()
-        doBind( tbar.AddTool(212, self.CreateImage("interligne_simple"), shortHelpString=_(u"Interligne simple")), self.OnLineSpacingSingle)
-        doBind( tbar.AddTool(213, self.CreateImage("interligne_demi"), shortHelpString=_(u"Interligne 1.5")), self.OnLineSpacingHalf)
-        doBind( tbar.AddTool(214, self.CreateImage("interligne_double"), shortHelpString=_(u"Interligne double")), self.OnLineSpacingDouble)
+        self.AddTool(tbar, ID_INTER_SIMPLE, "Images/Teamword/interligne_simple.png", label=_(u"Interligne simple"), handler=self.OnLineSpacingSingle)
+        self.AddTool(tbar, ID_INTER_DEMI, "Images/Teamword/interligne_demi.png", label=_(u"Interligne 1.5"), handler=self.OnLineSpacingHalf)
+        self.AddTool(tbar, ID_INTER_DOUBLE, "Images/Teamword/interligne_double.png", label=_(u"Interligne double"), handler=self.OnLineSpacingDouble)
         tbar.AddSeparator()
-        doBind( tbar.AddTool(221, self.CreateImage("inserer_url"), shortHelpString=_(u"Insérer une URL")), self.OnInsererURL)
-        doBind( tbar.AddTool(222, self.CreateImage("importer_image"), shortHelpString=_(u"Insérer une image")), self.OnImporterImage)
-
+        self.AddTool(tbar, ID_URL, "Images/Teamword/url.png", label=_(u"Insérer une url"), handler=self.OnInsererURL)
+        self.AddTool(tbar, ID_IMAGE, "Images/Teamword/importer_image.png", label=_(u"Insérer une image"), handler=self.OnImporterImage)
         tbar.Realize()
         return tbar
 

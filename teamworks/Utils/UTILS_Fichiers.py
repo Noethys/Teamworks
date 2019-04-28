@@ -129,6 +129,16 @@ def DeplaceFichiers():
         for nomFichier in os.listdir(Chemins.GetMainPath("Sync")) :
             shutil.move(Chemins.GetMainPath("Sync/%s" % nomFichier), GetRepSync(nomFichier))
 
+    # Déplace les fichiers du répertoire Documents/Modeles
+    if os.path.isdir(Chemins.GetMainPath("Documents/Modeles")):
+        for nomFichier in os.listdir(Chemins.GetMainPath("Documents/Modeles")) :
+            shutil.move(Chemins.GetMainPath("Documents/Modeles/%s" % nomFichier), GetRepModeles(nomFichier))
+
+    # Déplace les fichiers du répertoire Documents/Editions
+    if os.path.isdir(Chemins.GetMainPath("Documents/Editions")):
+        for nomFichier in os.listdir(Chemins.GetMainPath("Documents/Editions")) :
+            shutil.move(Chemins.GetMainPath("Documents/Editions/%s" % nomFichier), GetRepEditions(nomFichier))
+
     # Déplace les fichiers de données du répertoire Data
     if GetRepData() != "Data/" and os.path.isdir(Chemins.GetMainPath("Data")) :
         for nomFichier in os.listdir(Chemins.GetMainPath("Data")) :

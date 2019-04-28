@@ -19,6 +19,7 @@ class MyDialog(wx.Dialog):
     def __init__(self, parent, adresse=None):
         wx.Dialog.__init__(self, parent, -1, title=_(u"Saisie d'une adresse Email"))
         self.IDadresse = adresse
+        self.defaut = False
         
         # Récupération des serveurs prédéfinis
         self.listeServeurs = DATA_Serveurs_fai.LISTE_SERVEURS_FAI
@@ -124,6 +125,7 @@ class MyDialog(wx.Dialog):
         grid_sizer_base.Fit(self)
         grid_sizer_base.AddGrowableCol(0)
         self.Layout()
+        self.CenterOnScreen()
     
     def OnRadioServeur(self, event):
         if self.radio_predefini.GetValue() == True :
@@ -174,7 +176,7 @@ class MyDialog(wx.Dialog):
         DB.Close()
         if len(listeDonnees) == 0 : return
         IDadresse, adresse, motdepasse, smtp, port, defaut, ssl = listeDonnees[0]
-        
+
         self.ctrl_adresse.SetValue(adresse)
         if motdepasse != None :
             self.ctrl_mdp.SetValue(motdepasse)
@@ -200,7 +202,9 @@ class MyDialog(wx.Dialog):
             if ssl != None :
                 self.ctrl_ssl.SetValue(ssl)
             self.radio_personnalise.SetValue(True)
-        
+
+        self.defaut = defaut
+
         self.ActiveCtrlMdp()
         
         return listeDonnees
@@ -314,19 +318,18 @@ class MyDialog(wx.Dialog):
         # Si c'est la première adresse saisie, on la met comme defaut
         nbreAdresses = self.GetNbreAdresses() 
         if nbreAdresses == 0 :
-            defaut = True
-        else:
-            defaut = False
-            
+            self.defaut = True
+
         # Enregistrement des données
         DB = GestionDB.DB()
-        listeDonnees = [    ("adresse",   adresse),  
-                                    ("motdepasse",    motdepasse),
-                                    ("smtp",    smtp),
-                                    ("port",    port), 
-                                    ("connexionssl",    ssl), 
-                                    ("defaut",    defaut), 
-                                    ]
+        listeDonnees = [
+            ("adresse", adresse),
+            ("motdepasse", motdepasse),
+            ("smtp", smtp),
+            ("port", port),
+            ("connexionssl", ssl),
+            ("defaut", self.defaut),
+            ]
         if self.IDadresse == None :
             # Enregistrement
             newID = DB.ReqInsert("adresses_mail", listeDonnees)
