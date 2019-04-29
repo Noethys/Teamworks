@@ -446,6 +446,29 @@ DB_DATA = {
                            ("type_donnee", "VARCHAR(200)", u"Type de données"),
                            ],  # Paramètres des profils
 
+    "sauvegardes_auto": [("IDsauvegarde", "INTEGER PRIMARY KEY AUTOINCREMENT", u"IDsauvegarde"),
+                         ("nom", "VARCHAR(455)", u"Nom de la procédure de sauvegarde auto"),
+                         ("observations", "VARCHAR(455)", u"Observations"),
+                         ("date_derniere", "DATE", u"Date de la dernière sauvegarde"),
+                         ("sauvegarde_nom", "VARCHAR(455)", u"Sauvegarde Nom"),
+                         ("sauvegarde_motdepasse", "VARCHAR(455)", u"Sauvegarde mot de passe"),
+                         ("sauvegarde_repertoire", "VARCHAR(455)", u"sauvegarde Répertoire"),
+                         ("sauvegarde_emails", "VARCHAR(455)", u"Sauvegarde Emails"),
+                         ("sauvegarde_fichiers_locaux", "VARCHAR(455)", u"Sauvegarde fichiers locaux"),
+                         ("sauvegarde_fichiers_reseau", "VARCHAR(455)", u"Sauvegarde fichiers réseau"),
+                         ("sauvegarde_modeles", "INTEGER", u"Sauvegarde des modèles"),
+                         ("sauvegarde_editions", "INTEGER", u"Sauvegarde des éditions"),
+                         ("condition_jours_scolaires", "VARCHAR(455)", u"Condition Jours scolaires"),
+                         ("condition_jours_vacances", "VARCHAR(455)", u"Condition Jours vacances"),
+                         ("condition_heure", "VARCHAR(455)", u"Condition Heure"),
+                         ("condition_poste", "VARCHAR(455)", u"Condition Poste"),
+                         ("condition_derniere", "VARCHAR(455)", u"Condition Date dernière sauvegarde"),
+                         ("condition_utilisateur", "VARCHAR(455)", u"Condition Utilisateur"),
+                         ("option_afficher_interface", "VARCHAR(455)", u"Option Afficher interface (0/1)"),
+                         ("option_demander", "VARCHAR(455)", u"Option Demander (0/1)"),
+                         ("option_confirmation", "VARCHAR(455)", u"Option Confirmation (0/1)"),
+                         ("option_suppression", "VARCHAR(455)", u"Option Suppression sauvegardes obsolètes"),
+                         ], # procédures de sauvegardes automatiques
 
 }
 

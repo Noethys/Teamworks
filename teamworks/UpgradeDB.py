@@ -53,17 +53,16 @@ class DB(GestionDB.DB):
 
         # =============================================================
 
-        versionFiltre = (2, 1, 0, 1)
+        versionFiltre = (2, 1, 0, 6)
         if versionFichier < versionFiltre:
             try:
                 if self.IsTableExists("profils") == False: self.CreationTable("profils", Tables.DB_DATA)
                 if self.IsTableExists("profils_parametres") == False: self.CreationTable("profils_parametres", Tables.DB_DATA)
+                if self.IsTableExists("sauvegardes_auto") == False: self.CreationTable("sauvegardes_auto", Tables.DB_DATA)
             except Exception as err:
                 return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
 
         # =============================================================
-
-
 
 
 
@@ -79,4 +78,7 @@ class DB(GestionDB.DB):
 
 
 if __name__ == "__main__":
-    pass
+    db = DB()
+    resultat = db.Upgrade(versionFichier=(2, 1, 0, 4))
+    db.Close()
+    print(resultat)

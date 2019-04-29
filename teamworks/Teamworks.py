@@ -25,6 +25,7 @@ from Utils import UTILS_Fichiers
 from Utils import UTILS_Customize
 from Utils import UTILS_Adaptations
 from Utils import UTILS_Rapport_bugs
+from Utils import UTILS_Sauvegarde_auto
 
 from Ctrl import CTRL_Accueil
 from Ctrl import CTRL_Personnes
@@ -177,7 +178,9 @@ class MyFrame(wx.Frame):
             os.remove("Data/Exemple.twk")
 
         # Récupération du nom du dernier fichier chargé
-        self.nomDernierFichier = self.userConfig["nomFichier"]
+        self.nomDernierFichier = ""
+        if "nomFichier" in self.userConfig:
+            self.nomDernierFichier = self.userConfig["nomFichier"]
         self.userConfig["nomFichier"] = ""
                 
         if "assistant_demarrage" in self.userConfig :
@@ -487,7 +490,7 @@ class MyFrame(wx.Frame):
         self.Quitter()
         event.Skip()
         
-    def Quitter(self, videRepertoiresTemp=True):
+    def Quitter(self, videRepertoiresTemp=True, sauvegarde_auto=True):
         """ Fin de l'application """
         # Mémorisation du paramètre de la taille d'écran
         if self.IsMaximized() == True :
@@ -503,7 +506,13 @@ class MyFrame(wx.Frame):
 
         # Sauvegarde du fichier de configuration
         self.SaveFichierConfig()
-        
+
+        # Sauvegarde automatique
+        if self.userConfig["nomFichier"] != "" and sauvegarde_auto == True :
+            resultat = self.SauvegardeAutomatique()
+            if resultat == wx.ID_CANCEL :
+                return False
+
         # Vidage du répertoire Temp
         if videRepertoiresTemp == True :
             FonctionsPerso.VideRepertoireTemp()
@@ -513,6 +522,11 @@ class MyFrame(wx.Frame):
 
         # Affiche les connexions restées ouvertes
         GestionDB.AfficheConnexionOuvertes()
+
+    def SauvegardeAutomatique(self):
+        save = UTILS_Sauvegarde_auto.Sauvegarde_auto(self)
+        resultat = save.Start()
+        return resultat
 
     def OuvrirDernierFichier(self):
         # Chargement du dernier fichier chargé si assistant non affiché
@@ -846,6 +860,11 @@ class MyFrame(wx.Frame):
             dlg = wx.MessageDialog(self, _(u"Il n'y a aucun fichier à fermer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
+            return
+
+        # Sauvegarde automatique
+        resultat = self.SauvegardeAutomatique()
+        if resultat == wx.ID_CANCEL :
             return
 
         # change le nom de fichier
@@ -1194,7 +1213,7 @@ class MyFrame(wx.Frame):
         installation = dlg.GetEtat() 
         dlg.Destroy()
         if installation == True :
-            self.Quitter(videRepertoiresTemp=False)
+            self.Quitter(videRepertoiresTemp=False, sauvegarde_auto=False)
             self.Destroy()
         
     def On_outils_mail(self, event):
@@ -1336,7 +1355,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
             texteNouveautes= fichierVersions.read()
             fichierVersions.close()
             if six.PY3:
-                texteNouveautes = texteNouveautes.decode("iso-8859-15")
+                texteNouveautes = texteNouveautes.decode("utf-8")
             pos_debut_numVersion = texteNouveautes.find("n")
             if "(" in texteNouveautes[:50] :
                 pos_fin_numVersion = texteNouveautes.find("(")

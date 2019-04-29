@@ -325,7 +325,7 @@ class Gadget_Updater(wx.Panel):
         self.parent.couleurFondCadre = couleurFondUpdater
         
         # Widgets
-        self.texte = wx.StaticText(self, -1, _(u"Une nouvelle version du logiciel est disponible !\n\nCliquez ci-dessous pour la télécharger et l'installer dès maintenant. Cette procédure est automatisée."))   
+        self.texte = wx.StaticText(self, -1, _(u"Une nouvelle version du logiciel est disponible !\n\nCliquez ci-dessous pour la télécharger et l'installer dès maintenant."))
         self.SetBackgroundColour(couleurFondUpdater)
         
         self.bouton_telecharger = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Telecharger_L140.png"), wx.BITMAP_TYPE_ANY), size=(-1, 60))
@@ -351,7 +351,7 @@ class Gadget_Updater(wx.Panel):
     
     def OnBoutonTelecharger(self, event):
         topWindow = wx.GetApp().GetTopWindow()
-        topWindow.MenuUpdater(None)
+        topWindow.On_outils_updater(None)
         
 # ----------------------------------------------------------------------------------------------------------------------------
 

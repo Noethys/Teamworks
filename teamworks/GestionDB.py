@@ -1272,7 +1272,7 @@ if __name__ == "__main__":
         
     # # Ajouter un champ
     # db = DB(suffixe="DATA")
-    # db.AjoutChamp("consommations", "badgeage_fin", "DATETIME")
+    # db.AjoutChamp("sauvegardes_auto", "sauvegarde_editions", "INTEGER")
     # db.Close()
 
     # # Exportation d'une table dans la base DEFAUT

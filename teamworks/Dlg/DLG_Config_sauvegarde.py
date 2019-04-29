@@ -17,6 +17,8 @@ import zipfile
 import wx.lib.agw.customtreectrl as CT
 import datetime
 from Utils import UTILS_Fichiers
+from Ol import OL_Sauvegardes_auto
+
 
 
 LISTE_SOURCES = [
@@ -65,9 +67,100 @@ LISTE_INDESIRABLES = [
             "20090529142759BMW16.jpg",
             "20090529142759BMW17.jpg",
             ]
-            
-            
-            
+
+
+class Panel(wx.Panel):
+    def __init__(self, parent, ID=-1):
+        wx.Panel.__init__(self, parent, ID, name="panel_config_sauvegarde", style=wx.TAB_TRAVERSAL)
+
+        self.barreTitre = FonctionsPerso.BarreTitre(self, _(u"Sauvegarde automatique"), u"")
+        texteIntro = _(u"Vous pouvez programmer ici des sauvegardes automatiques de vos données.")
+        self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
+
+        # Cadre d'activation
+        self.staticbox1 = wx.StaticBox(self, -1, _(u"Procédures de sauvegarde automatique"))
+
+        self.ctrl_listview = OL_Sauvegardes_auto.ListView(self, id=-1, style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_SINGLE_SEL|wx.LC_HRULES|wx.LC_VRULES)
+        self.ctrl_listview.MAJ()
+        self.ctrl_recherche = OL_Sauvegardes_auto.CTRL_Outils(self, listview=self.ctrl_listview)
+
+        self.bouton_ajouter = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_ANY))
+        self.bouton_modifier = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Modifier.png"), wx.BITMAP_TYPE_ANY))
+        self.bouton_supprimer = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Supprimer.png"), wx.BITMAP_TYPE_ANY))
+        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_ANY))
+
+        # Binds
+        self.Bind(wx.EVT_BUTTON, self.ctrl_listview.Ajouter, self.bouton_ajouter)
+        self.Bind(wx.EVT_BUTTON, self.ctrl_listview.Modifier, self.bouton_modifier)
+        self.Bind(wx.EVT_BUTTON, self.ctrl_listview.Supprimer, self.bouton_supprimer)
+        self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
+
+        # Propriétés
+        self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour ajouter une procédure de sauvegarde")))
+        self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la procédure de sauvegarde sélectionnée dans la liste")))
+        self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la procédure de sauvegarde sélectionnée dans la liste")))
+        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
+
+        if parent.GetName() != "treebook_configuration":
+            self.bouton_aide.Show(False)
+
+        # Layout
+        grid_sizer_principal = wx.FlexGridSizer(rows=8, cols=1, vgap=0, hgap=0)
+        grid_sizer_principal.Add(self.barreTitre, 1, wx.EXPAND, 0)
+        grid_sizer_principal.Add(self.label_introduction, 1, wx.ALL | wx.EXPAND, 10)
+
+        # Cadre 1
+        staticbox1 = wx.StaticBoxSizer(self.staticbox1, wx.VERTICAL)
+        grid_sizer_principal.Add(staticbox1, 1, wx.ALL | wx.EXPAND, 10)
+
+        grid_sizer_contenu = wx.FlexGridSizer(rows=2, cols=2, vgap=5, hgap=5)
+
+        grid_sizer_contenu.Add(self.ctrl_listview, 0, wx.EXPAND, 0)
+
+        grid_sizer_droit = wx.FlexGridSizer(rows=5, cols=1, vgap=5, hgap=5)
+        grid_sizer_droit.Add(self.bouton_ajouter, 0, 0, 0)
+        grid_sizer_droit.Add(self.bouton_modifier, 0, 0, 0)
+        grid_sizer_droit.Add(self.bouton_supprimer, 0, 0, 0)
+        grid_sizer_droit.Add((5, 5), 0, wx.EXPAND, 0)
+        grid_sizer_droit.Add(self.bouton_aide, 0, 0, 0)
+        grid_sizer_droit.AddGrowableRow(3)
+
+        grid_sizer_contenu.Add(grid_sizer_droit, 1, wx.EXPAND, 0)
+
+        grid_sizer_contenu.Add(self.ctrl_recherche, 0, wx.EXPAND, 0)
+
+        grid_sizer_contenu.AddGrowableRow(0)
+        grid_sizer_contenu.AddGrowableCol(0)
+
+        staticbox1.Add(grid_sizer_contenu, 1, wx.EXPAND | wx.ALL, 10)
+
+        grid_sizer_principal.AddGrowableRow(2)
+        grid_sizer_principal.AddGrowableCol(0)
+
+        self.SetSizer(grid_sizer_principal)
+        grid_sizer_principal.Fit(self)
+
+    def MAJpanel(self):
+        pass
+
+    def OnBoutonAide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lasauvegardeautomatique")
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------------
+
 def GetListeSourcesStr():
     txt = ""
     for source in LISTE_SOURCES :
@@ -101,7 +194,7 @@ class Sauvegarde():
 
 
 
-class Panel(wx.Panel):
+class Panel_archive(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, name="panel_config_sauvegarde", style=wx.TAB_TRAVERSAL)
         
@@ -112,7 +205,7 @@ class Panel(wx.Panel):
         # Cadre d'activation
         self.staticbox1 = wx.StaticBox(self, -1, _(u"Activation"))
         self.checkBox_activer = wx.CheckBox(self, -1, _(u"Activer la sauvegarde automatique"))
-                
+
         # Cadre des paramètres
         self.staticbox2 = wx.StaticBox(self, -1, _(u"Paramètres"))
         self.label_frequence = wx.StaticText(self, -1, _(u"Fréquence :"))
@@ -124,7 +217,7 @@ class Panel(wx.Panel):
         self.label_conservation = wx.StaticText(self, -1, _(u"Conservation :"))
         self.label_conservation2 = wx.StaticText(self, -1, u"")
         self.bouton_parametres = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Parametres_sauvegarde.png"), wx.BITMAP_TYPE_ANY))
-        
+
         self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
         if parent.GetName() != "treebook_configuration" :
