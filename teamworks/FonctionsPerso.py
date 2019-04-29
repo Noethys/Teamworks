@@ -1479,6 +1479,20 @@ def InsertCode():
 
     print("Fini !!!!!!!!!!!!!!!!!")
 
+def GetIDfichier():
+    try :
+        DB = GestionDB.DB()
+        req = """SELECT IDparametre, nom, parametre 
+        FROM parametres WHERE nom='IDfichier';"""
+        DB.ExecuterReq(req)
+        listeTemp = DB.ResultatReq()
+        DB.Close()
+        IDfichier = listeTemp[0][2]
+    except :
+        IDfichier = ""
+    return IDfichier
+
+
 
 if __name__ == "__main__":
-    InsertCode()
+    print(GetIDfichier())

@@ -307,7 +307,7 @@ class Page_recherche(wx.Panel):
 
         # Recherche du numéro de version
         if six.PY3:
-            self.texteNouveautes = self.texteNouveautes.decode("iso-8859-15")
+            self.texteNouveautes = self.texteNouveautes.decode("utf-8")
         pos_debut_numVersion = self.texteNouveautes.find("n")
         if "(" in self.texteNouveautes[:50] :
             pos_fin_numVersion = self.texteNouveautes.find("(")
@@ -370,7 +370,7 @@ class Page_recherche(wx.Panel):
                 self.parent.GetPage("page_disponible").label_introduction1.SetLabel(texteIntro1)
                 texteNouveautes = self.texteNouveautes
                 if six.PY2:
-                    texteNouveautes = texteNouveautes.decode("iso-8859-15")
+                    texteNouveautes = texteNouveautes.decode("utf-8")
                 self.parent.GetPage("page_disponible").textCtrl_nouveautes.SetValue(texteNouveautes)
                 self.parent.Active_page("page_disponible")
               
@@ -433,7 +433,6 @@ class Page_disponible(wx.Panel):
                     
     def Onbouton_annuler(self, event):
         # Fermeture
-        #print "annuler"
         self.parent.Fermer()
         
     def Onbouton_ok(self, event):
@@ -819,7 +818,7 @@ class Dialog(wx.Dialog):
         self.parent = parent
         self.installation = False
         
-        intro = _(u"Vous pouvez ici télécharger et installer une mise à jour pour Teamworks. Ces mises à jour vous permettent bien-sûr de gagner en stabilité et en fonctionnalités.")
+        intro = _(u"Vous pouvez ici télécharger et installer une mise à jour pour Teamworks. Ces mises à jour vous permettent de gagner en stabilité et en fonctionnalités.")
         titre = _(u"Mise à jour du logiciel")
         self.ctrl_bandeau = CTRL_Bandeau.Bandeau(self, titre=titre, texte=intro, hauteurHtml=30, nomImage=Chemins.GetStaticPath("Images/32x32/Telecharger.png"))
         
@@ -912,24 +911,12 @@ class Dialog(wx.Dialog):
         from Utils import UTILS_Aide
         UTILS_Aide.Aide("Rechercherunemisejourdulogiciel")
 
-    def SurFermeture(self):
-        # Relance serveur Connecthys si besoin
-        if self.GetEtat() == False :
-            try :
-                self.parent.ctrl_serveur_portail.RepriseServeur()
-            except:
-                pass
-
     def Fermer(self):
-        self.SurFermeture()
-
         # Fermeture de la fenêtre
-        self.EndModal(wx.ID_OK)
+        self.EndModal(wx.ID_CANCEL)
 
     def OnClose(self, event):
-        self.SurFermeture()
-
-        if self.page_active == "page_telechargement" :
+        if self.page_active == "page_telechargement":
             self.page_telechargement.Arreter_telechargement()
         elif self.page_active == "page_installation" :
             pass

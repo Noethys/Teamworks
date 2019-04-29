@@ -50,6 +50,9 @@ class MyEncoder(json.JSONEncoder):
         # Si wx.Point
         elif isinstance(objet, wx.Point):
             return {'__type__': "wx.Point", 'data': objet.Get()}
+        # Si bytes
+        elif isinstance(objet, bytes):
+            return {'__type__': "bytes", 'data': objet.decode('utf8')}
         # Si autre
         return json.JSONEncoder.default(self, objet)
 
@@ -70,13 +73,16 @@ def MyDecoder(objet):
     # Si wx.Point
     elif objet.get('__type__') == 'wx.Point':
         return wx.Point(objet['data'][0], objet['data'][1])
+    # Si bytes
+    elif objet.get('__type__') == 'bytes':
+        return bytes(objet['data'], 'utf-8')
     # Si autre
     else:
         return objet
 
 
 def Lire(nom_fichier="", conversion_auto=False):
-    data = {}
+    data = None
     is_json = True
 
     # Essaye d'ouvrir un fichier Json
@@ -92,7 +98,7 @@ def Lire(nom_fichier="", conversion_auto=False):
                 data = json.load(json_file, object_hook=MyDecoder)
         except Exception as err:
             print("Impossible d'ouvrir le fichier Json")
-            print((err,))
+            print(err,)
             is_json = False
 
     if is_json == False :
@@ -103,7 +109,7 @@ def Lire(nom_fichier="", conversion_auto=False):
         try:
             fichier = shelve.open(nom_fichier, "r")
             data = {}
-            for key, valeur in list(fichier.items()):
+            for key, valeur in fichier.items():
                 if type(key) == str:
                     key = key.decode("iso-8859-15")
                 if type(valeur) == str:
@@ -116,7 +122,11 @@ def Lire(nom_fichier="", conversion_auto=False):
                 Ecrire(nom_fichier=nom_fichier, data=data)
         except Exception as err:
             print("Conversion du shelve en Json impossible :")
-            print((err,))
+            print(err,)
+
+    # Si aucune donnée trouvée, on lève une erreur
+    if data == None :
+        raise
 
     return data
 
