@@ -36,7 +36,6 @@ class MyDialog(wx.Dialog):
         self.__do_layout()
         
         self.Bind(wx.EVT_BUTTON, self.OnBoutonOk, self.bouton_ok)
-        
 
     def __set_properties(self):
         self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
@@ -63,7 +62,7 @@ class MyDialog(wx.Dialog):
         grid_sizer_base.AddGrowableCol(0)
         grid_sizer_base.AddGrowableRow(1)
         self.Layout()
-
+        self.CentreOnScreen()
 
         
     def OnBoutonOk(self, event):

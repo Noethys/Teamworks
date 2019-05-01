@@ -181,7 +181,7 @@ class ListView(ObjectListView):
         
     def OnItemDeselected(self, event):
         self.itemSelected = False
-        wx.FutureCall(100, self.DeselectionneItem)
+        wx.CallLater(100, self.DeselectionneItem)
     
     def DeselectionneItem(self) :
         try :

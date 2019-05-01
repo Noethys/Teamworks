@@ -587,7 +587,7 @@ class BarreRecherche(wx.SearchCtrl):
 
 class PanelPersonnes(FonctionsPerso.PanelArrondi):
     def __init__(self, parent, ID=-1):
-        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=_(u"Personnes"))
+        FonctionsPerso.PanelArrondi.__init__(self, parent, ID, texteTitre=_(u"Individus"))
 
         self.triCritere = FonctionsPerso.Parametres(mode="get", categorie="presences", nom="tri_critere", valeur="presence")
         self.triOrdre = FonctionsPerso.Parametres(mode="get", categorie="presences", nom="tri_ordre", valeur="decroissant")

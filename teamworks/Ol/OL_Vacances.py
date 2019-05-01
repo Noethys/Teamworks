@@ -218,7 +218,7 @@ class ListView(FastObjectListView):
                 ("date_debut", dateDebut),
                 ("date_fin", dateFin),
                 ]
-            IDvacance = DB.ReqInsert("vacances", listeDonnees)
+            IDvacance = DB.ReqInsert("periodes_vacances", listeDonnees)
             DB.Close()
             self.MAJ(IDvacance)
         dlg.Destroy()
@@ -251,7 +251,7 @@ class ListView(FastObjectListView):
                 ("date_debut", dateDebut),
                 ("date_fin", dateFin),
                 ]
-            DB.ReqMAJ("vacances", listeDonnees, "IDvacance", IDvacance)
+            DB.ReqMAJ("periodes_vacances", listeDonnees, "IDperiode", IDvacance)
             DB.Close()
             self.MAJ(IDvacance)
         dlg.Destroy()
@@ -266,7 +266,7 @@ class ListView(FastObjectListView):
         if dlg.ShowModal() == wx.ID_YES :
             IDvacance = self.Selection()[0].IDvacance
             DB = GestionDB.DB()
-            DB.ReqDEL("vacances", "IDvacance", IDvacance)
+            DB.ReqDEL("periodes_vacances", "IDperiode", IDvacance)
             DB.Close() 
             self.MAJ()
         dlg.Destroy()

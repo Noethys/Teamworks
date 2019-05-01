@@ -552,7 +552,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucune présence à imprimer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
-            return
+            return False
         
         # Met à jour les données du planning à partir du panel présences
         self.GetGrandParent().GetParent().MAJpanelPlanning()
@@ -2136,6 +2136,8 @@ class BarreOptions(wx.Panel):
 
         # Génération du PDF
         nom_doc = self.GetParent().DCplanning.Impression(afficher=False)
+        if nom_doc == False:
+            return False
 
         # Envoyer données vers l'éditeur d'emails
         from Dlg import DLG_Mailer

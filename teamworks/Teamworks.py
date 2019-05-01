@@ -377,7 +377,6 @@ class MyFrame(wx.Frame):
                 {"code": "registre", "label": _(u"Registre unique du personnel"), "infobulle": _(u"Registre unique du personnel"), "image": "Images/16x16/Contrat.png", "action": self.On_outils_registre},
                 "-",
                 {"code": "outlook", "label": _(u"Exporter les individus vers MS Outlook"), "infobulle": _(u"Exporter les individus vers MS Outlook"), "image": "Images/16x16/Outlook.png", "action": self.On_outils_outlook},
-                {"code": "mail", "label": _(u"Envoyer un mail groupé avec le client de messagerie"), "infobulle": _(u"Envoyer un mail groupé avec le client de messagerie"), "image": "Images/16x16/Mail.png", "action": self.On_outils_mail},
                 {"code": "publipostage", "label": _(u"Créer des courriers ou des emails par publipostage"), "infobulle": _(u"Créer des courriers ou des emails par publipostage"), "image": "Images/16x16/Mail.png", "action": self.On_outils_publipostage},
                 "-",
                 {"code": "editeur_emails", "label": _(u"Editeur d'Emails"), "infobulle": _(u"Editeur d'Emails"), "image": "Images/16x16/Editeur_email.png", "action": self.On_outils_emails},
@@ -1361,16 +1360,20 @@ class MyFrame(wx.Frame):
         self.toolBook.MAJ_page_si_affichee("recrutement")
 
     def On_param_vacances(self, event):
-            from Dlg import DLG_Vacances
-            dlg = DLG_Vacances.Dialog(self)
-            dlg.ShowModal()
-            dlg.Destroy()
+        from Dlg import DLG_Vacances
+        dlg = DLG_Vacances.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+        self.toolBook.MAJ_page_si_affichee("accueil")
+        self.toolBook.MAJ_page_si_affichee("presences")
 
     def On_param_feries(self, event):
         from Dlg import DLG_Feries
         dlg = DLG_Feries.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.toolBook.MAJ_page_si_affichee("accueil")
+        self.toolBook.MAJ_page_si_affichee("presences")
 
     def On_outils_outlook(self ,event):
         # Vérifie qu'un fichier est chargé
@@ -1416,19 +1419,6 @@ class MyFrame(wx.Frame):
         if installation == True :
             self.Quitter(videRepertoiresTemp=False, sauvegarde_auto=False)
             self.Destroy()
-        
-    def On_outils_mail(self, event):
-        """ Envoi d'un mail groupé """
-        from Dlg import DLG_Envoi_email_groupe
-        dlg = DLG_Envoi_email_groupe.MyDialog(self)
-        if dlg.ShowModal() == wx.ID_OK:
-            listeAdresses = dlg.GetAdresses()
-            dlg.Destroy()
-        else:
-            dlg.Destroy()
-            return
-        # Création du mail
-        FonctionsPerso.EnvoyerMail(adresses=listeAdresses)
 
     def On_outils_frais(self, event):
         """ Gestion globale des frais de déplacements """
