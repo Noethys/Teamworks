@@ -1,8 +1,10 @@
-Version 2.1.0.6 :
+Version 2.1.1.0 :
 
 - Ajout du registre unique du personnel
 - Ajout du calcul automatique des jours fériés variables
 - Ajout de l'importation des périodes de vacances depuis Internet
+- Ajout du nouvel éditeur d'emails
+- Prise en charge de Mailjet
 - Amélioration de la fenêtre d'ouverture des fichiers
 - Réorganisation complète des fichiers
 - Compatibilité avec Python 3.7
