@@ -393,22 +393,28 @@ DB_DATA = {
                                     ("exemple", "VARCHAR(100)", u"Exemple", u"Exemple de valeur pour ce champ"),
                                     ], # Champs personnalisés pour le publipostage.
 
-    "adresses_mail":  [ ("IDadresse", "INTEGER PRIMARY KEY AUTOINCREMENT", u"ID", u"ID"),
-                                    ("adresse", "VARCHAR(100)", u"Adresse de messagerie", u"Adresse"),
-                                    ("motdepasse", "VARCHAR(100)", u"Mot de passe si SSL", u"mdp"),
-                                    ("smtp", "VARCHAR(100)", u"Adresse SMTP", u"Smtp"),
-                                    ("port", "INTEGER", u"Numéro du port", "num port"),
-                                    ("connexionssl", "INTEGER", u"Connexion ssl (1/0)", "connexionssl"),
-                                    ("defaut", "INTEGER", u"Adresse utilisée par défaut (1/0)", "defaut"),
-                                    ], # Adresses d'expéditeur de mail
+    "adresses_mail": [("IDadresse", "INTEGER PRIMARY KEY AUTOINCREMENT", u"ID"),
+                      ("adresse", "VARCHAR(200)", u"Adresse de messagerie"),
+                      ("nom_adresse", "VARCHAR(200)", u"Nom d'affichage de l'adresse de messagerie"),
+                      ("motdepasse", "VARCHAR(200)", u"Mot de passe si SSL"),
+                      ("smtp", "VARCHAR(200)", u"Adresse SMTP"),
+                      ("port", "INTEGER", u"Numéro du port"),
+                      ("connexionssl", "INTEGER", u"Connexion ssl (1/0) - N'est plus utilisé !"),
+                      ("defaut", "INTEGER", u"Adresse utilisée par défaut (1/0)"),
+                      ("connexionAuthentifiee", "INTEGER", u"Authentification activée (1/0)"),
+                      ("startTLS", "INTEGER", u"startTLS activé (1/0)"),
+                      ("utilisateur", "VARCHAR(200)", u"Nom d'utilisateur"),
+                      ("moteur", "VARCHAR(200)", u"Moteur d'envoi"),
+                      ("parametres", "VARCHAR(1000)", u"Autres paramètres"),
+                      ], # Adresses d'expéditeur de mail
 
     "questionnaire_categories": [("IDcategorie", "INTEGER PRIMARY KEY AUTOINCREMENT", u"ID"),
-                                    ("ordre", "INTEGER", u"Ordre"),
-                                    ("visible", "INTEGER", u"Visible (0/1)"),
-                                    ("type", "VARCHAR(100)", u"Individu ou Famille"),
-                                    ("couleur", "VARCHAR(100)", u"Couleur de la catégorie"),
-                                    ("label", "VARCHAR(400)", u"Label de la question"),
-                                    ], # Catégories des questionnaires
+                            ("ordre", "INTEGER", u"Ordre"),
+                            ("visible", "INTEGER", u"Visible (0/1)"),
+                            ("type", "VARCHAR(100)", u"Individu ou Famille"),
+                            ("couleur", "VARCHAR(100)", u"Couleur de la catégorie"),
+                            ("label", "VARCHAR(400)", u"Label de la question"),
+                            ], # Catégories des questionnaires
 
     "questionnaire_questions": [("IDquestion", "INTEGER PRIMARY KEY AUTOINCREMENT", u"ID"),
                                     ("IDcategorie", "INTEGER", u"ID de la catégorie"),
@@ -469,6 +475,18 @@ DB_DATA = {
                          ("option_confirmation", "VARCHAR(455)", u"Option Confirmation (0/1)"),
                          ("option_suppression", "VARCHAR(455)", u"Option Suppression sauvegardes obsolètes"),
                          ], # procédures de sauvegardes automatiques
+
+    "modeles_emails": [("IDmodele", "INTEGER PRIMARY KEY AUTOINCREMENT", u"IDmodele"),
+                       ("categorie", "VARCHAR(455)", u"Catégorie du modèle"), ("nom", "VARCHAR(455)", u"Nom du modèle"),
+                       ("description", "VARCHAR(455)", u"Description du modèle"),
+                       ("objet", "VARCHAR(455)", u"Texte objet du mail"),
+                       ("texte_xml", "VARCHAR(50000)", u"Contenu du texte version XML"),
+                       ("IDadresse", "INTEGER", u"IDadresse d'expédition de mails"),
+                       ("defaut", "INTEGER", u"Modèle par défaut (0/1)"),
+                       ], # Modèles d'Emails
+
+
+
 
 }
 

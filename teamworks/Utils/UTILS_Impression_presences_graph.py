@@ -54,10 +54,10 @@ def minutesEnHeures(dureeMinutes) :
     return duree
 
 class Impression():
-    def __init__(self, orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, coordLigne, hauteur_barre, ecart_lignes, mode_texte):
+    def __init__(self, nom_doc, orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, coordLigne, hauteur_barre, ecart_lignes, mode_texte):
         # Paramètres du PDF
-        nomDoc = UTILS_Fichiers.GetRepTemp("Impression_presences_graph.pdf")
-        if "win" in sys.platform : nomDoc = nomDoc.replace("/", "\\")
+        self.nom_doc = nom_doc
+        if "win" in sys.platform : self.nom_doc = self.nom_doc.replace("/", "\\")
         
         # Initialisation des valeurs
         global DICT_CATEGORIES, HAUTEUR_BARRE, ECART_LIGNES, MODE_TEXTE, COORD_LIGNE
@@ -78,7 +78,7 @@ class Impression():
             HAUTEUR_PAGE = defaultPageSize[0]
             LARGEUR_PAGE = defaultPageSize[1]
         
-        doc = SimpleDocTemplate(nomDoc, pagesize=taillePage)
+        doc = SimpleDocTemplate(self.nom_doc, pagesize=taillePage)
         story = []
         
         # Création des lignes        
@@ -124,9 +124,10 @@ class Impression():
         
         # Enregistrement du PDF
         doc.build(story)
-        
+
+    def Afficher(self):
         # Affichage du PDF
-        FonctionsPerso.LanceFichierExterne(nomDoc)
+        FonctionsPerso.LanceFichierExterne(self.nom_doc)
 
 
 class Ligne(Flowable) :

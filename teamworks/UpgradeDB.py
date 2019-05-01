@@ -64,6 +64,21 @@ class DB(GestionDB.DB):
 
         # =============================================================
 
+        versionFiltre = (2, 1, 1, 0)
+        if versionFichier < versionFiltre:
+            try:
+                if self.IsTableExists("modeles_emails") == False: self.CreationTable("modeles_emails", Tables.DB_DATA)
+                self.AjoutChamp("adresses_mail", "nom_adresse", "VARCHAR(200)")
+                self.AjoutChamp("adresses_mail", "connexionAuthentifiee", "INTEGER")
+                self.AjoutChamp("adresses_mail", "startTLS", "INTEGER")
+                self.AjoutChamp("adresses_mail", "utilisateur", "VARCHAR(200)")
+                self.AjoutChamp("adresses_mail", "moteur", "VARCHAR(200)")
+                self.AjoutChamp("adresses_mail", "parametres", "VARCHAR(1000)")
+            except Exception as err:
+                return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
+
+        # =============================================================
+
 
 
 

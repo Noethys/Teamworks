@@ -494,12 +494,18 @@ class ListView(ObjectListView):
         # Item Envoyer un Mail
         if noSelection == False : 
             if self.adresseMail != "" :
-                item = wx.MenuItem(menuPop, 80, _(u"Envoyer un Email avec votre logiciel de messagerie"))
+                item = wx.MenuItem(menuPop, 80, _(u"Envoyer un Email depuis l'éditeur d'Emails de Noethys"))
                 bmp = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG)
                 item.SetBitmap(bmp)
                 menuPop.AppendItem(item)
                 self.Bind(wx.EVT_MENU, self.Menu_Mail, id=80)
-        
+
+                item = wx.MenuItem(menuPop, 81, _(u"Envoyer un Email depuis le client de messagerie par défaut"))
+                bmp = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG)
+                item.SetBitmap(bmp)
+                menuPop.AppendItem(item)
+                self.Bind(wx.EVT_MENU, self.Menu_Mail, id=81)
+
         # Item Publipostage
         item = wx.MenuItem(menuPop, 140, _(u"Créer un courrier ou un mail par publipostage"))
         bmp = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG)
@@ -591,7 +597,20 @@ class ListView(ObjectListView):
         UTILS_Aide.Aide("")
         
     def Menu_Mail(self, event):
-        FonctionsPerso.EnvoyerMail(adresses = (self.adresseMail,))
+        adresse = self.adresseMail
+
+        # Depuis l'éditeur d'Emails de Noethys
+        if event.GetId() == 80:
+            from Dlg import DLG_Mailer
+            dlg = DLG_Mailer.Dialog(self)
+            listeDonnees = [{"adresse": adresse, "pieces": [], "champs": {}, }, ]
+            dlg.SetDonnees(listeDonnees, modificationAutorisee=False)
+            dlg.ShowModal()
+            dlg.Destroy()
+
+        # Depuis le client de messagerie par défaut
+        if event.GetId() == 81:
+            FonctionsPerso.EnvoyerMail(adresses=[adresse,], sujet="", message="")
 
     def Menu_Courrier(self, event):
         self.CourrierPublipostage()

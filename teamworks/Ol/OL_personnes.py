@@ -19,7 +19,8 @@ import os
 import sys
 import six
 from Utils import UTILS_Fichiers
-from ObjectListView import ObjectListView, ColumnDefn
+# from ObjectListView import ObjectListView, ColumnDefn
+from Ctrl.CTRL_ObjectListView import FastObjectListView, ColumnDefn, Filter, CTRL_Outils
 
 
 DICT_PAYS = {}
@@ -145,7 +146,7 @@ class Track(object):
 
 
 
-class ListView(ObjectListView):
+class ListView(FastObjectListView):
     def __init__(self, *args, **kwds):
         # Récupération des paramètres perso
         self.activeDoubleClic = kwds.pop("activeDoubleClic", True)
@@ -157,9 +158,9 @@ class ListView(ObjectListView):
         self.criteres = ""
         self.itemSelected = False
         # Initialisation du listCtrl
-        self.listeColonnes = LISTE_COLONNES
-        self.listeColonnesOriginale = list(self.listeColonnes)
-        ObjectListView.__init__(self, *args, **kwds)
+        self.listeColonnesTemp = LISTE_COLONNES
+        self.listeColonnesOriginale = list(self.listeColonnesTemp)
+        FastObjectListView.__init__(self, *args, **kwds)
         self.Importation_pays()
         self.InitModel()
         self.InitObjectListView()
@@ -324,7 +325,7 @@ class ListView(ObjectListView):
             return text
         
         # Création des colonnes
-        liste_ColonnesTmp = self.listeColonnes
+        liste_ColonnesTmp = self.listeColonnesTemp
         # Tri par ordre
         liste_ColonnesTmp.sort(key=operator.itemgetter(7))
         
@@ -373,7 +374,7 @@ class ListView(ObjectListView):
         return self.GetSelectedObjects()
     
     def SetListeColonnes(self, listeColonnes):
-        self.listeColonnes = listeColonnes
+        self.listeColonnesTemp = listeColonnes
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -430,12 +431,18 @@ class ListView(ObjectListView):
         
         # Item Envoyer un Mail
         if self.adresseMail != "" :
-            item = wx.MenuItem(menuPop, 80, _(u"Envoyer un Email"))
+            item = wx.MenuItem(menuPop, 80, _(u"Envoyer un Email depuis l'éditeur d'Emails de Noethys"))
             bmp = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
             self.Bind(wx.EVT_MENU, self.Menu_Mail, id=80)
-        
+
+            item = wx.MenuItem(menuPop, 81, _(u"Envoyer un Email depuis le client de messagerie par défaut"))
+            bmp = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG)
+            item.SetBitmap(bmp)
+            menuPop.AppendItem(item)
+            self.Bind(wx.EVT_MENU, self.Menu_Mail, id=81)
+
         # Item Publipostage
         item = wx.MenuItem(menuPop, 140, _(u"Créer un courrier ou un mail par publipostage"))
         bmp = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG)
@@ -528,7 +535,21 @@ class ListView(ObjectListView):
         self.GetGrandParent().GetParent().OnBoutonAide(None)
         
     def Menu_Mail(self, event):
-        FonctionsPerso.EnvoyerMail(adresses = (self.adresseMail,))
+        adresse = self.adresseMail
+
+        # Depuis l'éditeur d'Emails de Noethys
+        if event.GetId() == 80:
+            from Dlg import DLG_Mailer
+            dlg = DLG_Mailer.Dialog(self)
+            listeDonnees = [{"adresse": adresse, "pieces": [], "champs": {}, }, ]
+            dlg.SetDonnees(listeDonnees, modificationAutorisee=False)
+            dlg.ShowModal()
+            dlg.Destroy()
+
+        # Depuis le client de messagerie par défaut
+        if event.GetId() == 81:
+            FonctionsPerso.EnvoyerMail(adresses=[adresse,], sujet="", message="")
+
 
     def AfficherTout(self):
         """ Réafficher toute la liste """
@@ -541,7 +562,7 @@ class ListView(ObjectListView):
     def Options(self):
         """ Choix et ordre des colonnes """
         from Dlg import DLG_Config_liste_personnes
-        dlg = DLG_Config_liste_personnes.Dialog(self, self.listeColonnes)
+        dlg = DLG_Config_liste_personnes.Dialog(self, self.listeColonnesTemp)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -690,7 +711,7 @@ class ListView(ObjectListView):
     def GetValeurs(self):
         """ Récupère les valeurs affichées sous forme de liste """
         # Récupère les labels de colonnes
-        liste_ColonnesTmp = self.listeColonnes
+        liste_ColonnesTmp = self.listeColonnesTemp
         liste_ColonnesTmp.sort(key=operator.itemgetter(7))
         liste_labelsColonnes = []
         for labelCol, alignement, largeur, nomChamp, args, description, affiche, ordre in liste_ColonnesTmp :

@@ -547,7 +547,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             # Mémorisation dans le dict de IDs
             self.dictIDs[IDobjet] = ("tache", IDpresence)
     
-    def Impression(self):
+    def Impression(self, afficher=True):
         if len(self.listePresences) == 0 :
             dlg = wx.MessageDialog(self, _(u"Vous n'avez sélectionné aucune présence à imprimer !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
@@ -571,17 +571,25 @@ class WidgetPlanning(wx.ScrolledWindow):
         else:
             dlg.Destroy()
             return False
-        
+
+        nom_doc = UTILS_Fichiers.GetRepTemp("impression_planning.pdf")
+
         if ChoixType == 1 :
             # Type texte
-            impress = ImpressionPDFvTexte(self.dictCategories, self.dictGroupes, self.dictLignes, self.listePresences, self.dictPresences, self.maxWidth ,self.maxHeight)
+            impress = ImpressionPDFvTexte(nom_doc, self.dictCategories, self.dictGroupes, self.dictLignes, self.listePresences, self.dictPresences, self.maxWidth ,self.maxHeight)
         if ChoixType == 2 :
             # Type Graph Portrait
-            impress = ImpressionPDFvGraph("portrait", self.dictCategories, self.dictGroupes, self.dictLignes, self.listePresences, self.dictPresences, self.maxWidth ,self.maxHeight)
+            impress = ImpressionPDFvGraph(nom_doc, "portrait", self.dictCategories, self.dictGroupes, self.dictLignes, self.listePresences, self.dictPresences, self.maxWidth ,self.maxHeight)
         if ChoixType == 3 :
             # Type Graph Paysage
-            impress = ImpressionPDFvGraph("paysage", self.dictCategories, self.dictGroupes, self.dictLignes, self.listePresences, self.dictPresences, self.maxWidth ,self.maxHeight)
-                                  
+            impress = ImpressionPDFvGraph(nom_doc, "paysage", self.dictCategories, self.dictGroupes, self.dictLignes, self.listePresences, self.dictPresences, self.maxWidth ,self.maxHeight)
+
+        # Afficher le PDF
+        if afficher == True:
+            impress.Afficher()
+
+        return nom_doc
+
     def InitPlanning(self, listePresences, dictCategories, dictGroupes, dictLignes) :
         self.dictCategories = dictCategories
         self.dictGroupes = dictGroupes
@@ -641,57 +649,6 @@ class WidgetPlanning(wx.ScrolledWindow):
             if heureFin > heureMax : heureMax = heureFin
         
         return newListe
-
-    
-##    def draw(self, dc):
-##        dc.SetBackground(wx.Brush(couleurBackground))
-##        dc.Clear()
-##
-##        # Création du planning
-##        try: test = len(self.listePresences)
-##        except : return
-##        
-##        self.DrawPlanning(dc)
-
-
-##    def MAJListePresences(self):
-##        """ MAJ des coordonnées de toute la liste des présences """
-##        index = 0
-##
-##        for item in self.listePresences :
-##            posG = HeuresEnCoords(item[3]) 
-##            posD = HeuresEnCoords(item[4])
-##            self.listePresences[index][7] = posG
-##            self.listePresences[index][8] = posD
-##            index += 1     
-                    
-                    
-##    def DrawPlanning(self, dc):
-##        """ Dessine la totalité du planning """
-##        chrono1 = time.clock()
-##        self.MAJListePresences()
-##
-##        tailleDC = self.GetSizeTuple()
-##
-##        # Calcul de la largeur des entetes de lignes et des lignes
-##        self.CalcLargeurEnteteLigne(dc)
-##        self.CalcCoordLignes(tailleDC)
-##        self.parent.DCgraduations.update()
-##
-##        # Dessin des groupes
-##        self.DrawGroupes(dc, tailleDC)
-##
-##        index = 0
-##        # Dessin des présences
-##        for item in self.listePresences :
-##            self.listePresences[index][7]  = HeuresEnCoords(item[3]) 
-##            self.listePresences[index][8] = HeuresEnCoords(item[4])
-##            self.DrawBarre(dc,item[3], item[4], item[5], item[6], item[7], item[8], item[9], item[10])
-##            index += 1
-##                
-##        chrono2 = time.clock()
-##        #print "index=", index, "chrono=", chrono2 - chrono1
-
     
     def DrawGroupes(self, dc, tailleDC, mode="screen"):
         """ Dessine les groupes """
@@ -1919,8 +1876,7 @@ class BarreOptions(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent, -1, style = wx.NO_BORDER)
         self.parent = parent
-##        self.SetBackgroundColour("white")
-        
+
         # Widgets        
         self.txtRadio = wx.StaticText( self, -1, " Grouper par :" )
         self.radio1 = wx.RadioButton( self, -1, "Dates", style = wx.RB_GROUP )
@@ -2044,20 +2000,29 @@ class BarreOptions(wx.Panel):
         # Création du menu contextuel
         menu = UTILS_Adaptations.Menu()
         
-        # Commande Imprimer
+        # Commande Imprimer le planning affiché
         IDitem = 10
         item = wx.MenuItem(menu, IDitem, _(u"Imprimer le planning affiché"), _(u"Imprimer le planning affiché"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Imprimante.png"), wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_10, id=IDitem)
-        
-        # Commande Autres impressions
+
+        # Commande Envoyer par email le planning affiché
+        IDitem = 11
+        item = wx.MenuItem(menu, IDitem, _(u"Envoyer par Email le planning affiché"), _(u"Envoyer par Email le planning affiché"))
+        item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG))
+        menu.AppendItem(item)
+        self.Bind(wx.EVT_MENU, self.Menu_Mail_planning_affiche, id=IDitem)
+
+        menu.AppendSeparator()
+
+        # Commande Imprimer autres plannings
         IDitem = 40
         item = wx.MenuItem(menu, IDitem, _(u"Imprimer d'autres types de plannings"), _(u"Imprimer d'autres types de plannings"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Imprimante.png"), wx.BITMAP_TYPE_PNG))
         menu.AppendItem(item)
         self.Bind(wx.EVT_MENU, self.Menu_40, id=IDitem)
-        
+
         menu.AppendSeparator()
         
         # Commande Stats simples
@@ -2134,7 +2099,52 @@ class BarreOptions(wx.Panel):
     def Menu_10(self, event):
         """ Imprimer le planning """
         self.GetParent().DCplanning.Impression()
-    
+
+    def Menu_Mail_planning_affiche(self, event):
+        liste_presents = self.GetParent().listePresents
+
+        # Recherche emails
+        DB = GestionDB.DB()
+        req = """SELECT IDpersonne, texte
+        FROM Coordonnees 
+        WHERE categorie='Email';"""
+        DB.ExecuterReq(req)
+        liste_coords = DB.ResultatReq()
+        DB.Close()
+        dict_emails = {}
+        for IDpersonne, email in liste_coords:
+            if email not in ("", None):
+                dict_emails[IDpersonne] = email
+
+        # Attribue les emails aux individus
+        liste_anomalies = []
+        listeDonnees = []
+        for IDpersonne in liste_presents:
+            if IDpersonne in dict_emails :
+                listeDonnees.append({"adresse": dict_emails[IDpersonne], "pieces": [], "champs": {} })
+            else:
+                nom_individu = " ".join(self.GetParent().dictPersonnes[IDpersonne])
+                liste_anomalies.append(nom_individu)
+
+        if len(liste_anomalies) > 0:
+            message = _(u"Les individus suivants n'ont pas d'adresse email : \n%s\n\n Faut-il quand même continuer ?") % (u"\n- " + u"\n- ".join(liste_anomalies))
+            dlg = wx.MessageDialog(None, message, _(u"Avertissement"), wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_EXCLAMATION)
+            reponse = dlg.ShowModal()
+            dlg.Destroy()
+            if reponse != wx.ID_YES:
+                return False
+
+        # Génération du PDF
+        nom_doc = self.GetParent().DCplanning.Impression(afficher=False)
+
+        # Envoyer données vers l'éditeur d'emails
+        from Dlg import DLG_Mailer
+        dlg = DLG_Mailer.Dialog(self)
+        dlg.SetDonnees(listeDonnees, modificationAutorisee=False)
+        dlg.SetPiecesJointes([nom_doc,])
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def Menu_40(self, event):
         """ Autres types de planning """
         # Demande le type d'impression à l'utilisateur
@@ -2339,6 +2349,7 @@ class PanelPlanning(wx.Panel):
         # Initialisation des données
         dictGroupes, dictLignes, listePresences = self.InitPlanning(modeAffichage, listeIDPersonne, listeDates)
         self.listePresents = self.RecherchePresents(listeDates)
+
         if len(dictGroupes) != 0 :
             YFinDessin = dictGroupes[len(dictGroupes)][2]
             self.DCplanning.SetSizeDC(h=YFinDessin)
@@ -2439,7 +2450,7 @@ class PanelPlanning(wx.Panel):
         DB.Close()
 
         # Importation des noms des personnes pour les entetes de lignes
-        dictPersonnes = self.ImportPersonnes()
+        self.dictPersonnes = self.ImportPersonnes()
 
         dictGroupes = {}
         prevIDpersonne = None
@@ -2478,7 +2489,7 @@ class PanelPlanning(wx.Panel):
             dictGroupes[IDGroupe][4].sort #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< A voir
             posYLigne = posY
             posY += hauteurBarre + ecartLignes
-            texteLigne = dictPersonnes[IDpersonne][0] + " " + dictPersonnes[IDpersonne][1]
+            texteLigne = self.dictPersonnes[IDpersonne][0] + " " + self.dictPersonnes[IDpersonne][1]
             dictGroupes[IDGroupe][4].append((IDpersonne, datetimeDate, posYLigne, texteLigne))
 
         # Clôture le dernier groupe
@@ -2509,13 +2520,12 @@ class PanelPlanning(wx.Panel):
         """
 
         # Importation des noms des personnes pour les entetes de lignes
-        try : dictPersonnes
-        except : dictPersonnes = self.ImportPersonnes()
+        self.dictPersonnes = self.ImportPersonnes()
 
         # Création de la liste des personnes
         listePersonnes = []
         for IDpersonne in listeIDPersonne :
-            nomPersonne = dictPersonnes[IDpersonne][0] + " " + dictPersonnes[IDpersonne][1]
+            nomPersonne = self.dictPersonnes[IDpersonne][0] + " " + self.dictPersonnes[IDpersonne][1]
             listePersonnes.append((nomPersonne, IDpersonne))
         listePersonnes.sort()
 
@@ -2567,13 +2577,12 @@ class PanelPlanning(wx.Panel):
         """
 
         # Importation des noms des personnes pour les entetes de lignes
-        try : dictPersonnes
-        except : dictPersonnes = self.ImportPersonnes()
+        self.dictPersonnes = self.ImportPersonnes()
 
         # Création de la liste des personnes
         listePersonnes = []
         for IDpersonne in listeIDPersonne :
-            nomPersonne = dictPersonnes[IDpersonne][0] + " " + dictPersonnes[IDpersonne][1]
+            nomPersonne = self.dictPersonnes[IDpersonne][0] + " " + self.dictPersonnes[IDpersonne][1]
             listePersonnes.append((nomPersonne, IDpersonne))
         listePersonnes.sort()
         
@@ -2655,8 +2664,7 @@ class PanelPlanning(wx.Panel):
 
     def RechargeDictCategories(self):
         self.dictCategories = self.ImportCategories()
-##        print "MAJ dict categorie du DCplanning !"
-        
+
     def ImportCategories(self):
         """ Récupération des catégories de présences dans la base """
         DB = GestionDB.DB()
@@ -2714,56 +2722,35 @@ class PanelPlanning(wx.Panel):
 # -------------- IMPRESSION PDF Format GRAPH ---------------------------------------------------------------------
 
 class ImpressionPDFvGraph():
-    def __init__(self, orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, maxWidth, maxHeight) :
-        
-##        print "largeurEnteteLigne=", largeurEnteteLigne
-##        print "coordLigne =", coordLigne
-##        print "hauteurBarre=", hauteurBarre
-##        print "ecartLignes =", ecartLignes
-##        print "modeTexte =", modeTexte
-##        print "hauteurTitreGroupe=", hauteurTitreGroupe
-##        print "dictCategories =", dictCategories
-##        print "dictGroupes =", dictGroupes
-##        print "dictLignes =", dictLignes
-##        print "listePresences =", listePresences
-##        print "dictPresences =", dictPresences
-        
+    def __init__(self, nom_doc, orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, maxWidth, maxHeight) :
         from Utils import UTILS_Impression_presences_graph
-        UTILS_Impression_presences_graph.Impression(orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, coordLigne, hauteurBarre, ecartLignes, modeTexte)
+        UTILS_Impression_presences_graph.Impression(nom_doc, orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, coordLigne, hauteurBarre, ecartLignes, modeTexte)
 
 # -------------- IMPRESSION PDF Format TEXTE ---------------------------------------------------------------------
 
 class ImpressionPDFvTexte():
-    def __init__(self, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, maxWidth, maxHeight) :
-        
-        # IDcategorie (nom, IDcat_parent, ordre, couleur, totalHeures)
-        # [titreGroupe, posY_debut, posY_fin, nbreLignes, listeLignes]
-        #  dictLignes[(IDpersonne, datetimeDate)] = [IDgroupe, posYLigne, texteLigne, False]       # [IDgroupe, posYligne, texte, Sélectionné]
-        # IDpresence, IDpersonne, date, heureDebut, heureFin, IDcategorie, intitule, posG, posD, posYhaut, posYbas
-
-        
-        if len(dictGroupes) == 0 : 
+    def __init__(self, nom_doc, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, maxWidth, maxHeight) :
+        if len(dictGroupes) == 0 :
             dlg = wx.MessageDialog(None, _(u"Vous devez sélectionner au moins une date dans le calendrier !"), "Erreur", wx.OK)  
             dlg.ShowModal()
             dlg.Destroy() 
             return
-        
+
+        self.nom_doc = nom_doc
+
         # Tri de la liste des présences par heure de début
         if len(listePresences) != 0 :
             listePresences = sorted(listePresences, key=operator.itemgetter(3))
         
         # Création du PDF
-        
         from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
         from reportlab.rl_config import defaultPageSize
-        from reportlab.lib.units import inch, cm
         from reportlab.lib import colors
 
         PAGE_HEIGHT=defaultPageSize[1]
         PAGE_WIDTH=defaultPageSize[0]
-        nomDoc = UTILS_Fichiers.GetRepTemp("impression_planning.pdf")
-        if "win" in sys.platform : nomDoc = nomDoc.replace("/", "\\")
-        doc = SimpleDocTemplate(nomDoc)
+        if "win" in sys.platform : self.nom_doc = self.nom_doc.replace("/", "\\")
+        doc = SimpleDocTemplate(self.nom_doc)
         story = []
         
         # Style du tableau
@@ -2773,7 +2760,6 @@ class ImpressionPDFvTexte():
                             ('ALIGN', (0,1), (0,-1), 'RIGHT'), # Colonne dates alignée à droite
                             ('ALIGN', (1,1), (1,-2), 'LEFT'), # Colonne tâches alignée à gauche
                             ('ALIGN', (2,1), (2,-1), 'CENTRE'), # Colonne temps alignée au centre
-##                            ('SPAN',(0,-1),(1,-1)), # Fusionne les 2 lignes du bas pour faire case Total
                             ('ALIGN', (0,-1), (1,-1), 'RIGHT'), # Met à droite le mot 'Total :'
                             ('SPAN',(0,0),(2,0)), # Fusionne les 3 lignes du haut pour faire le titre du groupe
                             ('FONT',(0,0),(-1,-1), "Helvetica", 8), # Donne la police de caract. + taille de police 
@@ -2783,8 +2769,7 @@ class ImpressionPDFvTexte():
                             ])
             
         largeursColonnes = (150, 320, 50)
-                            
-                            
+
         # Création des groupes
         for index in range(1, len(dictGroupes)+1) :
             titreGroupe, posY_debut, posY_fin, nbreLignes, listeLignes = dictGroupes[index]
@@ -2856,11 +2841,10 @@ class ImpressionPDFvTexte():
             
         # Enregistrement du PDF
         doc.build(story)
-        
+
+    def Afficher(self):
         # Affichage du PDF
-##        os.startfile(nomDoc)
-        FonctionsPerso.LanceFichierExterne(nomDoc)
-        
+        FonctionsPerso.LanceFichierExterne(self.nom_doc)
 
     def formateHeure(self, heure):
         heures = heure.hour

@@ -728,7 +728,11 @@ class MyCheckListBox(wx.CheckListBox):
     
     def GetListIDpersonnes(self):
         listeID = []
-        for index in self.GetChecked() :
+        if 'phoenix' in wx.PlatformInfo:
+            listeChecked = self.GetCheckedItems()
+        else:
+            listeChecked = self.GetChecked()
+        for index in listeChecked:
             nomPersonne, IDpersonne = self.listePersonnes[index]
             listeID.append(IDpersonne)
         return listeID

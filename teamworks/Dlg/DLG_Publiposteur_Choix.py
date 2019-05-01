@@ -265,23 +265,7 @@ class ToolBook(wx.Toolbook):
             listeContrats.append( (key, dictGroupes[key]) )
         return listeContrats
 
-## "candidatures":[         ("IDcandidature", "INTEGER PRIMARY KEY AUTOINCREMENT", _(u"ID"), _(u"ID de la candidature")),
-##                                    ("IDcandidat", "INTEGER", _(u"IDcandidat"), _(u"ID du candidat")),
-##                                    ("IDpersonne", "INTEGER", _(u"IDpersonne"), _(u"ID du salarié")),
-##                                    ("date_depot", "DATE", _(u"Date de la candidature"), _(u"Date de la candidature")),
-##                                    ("IDtype", "INTEGER", _(u"IDtype"), _(u"ID du type de candidature")),
-##                                    ("acte_remarques", "VARCHAR(300)", _(u"Remarques"), _(u"Remarques sur le dépôt de candidature")),
-##                                    ("IDemploi", "INTEGER", _(u"IDemploi"), _(u"ID de l'emploi")),
-##                                    ("periodes_remarques", "VARCHAR(300)", _(u"Remarques"), _(u"Remarques sur les disponibilités")),
-##                                    ("poste_remarques", "VARCHAR(300)", _(u"Remarques"), _(u"Remarques sur le poste de la candidature")),
-##                                    ("IDdecision", "INTEGER", _(u"IDdecision"), _(u"ID de la décision")),
-##                                    ("decision_remarques", "VARCHAR(300)", _(u"Remarques"), _(u"Remarques sur la décision")),
-##                                    ("reponse_obligatoire", "INTEGER", _(u"Reponse obligatoire"), _(u"Réponse obligatoire (0 ou 1)")),
-##                                    ("reponse", "INTEGER", _(u"Reponse"), _(u"Réponse de la candidature (0 ou 1)")),
-##                                    ("date_reponse", "DATE", _(u"Date de la réponse"), _(u"Date de la réponse")),
-##                                    ("IDtype_reponse", "INTEGER", _(u"IDtype"), _(u"ID du type de réponse")),
-##                                    ], # Liste des candidatures du candidat
-                                    
+
 
 class Dialog(wx.Dialog):
     def __init__(self, parent):
