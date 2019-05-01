@@ -718,7 +718,7 @@ class ListView(ObjectListView):
     def CourrierPublipostage(self, mode="unique"):
         if mode == "unique" :
             if len(self.Selection()) == 0:
-                dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner une personne dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
+                dlg = wx.MessageDialog(self, _(u"Vous devez d'abord sélectionner un individu dans la liste."), "Information", wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False

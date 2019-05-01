@@ -731,7 +731,7 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
     def Remplissage(self):
         self.ClearAll()
         # Création des colonnes
-        self.InsertColumn(0, "Personnes")
+        self.InsertColumn(0, "Individus")
 
         # Remplissage avec les valeurs
         for key, valeurs in self.dictPersonnes.items():

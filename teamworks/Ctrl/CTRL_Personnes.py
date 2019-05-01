@@ -315,7 +315,7 @@ class PanelPersonnes(wx.Panel):
         self.bouton_export_excel = wx.BitmapButton(self.window_D, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Excel.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_aide = wx.BitmapButton(self.window_D, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_ANY))
         
-        self.barreTitre_liste = FonctionsPerso.BarreTitre(self.window_D,  _(u"Liste des personnes"), _(u"Liste des personnes"))
+        self.barreTitre_liste = FonctionsPerso.BarreTitre(self.window_D,  _(u"Liste des individus"), _(u"Liste des individus"))
         
         # Diminution de la taille de la police sous linux
         if "linux" in sys.platform :
@@ -557,7 +557,7 @@ class BarreRecherche(wx.SearchCtrl):
         wx.SearchCtrl.__init__(self, parent, size=(-1,-1), style=wx.TE_PROCESS_ENTER)
         self.parent = parent
 
-        self.SetDescriptiveText(_(u"Rechercher une personne dans la liste"))
+        self.SetDescriptiveText(_(u"Rechercher un individu"))
         self.ShowSearchButton(True)
         
         self.listView = self.GetParent().GetGrandParent().listCtrl_personnes

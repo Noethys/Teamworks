@@ -43,6 +43,12 @@ class CTRL(wx.Button):
         self.margesImage = margesImage
         self.positionImage = positionImage
         self.margesTexte = margesTexte
+
+        # Vérifie que l'image est bien dans le dossier static
+        if "Static" not in self.cheminImage:
+            self.cheminImage = Chemins.GetStaticPath(self.cheminImage)
+
+        # MAJ
         self.MAJ() 
     
     def MAJ(self):

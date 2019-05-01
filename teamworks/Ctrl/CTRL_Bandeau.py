@@ -27,6 +27,10 @@ class MyHtml(html.HtmlWindow):
 class Bandeau(wx.Panel):
     def __init__(self, parent, titre="", texte="", hauteurHtml=25, nomImage=None):
         wx.Panel.__init__(self, parent, id=-1, style=wx.TAB_TRAVERSAL)
+        # Vérifie que l'image est bien dans le dossier static
+        if "Static" not in nomImage:
+            nomImage = Chemins.GetStaticPath(nomImage)
+
         img = wx.Bitmap(nomImage, wx.BITMAP_TYPE_ANY)
         self.image = wx.StaticBitmap(self, -1, img)
         self.ctrl_titre = wx.StaticText(self, -1, titre)

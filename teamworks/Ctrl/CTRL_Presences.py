@@ -451,7 +451,7 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
         self.ClearAll()
 
         # Création des colonnes
-        self.InsertColumn(0, "Personnes")
+        self.InsertColumn(0, "Individus")
 
         # Remplissage avec les valeurs
         for key, valeurs in self.parent.dictPersonnes.items():

@@ -955,7 +955,7 @@ class BarreRecherche(wx.SearchCtrl):
         wx.SearchCtrl.__init__(self, parent, size=(-1,-1), style=wx.TE_PROCESS_ENTER)
         self.parent = parent
 
-        self.SetDescriptiveText(_(u"Rechercher une personne dans la liste"))
+        self.SetDescriptiveText(_(u"Rechercher un individu"))
         self.ShowSearchButton(True)
         
         self.listView = self.GetParent().GetGrandParent().listCtrl_candidats

@@ -10,11 +10,24 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-import FonctionsPerso
-import os
+from wx.lib import platebtn
 
-##import wx.lib.platebtn as platebtn
-from Ctrl import CTRL_Platebtn # L'event ON ERASE BACKGROUND a été désactivé car il faisait planter l'affichage du fond du bouton sur wx 2.9.4
+
+# Pour contrer bug sur platebtn lors de la fermeture de la fenêtre
+class MyPlateBtn(platebtn.PlateButton):
+    def __init__(self, *args, **kwds):
+        platebtn.PlateButton.__init__(self, *args, **kwds)
+
+    def _SetState(self, state):
+        self._state['pre'] = self._state['cur']
+        self._state['cur'] = state
+        try:
+            if wx.Platform == '__WXMSW__':
+                self.Parent.RefreshRect(self.Rect, False)
+            else:
+                self.Refresh()
+        except:
+            pass
 
 
 
@@ -39,11 +52,10 @@ class Dialog(wx.Dialog):
             [ 5, "", wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Bienvenue_exemple.png"), wx.BITMAP_TYPE_ANY), _(u"Charger le fichier Exemple") ],
             [ 6, "", wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Bienvenue_dernier.png"), wx.BITMAP_TYPE_ANY), _(u"Charger le dernier fichier ouvert : %s") % nomDernierFichier ],
             ]
-        
-        bstyle = CTRL_Platebtn.PB_STYLE_NOBG #| platebtn.PB_STYLE_GRADIENT
+
         self.listeBoutons = []
         for index, label, img, infobulle in self.listeCommandes :
-            bouton = CTRL_Platebtn.PlateButton(self, index, label, img, style=bstyle)
+            bouton = MyPlateBtn(self, index, label, img)
             bouton.SetToolTip(wx.ToolTip(infobulle))
             self.Bind(wx.EVT_BUTTON, self.OnBoutonCommande, bouton)
             bouton.SetPressColor(wx.Colour(255, 255, 245))
@@ -116,6 +128,7 @@ class Dialog(wx.Dialog):
     def OnBoutonCommande(self, event):
         self.choix = event.GetId()
         # Ferme la boîte de dialogue
+        self.bouton_ok.SetFocus()
         self.EndModal(wx.ID_OK)
 
     def OnBoutonOk(self, event):

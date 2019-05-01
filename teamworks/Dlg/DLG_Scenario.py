@@ -153,7 +153,7 @@ class Dialog(wx.Dialog):
         self.SetIcon(_icon)
         self.ctrl_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom pour le scénario")))
         self.ctrl_description.SetToolTip(wx.ToolTip(_(u"Saisissez ici une description claire du scénario (optionnel)")))
-        self.ctrl_personne.SetToolTip(wx.ToolTip(_(u"Sélectionnez une personne dans la liste proposée")))
+        self.ctrl_personne.SetToolTip(wx.ToolTip(_(u"Sélectionnez un individu dans la liste proposée")))
         self.ctrl_date_debut.SetToolTip(wx.ToolTip(_(u"Saisissez la date de début de période")))
         self.ctrl_date_fin.SetToolTip(wx.ToolTip(_(u"Saisissez la date de fin de période")))
         self.ctrl_toutes_categories.SetToolTip(wx.ToolTip(_(u"Cochez cette option pour inclure dans le scénario \ntoutes les catégories pour lesquelles des présences \nont été enregistrées sur la période du scénario.")))
@@ -415,7 +415,7 @@ class Dialog(wx.Dialog):
         
         valeur = self.GetIDpersonne()
         if valeur == None :
-            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner une personne dans la liste proposée !"), "Erreur", wx.OK|wx.ICON_ERROR)  
+            dlg = wx.MessageDialog(self, _(u"Vous devez obligatoirement sélectionner un individu dans la liste proposée !"), "Erreur", wx.OK|wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             self.ctrl_personne.SetFocus()

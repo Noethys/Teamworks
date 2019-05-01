@@ -208,26 +208,16 @@ class Panel(wx.Panel):
             else:
                 etat = self.SauvegardeModif()
             if etat == "PasOk" : return
-            
-            # MAJ de la page Présences de la fiche individuelle si elle est ouverte
-            if self.panelPlanning != None : 
-                self.panelPlanning.MAJafterModif()
-            else :
-                if self.GetGrandParent().GetName() == "panel_pagePresences" :
-                    self.GetGrandParent().MAJpanel()
-                # MAJ du DCplanning
-                if self.GetGrandParent().GetName() == "panel_widgetPlanning" :
-                    self.GetGrandParent().MAJafterModif()
-                # Si appellée à partir de la fiche individuelle
-                if self.GetGrandParent().GetName() == "frm_saisiePresences_FicheInd" :
-                    print("ok")
-        
+
         # if self.mode == "modele" :
         #     etat = self.SauvegardeModele()
         #     if etat == "PasOk" : return
              
         # Fermeture de la fenêtre
-        self.parent.EndModal(wx.ID_OK)
+        try:
+            self.parent.EndModal(wx.ID_OK)
+        except:
+            self.GetGrandParent().EndModal(wx.ID_OK)
         
     def ValidationDonnees(self):
         """ Validation des données """

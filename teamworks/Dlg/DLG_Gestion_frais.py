@@ -25,7 +25,7 @@ class Dialog(wx.Dialog):
         self.nomPersonne = None
         
         self.panel_base = wx.Panel(self, -1)
-        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Veuillez sélectionner une personne dans la liste pour afficher les déplacements et remboursements correspondants :"))
+        self.label_intro = wx.StaticText(self.panel_base, -1, _(u"Veuillez sélectionner un individu dans la liste pour afficher les déplacements et remboursements correspondants :"))
         self.staticBox_selection = wx.StaticBox(self.panel_base, -1, _(u"Sélection"))
         
         # Filtres d'affichage

@@ -501,7 +501,7 @@ class Dialog(wx.Dialog):
         self.staticbox_mode = wx.StaticBox(self.panel, -1, _(u"Mode d'affichage"))
         self.staticbox_periode = wx.StaticBox(self.panel, -1, _(u"Période"))
         self.staticbox_options = wx.StaticBox(self.panel, -1, _(u"Options d'affichage"))
-        self.staticbox_personnes = wx.StaticBox(self.panel, -1, _(u"Personnes"))
+        self.staticbox_personnes = wx.StaticBox(self.panel, -1, _(u"Individus"))
         self.staticbox_tableau = wx.StaticBox(self.panel, -1, _(u"Statistiques"))
         
         # Mode d'affichage
@@ -2011,7 +2011,7 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
     def Remplissage(self):
         self.ClearAll()
         # Création des colonnes
-        self.InsertColumn(0, "Personnes")
+        self.InsertColumn(0, "Individus")
 
         # Remplissage avec les valeurs
         self.activeCheck = False

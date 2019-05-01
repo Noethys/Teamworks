@@ -131,7 +131,7 @@ class ToolBook(wx.Toolbook):
         self.panelCandidats.MAJ() 
         self.panelCandidatures.MAJ() 
         
-        self.AddPage(self.panelPersonnes, _(u"Personnes"), imageId=img1)
+        self.AddPage(self.panelPersonnes, _(u"Individus"), imageId=img1)
         self.AddPage(self.panelContrats, _(u"Contrats"), imageId=img2)
         self.AddPage(self.panelCandidats, _(u"Candidats"), imageId=img3)
         self.AddPage(self.panelCandidatures, _(u"Candidatures"), imageId=img4)
