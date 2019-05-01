@@ -22,7 +22,7 @@ class Panel(wx.Panel):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL)
         
         self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Les fonctions des candidatures"), u"")
-        texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer les fonctions qui sont utilisées\ndans la création des candidatures. Exemples : 'Animateur C.V.L.', 'Personnel\nde service', 'Infirmière', etc...")
+        texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer les fonctions qui sont utilisées dans la création des\ncandidatures. Exemples : 'Animateur C.V.L.', 'Personnel de service', 'Infirmière', etc...")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         self.listCtrl = ListCtrl(self)
         self.listCtrl.SetMinSize((20, 20)) 
@@ -464,100 +464,62 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
 
 
 
-
 class Dialog(wx.Dialog):
-    def __init__(self, parent, title="" ):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX)
         self.parent = parent
+
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
         self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
-        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
+        self.bouton_fermer = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Fermer"), cheminImage=Chemins.GetStaticPath("Images/32x32/Fermer.png"))
         self.__set_properties()
         self.__do_layout()
-        
+
         self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
-        self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
-        self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-        self.SetMinSize((450, 350))
-        self.SetSize((450, 350))
+        self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_fermer)
 
     def __set_properties(self):
-        self.SetTitle(_(u"Gestion des fonctions de candidatures"))
-        if 'phoenix' in wx.PlatformInfo:
-            _icon = wx.Icon()
-        else:
-            _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-        self.SetIcon(_icon)
+        self.SetTitle(_(u"Gestion des fonctions"))
         self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
-        self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
-        self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
-        self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        
+        self.bouton_fermer.SetToolTip(wx.ToolTip(_(u"Cliquez pour fermer")))
+        self.SetMinSize((600, 500))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=0, hgap=0)
-        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
         sizer_pages = wx.BoxSizer(wx.VERTICAL)
-        grid_sizer_base.Add(sizer_pages, 1, wx.ALL|wx.EXPAND, 0)
+        grid_sizer_base.Add(sizer_pages, 1, wx.ALL | wx.EXPAND, 0)
         sizer_pages.Add(self.panel_contenu, 1, wx.EXPAND | wx.TOP, 10)
+        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
         grid_sizer_boutons.Add(self.bouton_aide, 0, 0, 0)
         grid_sizer_boutons.Add((20, 20), 0, wx.EXPAND, 0)
-        grid_sizer_boutons.Add(self.bouton_ok, 0, 0, 0)
-        grid_sizer_boutons.Add(self.bouton_annuler, 0, 0, 0)
+        grid_sizer_boutons.Add(self.bouton_fermer, 0, 0, 0)
         grid_sizer_boutons.AddGrowableCol(1)
-        grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT|wx.BOTTOM|wx.RIGHT|wx.EXPAND, 10)
+        grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT | wx.BOTTOM | wx.RIGHT | wx.EXPAND, 10)
         self.panel_base.SetSizer(grid_sizer_base)
         grid_sizer_base.AddGrowableRow(0)
         grid_sizer_base.AddGrowableCol(0)
         sizer_base.Add(self.panel_base, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_base)
+        sizer_base.Fit(self)
         self.Layout()
-        self.Centre()
+        self.CenterOnScreen()
         self.sizer_pages = sizer_pages
 
-    def OnClose(self, event):
-        event.Skip()
-        
     def Onbouton_aide(self, event):
         from Utils import UTILS_Aide
-        UTILS_Aide.Aide("Lesclassifications")
-        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
-            
-    def Onbouton_annuler(self, event):
-        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Fonctions
-        self.MAJparents()
-        # Fermeture
-        self.Destroy()
-        
-    def Onbouton_ok(self, event):
-        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Fonctions
-        self.MAJparents()
-        # Fermeture
-        self.Destroy()
+        UTILS_Aide.Aide("")
 
-    def MAJparents(self):
-        if FonctionsPerso.FrameOuverte("panel_candidature") != None :
-            self.GetParent().MAJ_fonctions()
-##        if FonctionsPerso.FrameOuverte("frm_creation_modele_contrats") != None :
-##            self.GetParent().MAJ_choice_Class()    
-        
-        
-        
+    def Onbouton_annuler(self, event):
+        self.EndModal(wx.ID_CANCEL)
+
+
 if __name__ == "__main__":
     app = wx.App(0)
     #wx.InitAllImageHandlers()
-    frame_1 = Dialog(None, "")
+    frame_1 = Dialog(None)
     app.SetTopWindow(frame_1)
     frame_1.Show()
     app.MainLoop()

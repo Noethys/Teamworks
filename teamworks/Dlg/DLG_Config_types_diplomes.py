@@ -13,16 +13,17 @@ import six
 import wx.lib.mixins.listctrl  as  listmix
 import GestionDB
 import FonctionsPerso
+from Ctrl import CTRL_Bouton_image
 from Utils import UTILS_Adaptations
 
 
 
-class Panel_TypesDiplomes(wx.Panel):
+class Panel(wx.Panel):
     def __init__(self, parent, ID=-1):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL)
         
         self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Les types de qualifications"), u"")
-        texteIntro = _(u"Vous pouvez ici ajouter, modifier ou supprimer des types de qualifications.\nExemple : 'B.A.F.A', 'A.F.P.S.', etc... N'oubliez pas de créer ensuite créer le\ntype de pièces correspondants.")
+        texteIntro = _(u"Vous pouvez ici ajouter, modifier ou supprimer des types de qualifications. Exemples : 'B.A.F.A', 'A.F.P.S.', etc... N'oubliez pas de\ncréer ensuite créer le type de pièces correspondants.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
         self.listCtrl_TypesDiplomes = ListCtrlTypesDiplomes(self)
@@ -31,24 +32,17 @@ class Panel_TypesDiplomes(wx.Panel):
         self.bouton_ajouter = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_modifier = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Modifier.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_supprimer = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Supprimer.png"), wx.BITMAP_TYPE_ANY))
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_ANY))
-##        self.label_conclusion = wx.StaticText(self, -1, "Remarques...")
 
         self.__set_properties()
         self.__do_layout()
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAjouter, self.bouton_ajouter)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonModifier, self.bouton_modifier)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonSupprimer, self.bouton_supprimer)
-        self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
-              
+
     def __set_properties(self):
         self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer un nouveau type de qualification")))
-        self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
         self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier un type de qualification sélectionné dans la liste")))
-        self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
         self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer un type de qualification sélectionné dans la liste")))
-        self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -60,24 +54,19 @@ class Panel_TypesDiplomes(wx.Panel):
         grid_sizer_boutons.Add(self.bouton_ajouter, 0, 0, 0)
         grid_sizer_boutons.Add(self.bouton_modifier, 0, 0, 0)
         grid_sizer_boutons.Add(self.bouton_supprimer, 0, 0, 0)
-        grid_sizer_boutons.Add((5, 5), 0, 0, 0)
-        grid_sizer_boutons.Add(self.bouton_aide, 0, 0, 0)
         grid_sizer_boutons.AddGrowableRow(3)
         grid_sizer_base2.Add(grid_sizer_boutons, 1, wx.EXPAND, 0)
         grid_sizer_base2.AddGrowableRow(0)
         grid_sizer_base2.AddGrowableCol(0)
         grid_sizer_base.Add(grid_sizer_base2, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
-##        grid_sizer_base.Add(self.label_conclusion, 0, 0, 0)
         self.SetSizer(grid_sizer_base)
         grid_sizer_base.Fit(self)
         grid_sizer_base.AddGrowableRow(2)
         grid_sizer_base.AddGrowableCol(0)
         self.SetAutoLayout(True)
-        
         self.grid_sizer_base = grid_sizer_base
         self.grid_sizer_base2 = grid_sizer_base2
-        
-                
+
     def OnBoutonAjouter(self, event):
         self.Ajouter()
 
@@ -205,10 +194,7 @@ class Panel_TypesDiplomes(wx.Panel):
     def MAJpanel(self):
         self.listCtrl_TypesDiplomes.MAJListeCtrl()
         
-    def OnBoutonAide(self, event):
-        from Utils import UTILS_Aide
-        UTILS_Aide.Aide("Lestypesdequalifications")
-        
+
 
 class ListCtrlTypesDiplomes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorterMixin):
     def __init__(self, parent):
@@ -246,7 +232,7 @@ class ListCtrlTypesDiplomes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
         self.InsertColumn(0, _(u"     ID"))
         self.SetColumnWidth(0, 0)
         self.InsertColumn(1, _(u"Nom de la qualification"))
-        self.SetColumnWidth(1, 250)
+        self.SetColumnWidth(1, 300)
         self.InsertColumn(2, _(u"Nb titulaires"))
         self.SetColumnWidth(2, 80)        
 
@@ -401,24 +387,61 @@ class ListCtrlTypesDiplomes(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix
         self.parent.Supprimer()
 
 
+class Dialog(wx.Dialog):
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX)
+        self.parent = parent
 
+        self.panel_base = wx.Panel(self, -1)
+        self.panel_contenu = Panel(self.panel_base)
+        self.panel_contenu.barreTitre.Show(False)
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
+        self.bouton_fermer = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Fermer"), cheminImage=Chemins.GetStaticPath("Images/32x32/Fermer.png"))
+        self.__set_properties()
+        self.__do_layout()
 
-class MyFrame(wx.Frame):
-    def __init__(self, parent, ID, title=""):
-        wx.Frame.__init__(self, parent, ID, title, style=wx.DEFAULT_FRAME_STYLE)
-        
-        panel = Panel_TypesDiplomes(self)
-        if 'phoenix' in wx.PlatformInfo:
-            _icon = wx.Icon()
-        else :
-            _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-        self.SetIcon(_icon)
+        self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
+        self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_fermer)
+
+    def __set_properties(self):
+        self.SetTitle(_(u"Gestion des qualifications"))
+        self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
+        self.bouton_fermer.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
+        self.SetMinSize((750, 600))
+
+    def __do_layout(self):
+        sizer_base = wx.BoxSizer(wx.VERTICAL)
+        grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=0, hgap=0)
+        sizer_pages = wx.BoxSizer(wx.VERTICAL)
+        grid_sizer_base.Add(sizer_pages, 1, wx.ALL | wx.EXPAND, 0)
+        sizer_pages.Add(self.panel_contenu, 1, wx.EXPAND | wx.TOP, 10)
+        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
+        grid_sizer_boutons.Add(self.bouton_aide, 0, 0, 0)
+        grid_sizer_boutons.Add((20, 20), 0, wx.EXPAND, 0)
+        grid_sizer_boutons.Add(self.bouton_fermer, 0, 0, 0)
+        grid_sizer_boutons.AddGrowableCol(1)
+        grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT | wx.BOTTOM | wx.RIGHT | wx.EXPAND, 10)
+        self.panel_base.SetSizer(grid_sizer_base)
+        grid_sizer_base.AddGrowableRow(0)
+        grid_sizer_base.AddGrowableCol(0)
+        sizer_base.Add(self.panel_base, 1, wx.EXPAND, 0)
+        self.SetSizer(sizer_base)
+        sizer_base.Fit(self)
+        self.Layout()
+        self.CenterOnScreen()
+        self.sizer_pages = sizer_pages
+
+    def Onbouton_aide(self, event):
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("Lesclassifications")
+
+    def Onbouton_annuler(self, event):
+        self.EndModal(wx.ID_CANCEL)
+
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    frame_1 = MyFrame(None, -1)
-    app.SetTopWindow(frame_1)
-    frame_1.Show()
+    dlg = Dialog(None)
+    dlg.ShowModal()
+    dlg.Destroy()
     app.MainLoop()

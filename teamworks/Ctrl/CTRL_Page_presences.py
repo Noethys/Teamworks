@@ -119,6 +119,7 @@ class Panel(wx.Panel):
         dlg = Dialog_saisie(self, IDpersonne=self.IDpersonne)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJpanel()
 
     def OnBoutonModif(self, event):
         self.Modifier()
@@ -144,6 +145,7 @@ class Panel(wx.Panel):
         dlg.ShowModal()
         dlg.Destroy()
         self.listCtrl.indexEnCours = index
+        self.MAJpanel()
 
     def OnBoutonSuppr(self, event):
         self.Supprimer()

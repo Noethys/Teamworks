@@ -31,7 +31,6 @@ from Ctrl import CTRL_Accueil
 from Ctrl import CTRL_Personnes
 from Ctrl import CTRL_Presences
 from Ctrl import CTRL_Recrutement
-from Ctrl import CTRL_Configuration
 
 from Dlg import DLG_Config_sauvegarde
 from Dlg import DLG_Enregistrement
@@ -79,16 +78,23 @@ class Toolbook(wx.Toolbook):
         self.img_personnes  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Personnes.png"), wx.BITMAP_TYPE_PNG))
         self.img_presences  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Horloge.png"), wx.BITMAP_TYPE_PNG))
         self.img_recrutement  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Recrutement.png"), wx.BITMAP_TYPE_PNG))
-        self.img_configuration  = il.Add(wx.Bitmap(Chemins.GetStaticPath("Images/32x32/Configuration.png"), wx.BITMAP_TYPE_PNG))
         self.AssignImageList(il)
         
         # Création des pages
         self.AddPage(CTRL_Accueil.Panel(self), _(u"Accueil"), imageId=self.img_accueil)
-        self.AddPage(CTRL_Personnes.PanelPersonnes(self), _(u"Personnes"), imageId=self.img_personnes)
+        self.AddPage(CTRL_Personnes.PanelPersonnes(self), _(u"Individus"), imageId=self.img_personnes)
         self.AddPage(CTRL_Presences.PanelPresences(self), _(u"Présences"), imageId=self.img_presences)
         self.AddPage(CTRL_Recrutement.Panel(self), _(u"Recrutement"), imageId=self.img_recrutement)
-        self.AddPage(CTRL_Configuration.Panel(self), _(u"Configuration"), imageId=self.img_configuration)
-        
+
+        # Mémorise les index des pages
+        self.dict_pages_by_index = {
+            "accueil" : 0,
+            "individus" : 1,
+            "personnes" : 1,
+            "presences" : 2,
+            "recrutement" : 3,
+            }
+
         # Met le texte à droite dans la toolbar
         tb = self.GetToolBar()        
         tb.SetWindowStyleFlag(wx.TB_HORZ_TEXT)
@@ -97,7 +103,11 @@ class Toolbook(wx.Toolbook):
         self.Bind(wx.EVT_TOOLBOOK_PAGE_CHANGED, self.OnPageChanged)
         self.Bind(wx.EVT_TOOLBOOK_PAGE_CHANGING, self.OnPageChanging)
 
-        
+    def MAJ_page_si_affichee(self, code=""):
+        index = self.dict_pages_by_index[code]
+        if index == self.GetSelection():
+            self.MAJ_panel(index)
+
     def MAJ_panel(self, numPage=0):
         """ Test de MAJ des panels lors d'un changement d'onglet """
         self.Freeze() # Gèle l'affichage pour éviter des clignements
@@ -117,8 +127,7 @@ class Toolbook(wx.Toolbook):
         toolBar.EnableTool(2, etat) # Personnes
         toolBar.EnableTool(3, etat) # Présences
         toolBar.EnableTool(4, etat) # Recrutement
-        toolBar.EnableTool(5, etat) # Configuration
-        
+
         self.Thaw()
 
     def OnPageChanged(self, event):
@@ -302,6 +311,8 @@ class MyFrame(wx.Frame):
                 "-",
                 {"code": "creer_sauvegarde", "label": _(u"Créer une sauvegarde"), "infobulle": _(u"Créer une sauvegarde"), "image": "Images/16x16/Sauvegarder.png", "action": self.On_fichier_sauvegarder},
                 {"code": "restaurer_sauvegarde", "label": _(u"Restaurer une sauvegarde"), "infobulle": _(u"Restaurer une sauvegarde"), "image": "Images/16x16/Restaurer.png", "action": self.On_fichier_restaurer},
+                {"code": "sauvegardes_auto", "label": _(u"Sauvegardes automatiques"), "infobulle": _(u"Paramétrage des sauvegardes automatiques"), "image": "Images/16x16/Sauvegarder_param.png", "action": self.On_fichier_Sauvegardes_auto},
+
                 "-",
                 {"code": "convertir_fichier_reseau", "label": _(u"Convertir en fichier réseau"), "infobulle": _(u"Convertir le fichier en mode réseau"), "image": "Images/16x16/Conversion_reseau.png", "action": self.On_fichier_convertir_reseau, "actif": False},
                 {"code": "convertir_fichier_local", "label": _(u"Convertir en fichier local"), "infobulle": _(u"Convertir le fichier en mode local"), "image": "Images/16x16/Conversion_local.png", "action": self.On_fichier_convertir_local, "actif": False},
@@ -316,8 +327,47 @@ class MyFrame(wx.Frame):
                 {"code": "enregistrement", "label": _(u"Enregistrement"), "infobulle": _(u"Enregistrement"), "image": "Images/16x16/Cle.png", "action": self.On_param_enregistrement},
                 "-",
                 {"code": "gadgets", "label": _(u"Gestion des Gadgets de la page d'accueil"), "infobulle": _(u"Gestion des Gadgets de la page d'accueil"), "image": "Images/16x16/Calendrier_ajout.png", "action": self.On_param_gadgets},
-                ],
+                "-",
+                {"code": "acces_reseau", "label": _(u"Accès réseau"), "infobulle": _(u"Paramétrage des accès réseau"), "image": "Images/16x16/Utilisateur_reseau.png", "action": self.On_param_utilisateurs_reseau},
+                {"code": "adresses_exp_mails", "label": _(u"Adresses d'expédition d'Emails"), "infobulle": _(u"Paramétrage des adresses d'expédition d'Emails"), "image": "Images/16x16/Emails_exp.png", "action": self.On_param_emails_exp},
+                {"code": "protection_mdp", "label": _(u"Protection par mot de passe"), "infobulle": _(u"Paramétrage de la protection par mot de passe"), "image": "Images/16x16/Cadenas.png", "action": self.On_protection_mdp},
+                "-",
+                {"code": "menu_parametrage_individus", "label": _(u"Individus"), "items": [
+                    {"code": "individus_questionnaire", "label": _(u"Le questionnaire"), "infobulle": _(u"Paramétrage des questionnaires"), "image": "Images/16x16/Questionnaire.png", "action": self.On_param_questionnaire},
+                    {"code": "individus_qualifications", "label": _(u"Les types de qualifications"), "infobulle": _(u"Paramétrage des types de qualifications"), "image": "Images/16x16/Personnes.png", "action": self.On_param_qualifications},
+                    {"code": "individus_pieces", "label": _(u"Les types de pièces"), "infobulle": _(u"Paramétrage des types de pièces"), "image": "Images/16x16/Personnes.png", "action": self.On_param_pieces},
+                    {"code": "individus_situations", "label": _(u"Les types de situations"), "infobulle": _(u"Paramétrage des types de situations"), "image": "Images/16x16/Personnes.png", "action": self.On_param_situations},
+                    {"code": "individus_pays", "label": _(u"Les pays et nationalités"), "infobulle": _(u"Paramétrage des pays et nationalités"), "image": "Images/16x16/Drapeau.png", "action": self.On_param_pays},
+                    ],
+                },
+                {"code": "menu_parametrage_presences", "label": _(u"Planning"), "items": [
+                    {"code": "individus_categories_presences", "label": _(u"Les catégories de présences"), "infobulle": _(u"Paramétrage des catégories de présence"), "image": "Images/16x16/Presences.png", "action": self.On_param_categories_presence},
+                    ],
+                },
+                {"code": "menu_parametrage_contrats", "label": _(u"Contrats"), "items": [
+                    {"code": "contrats_classifications", "label": _(u"Classifications"), "infobulle": _(u"Paramétrage des classifications"), "image": "Images/16x16/Document.png", "action": self.On_param_classifications},
+                    {"code": "contrats_champs_", "label": _(u"Les champs de contrats"), "infobulle": _(u"Paramétrage des champs des contrats"), "image": "Images/16x16/Document.png", "action": self.On_param_champs_contrats},
+                    {"code": "contrats_modeles", "label": _(u"Les modèles de contrats"), "infobulle": _(u"Paramétrage des modèles des contrats"), "image": "Images/16x16/Document.png", "action": self.On_param_modeles_contrats},
+                    {"code": "contrats_types", "label": _(u"Les types de contrats"), "infobulle": _(u"Paramétrage des types de contrats"), "image": "Images/16x16/Document.png", "action": self.On_param_types_contrats},
+                    {"code": "contrats_valeurs_points", "label": _(u"Les valeurs de points"), "infobulle": _(u"Paramétrage des valeurs de points"), "image": "Images/16x16/Document.png", "action": self.On_param_val_points},
+                    ],
                  },
+                {"code": "menu_parametrage_recrutement", "label": _(u"Recrutement"), "items": [
+                    {"code": "recrutement_entretiens", "label": _(u"Protection des entretiens"), "infobulle": _(u"Paramétrage de la protection des entretiens"), "image": "Images/16x16/Mail.png", "action": self.On_param_entretiens},
+                    {"code": "recrutement_fonctions", "label": _(u"Les fonctions"), "infobulle": _(u"Paramétrage fonctions"), "image": "Images/16x16/Mail.png", "action": self.On_param_fonctions},
+                    {"code": "recrutement_affectations", "label": _(u"Les affectations"), "infobulle": _(u"Paramétrage des affectations"), "image": "Images/16x16/Mail.png", "action": self.On_param_affectations},
+                    {"code": "recrutement_diffuseurs", "label": _(u"Les diffuseurs"), "infobulle": _(u"Paramétrage des diffuseurs"), "image": "Images/16x16/Mail.png", "action": self.On_param_diffuseurs},
+                    {"code": "recrutement_offres", "label": _(u"Les offres d'emploi"), "infobulle": _(u"Paramétrage des offres d'emploi"), "image": "Images/16x16/Mail.png", "action": self.On_param_offres},
+                    ],
+                 },
+                "-",
+                {"code": "menu_parametrage_calendrier", "label": _(u"Calendrier"), "items": [
+                    {"code": "vacances", "label": _(u"Vacances"), "infobulle": _(u"Paramétrage des vacances"), "image": "Images/16x16/Calendrier.png", "action": self.On_param_vacances},
+                    {"code": "feries", "label": _(u"Jours fériés"), "infobulle": _(u"Paramétrage des jours fériés"), "image": "Images/16x16/Jour.png", "action": self.On_param_feries},
+                    ],
+                },
+            ],
+             },
 
             # Outils
             {"code": "menu_outils", "label": _(u"Outils"), "items": [
@@ -330,7 +380,15 @@ class MyFrame(wx.Frame):
                 {"code": "mail", "label": _(u"Envoyer un mail groupé avec le client de messagerie"), "infobulle": _(u"Envoyer un mail groupé avec le client de messagerie"), "image": "Images/16x16/Mail.png", "action": self.On_outils_mail},
                 {"code": "publipostage", "label": _(u"Créer des courriers ou des emails par publipostage"), "infobulle": _(u"Créer des courriers ou des emails par publipostage"), "image": "Images/16x16/Mail.png", "action": self.On_outils_publipostage},
                 "-",
-                {"code": "teamword", "label": _(u"Lancer Teamword, l'éditeur de texte"), "infobulle": _(u"Lancer Teamword, l'éditeur de texte"), "image": "Images/16x16/Document.png", "action": self.On_outils_teamword},
+                {"code": "editeur_emails", "label": _(u"Editeur d'Emails"), "infobulle": _(u"Editeur d'Emails"), "image": "Images/16x16/Editeur_email.png", "action": self.On_outils_emails},
+                {"code": "teamword", "label": _(u"Teamword, l'éditeur de texte"), "infobulle": _(u"Teamword, l'éditeur de texte"), "image": "Images/16x16/Document.png", "action": self.On_outils_teamword},
+                "-",
+                {"code": "menu_outils_utilitaires", "label": _(u"Utilitaires administrateur"), "items": [
+                    {"code": "ouvrir_rep_utilisateur", "label": _(u"Ouvrir le répertoire utilisateur"), "infobulle": _(u"Ouvrir le répertoire utilisateur"), "image": "Images/16x16/Dossier.png", "action": self.On_outils_ouvrir_rep_utilisateur},
+                    {"code": "ouvrir_rep_donnees", "label": _(u"Ouvrir le répertoire des données"), "infobulle": _(u"Ouvrir le répertoire des données"), "image": "Images/16x16/Dossier.png", "action": self.On_outils_ouvrir_rep_donnees},
+                    {"code": "ouvrir_rep_modeles", "label": _(u"Ouvrir le répertoire des modèles de documents"), "infobulle": _(u"Ouvrir le répertoire des modèles de documents"), "image": "Images/16x16/Dossier.png", "action": self.On_outils_ouvrir_rep_modeles},
+                    {"code": "ouvrir_rep_documents", "label": _(u"Ouvrir le répertoire des documents édités"), "infobulle": _(u"Ouvrir le répertoire des documents édités"), "image": "Images/16x16/Dossier.png", "action": self.On_outils_ouvrir_rep_editions},
+                    ]},
                 "-",
                 {"code": "updater", "label": _(u"Rechercher une mise à jour du logiciel"), "infobulle": _(u"Rechercher une mise à jour du logiciel"), "image": "Images/16x16/Updater.png", "action": self.On_outils_updater},
             ],
@@ -487,7 +545,8 @@ class MyFrame(wx.Frame):
         cfg.SetDictConfig(dictConfig=self.userConfig )
 
     def OnClose(self, event):
-        self.Quitter()
+        if self.Quitter() == False :
+            return
         event.Skip()
         
     def Quitter(self, videRepertoiresTemp=True, sauvegarde_auto=True):
@@ -1124,6 +1183,12 @@ class MyFrame(wx.Frame):
         dlg.ShowModal()
         dlg.Destroy()
 
+    def On_fichier_Sauvegardes_auto(self, event):
+        from Dlg import DLG_Sauvegardes_auto
+        dlg = DLG_Sauvegardes_auto.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def On_fichier_quitter(self, event):
         self.Quitter()
         self.Destroy()
@@ -1164,11 +1229,147 @@ class MyFrame(wx.Frame):
             dlg.ShowModal()
             dlg.Destroy()
             return
-
         from Dlg import DLG_Config_gadgets
         dlg = DLG_Config_gadgets.Dialog(None)
         if dlg.ShowModal() == wx.ID_YES:
             self.toolBook.GetPage(0).MAJpanel()
+        dlg.Destroy()
+
+    def On_param_utilisateurs_reseau(self, event):
+        if "[RESEAU]" not in self.userConfig["nomFichier"] :
+            dlg = wx.MessageDialog(self, _(u"Cette fonction n'est accessible que si vous utilisez un fichier réseau !"), _(u"Accès non autorisé"), wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return
+        from Dlg import DLG_Utilisateurs_reseau
+        dlg = DLG_Utilisateurs_reseau.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_emails_exp(self, event):
+        from Dlg import DLG_Emails_exp
+        dlg = DLG_Emails_exp.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_protection_mdp(self, event):
+        from Dlg import DLG_Config_password
+        dlg = DLG_Config_password.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_questionnaire(self, event):
+        from Dlg import DLG_Config_questionnaires
+        dlg = DLG_Config_questionnaires.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_qualifications(self, event):
+        from Dlg import DLG_Config_types_diplomes
+        dlg = DLG_Config_types_diplomes.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_pieces(self, event):
+        from Dlg import DLG_Config_types_pieces
+        dlg = DLG_Config_types_pieces.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+        self.toolBook.MAJ_page_si_affichee("individus")
+
+    def On_param_situations(self, event):
+        from Dlg import DLG_Config_situations
+        dlg = DLG_Config_situations.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_pays(self, event):
+        from Dlg import DLG_Config_pays
+        dlg = DLG_Config_pays.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_categories_presence(self, event):
+        from Dlg import DLG_Config_categories_presences
+        dlg = DLG_Config_categories_presences.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+        self.toolBook.MAJ_page_si_affichee("presences")
+
+    def On_param_classifications(self, event):
+        from Dlg import DLG_Config_classifications
+        dlg = DLG_Config_classifications.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_champs_contrats(self, event):
+        from Dlg import DLG_Config_champs_contrats
+        dlg = DLG_Config_champs_contrats.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_modeles_contrats(self, event):
+        from Dlg import DLG_Config_modeles_contrats
+        dlg = DLG_Config_modeles_contrats.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_types_contrats(self, event):
+        from Dlg import DLG_Config_types_contrats
+        dlg = DLG_Config_types_contrats.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_val_points(self, event):
+        from Dlg import DLG_Config_val_point
+        dlg = DLG_Config_val_point.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_entretiens(self, event):
+        from Dlg import DLG_Config_verrouillage_entretien
+        dlg = DLG_Config_verrouillage_entretien.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def On_param_fonctions(self, event):
+        from Dlg import DLG_Config_fonctions
+        dlg = DLG_Config_fonctions.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+        self.toolBook.MAJ_page_si_affichee("recrutement")
+
+    def On_param_affectations(self, event):
+        from Dlg import DLG_Config_affectations
+        dlg = DLG_Config_affectations.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+        self.toolBook.MAJ_page_si_affichee("recrutement")
+
+    def On_param_diffuseurs(self, event):
+        from Dlg import DLG_Config_diffuseurs
+        dlg = DLG_Config_diffuseurs.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+        self.toolBook.MAJ_page_si_affichee("recrutement")
+
+    def On_param_offres(self, event):
+        from Dlg import DLG_Config_emplois
+        dlg = DLG_Config_emplois.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+        self.toolBook.MAJ_page_si_affichee("recrutement")
+
+    def On_param_vacances(self, event):
+            from Dlg import DLG_Vacances
+            dlg = DLG_Vacances.Dialog(self)
+            dlg.ShowModal()
+            dlg.Destroy()
+
+    def On_param_feries(self, event):
+        from Dlg import DLG_Feries
+        dlg = DLG_Feries.Dialog(self)
+        dlg.ShowModal()
         dlg.Destroy()
 
     def On_outils_outlook(self ,event):
@@ -1257,11 +1458,34 @@ class MyFrame(wx.Frame):
         dlg.ShowModal()
         dlg.Destroy()
 
+    def On_outils_emails(self, event):
+        """ Lancer Editeur d'emails """
+        from Dlg import DLG_Mailer
+        dlg = DLG_Mailer.Dialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def On_outils_teamword(self, event):
         """ Lancer Teamword """
         from Dlg import DLG_Teamword
         frame = DLG_Teamword.MyFrame(None)
         frame.Show()
+
+    def On_outils_ouvrir_rep_utilisateur(self, event):
+        """ Ouvrir le répertoire Utilisateur """
+        UTILS_Fichiers.OuvrirRepertoire(UTILS_Fichiers.GetRepUtilisateur())
+
+    def On_outils_ouvrir_rep_donnees(self, event):
+        """ Ouvrir le répertoire Utilisateur """
+        UTILS_Fichiers.OuvrirRepertoire(UTILS_Fichiers.GetRepData())
+
+    def On_outils_ouvrir_rep_modeles(self, event):
+        """ Ouvrir le répertoire des modèles de documents """
+        UTILS_Fichiers.OuvrirRepertoire(UTILS_Fichiers.GetRepModeles())
+
+    def On_outils_ouvrir_rep_editions(self, event):
+        """ Ouvrir le répertoire des éditions de documents """
+        UTILS_Fichiers.OuvrirRepertoire(UTILS_Fichiers.GetRepEditions())
 
     def On_aide_aide(self, event):
         from Utils import UTILS_Aide
@@ -1351,7 +1575,7 @@ Phillip Piper (ObjectListView), Armin Rigo (Psycho)...
                 fichierVersions = urlopen('https://raw.githubusercontent.com/Noethys/Teamworks/master/teamworks/Versions.txt', timeout=5)
             else:
                 # Version Windows
-                fichierVersions = urlopen('https://www.teamworks.ovh/fichiers/windows/Versions.txt', timeout=5)
+                fichierVersions = urlopen('http://www.teamworks.ovh/fichiers/windows/Versions.txt', timeout=5)
             texteNouveautes= fichierVersions.read()
             fichierVersions.close()
             if six.PY3:

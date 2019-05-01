@@ -24,7 +24,7 @@ class Panel(wx.Panel):
         wx.Panel.__init__(self, parent, ID, style=wx.TAB_TRAVERSAL, name="config_val_point")
         
         self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Les valeurs de points"), u"")
-        texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer les valeurs de points qui sont utilisés dans la création des contrats. Il vous suffit de préciser le montant et la valeur d'application.")
+        texteIntro = _(u"Vous pouvez ici créer, modifier ou supprimer les valeurs de points qui sont utilisés dans la création des\ncontrats. Il vous suffit de préciser le montant et la valeur d'application.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
         self.listCtrl = ListCtrl(self)
@@ -33,9 +33,6 @@ class Panel(wx.Panel):
         self.bouton_ajouter = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_modifier = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Modifier.png"), wx.BITMAP_TYPE_ANY))
         self.bouton_supprimer = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Supprimer.png"), wx.BITMAP_TYPE_ANY))
-        self.bouton_aide = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Aide.png"), wx.BITMAP_TYPE_ANY))
-        if parent.GetName() != "treebook_configuration" :
-            self.bouton_aide.Show(False)
 
         self.__set_properties()
         self.__do_layout()
@@ -44,19 +41,14 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnBoutonAjouter, self.bouton_ajouter)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonModifier, self.bouton_modifier)
         self.Bind(wx.EVT_BUTTON, self.OnBoutonSupprimer, self.bouton_supprimer)
-        self.Bind(wx.EVT_BUTTON, self.OnBoutonAide, self.bouton_aide)
 
         self.bouton_modifier.Enable(False)
         self.bouton_supprimer.Enable(False)
         
     def __set_properties(self):
         self.bouton_ajouter.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour créer une nouvelle valeur de points")))
-        self.bouton_ajouter.SetSize(self.bouton_ajouter.GetBestSize())
         self.bouton_modifier.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour modifier la valeur de points sélectionnée dans la liste")))
-        self.bouton_modifier.SetSize(self.bouton_modifier.GetBestSize())
         self.bouton_supprimer.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour supprimer la valeurs de points sélectionnée dans la liste")))
-        self.bouton_supprimer.SetSize(self.bouton_supprimer.GetBestSize())
-        self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
 
     def __do_layout(self):
         grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
@@ -68,14 +60,11 @@ class Panel(wx.Panel):
         grid_sizer_boutons.Add(self.bouton_ajouter, 0, 0, 0)
         grid_sizer_boutons.Add(self.bouton_modifier, 0, 0, 0)
         grid_sizer_boutons.Add(self.bouton_supprimer, 0, 0, 0)
-        grid_sizer_boutons.Add((5, 5), 0, 0, 0)
-        grid_sizer_boutons.Add(self.bouton_aide, 0, 0, 0)
         grid_sizer_boutons.AddGrowableRow(3)
         grid_sizer_base2.Add(grid_sizer_boutons, 1, wx.EXPAND, 0)
         grid_sizer_base2.AddGrowableRow(0)
         grid_sizer_base2.AddGrowableCol(0)
         grid_sizer_base.Add(grid_sizer_base2, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
-##        grid_sizer_base.Add(self.label_conclusion, 0, 0, 0)
         self.SetSizer(grid_sizer_base)
         grid_sizer_base.Fit(self)
         grid_sizer_base.AddGrowableRow(2)
@@ -170,9 +159,6 @@ class Panel(wx.Panel):
     def MAJpanel(self):
         self.listCtrl.MAJListeCtrl() 
 
-    def OnBoutonAide(self, event):
-        from Utils import UTILS_Aide
-        UTILS_Aide.Aide("Lesvaleursdepoints")
 
 
 
@@ -392,60 +378,46 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         self.parent.Supprimer()
 
 
-
 class Dialog(wx.Dialog):
-    def __init__(self, parent, title=""):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX)
         self.parent = parent
+
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
         self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
-        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
+        self.bouton_fermer = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Fermer"), cheminImage=Chemins.GetStaticPath("Images/32x32/Fermer.png"))
         self.__set_properties()
         self.__do_layout()
-        
-        self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
-        self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
-        self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
 
-        self.SetMinSize((450, 350))
-        self.SetSize((450, 350))
+        self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
+        self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_fermer)
 
     def __set_properties(self):
-        self.SetTitle(_(u"Gestion des valeurs de points"))
-        if 'phoenix' in wx.PlatformInfo:
-            _icon = wx.Icon()
-        else :
-            _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-        self.SetIcon(_icon)
+        self.SetTitle(_(u"Gestion des valeurs des points"))
         self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
-        self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
-        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
-        self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
-        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
-        self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
+        self.bouton_fermer.SetToolTip(wx.ToolTip(_(u"Cliquez pour fermer")))
+        self.SetMinSize((600, 500))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=0, hgap=0)
-        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
         sizer_pages = wx.BoxSizer(wx.VERTICAL)
-        grid_sizer_base.Add(sizer_pages, 1, wx.ALL|wx.EXPAND, 0)
+        grid_sizer_base.Add(sizer_pages, 1, wx.ALL | wx.EXPAND, 0)
         sizer_pages.Add(self.panel_contenu, 1, wx.EXPAND | wx.TOP, 10)
+        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
         grid_sizer_boutons.Add(self.bouton_aide, 0, 0, 0)
         grid_sizer_boutons.Add((20, 20), 0, wx.EXPAND, 0)
-        grid_sizer_boutons.Add(self.bouton_ok, 0, 0, 0)
-        grid_sizer_boutons.Add(self.bouton_annuler, 0, 0, 0)
+        grid_sizer_boutons.Add(self.bouton_fermer, 0, 0, 0)
         grid_sizer_boutons.AddGrowableCol(1)
-        grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT|wx.BOTTOM|wx.RIGHT|wx.EXPAND, 10)
+        grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT | wx.BOTTOM | wx.RIGHT | wx.EXPAND, 10)
         self.panel_base.SetSizer(grid_sizer_base)
         grid_sizer_base.AddGrowableRow(0)
         grid_sizer_base.AddGrowableCol(0)
         sizer_base.Add(self.panel_base, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_base)
+        sizer_base.Fit(self)
         self.Layout()
         self.CenterOnScreen()
         self.sizer_pages = sizer_pages
@@ -453,24 +425,14 @@ class Dialog(wx.Dialog):
     def Onbouton_aide(self, event):
         from Utils import UTILS_Aide
         UTILS_Aide.Aide("Lesvaleursdepoints")
-            
+
     def Onbouton_annuler(self, event):
-        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
-        if FonctionsPerso.FrameOuverte("frm_creation_contrats") != None :
-            self.GetParent().MAJ_choice_ValPoint()
-        # Fermeture
         self.EndModal(wx.ID_CANCEL)
-        
-    def Onbouton_ok(self, event):
-        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
-        if FonctionsPerso.FrameOuverte("frm_creation_contrats") != None :
-            self.GetParent().MAJ_choice_ValPoint()
-        # Fermeture
-        self.EndModal(wx.ID_OK)
+
 
 if __name__ == "__main__":
     app = wx.App(0)
-    dlg = Dialog(None, "")
+    dlg = Dialog(None)
     dlg.ShowModal()
     dlg.Destroy()
     app.MainLoop()

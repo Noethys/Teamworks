@@ -79,7 +79,7 @@ class Page(wx.Panel):
             self.listCtrl_modeles.Select(0)
 
     def OnBoutonModeles(self, event):
-        dlg = ConfigModeles.Dialog(self, "")
+        dlg = ConfigModeles.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
                         

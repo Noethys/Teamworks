@@ -556,19 +556,22 @@ class Panel(wx.Panel):
         self.ctrl_periodes.Remplissage(self.listeDisponibilites)
 
     def OnGestionEmplois(self, event):
-        dlg = DLG_Config_emplois.Dialog(self, "")
+        dlg = DLG_Config_emplois.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_emplois()
             
     def OnGestionFonctions(self, event):
-        dlg = DLG_Config_fonctions.Dialog(self, "")
+        dlg = DLG_Config_fonctions.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_fonctions()
     
     def OnGestionAffectations(self, event):
-        dlg = DLG_Config_affectations.Dialog(self, "")
+        dlg = DLG_Config_affectations.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_affectations()
     
     def OnClose(self, event):
         self.GetParent().Fermer()

@@ -308,7 +308,7 @@ class Page2(wx.Panel):
             self.AjouterChampPerso(IDchamp, mot_cle, defaut)
         
     def OnBoutonChamps(self, event):
-        dlg = Config_ChampsContrats.Dialog(self, "")
+        dlg = Config_ChampsContrats.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
     

@@ -108,19 +108,22 @@ class Page(wx.Panel):
         self.SelectChoice(self.choice_class, data=classification )
         
     def OnBoutonChamps(self, event):
-        dlg = DLG_Config_champs_contrats.Dialog(self, "")
+        dlg = DLG_Config_champs_contrats.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_ListCtrl()
 
     def OnBoutonClassifications(self, event):
-        dlg = DLG_Config_classifications.Dialog(self, "")
+        dlg = DLG_Config_classifications.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_choice_Class()
 
     def OnBoutonType(self, event):
-        dlg = DLG_Config_types_contrats.Dialog(self, "")
+        dlg = DLG_Config_types_contrats.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_choice_Type()
 
     def MAJ_ListCtrl(self):
         self.listCtrl_champs.MAJListeCtrl()   

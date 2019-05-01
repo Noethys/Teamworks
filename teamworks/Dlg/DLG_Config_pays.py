@@ -449,9 +449,6 @@ class Dialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
         self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
 
-        self.SetMinSize((550, 400))
-        self.SetSize((550, 400))
-        
         if IDpays != 0 : 
             self.panel_contenu.listCtrl.SetSelection(IDpays=IDpays)
         if self.saisie == "FicheIndiv_pays_naiss" : 
@@ -461,19 +458,10 @@ class Dialog(wx.Dialog):
 
     def __set_properties(self):
         self.SetTitle(_(u"Gestion des pays"))
-        if 'phoenix' in wx.PlatformInfo:
-            _icon = wx.Icon()
-        else :
-            _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-        self.SetIcon(_icon)
         self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
-        self.bouton_aide.SetSize(self.bouton_aide.GetBestSize())
         self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
-        self.bouton_ok.SetSize(self.bouton_ok.GetBestSize())
         self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
-        self.bouton_annuler.SetSize(self.bouton_annuler.GetBestSize())
-        
+        self.SetMinSize((550, 500))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
@@ -493,6 +481,7 @@ class Dialog(wx.Dialog):
         grid_sizer_base.AddGrowableCol(0)
         sizer_base.Add(self.panel_base, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_base)
+        sizer_base.Fit(self)
         self.Layout()
         self.CenterOnScreen()
         self.sizer_pages = sizer_pages
@@ -535,9 +524,7 @@ class Dialog(wx.Dialog):
 
 if __name__ == "__main__":
     app = wx.App(0)
-    #wx.InitAllImageHandlers()
-    dlg = Dialog(None, "")
-    dlg.Show()
+    dlg = Dialog(None)
+    dlg.ShowModal()
     dlg.Destroy()
-
     app.MainLoop()

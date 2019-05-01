@@ -440,19 +440,22 @@ class Panel(wx.Panel):
         self.ctrl_periodes.Remplissage(self.listeDisponibilites)
     
     def OnGestionFonctions(self, event):
-        dlg = DLG_Config_fonctions.Dialog(self, "")
+        dlg = DLG_Config_fonctions.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_fonctions()
 
     def OnGestionAffectations(self, event):
-        dlg = DLG_Config_affectations.Dialog(self, "")
+        dlg = DLG_Config_affectations.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_affectations()
 
     def OnGestionDiffuseurs(self, event):
-        dlg = DLG_Config_diffuseurs.Dialog(self, "")
+        dlg = DLG_Config_diffuseurs.Dialog(self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJ_diffuseurs()
 
     def OnClose(self, event):
         self.GetParent().Fermer()
@@ -468,7 +471,6 @@ class Panel(wx.Panel):
         
     def Onbouton_ok(self, event):
         """ Validation des données saisies """
-        
         # Type du dépôt
         valeur = self.ctrl_intitule.GetValue()
         if valeur == "" :

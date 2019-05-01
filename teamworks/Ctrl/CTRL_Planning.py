@@ -1481,13 +1481,14 @@ class WidgetPlanning(wx.ScrolledWindow):
         dlg = DLG_Saisie_presence.Dialog(None, selection, panelPlanning=self)
         dlg.ShowModal()
         dlg.Destroy()
-
+        self.MAJafterModif()
 
     def Modifier(self, IDpresence):
         """ Modifier une présence avec le form de saisie des présences """
         dlg = DLG_Saisie_presence.Dialog(None, IDmodif=IDpresence, panelPlanning=self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJafterModif()
 
     def Supprimer(self, IDpresence, txt):
         """ Supprimer une tâche """
@@ -1635,11 +1636,11 @@ class WidgetPlanning(wx.ScrolledWindow):
         dlg = DLG_Saisie_presence.Dialog(None, [self.ligne], panelPlanning=self)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJafterModif()
 
     def OnMenuModifier(self, event):
         IDpresence = self.Context[0]
         self.Modifier(IDpresence)
-        #event.Skip()
 
     def OnMenuSupprimer(self, event):
         IDpresence = self.Context[0]
@@ -1648,7 +1649,6 @@ class WidgetPlanning(wx.ScrolledWindow):
         date = DatetimeDateEnStr(self.dictPresences[IDpresence][2])
         txt = _(u"Souhaitez-vous vraiment supprimer la tâche du %s de %s à %s ?") % (date, heureDebut, heureFin)
         self.Supprimer(IDpresence, txt)
-        #event.Skip()
 
     def OnMenuModifLegende(self, event):
         """ Ajouter ou modifier une légende """
@@ -1791,6 +1791,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         dlg = DLG_Saisie_presence.Dialog(self, selectionsLignes)
         dlg.ShowModal()
         dlg.Destroy()
+        self.MAJafterModif()
 
     def SupprimerPresencesLignes(self):
         """ Supprime toutes les tâches des lignes sélectionnées """
@@ -1923,7 +1924,7 @@ class BarreOptions(wx.Panel):
         # Widgets        
         self.txtRadio = wx.StaticText( self, -1, " Grouper par :" )
         self.radio1 = wx.RadioButton( self, -1, "Dates", style = wx.RB_GROUP )
-        self.radio2 = wx.RadioButton( self, -1, "Personnes" )
+        self.radio2 = wx.RadioButton( self, -1, "Individus" )
         
         self.boutonOutils = wx.StaticBitmap(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Outils.png"), wx.BITMAP_TYPE_PNG) )
         self.txtOutils = wx.StaticText( self, -1, _(u"Outils") )

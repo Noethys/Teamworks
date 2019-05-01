@@ -1,20 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 #------------------------------------------------------------------------
-# Application :    Teamworks
+# Application :    Noethys, gestion multi-activités
+# Site internet :  www.noethys.com
 # Auteur:           Ivan LUCAS
 # Copyright:       (c) 2010-11 Ivan LUCAS
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+
 import Chemins
+from Utils import UTILS_Adaptations
 from Utils.UTILS_Traduction import _
 import wx
-import six
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 
-LISTE_SUFFIXES = ("tdata", "tphotos", "tdocuments")
+LISTE_SUFFIXES = ("data", "photos", "documents")
 
 
 class Dialog(wx.Dialog):
@@ -49,9 +51,9 @@ class Dialog(wx.Dialog):
         self.sizer_autorisation_staticbox = wx.StaticBox(self, -1, _(u"Autorisation d'accès au fichier '%s'") % self.nomBase)
         self.ctrl_autorisation = wx.CheckBox(self, -1, _(u"Cet utilisateur est autorisé à se connecter au fichier"))
         
-        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
-        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Ok"), cheminImage="Images/32x32/Valider.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, id=wx.ID_CANCEL, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -84,6 +86,7 @@ class Dialog(wx.Dialog):
         # Recherche l'autorisation d'accès au fichier
         self.ctrl_autorisation.SetValue(self.RechercheAutorisation())
 
+
     def __set_properties(self):
         self.ctrl_nom.SetToolTip(wx.ToolTip(_(u"Saisissez ici un nom pour l'utilisateur. \nIl est fortement conseillé de n'inclure aucun caractères spéciaux (accents, symboles...)")))
         self.radio_1.SetToolTip(wx.ToolTip(_(u"L'utilisateur ne peut se connecter à la base de données\n qu'à partir du serveur sur lequel se trouve la base de données.")))
@@ -95,7 +98,7 @@ class Dialog(wx.Dialog):
         self.bouton_aide.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour obtenir de l'aide")))
 
     def __do_layout(self):
-        grid_sizer_base = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
+        grid_sizer_base = wx.FlexGridSizer(rows=5, cols=1, vgap=10, hgap=10)
         
         # Nom Utilisateur
         sizer_nom = wx.StaticBoxSizer(self.sizer_nom_staticbox, wx.VERTICAL)
@@ -108,7 +111,7 @@ class Dialog(wx.Dialog):
         
         # Mots de passe
         sizer_mdp = wx.StaticBoxSizer(self.sizer_mdp_staticbox, wx.VERTICAL)
-        grid_sizer_mdp = wx.FlexGridSizer(rows=1, cols=2, vgap=10, hgap=10)
+        grid_sizer_mdp = wx.FlexGridSizer(rows=2, cols=2, vgap=10, hgap=10)
         grid_sizer_mdp.Add(self.label_mdp_1, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_mdp.Add(self.ctrl_mdp_1, 0, wx.EXPAND, 0)
         grid_sizer_mdp.Add(self.label_mdp_2, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
@@ -119,7 +122,7 @@ class Dialog(wx.Dialog):
         
         # Hotes de l'utilisateur
         sizer_hotes = wx.StaticBoxSizer(self.sizer_hotes_staticbox, wx.VERTICAL)
-        grid_sizer_hotes = wx.FlexGridSizer(rows=3, cols=2, vgap=10, hgap=5)
+        grid_sizer_hotes = wx.FlexGridSizer(rows=6, cols=2, vgap=10, hgap=5)
         grid_sizer_hotes.Add(self.radio_1, 0, 0, 0)
         grid_sizer_hotes.Add( (5, 5), 0, 0, 0)
         grid_sizer_hotes.Add(self.radio_2, 0, 0, 0)
@@ -165,7 +168,7 @@ class Dialog(wx.Dialog):
         if self.radio_3.GetValue() == True : hote = self.ctrl_hote.GetValue()
         DB = GestionDB.DB()
         DB.ExecuterReq("USE mysql;")
-        req = "SELECT host, db, user FROM db WHERE user='%s' and db='%s' and host='%s';" % (self.nomUtilisateur, _(u"%s_tdata") % self.nomBase, hote)
+        req = "SELECT host, db, user FROM db WHERE user='%s' and db='%s' and host='%s';" % (self.nomUtilisateur, u"%s_data" % self.nomBase, hote)
         DB.ExecuterReq(req)
         donnees = DB.ResultatReq()
         DB.Close()
@@ -187,19 +190,19 @@ class Dialog(wx.Dialog):
         DB = GestionDB.DB()
         
         # Recherche des autorisations pour la base en cours
-        req = "SELECT Host FROM `mysql`.`db` WHERE Db='%s' AND User='%s';" % (_(u"%s_tdata") % self.nomBase, self.nomUtilisateur)
+        req = "SELECT Host FROM `mysql`.`db` WHERE Db='%s' AND User='%s';" % (u"%s_data" % self.nomBase, self.nomUtilisateur)
         DB.ExecuterReq(req)
         listeAutorisations = DB.ResultatReq()
 
         # Recherche des Hotes
-        req = "SELECT Host, User, Password FROM `mysql`.`user` WHERE User='%s' ORDER BY Host;" % self.nomUtilisateur
+        req = "SELECT Host, User FROM `mysql`.`user` WHERE User='%s' ORDER BY Host;" % self.nomUtilisateur
         DB.ExecuterReq(req)
         listeHotesTmp = DB.ResultatReq()
         DB.Close()
         
         listeHotesLabels = []
         listeHotesData = []
-        for host, user, password in listeHotesTmp :
+        for host, user in listeHotesTmp :
             # Recherche s'il y a une autorisation pour la base en cours
             if (host,) in listeAutorisations :
                 autorisation = True
@@ -220,7 +223,7 @@ class Dialog(wx.Dialog):
         
     def OnBoutonAide(self, event):
         from Utils import UTILS_Aide
-        UTILS_Aide.Aide("")
+        UTILS_Aide.Aide("Accsrseau")
 
     def OnBoutonOk(self, event):
 
@@ -236,7 +239,7 @@ class Dialog(wx.Dialog):
         # Vérification des caractères spéciaux du nom
         erreur = False
         for caract in textNom :
-            if caract in u"~&é(-è_çà)=~#{[|`\^@]}" :
+            if caract in u"ïîôûëê~&é(-è_çà)=~#{[|`\^@]}" :
                 erreur = True
         if erreur == True :
             dlg = wx.MessageDialog(self, _(u"Le nom d'utilisateur ne devrait pas inclure de caractères spéciaux (accents, symboles...)"), "Information", wx.OK | wx.ICON_ERROR)
@@ -256,7 +259,7 @@ class Dialog(wx.Dialog):
         
         # Si pas de mot de passe
         if mdp1 == "" :
-            txtMessage = six.text_type(_(u"Attention, vous n'avez saisi aucun mot de passe pour cet utilisateur.\nCela peut être risqué pour la sécurité des données.\n\nVoulez-vous quand même valider la création de cet utilisateur sans mot de passe ?\n\n(Cliquez sur Non ou sur Annuler pour saisir un mot de de passe)"))
+            txtMessage = unicode(_(u"Attention, vous n'avez saisi aucun mot de passe pour cet utilisateur.\nCela peut être risqué pour la sécurité des données.\n\nVoulez-vous quand même valider la création de cet utilisateur sans mot de passe ?\n\n(Cliquez sur Non ou sur Annuler pour saisir un mot de de passe)"))
             dlgConfirm = wx.MessageDialog(self, txtMessage, _(u"Confirmation de suppression"), wx.YES_NO|wx.CANCEL|wx.NO_DEFAULT|wx.ICON_QUESTION)
             reponse = dlgConfirm.ShowModal()
             dlgConfirm.Destroy()
@@ -297,13 +300,15 @@ class Dialog(wx.Dialog):
         if self.radio_3.GetValue() == True : hote = self.ctrl_hote.GetValue()
                 
         # Création de l'hôte :
-        req = "SELECT host, user, password FROM user WHERE user='%s' and host='%s';" % (nom, hote)
+        req = "SELECT host, user FROM user WHERE user='%s' and host='%s';" % (nom, hote)
         DB.ExecuterReq(req)
         donnees = DB.ResultatReq()
         if len(donnees) == 0 :
-            req = _(u"CREATE USER '%s'@'%s' IDENTIFIED BY '%s';") % (nom, hote, motdepasse)
+            req = u"CREATE USER '%s'@'%s' IDENTIFIED BY '%s';" % (nom, hote, motdepasse)
             DB.ExecuterReq(req)
+            print("L'utilisateur a ete cree.")
         else:
+            print("L'utilisateur existe deja.")
             DB.Close()
             dlg = wx.MessageDialog(self, _(u"Cet utilisateur avec cet hôte existe déjà !"), "Information", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
@@ -327,7 +332,7 @@ class Dialog(wx.Dialog):
                     """ % (self.nomBase, nom, hote)
                     DB.ExecuterReq(req)
 
-        DB.ExecuterReq(_(u"FLUSH PRIVILEGES;"))
+        DB.ExecuterReq(u"FLUSH PRIVILEGES;")
         DB.Close()
         
         return True
