@@ -31,9 +31,8 @@ from six.moves.email_mime_multipart import MIMEMultipart
 from six.moves.email_mime_base import MIMEBase
 from six.moves.email_mime_text import MIMEText
 from six.moves.email_mime_image import MIMEImage
-from email.utils import COMMASPACE, formatdate
 from email.header import Header
-from email.utils import formatdate, formataddr
+from email.utils import formatdate
 from email import encoders
 import mimetypes
 

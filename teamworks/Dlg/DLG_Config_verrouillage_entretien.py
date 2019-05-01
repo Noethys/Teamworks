@@ -20,7 +20,7 @@ class Panel(wx.Panel):
         wx.Panel.__init__(self, parent, ID, name="panel_config_verrouillage_entretien", style=wx.TAB_TRAVERSAL)
         
         self.barreTitre = FonctionsPerso.BarreTitre(self,  _(u"Verrouillage des informations des entretiens"), u"")
-        texteIntro = _(u"Vous pouvez protéger l'accès aux informations liées aux entretiens d'embauche (avis et commentaires). L'utilisateur devra ainsi saisir un mot de passe pour les afficher. Cochez la case et saisissez le mot de passe souhaité à deux reprises. Pour désactiver la protection, il vous suffit de décocher cette case.")
+        texteIntro = _(u"Vous pouvez protéger l'accès aux informations liées aux entretiens d'embauche (avis et commentaires).\nL'utilisateur devra ainsi saisir un mot de passe pour les afficher. Cochez la case et saisissez le mot de passe\nsouhaité à deux reprises. Pour désactiver la protection, il vous suffit de décocher cette case.")
         self.label_introduction = FonctionsPerso.StaticWrapText(self, -1, texteIntro)
         
         self.staticbox = wx.StaticBox(self, -1, _(u"Protection"))
@@ -161,85 +161,62 @@ class SaisiePassword(wx.Dialog):
 
 
 class Dialog(wx.Dialog):
-    def __init__(self, parent, title=""):
-        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX)
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX)
         self.parent = parent
 
         self.panel_base = wx.Panel(self, -1)
         self.panel_contenu = Panel(self.panel_base)
         self.panel_contenu.barreTitre.Show(False)
         self.bouton_aide = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Ok"), cheminImage=Chemins.GetStaticPath("Images/32x32/Valider.png"))
-        self.bouton_annuler = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
-        self.bouton_annuler.Show(False)
+        self.bouton_fermer = CTRL_Bouton_image.CTRL(self.panel_base, texte=_(u"Fermer"), cheminImage=Chemins.GetStaticPath("Images/32x32/Fermer.png"))
         self.__set_properties()
         self.__do_layout()
-        
-        self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
-        self.Bind(wx.EVT_BUTTON, self.Onbouton_ok, self.bouton_ok)
-        self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_annuler)
 
-        self.SetMinSize((400, 300))
-        self.SetSize((400, 300))
+        self.Bind(wx.EVT_BUTTON, self.Onbouton_aide, self.bouton_aide)
+        self.Bind(wx.EVT_BUTTON, self.Onbouton_annuler, self.bouton_fermer)
 
     def __set_properties(self):
         self.SetTitle(_(u"Verrouillage des informations des entretiens"))
-        if 'phoenix' in wx.PlatformInfo:
-            _icon = wx.Icon()
-        else :
-            _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Logo.png"), wx.BITMAP_TYPE_ANY))
-        self.SetIcon(_icon)
         self.bouton_aide.SetToolTip(wx.ToolTip("Cliquez ici pour obtenir de l'aide"))
-        self.bouton_ok.SetToolTip(wx.ToolTip(_(u"Cliquez ici pour valider")))
-        self.bouton_annuler.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
+        self.bouton_fermer.SetToolTip(wx.ToolTip(_(u"Cliquez pour annuler et fermer")))
+        self.bouton_fermer.SetSize(self.bouton_fermer.GetBestSize())
+        self.SetMinSize((600, 300))
 
     def __do_layout(self):
         sizer_base = wx.BoxSizer(wx.VERTICAL)
         grid_sizer_base = wx.FlexGridSizer(rows=3, cols=1, vgap=0, hgap=0)
-        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
         sizer_pages = wx.BoxSizer(wx.VERTICAL)
-        grid_sizer_base.Add(sizer_pages, 1, wx.ALL|wx.EXPAND, 0)
+        grid_sizer_base.Add(sizer_pages, 1, wx.ALL | wx.EXPAND, 0)
         sizer_pages.Add(self.panel_contenu, 1, wx.EXPAND | wx.TOP, 10)
+        grid_sizer_boutons = wx.FlexGridSizer(rows=1, cols=6, vgap=10, hgap=10)
         grid_sizer_boutons.Add(self.bouton_aide, 0, 0, 0)
         grid_sizer_boutons.Add((20, 20), 0, wx.EXPAND, 0)
-        grid_sizer_boutons.Add(self.bouton_ok, 0, 0, 0)
-        grid_sizer_boutons.Add(self.bouton_annuler, 0, 0, 0)
+        grid_sizer_boutons.Add(self.bouton_fermer, 0, 0, 0)
         grid_sizer_boutons.AddGrowableCol(1)
-        grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT|wx.BOTTOM|wx.RIGHT|wx.EXPAND, 10)
+        grid_sizer_base.Add(grid_sizer_boutons, 1, wx.LEFT | wx.BOTTOM | wx.RIGHT | wx.EXPAND, 10)
         self.panel_base.SetSizer(grid_sizer_base)
         grid_sizer_base.AddGrowableRow(0)
         grid_sizer_base.AddGrowableCol(0)
         sizer_base.Add(self.panel_base, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_base)
+        sizer_base.Fit(self)
         self.Layout()
         self.CenterOnScreen()
         self.sizer_pages = sizer_pages
-        
+
     def Onbouton_aide(self, event):
-        dlg = wx.MessageDialog(self, _(u"L'aide du module Recrutement est en cours de rédaction.\nElle sera disponible lors d'une mise à jour ultérieure."), "Aide indisponible", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
-            
+        from Utils import UTILS_Aide
+        UTILS_Aide.Aide("")
+
     def Onbouton_annuler(self, event):
-        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
-        self.MAJparents()
-        # Fermeture
         self.EndModal(wx.ID_CANCEL)
-        
-    def Onbouton_ok(self, event):
-        # Si frame Creation_contrats ouverte, on met à jour le listCtrl Valeurs de points
-        self.MAJparents()
-        # Fermeture
-        self.EndModal(wx.ID_OK)
-        
-    def MAJparents(self):
-        pass
+
 
 
 if __name__ == "__main__":
     app = wx.App(0)
-    dlg = Dialog(None, "")
+    dlg = Dialog(None)
     dlg.ShowModal()
     dlg.Destroy()
     app.MainLoop()
