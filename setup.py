@@ -23,6 +23,7 @@ sys.path.insert(0, REP_COURANT)
 TEAMWORKS_PATH = os.path.join(REP_COURANT, "teamworks")
 sys.path.insert(1, TEAMWORKS_PATH)
 REP_BUILD = REP_COURANT + "/build/exe.win32-3.7"
+PYTHON_INSTALL_DIR = os.path.dirname(os.path.dirname(os.__file__))
 
 # Supprime le répertoire build
 if os.path.isdir(REP_BUILD):
@@ -43,6 +44,7 @@ base = 'Console'
 if sys.platform == 'win32':
     base = 'Win32GUI'
 
+
 options = {
     'build_exe': {
         'excludes': [
@@ -56,10 +58,11 @@ options = {
             "_imagingtk", "PIL._imagingtk", "ImageTk", "PIL.ImageTk", "FixTk",
             ],
         'includes': [
-            'Gadget', 'numpy.core._methods', 'numpy.lib.format'
+            'Gadget', 'numpy.core._methods', 'numpy.lib.format', 'email.mime.image',
             ],
         'include_files': [
             TEAMWORKS_PATH + '/static', TEAMWORKS_PATH + '/Versions.txt', TEAMWORKS_PATH + '/Licence.txt', TEAMWORKS_PATH + '/Icone.ico',
+            os.path.join(PYTHON_INSTALL_DIR, 'DLLs', 'libcrypto-1_1.dll'), os.path.join(PYTHON_INSTALL_DIR, 'DLLs', 'libssl-1_1.dll'),
             ],
     }
 }
