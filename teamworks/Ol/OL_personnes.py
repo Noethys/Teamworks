@@ -82,8 +82,15 @@ class Track(object):
         self.email = self.GetCoordonnees(self.IDpersonne, type="email")
         self.fax = self.GetCoordonnees(self.IDpersonne, type="fax")
         self.qualifications = self.GetQualifications(self.IDpersonne)
-##        self.dossier = self.GetPbDossier(self.IDpersonne)
-        
+        # self.dossier = self.GetPbDossier(self.IDpersonne)
+
+        # Champ pour filtre de recherche
+        nom = self.nom
+        if nom == None : nom = ""
+        prenom = self.prenom
+        if prenom == None : prenom = ""
+        self.champ_recherche = u"%s %s %s" % (nom, prenom, nom)
+
             
     def RetourneAge(self, dateStr):
         if dateStr == "" or dateStr == None : return ""
@@ -341,7 +348,10 @@ class ListView(FastObjectListView):
                 else:
                     colonne = ColumnDefn(labelCol, alignement, largeur, nomChamp)
                 liste_Colonnes.append(colonne)
-        
+
+        # Colonne pour recherche facile sur nom et prénom
+        liste_Colonnes.append(ColumnDefn(_(u"Recherche"), "left", 0, "champ_recherche", typeDonnee="texte"))
+
         self.SetColumns(liste_Colonnes)
 
         if self.activeCheckBoxes == True :

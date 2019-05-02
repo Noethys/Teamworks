@@ -52,7 +52,7 @@ def GenerationFichierConfig():
         dictDonnees = {
             "nomFichier": "",
             "derniersFichiers": [],
-            "taille_fenetre": (0, 0),
+            "taille_fenetre": [0, 0],
             "interface_mysql": "mysql.connector",
         }
 

@@ -2726,7 +2726,12 @@ class PanelPlanning(wx.Panel):
 class ImpressionPDFvGraph():
     def __init__(self, nom_doc, orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, maxWidth, maxHeight) :
         from Utils import UTILS_Impression_presences_graph
-        UTILS_Impression_presences_graph.Impression(nom_doc, orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, coordLigne, hauteurBarre, ecartLignes, modeTexte)
+        self.impress = UTILS_Impression_presences_graph.Impression(nom_doc, orientation, dictCategories, dictGroupes, dictLignes, listePresences, dictPresences, coordLigne, hauteurBarre, ecartLignes, modeTexte)
+
+    def Afficher(self):
+        self.impress.Afficher()
+
+
 
 # -------------- IMPRESSION PDF Format TEXTE ---------------------------------------------------------------------
 

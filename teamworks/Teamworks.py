@@ -245,10 +245,10 @@ class MyFrame(wx.Frame):
 
         # Détermine la taille de la fenêtre
         if ("taille_fenetre" in self.userConfig) == False :
-            self.userConfig["taille_fenetre"] = (0, 0)
+            self.userConfig["taille_fenetre"] = [0, 0]
         
         taille_fenetre = self.userConfig["taille_fenetre"]
-        if taille_fenetre == (0, 0) :
+        if taille_fenetre == [0, 0] :
             self.Maximize(True)
         else:
             self.SetSize(taille_fenetre)
@@ -552,9 +552,9 @@ class MyFrame(wx.Frame):
         """ Fin de l'application """
         # Mémorisation du paramètre de la taille d'écran
         if self.IsMaximized() == True :
-            taille_fenetre = (0, 0)
+            taille_fenetre = [0, 0]
         else:
-            taille_fenetre = tuple(self.GetSize())
+            taille_fenetre = list(self.GetSize())
         self.userConfig["taille_fenetre"] = taille_fenetre
 
         # Codage du mdp réseau si besoin
