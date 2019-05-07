@@ -187,6 +187,7 @@ class Panel(wx.Panel):
         # Suppression du type de pièce
         DB = GestionDB.DB()
         DB.ReqDEL("types_diplomes", "IDtype_diplome", IDtype_diplome)
+        DB.Close()
 
         # MàJ du ListCtrl
         self.listCtrl_TypesDiplomes.MAJListeCtrl()

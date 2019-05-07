@@ -632,6 +632,7 @@ class ListView(ObjectListView):
         DB.ReqDEL("emplois_fonctions", "IDemploi", ID)
         DB.ReqDEL("emplois_affectations", "IDemploi", ID) 
         DB.ReqDEL("emplois_diffuseurs", "IDemploi", ID)
+        DB.Close()
 
         # M‡J
         self.MAJ()

@@ -20,12 +20,12 @@ from Utils import UTILS_Adaptations
 import GestionDB
 
 
-ID_AJOUTER = wx.NewId() 
-ID_ROTATION_GAUCHE = wx.NewId() 
-ID_ROTATION_DROITE = wx.NewId() 
-ID_MODIFIER_LABEL = wx.NewId() 
-ID_SUPPRIMER = wx.NewId() 
-ID_VISUALISER = wx.NewId() 
+ID_AJOUTER = wx.Window.NewControlId()
+ID_ROTATION_GAUCHE = wx.Window.NewControlId()
+ID_ROTATION_DROITE = wx.Window.NewControlId()
+ID_MODIFIER_LABEL = wx.Window.NewControlId()
+ID_SUPPRIMER = wx.Window.NewControlId()
+ID_VISUALISER = wx.Window.NewControlId()
 
 
 DICT_TYPES = {
@@ -105,7 +105,7 @@ class Track(object):
             return img
         # Si c'est un document :
         if self.type in DICT_TYPES :        
-            cheminImage = DICT_TYPES[self.type]
+            cheminImage = Chemins.GetStaticPath(DICT_TYPES[self.type])
             img = Image.open(cheminImage)
             self.isImage = False
             return img

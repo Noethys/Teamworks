@@ -1104,23 +1104,6 @@ class Tableau(gridlib.Grid):
             dictCategories[IDcategorie] = (nom_categorie, IDcat_parent, ordre, couleur)
         return dictCategories
 
-##    def GetListeMoisPeriode(self, date_debut, date_fin) :
-##        """ Liste les mois d'une période """
-##        listeMois = [] # [num_mois, num_annee, nom_mois, date_debut_mois, date_fin_mois]
-##        listeNomsMois = (_(u"Janvier"), _(u"Février"), _(u"Mars"), _(u"Avril"), _(u"Mai"), _(u"Juin"), _(u"Juillet"), _(u"Août"), _(u"Septembre"), _(u"Octobre"), _(u"Novembre"), _(u"Décembre"))
-##        
-##        nbreJoursPeriode = (date_fin - date_debut).days
-##        listeMois.append( (date_debut.month, date_debut.year,listeNomsMois[date_debut.month-1], datetime.date(date_debut.year, date_debut.month, 1), datetime.date(date_debut.year, date_debut.month, calendar.monthrange(year=date_debut.year, month=date_debut.month)[1]) ) )
-##        
-##        datePrecedente = date_debut
-##        for listeJours in range(0, nbreJoursPeriode) :
-##            date = datePrecedente + datetime.timedelta(days=1)
-##            if date.month != datePrecedente.month :
-##                listeMois.append( (date.month, date.year, listeNomsMois[date.month-1], datetime.date(date.year, date.month, 1), datetime.date(date.year, date.month, calendar.monthrange(year=date.year, month=date.month)[1]) ) )
-##            datePrecedente = date
-##        
-##        return listeMois
-
     def GetListeLabelsLignes(self):
         # Labels de lignes de base :
         listeLignes = [
@@ -1335,7 +1318,8 @@ class Tableau(gridlib.Grid):
         req = "SELECT IDscenario, nom, description, detail_mois, date_debut, date_fin, toutes_categories, IDpersonne FROM scenarios WHERE IDscenario=%d" % IDscenario
         DB.ExecuterReq(req)
         listePresences = DB.ResultatReq()
-        
+        DB.Close()
+
         if len(listePresences) == 0 :
             # Le scénario a été supprimé
             totalResteColonne, nomScenario, descriptionScenario = "+00:00", "ERREUR2", ""
@@ -1494,7 +1478,7 @@ class GetDictColonnes():
         req = "SELECT IDcategorie FROM presences WHERE (IDpersonne=%d AND '%s'<=date AND date<='%s') GROUP BY IDcategorie ORDER BY IDcategorie;" % (self.IDpersonne, self.date_debut, self.date_fin)
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
-        DB.CLose()
+        DB.Close()
         if len(listeDonnees) == 0 : return []
         listeCategoriesUtilisees = []
         for IDcategorie, in listeDonnees :
@@ -1679,6 +1663,7 @@ class GetDictColonnes():
         req = "SELECT IDscenario, nom, description FROM scenarios WHERE IDscenario=%d" % IDscenario
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         if len(listeDonnees) == 0 :
             return "+00:00", _(u"Report supprimé"), u""
         listePresences = listeDonnees[0]

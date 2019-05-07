@@ -424,10 +424,9 @@ class Dialog(wx.Dialog):
             # Annule la création d'une nouvelle fiche
             if self.nouvelleFiche == True :
                 db = GestionDB.DB()
-                # Suppression des coordonnées déjà saisies
                 db.ReqDEL("coordonnees", "IDpersonne", self.IDpersonne)
-                # Suppression de la personne dans la base
                 db.ReqDEL("personnes", "IDpersonne", self.IDpersonne)
+                db.Close()
                 
         else :
             # Sauvegarde des données

@@ -180,10 +180,8 @@ class Panel(wx.Panel):
         # Suppression du type de pièce
         DB = GestionDB.DB()
         DB.ReqDEL("types_pieces", "IDtype_piece", IDtype_piece)
-
-        # Suppression des associations avec les diplômes
-        DB = GestionDB.DB()
         DB.ReqDEL("diplomes_pieces", "IDtype_piece", IDtype_piece)
+        DB.Close()
 
         # MàJ du listCtrl Coords de la fiche individuelle
         self.listCtrl_TypesPieces.MAJListeCtrl()

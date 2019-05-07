@@ -135,22 +135,7 @@ class Panel(wx.Panel):
                 dlg.Destroy()
                 return
             else: dlg.Destroy()
-        
-        # Vérifie que cette affectation n'est pas attribuée à une offre d'emploi
-##        DB = GestionDB.DB()
-##        req = "SELECT IDmodele FROM contrats_modeles WHERE IDclassification=%d;" % varID
-##        DB.ExecuterReq(req)
-##        listeDonnees = DB.ResultatReq()
-##        DB.Close()
-##        if len(listeDonnees) != 0 :
-##            dlg = wx.MessageDialog(self, _(u"Cette classification a déjà été attribuée à ") + str(len(listeDonnees)) + _(u" modèle(s) de contrat.\nEtes-vous sûr de vouloir la modifier ?"), "Confirmation", wx.YES_NO|wx.NO_DEFAULT|wx.ICON_EXCLAMATION)
-##            reponse = dlg.ShowModal()
-##            if reponse == wx.ID_NO:
-##                dlg.Destroy()
-##                return
-##            else: dlg.Destroy()
-        
-        
+
         dlg = wx.TextEntryDialog(self, _(u"Saisissez le nom de la nouvelle affectation :"), _(u"Modification du nom de l'affectation"), varNom)
         if dlg.ShowModal() == wx.ID_OK:
             varNom = dlg.GetValue()
@@ -203,18 +188,6 @@ class Panel(wx.Panel):
             dlg.ShowModal()
             dlg.Destroy()
             return
-        
-        # Vérifie que cette affectation n'est pas attribuée à une offre d'emploi
-##        DB = GestionDB.DB()
-##        req = "SELECT IDmodele FROM contrats_modeles WHERE IDclassification=%d;" % ID
-##        DB.ExecuterReq(req)
-##        listeDonnees = DB.ResultatReq()
-##        DB.Close()
-##        if len(listeDonnees) != 0 :
-##            dlg = wx.MessageDialog(self, _(u"Vous avez déjà enregistré ") + str(len(listeDonnees)) + _(u" modèle(s) de contrat avec cette classification. \nVous ne pouvez donc pas le supprimer."), "Information", wx.OK | wx.ICON_ERROR)
-##            dlg.ShowModal()
-##            dlg.Destroy()
-##            return
 
         # Demande de confirmation
         txtMessage = six.text_type((_(u"Voulez-vous vraiment supprimer cette affectation ? \n\n> ") + Nom))
@@ -227,6 +200,7 @@ class Panel(wx.Panel):
         # Suppression du type de pièce
         DB = GestionDB.DB()
         DB.ReqDEL("affectations", "IDaffectation", ID)
+        DB.Close()
 
         # MàJ du ListCtrl
         self.listCtrl.MAJListeCtrl()

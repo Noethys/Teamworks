@@ -427,8 +427,9 @@ class Panel(wx.Panel):
         if pasChevauchement == False :
             dlg = wx.MessageDialog(self, _(u"Vous avez modifié les horaires de la tâche et elle chevauche désormais une autre tâche sur la même journée pour le même animateur. \n\nVeuillez donc modifier les horaires saisis pour pouvoir l'enregistrer."), "Erreur de saisie", wx.OK)  
             dlg.ShowModal()
-            dlg.Destroy() 
-            return  "PasOk"      
+            dlg.Destroy()
+            DB.Close()
+            return "PasOk"
 
         # Modification de la présence
         DB.ReqMAJ("presences", listeDonnees, "IDpresence", self.IDmodif)

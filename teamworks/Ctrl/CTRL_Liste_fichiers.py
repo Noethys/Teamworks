@@ -416,6 +416,7 @@ class CTRL(ULC.UltimateListCtrl):
                 dlg = wx.MessageDialog(self, _(u"Erreur de connexion MySQL !\n\n%s") % DB.erreur, _(u"Erreur de connexion"), wx.OK | wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
+                DB.Close()
                 return
 
             for suffixe in ("tdata", "tdocuments", "tphotos"):

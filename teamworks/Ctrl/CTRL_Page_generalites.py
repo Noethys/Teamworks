@@ -494,6 +494,7 @@ class Panel_general(wx.Panel):
         # Suppression
         DB = GestionDB.DB()
         DB.ReqDEL("coordonnees", "IDcoord", varIDcoord)
+        DB.Close()
 
         # M‡J du listCtrl Coords de la fiche individuelle
         self.list_ctrl_coords.Remplissage()
@@ -1128,7 +1129,7 @@ class Panel_general(wx.Panel):
         else:
             # Si IDpersonne != 0, on modifie l'enregistrement
             DB.ReqMAJ("personnes", listeDonnees, "IDpersonne", self.IDpersonne)
-            
+        DB.Close()
 
     def MaJ_Header_Fiche(self):
         """ M‡J de la fiche individuelle """

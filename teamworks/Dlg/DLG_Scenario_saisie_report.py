@@ -307,6 +307,7 @@ class MyDialog(wx.Dialog):
         req = "SELECT IDscenario, IDpersonne, date_debut, date_fin, toutes_categories FROM scenarios WHERE IDscenario=%d;" % IDscenario
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         if len(listeDonnees) == 0 : return [], []
         
         IDpersonne = listeDonnees[0][1]
@@ -340,6 +341,7 @@ class MyDialog(wx.Dialog):
         req = "SELECT IDscenario, IDpersonne, date_debut, date_fin FROM scenarios WHERE IDscenario=%d;" % IDscenario
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
+        DB.Close()
         if len(listeDonnees) == 0 : return []
         
         IDpersonne = listeDonnees[0][1]

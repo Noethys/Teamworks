@@ -238,6 +238,7 @@ class Panel(wx.Panel):
         # Suppression
         DB = GestionDB.DB()
         DB.ReqDEL("deplacements", "IDdeplacement", IDdeplacement)
+        DB.Close()
 
         # M‡J du listCtrl de la fiche individuelle
         self.ctrl_deplacements.MAJListeCtrl()

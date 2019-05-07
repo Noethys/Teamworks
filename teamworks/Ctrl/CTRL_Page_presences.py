@@ -186,6 +186,7 @@ class Panel(wx.Panel):
         # Suppression
         DB = GestionDB.DB()
         DB.ReqDEL("presences", "IDpresence", IDpresence)
+        DB.Close()
 
         # MàJ du listCtrl de la fiche individuelle
         if index > 0 : self.listCtrl.indexEnCours = index - 1

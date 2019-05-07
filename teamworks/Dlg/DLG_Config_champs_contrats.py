@@ -180,6 +180,7 @@ class Panel(wx.Panel):
         # Suppression du type de pièce
         DB = GestionDB.DB()
         DB.ReqDEL("contrats_champs", "IDchamp", ID)
+        DB.Close()
 
         # MàJ du ListCtrl
         self.listCtrl.MAJListeCtrl()

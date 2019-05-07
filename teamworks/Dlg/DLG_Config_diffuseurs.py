@@ -202,6 +202,7 @@ class Panel(wx.Panel):
         # Suppression du type de pièce
         DB = GestionDB.DB()
         DB.ReqDEL("diffuseurs", "IDdiffuseur", ID)
+        DB.Close()
 
         # MàJ du ListCtrl
         self.listCtrl.MAJListeCtrl()

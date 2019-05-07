@@ -278,7 +278,6 @@ class Dialog(wx.Dialog):
 
 
         # Enregistrement des données de la table DIPLOMES_PIECES --------------------------
-        
         for IDtype_diplome in VarIDtypesDiplomes:
 
             # Recherche d'abord si cette association existe déjà dans la base de données
@@ -319,6 +318,7 @@ class Dialog(wx.Dialog):
         req = "SELECT * FROM types_pieces WHERE IDtype_piece = %d" % self.IDtype_piece
         DB.ExecuterReq(req)
         donnees = DB.ResultatReq()
+        DB.Close()
         if len(donnees) > 0 : 
             donnees = donnees[0]
         else:

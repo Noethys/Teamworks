@@ -92,8 +92,9 @@ class Dialog(wx.Dialog):
         
         for item in listeDonnees :
             self.dictChamps[item[0]] = item[1]
-        
-    
+
+        DB.Close()
+
     def Creation_Pages(self):
         """ Creation des pages """
         for numPage in range(1, self.nbrePages+1) :

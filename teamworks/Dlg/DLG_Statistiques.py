@@ -738,7 +738,7 @@ class Dialog(wx.Dialog):
         
     def Build_Hyperlink_periode(self, date_debut, date_fin) :
         """ Construit un hyperlien """
-        self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
+        self.SetFont(wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Arial'))
         dateTemp = str(date_debut)
         labelDebut = str(dateTemp[8:10]) + "/" + str(dateTemp[5:7]) + "/" + str(dateTemp[:4])
         dateTemp = str(date_fin)
@@ -776,7 +776,7 @@ class Dialog(wx.Dialog):
 
     def Build_Hyperlink_select_all(self) :
         """ Construit un hyperlien """
-        self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL, False))
+        self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial'))
         hyper = hl.HyperLinkCtrl(self.panel, -1, _(u"Tout sélect."), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink_select_all)
         hyper.AutoBrowse(False)
@@ -795,7 +795,7 @@ class Dialog(wx.Dialog):
 
     def Build_Hyperlink_deselect_all(self) :
         """ Construit un hyperlien """
-        self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL, False))
+        self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Arial'))
         hyper = hl.HyperLinkCtrl(self.panel, -1, _(u"Tout désélect."), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink_deselect_all)
         hyper.AutoBrowse(False)
@@ -815,7 +815,7 @@ class Dialog(wx.Dialog):
 
     def Build_Hyperlink_presents(self) :
         """ Construit un hyperlien """
-        self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL, False))
+        self.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Arial'))
         hyper = hl.HyperLinkCtrl(self.panel, -1, _(u"Sélectionner les présents"), URL="")
         hyper.Bind(hl.EVT_HYPERLINK_LEFT, self.OnLeftLink_presents)
         hyper.AutoBrowse(False)
@@ -1629,7 +1629,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(self.dictLignes[IDpersonne]["total"]["total"]))
                     self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                     self.SetReadOnly(indexLigne, indexColonne, True)
-                    font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                    font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                     self.SetCellFont(indexLigne, indexColonne, font)
                 
                 else:
@@ -1643,7 +1643,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellBackgroundColour(indexLigne, 0, couleur_fond_groupe)
                     self.SetReadOnly(indexLigne, 0, True)
                     self.SetCellTextColour(indexLigne, 0, couleur_police_groupe)
-                    font = wx.Font(7, wx.NORMAL, wx.NORMAL, wx.NORMAL)
+                    font = wx.Font(7, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Arial')
                     self.SetCellFont(indexLigne, 0, font)            
                     for x in range(1, len(self.listeCategories)+2):
                         self.SetCellBackgroundColour(indexLigne, x, couleur_fond_groupe)
@@ -1664,7 +1664,7 @@ class Tableau(gridlib.Grid):
                         self.SetCellAlignment(indexLigneTotal, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                         self.SetReadOnly(indexLigneTotal, indexColonne, True)
                         self.SetRowSize(indexLigneTotal, 30)
-                        font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                        font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                         self.SetCellFont(indexLigneTotal, indexColonne, font) 
                         if IDcategorie in self.dictLignes[IDpersonne]["total"] :
                             duree = self.dictLignes[IDpersonne]["total"][IDcategorie]
@@ -1676,7 +1676,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellValue(indexLigneTotal, indexColonne, self.FormateHeure(self.dictLignes[IDpersonne]["total"]["total"]))
                     self.SetCellAlignment(indexLigneTotal, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                     self.SetReadOnly(indexLigneTotal, indexColonne, True)
-                    font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                    font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                     self.SetCellFont(indexLigneTotal, indexColonne, font) 
                 
                 # Création du détail
@@ -1709,7 +1709,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                     self.SetReadOnly(indexLigne, indexColonne, True)
                     self.SetRowSize(indexLigne, 30)
-                    font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                    font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                     self.SetCellFont(indexLigne, indexColonne, font) 
                     
                     indexLigne += 1
@@ -1764,7 +1764,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(totalLigne)) # self.dictLignes[IDpersonne]["total"]["total"])
                     self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                     self.SetReadOnly(indexLigne, indexColonne, True)
-                    font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                    font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                     self.SetCellFont(indexLigne, indexColonne, font) 
                 
                 else:
@@ -1778,7 +1778,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellBackgroundColour(indexLigne, 0, couleur_fond_groupe)
                     self.SetReadOnly(indexLigne, 0, True)
                     self.SetCellTextColour(indexLigne, 0, couleur_police_groupe)
-                    font = wx.Font(7, wx.NORMAL, wx.NORMAL, wx.NORMAL)
+                    font = wx.Font(7, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Arial')
                     self.SetCellFont(indexLigne, 0, font)            
                     for x in range(1, len(self.listeCategories)+2):
                         self.SetCellBackgroundColour(indexLigne, x, couleur_fond_groupe)
@@ -1799,7 +1799,7 @@ class Tableau(gridlib.Grid):
                         self.SetCellAlignment(indexLigneTotal, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                         self.SetReadOnly(indexLigneTotal, indexColonne, True)
                         self.SetRowSize(indexLigneTotal, 30)
-                        font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                        font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                         self.SetCellFont(indexLigneTotal, indexColonne, font)
                         if IDcategorie in self.dictDetails[codeDetail] :
                             duree = self.dictDetails[codeDetail][IDcategorie]
@@ -1812,7 +1812,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellValue(indexLigneTotal, indexColonne, self.FormateHeure(totalLigne)) 
                     self.SetCellAlignment(indexLigneTotal, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                     self.SetReadOnly(indexLigneTotal, indexColonne, True)
-                    font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                    font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                     self.SetCellFont(indexLigneTotal, indexColonne, font) 
                     
                 # Création du détail
@@ -1853,7 +1853,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                     self.SetReadOnly(indexLigne, indexColonne, True)
                     self.SetRowSize(indexLigne, 30)
-                    font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                    font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                     self.SetCellFont(indexLigne, indexColonne, font)
                     
                     indexLigne += 1
@@ -1882,7 +1882,7 @@ class Tableau(gridlib.Grid):
             self.SetCellBackgroundColour(indexLigne, 0, couleur_fond_groupe)
             self.SetReadOnly(indexLigne, 0, True)
             self.SetCellTextColour(indexLigne, 0, couleur_police_groupe)
-            font = wx.Font(7, wx.NORMAL, wx.NORMAL, wx.NORMAL)
+            font = wx.Font(7, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, 'Arial')
             self.SetCellFont(indexLigne, 0, font)
             for x in range(1, len(self.listeCategories)+2):
                 self.SetCellBackgroundColour(indexLigne, x, couleur_fond_groupe)
@@ -1902,7 +1902,7 @@ class Tableau(gridlib.Grid):
                     self.SetCellValue(indexLigne, indexColonne, self.FormateHeure(duree))
                     self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
                     self.SetReadOnly(indexLigne, indexColonne, True)
-                    font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+                    font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
                     self.SetCellFont(indexLigne, indexColonne, font)
             indexColonne += 1
         
@@ -1912,7 +1912,7 @@ class Tableau(gridlib.Grid):
             self.SetCellAlignment(indexLigne, indexColonne, wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
             self.SetReadOnly(indexLigne, indexColonne, True)
             self.SetRowSize(indexLigne, 30)
-            font = wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD)
+            font = wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, 'Arial')
             self.SetCellFont(indexLigne, indexColonne, font)
 
           

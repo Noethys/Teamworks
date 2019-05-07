@@ -793,6 +793,9 @@ class Dialog(wx.Dialog):
                     champs[index][4] = valeur
                 index += 1
 
+        DB.Close()
+
+
 
 if __name__ == "__main__":
     app = wx.App(0)

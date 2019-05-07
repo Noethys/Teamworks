@@ -359,7 +359,8 @@ class PanelContacts(scrolled.ScrolledPanel):
 
             # Création de la liste
             listeContacts.append( [IDpersonne, civilite, nom, prenom, date_naiss, adresse_resid, cp_resid, ville_resid, emails, fixes, fax, mobile] )
-        
+
+        DB.Close()
         return listeContacts
     
     

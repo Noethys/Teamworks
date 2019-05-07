@@ -157,6 +157,7 @@ class Panel(wx.Panel):
         DB.ReqDEL("emplois_fonctions", "IDemploi", ID)
         DB.ReqDEL("emplois_affectations", "IDemploi", ID) 
         DB.ReqDEL("emplois_diffuseurs", "IDemploi", ID)
+        DB.Close()
 
         # M‡J du ListCtrl
         self.listCtrl.MAJListeCtrl()

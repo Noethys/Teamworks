@@ -372,6 +372,7 @@ class Dialog(wx.Dialog):
         else:
             # Modification de la coordonnée
             DB.ReqMAJ(self.nomTable, listeDonnees, "IDcoord", self.IDcoord)
+        DB.Close()
 
     def Importation(self,):
         """ Importation des donnees de la base """

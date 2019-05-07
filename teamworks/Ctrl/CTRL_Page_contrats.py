@@ -190,6 +190,7 @@ class Panel_Contrats(wx.Panel):
         # Suppression
         DB = GestionDB.DB()
         DB.ReqDEL("contrats", "IDcontrat", varIDcontrat)
+        DB.Close()
 
         # M‡J du listCtrl Coords de la fiche individuelle
         self.list_ctrl_contrats.Remplissage()

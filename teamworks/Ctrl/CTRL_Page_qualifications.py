@@ -255,6 +255,7 @@ class Panel_Statut(wx.Panel):
         # Suppression
         DB = GestionDB.DB()
         DB.ReqDEL("pieces", "IDpiece", varIDpiece)
+        DB.Close()
 
         # MàJ du listCtrl Coords de la fiche individuelle
         self.list_ctrl_dossier.Remplissage()
@@ -523,86 +524,7 @@ class ListCtrl_Pieces(wx.ListCtrl):
             else:
                 etat = "PasOk"
             self.DictPieces[IDtype_piece] = (etat, nom_piece)
-        
-##        # ---------------------------------------------------------------------------------------------------------------- Archives :
-##        self.DictPieces = {}
-##
-##        # Recherche des pièces spécifiques
-##        req = """
-##        SELECT diplomes_pieces.IDtype_piece, types_pieces.nom_piece, Count(pieces.IDpiece) AS CompteDeIDpiece, Min(pieces.date_debut) AS MinDedate_debut, Max(pieces.date_fin) AS MaxDedate_fin, diplomes.IDpersonne 
-##        FROM diplomes_pieces
-##        INNER JOIN types_diplomes ON diplomes_pieces.IDtype_diplome = types_diplomes.IDtype_diplome
-##        INNER JOIN types_pieces ON diplomes_pieces.IDtype_piece = types_pieces.IDtype_piece
-##        INNER JOIN diplomes ON types_diplomes.IDtype_diplome = diplomes.IDtype_diplome
-##        LEFT JOIN pieces ON types_pieces.IDtype_piece = pieces.IDtype_piece
-##        GROUP BY diplomes.IDpersonne, diplomes_pieces.IDtype_piece, types_pieces.nom_piece
-##        HAVING diplomes.IDpersonne=%d AND Min(pieces.date_debut)<='%s' AND Max(pieces.date_fin)>='%s' OR diplomes.IDpersonne=%d;
-##        """ % (self.IDpersonne, date_jour, date_jour, self.IDpersonne)
-##        DB.ExecuterReq(req)
-##        listePiecesSpecif = DB.ResultatReq()
-##        # Création du dictionnaire de données pour les pièces spécifiques
-##        for piece in listePiecesSpecif:
-##            IDtype_piece = piece[0]
-##            nom_piece = piece[1]
-##            nbre_pieces = piece[2]
-##            date_debut = piece[3]
-##            date_fin = piece[4]
-##            # Recherche la validité
-##            if nbre_pieces >0 :
-##                date_fin = datetime.date(int(date_fin[:4]), int(date_fin[5:7]), int(date_fin[8:10]))
-##                reste = str(date_fin - date_jour)
-##                if reste != "0:00:00":
-##                    jours = int(reste[:reste.index("day")])
-##                    if jours < 15  and jours > 0:
-##                        etat = "Attention"
-##                    elif jours <= 0:
-##                        etat = "PasOk"
-##                    else:
-##                        etat = "Ok"
-##                else:
-##                    etat = "Attention"
-##            else:
-##                etat = "PasOk"
-##            self.DictPieces[IDtype_piece] = (etat, nom_piece)
-        
-        
-##        # Recherche des pièces basiques (communes à tous les employés)
-##        req = """
-##        SELECT types_pieces.IDtype_piece, types_pieces.nom_piece, Count(pieces.IDpiece) AS CompteDeIDpiece, Min(pieces.date_debut) AS MinDedate_debut, Max(pieces.date_fin) AS MaxDedate_fin, pieces.IDpersonne
-##        FROM diplomes_pieces
-##        INNER JOIN types_pieces ON diplomes_pieces.IDtype_piece = types_pieces.IDtype_piece
-##        LEFT JOIN pieces ON types_pieces.IDtype_piece = pieces.IDtype_piece GROUP BY types_pieces.IDtype_piece, types_pieces.nom_piece, diplomes_pieces.IDtype_diplome, pieces.IDpersonne
-##        HAVING (((diplomes_pieces.IDtype_diplome)=0) AND ((Min(pieces.date_debut))<='%s' Or (Min(pieces.date_debut)) Is Null) AND ((Max(pieces.date_fin))>='%s' Or (Max(pieces.date_fin)) Is Null) AND ((pieces.IDpersonne)=%d Or (pieces.IDpersonne) Is Null)) OR (((diplomes_pieces.IDtype_diplome)=0));
-##        """ % (date_jour, date_jour, self.IDpersonne)
-##        DB.ExecuterReq(req)
-##        listePiecesBase = DB.ResultatReq()
-##
-##        # Création du dictionnaire de données pour les pièces basiques (communes à tous les employés)
-##        for piece in listePiecesBase:
-##            IDtype_piece = piece[0]
-##            nom_piece = piece[1]
-##            nbre_pieces = piece[2]
-##            date_debut = piece[3]
-##            date_fin = piece[4]
-##
-##            # Recherche la validité
-##            if nbre_pieces >0 :
-##                date_fin = datetime.date(int(date_fin[:4]), int(date_fin[5:7]), int(date_fin[8:10]))
-##                reste = str(date_fin - date_jour)
-##                if reste != "0:00:00":
-##                    jours = int(reste[:reste.index("day")])
-##                    if jours < 15 and jours > 0:
-##                        etat = "Attention"
-##                    elif jours <= 0:
-##                        etat = "PasOk"
-##                    else:
-##                        etat = "Ok"
-##                else:
-##                    etat = "Attention"
-##            else:
-##                etat = "PasOk"
-##            self.DictPieces[IDtype_piece] = (etat, nom_piece)
-        
+
         # Fermeture de la base de données
         DB.Close()
 

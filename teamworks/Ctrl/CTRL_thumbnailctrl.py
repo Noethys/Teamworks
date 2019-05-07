@@ -366,13 +366,18 @@ class PILImageHandler(object):
         originalsize = pil.size
         
         pil.thumbnail(thumbnailsize)
-        img = wx.EmptyImage(pil.size[0], pil.size[1])
-
+        if 'phoenix' in wx.PlatformInfo:
+            img = wx.Image(pil.size[0], pil.size[1])
+        else:
+            img = wx.EmptyImage(pil.size[0], pil.size[1])
         img.SetData(pil.convert("RGB").tobytes())
 
         alpha = False
         if "A" in pil.getbands():
-            img.SetAlphaData(pil.convert("RGBA").tobytes()[3::4])
+            if 'phoenix' in wx.PlatformInfo:
+                img.SetAlpha(pil.convert("RGBA").tobytes()[3::4])
+            else:
+                img.SetAlphaData(pil.convert("RGBA").tobytes()[3::4])
             alpha = True
 
         return img, originalsize, alpha
@@ -419,8 +424,12 @@ class Thumb(object):
         self._filesize = None
         self._parent = parent
         self._captionbreaks = []
-        self._bitmap = wx.EmptyBitmap(1,1)
-        self._image = wx.EmptyImage(1,1)
+        if 'phoenix' in wx.PlatformInfo:
+            self._bitmap = wx.Bitmap(1,1)
+            self._image = wx.Image(1,1)
+        else:
+            self._bitmap = wx.EmptyBitmap(1,1)
+            self._image = wx.EmptyImage(1,1)
         self._rotation = 0
         self._alpha = None
         
@@ -495,7 +504,11 @@ class Thumb(object):
         """
         
         if self.GetRotation() % (2*pi) < 1e-6:
-            if not self._bitmap.Ok():
+            if 'phoenix' in wx.PlatformInfo:
+                is_ok = self._bitmap.IsOk()
+            else:
+                is_ok = self._bitmap.Ok()
+            if not is_ok:
                 if not hasattr(self, "_threadedimage"):
                     img = GetMondrianImage()
                 else:
@@ -587,12 +600,15 @@ class Thumb(object):
         if len(self._caption) == 0:
             return
 
-        pos = width/16
+        pos = width//16
         beg = 0
         end = 0
 
         dc = wx.MemoryDC()
-        bmp = wx.EmptyBitmap(10,10)
+        if 'phoenix' in wx.PlatformInfo:
+            bmp = wx.Bitmap(10,10)
+        else:
+            bmp = wx.EmptyBitmap(10,10)
         dc.SelectObject(bmp)
         
         while 1:
@@ -616,7 +632,7 @@ class Thumb(object):
                     self._captionbreaks.append(pos)
                     beg = pos
               
-                pos = beg + width/16
+                pos = beg + width//16
                 end = 0
 
             if pos < len(self._caption) and self._caption[pos] in [" ", "-", ",", ".", "_"]:
@@ -1163,8 +1179,8 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         self._tWidth = width 
         self._tHeight = height
         self._tBorder = border
-        self.SetScrollRate((self._tWidth + self._tBorder)/4,
-                           (self._tHeight + self._tBorder)/4)
+        self.SetScrollRate((self._tWidth + self._tBorder)//4,
+                           (self._tHeight + self._tBorder)//4)
         self.SetSizeHints(self._tWidth + self._tBorder*2 + 16,
                           self._tHeight + self._tBorder*2 + 8)
 
@@ -1408,7 +1424,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         self._caption = caption
         if self._labelcontrol:
 
-            maxWidth = self._labelcontrol.GetSize().GetWidth()/8
+            maxWidth = self._labelcontrol.GetSize().GetWidth()//8
             if len(caption) > maxWidth:
                 caption = "..." + caption[len(caption) + 3 - maxWidth]
 
@@ -1468,7 +1484,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         :param `y`: the mouse y position.
         """
         
-        col = (x - self._tBorder)/(self._tWidth + self._tBorder)
+        col = (x - self._tBorder)//(self._tWidth + self._tBorder)
 
         if col >= self._cols:
             col = self._cols - 1
@@ -1620,7 +1636,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
             return
 
         # get row
-        row = self.GetSelection()/self._cols
+        row = self.GetSelection()//self._cols
         # calc position to scroll view
         
         paintRect = self.GetPaintRect()
@@ -1636,7 +1652,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         
         # scroll view
         xu, yu = self.GetScrollPixelsPerUnit()
-        sy = sy/yu + (sy%yu and [1] or [0])[0] # convert sy to scroll units
+        sy = sy//yu + (sy%yu and [1] or [0])[0] # convert sy to scroll units
         x, y = self.GetViewStart()
         
         self.Scroll(x,sy)
@@ -1672,10 +1688,11 @@ class ScrolledThumbnail(wx.ScrolledWindow):
 
         dc = wx.MemoryDC()
         dc.SelectObject(bmp)
-        dc.BeginDrawing()
+        if 'phoenix' not in wx.PlatformInfo:
+            dc.BeginDrawing()
         
-        x = self._tBorder/2
-        y = self._tBorder/2
+        x = self._tBorder//2
+        y = self._tBorder//2
 
         # background
         dc.SetPen(wx.Pen(wx.BLACK, 0, wx.TRANSPARENT))
@@ -1691,8 +1708,8 @@ class ScrolledThumbnail(wx.ScrolledWindow):
             factor = 1.5
             img = self._imageHandler.HighlightImage(img.ConvertToImage(), factor).ConvertToBitmap()
         
-        imgRect = wx.Rect(x + (self._tWidth - img.GetWidth())/2,
-                          y + (self._tHeight - img.GetHeight())/2,
+        imgRect = wx.Rect(x + (self._tWidth - img.GetWidth())//2,
+                          y + (self._tHeight - img.GetHeight())//2,
                           img.GetWidth(), img.GetHeight())
 
         if not thumb._alpha:
@@ -1717,17 +1734,17 @@ class ScrolledThumbnail(wx.ScrolledWindow):
                 sw = self._tWidth
             
             textWidth = sw + 8
-            tx = x + (self._tWidth - textWidth)/2
+            tx = x + (self._tWidth - textWidth)//2
             ty = y + self._tHeight
 
             txtcolour = "#7D7D7D"
             dc.SetTextForeground(txtcolour) 
             
-            tx = x + (self._tWidth - sw)/2
+            tx = x + (self._tWidth - sw)//2
             if hh >= self._tHeight:
-                ty = y + self._tHeight + (self._tTextHeight - sh)/2 + 3
+                ty = y + self._tHeight + (self._tTextHeight - sh)//2 + 3
             else:
-                ty = y + hh + (self._tHeight-hh)/2 + (self._tTextHeight - sh)/2 + 3
+                ty = y + hh + (self._tHeight-hh)//2 + (self._tTextHeight - sh)//2 + 3
 
             dc.DrawText(mycaption, tx, ty)
             
@@ -1759,8 +1776,10 @@ class ScrolledThumbnail(wx.ScrolledWindow):
             if selected:
 
                 dc.SetPen(self.grayPen)
-                dc.DrawRoundedRectangleRect(dotrect, 2)
-                
+                if 'phoenix' in wx.PlatformInfo:
+                    dc.DrawRoundedRectangle(dotrect, 2)
+                else:
+                    dc.DrawRoundedRectangleRect(dotrect, 2)
                 dc.SetPen(wx.Pen(wx.WHITE))
                 dc.DrawRectangle(imgRect.x, imgRect.y,
                                  imgRect.width, imgRect.height)
@@ -1779,9 +1798,9 @@ class ScrolledThumbnail(wx.ScrolledWindow):
 
                 dc.DrawRectangle(imgRect.x - 1, imgRect.y - 1,
                                  imgRect.width + 2, imgRect.height + 2)
-            
-  
-        dc.EndDrawing()
+
+        if 'phoenix' not in wx.PlatformInfo:
+            dc.EndDrawing()
         dc.SelectObject(wx.NullBitmap)
 
 
@@ -1812,22 +1831,25 @@ class ScrolledThumbnail(wx.ScrolledWindow):
             if col == 0:
                 row = row + 1
                 
-            xwhite = ((w - self._cols*(self._tWidth + self._tBorder)))/(self._cols+1)
+            xwhite = ((w - self._cols*(self._tWidth + self._tBorder)))//(self._cols+1)
             tx = xwhite + col*(self._tWidth + self._tBorder)
 
-            ty = self._tBorder/2 + row*(self._tHeight + self._tBorder) + \
+            ty = self._tBorder//2 + row*(self._tHeight + self._tBorder) + \
                  self.GetCaptionHeight(0, row)
             tw = self._tWidth + self._tBorder
             th = self._tHeight + self.GetCaptionHeight(row) + self._tBorder
             # visible?
             if not paintRect.Intersects(wx.Rect(tx, ty, tw, th)):
                 continue
-          
-            thmb = wx.EmptyBitmap(tw, th)
+
+            if 'phoenix' in wx.PlatformInfo:
+                thmb = wx.Bitmap(tw, th)
+            else:
+                thmb = wx.EmptyBitmap(tw, th)
             self.DrawThumbnail(thmb, self._items[ii], ii)
             dc.DrawBitmap(thmb, tx, ty)
   
-        rect = wx.Rect(xwhite, self._tBorder/2,
+        rect = wx.Rect(xwhite, self._tBorder//2,
                        self._cols*(self._tWidth + self._tBorder),
                        self._rows*(self._tHeight + self._tBorder) + \
                        self.GetCaptionHeight(0, self._rows))
@@ -2133,17 +2155,17 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         for thumb in selected:
             count = count + 1
             if TN_USE_PIL:
-                newangle = thumb.GetRotation()*180/pi + angle
+                newangle = thumb.GetRotation()*180//pi + angle
                 fil = opj(thumb.GetFullFileName())
                 pil = Image.open(fil).rotate(newangle)
                 img = wx.EmptyImage(pil.size[0], pil.size[1])
                 img.SetData(pil.convert('RGB').tobytes())
-                thumb.SetRotation(newangle*pi/180)
+                thumb.SetRotation(newangle*pi//180)
             else:
                 img = thumb._threadedimage
-                newangle = thumb.GetRotation() + angle*pi/180
+                newangle = thumb.GetRotation() + angle*pi//180
                 thumb.SetRotation(newangle)
-                img = img.Rotate(newangle, (img.GetWidth()/2, img.GetHeight()/2), True)
+                img = img.Rotate(newangle, (img.GetWidth()//2, img.GetHeight()//2), True)
                 
             thumb.SetRotatedImage(img)
             dlg.Update(count)

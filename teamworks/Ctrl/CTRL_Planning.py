@@ -487,7 +487,8 @@ class WidgetPlanning(wx.ScrolledWindow):
         y = posYhaut
         h = hauteurBarre
         if mode =="screen":
-            if IDobjet == None : IDobjet = wx.NewId()
+            if IDobjet == None :
+                IDobjet = wx.Window.NewControlId()
             dc.SetId(IDobjet)
         
         # Paramètres du dessin
@@ -659,7 +660,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         for key, valeurs in self.dictGroupes.items() :
             self.dictInfosGroupes[key] = {}
             if mode == "screen" :
-                IDobjet = wx.NewId()
+                IDobjet = wx.Window.NewControlId()
                 dc.SetId(IDobjet)
         
             # Détermine la couleur de fond du groupe
@@ -689,7 +690,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         
         for key, valeurs in self.dictLignes.items() :
             if mode == "screen" :
-                IDobjet = wx.NewId()
+                IDobjet = wx.Window.NewControlId()
                 dc.SetId(IDobjet)
         
             dc.SetBrush(wx.Brush((230, 230, 230)))
@@ -787,7 +788,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             
             if mode =="screen":
                 if IDobjet == None : 
-                    IDobjet = wx.NewId()
+                    IDobjet = wx.Window.NewControlId()
                 else:
                     dc.ClearId(IDobjet)
                 dc.SetId(IDobjet)
@@ -837,7 +838,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         
         if mode =="screen":
             if IDobjet == None : 
-                IDobjet = wx.NewId()
+                IDobjet = wx.Window.NewControlId()
             else:
                 dc.ClearId(IDobjet)
             dc.SetId(IDobjet)
@@ -890,7 +891,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         
         if mode =="screen":
             if IDobjet == None : 
-                IDobjet = wx.NewId()
+                IDobjet = wx.Window.NewControlId()
             else:
                 dc.ClearId(IDobjet)
             dc.SetId(IDobjet)
@@ -1494,31 +1495,30 @@ class WidgetPlanning(wx.ScrolledWindow):
             if IDpresence == None  : 
                 
                 # Menu Ajouter
-                self.popupID1 = wx.NewId()
-                self.Bind(wx.EVT_MENU, self.OnMenuAjouter, id=self.popupID1)
-                menu.Append(self.popupID1, _(u"Enregistrer une tâche unique ici"))
-                #menu.Enable(self.popupID1, False)
-            
+                id = wx.Window.NewControlId()
+                self.Bind(wx.EVT_MENU, self.OnMenuAjouter, id=id)
+                menu.Append(id, _(u"Enregistrer une tâche unique ici"))
+
             else:
 
                 # Menu Modifier
-                self.popupID1 = wx.NewId()
-                self.Bind(wx.EVT_MENU, self.OnMenuModifier, id=self.popupID1)
-                menu.Append(self.popupID1, _(u"Modifier"))
+                id = wx.Window.NewControlId()
+                self.Bind(wx.EVT_MENU, self.OnMenuModifier, id=id)
+                menu.Append(id, _(u"Modifier"))
 
                 # Menu Supprimer
-                self.popupID2 = wx.NewId()
-                self.Bind(wx.EVT_MENU, self.OnMenuSupprimer, id=self.popupID2)
-                menu.Append(self.popupID2, _(u"Supprimer"))
+                id = wx.Window.NewControlId()
+                self.Bind(wx.EVT_MENU, self.OnMenuSupprimer, id=id)
+                menu.Append(id, _(u"Supprimer"))
 
                 # Menu Modifier la légende
                 if self.dictPresences[IDpresence][6] == "" :
                     texte3 = _(u"Ajouter une légende")
                 else:
                     texte3 = _(u"Modifier la légende")
-                self.popupID3 = wx.NewId()
-                self.Bind(wx.EVT_MENU, self.OnMenuModifLegende, id=self.popupID3)
-                menu.Append(self.popupID3, texte3)
+                id = wx.Window.NewControlId()
+                self.Bind(wx.EVT_MENU, self.OnMenuModifLegende, id=id)
+                menu.Append(id, texte3)
            
                 # Création du sous-menu Catégories
                 self.SousMenuCategories(0, menu, _(u"Changer de catégorie"), None)
@@ -1529,45 +1529,45 @@ class WidgetPlanning(wx.ScrolledWindow):
         if len(selectionsLignes) != 0 :
             
             # Menu Saisir une tâche pour les lignes sélectionnées
-            self.popupIDSaisie = wx.NewId()
-            self.Bind(wx.EVT_MENU, self.OnMenuSaisie, id=self.popupIDSaisie)
+            id = wx.Window.NewControlId()
+            self.Bind(wx.EVT_MENU, self.OnMenuSaisie, id=id)
             if len(selectionsLignes) == 1:
                 txt = _(u"Enregistrer une tâche pour la ligne sélectionnée")
             else:
                 txt = _(u"Enregistrer une tâche pour les ") + str(len(selectionsLignes)) + _(u" lignes sélectionnées")
-            menu.Append(self.popupIDSaisie, txt)
+            menu.Append(id, txt)
             
             # Menu Supprimer toutes les tâches des des lignes sélectionnées
-            self.popupIDSupprimerAll = wx.NewId()
-            self.Bind(wx.EVT_MENU, self.OnMenuSupprimerLignes, id=self.popupIDSupprimerAll)
+            id = wx.Window.NewControlId()
+            self.Bind(wx.EVT_MENU, self.OnMenuSupprimerLignes, id=id)
             if len(selectionsLignes) == 1:
                 txt = _(u"Supprimer toutes les tâches de la ligne sélectionnée")
             else:
                 txt = _(u"Supprimer toutes les tâches des ") + str(len(selectionsLignes)) + _(u" lignes sélectionnées")
-            menu.Append(self.popupIDSupprimerAll, txt)
+            menu.Append(id, txt)
             
             menu.AppendSeparator()
             
             # Menu Appliquer un modèle
-            self.popupIDAppliquerModele = wx.NewId()
-            self.Bind(wx.EVT_MENU, self.OnMenuAppliquerModele, id=self.popupIDAppliquerModele)
+            id = wx.Window.NewControlId()
+            self.Bind(wx.EVT_MENU, self.OnMenuAppliquerModele, id=id)
             if len(selectionsLignes) == 1:
                 txt = _(u"Appliquer un modèle à la ligne sélectionnée")
             else:
                 txt = _(u"Appliquer un modèle aux ") + str(len(selectionsLignes)) + _(u" lignes sélectionnées")
-            menu.Append(self.popupIDAppliquerModele, txt)
+            menu.Append(id, txt)
             
             menu.AppendSeparator()
         
         # Menu Tout sélectionner
-        self.popupIDSelectAll = wx.NewId()
-        self.Bind(wx.EVT_MENU, self.OnMenuSelectAll, id=self.popupIDSelectAll)
-        menu.Append(self.popupIDSelectAll, _(u"Sélectionner toutes les lignes"))
+        id = wx.Window.NewControlId()
+        self.Bind(wx.EVT_MENU, self.OnMenuSelectAll, id=id)
+        menu.Append(id, _(u"Sélectionner toutes les lignes"))
             
         # Menu Tout désélectionner
-        self.popupIDDeselectAll = wx.NewId()
-        self.Bind(wx.EVT_MENU, self.OnMenuDeselectAll, id=self.popupIDDeselectAll)
-        menu.Append(self.popupIDDeselectAll, _(u"Désélectionner toutes les lignes"))
+        id = wx.Window.NewControlId()
+        self.Bind(wx.EVT_MENU, self.OnMenuDeselectAll, id=id)
+        menu.Append(id, _(u"Désélectionner toutes les lignes"))
         
        
         # Finalisation du menu
@@ -1723,7 +1723,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         # Rattachement de ce menu au menu parent
         if nbre != 0 :
             index, texte = 4, titre
-            setattr(self, "popupID%s" % index, wx.NewId())
+            setattr(self, "popupID%s" % index, wx.Window.NewControlId())
             menu.AppendMenu(getattr(self, "popupID%s" % index), texte, sm)
                   
 

@@ -689,6 +689,7 @@ class CTRL(HTL.HyperTreeList):
         self.listeIDcategorie = []
         self.dictValeursInitiales = {}
         self.dictReponses = {}
+        self.dictBranches = {}
         
         self.SetBackgroundColour(wx.WHITE)
         

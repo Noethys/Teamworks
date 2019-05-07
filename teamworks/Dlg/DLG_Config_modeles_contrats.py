@@ -142,15 +142,13 @@ class Panel(wx.Panel):
         # Suppression du modèle
         DB = GestionDB.DB()
         DB.ReqDEL("contrats_modeles", "IDmodele", IDmodele)
-        
+
         # Suppression des champs associés
-##        DB = GestionDB.DB()
         req = "SELECT IDval_champ FROM contrats_valchamps WHERE (IDmodele=%d AND type='modele')  ;" % IDmodele
         DB.ExecuterReq(req)
         listeChamps = DB.ResultatReq()
         nbreResultats = len(listeChamps)
-        print(listeChamps)
-        
+
         for IDval_champ in listeChamps :
                 DB.ReqDEL("contrats_valchamps", "IDval_champ", IDval_champ[0])
                 

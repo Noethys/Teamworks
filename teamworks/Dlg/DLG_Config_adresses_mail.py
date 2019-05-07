@@ -289,13 +289,7 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSorter
         self.nbreLignes = len(liste)
         # Création du dictionnaire de données
         self.donnees = self.listeEnDict(liste)
-        
-##        # Recherche de la valeur actuelle :
-##        dateJour = str(datetime.date.today())
-##        for ID, valeur, dateDebut in liste :
-##            if dateJour >= dateDebut :
-##                self.valeurActuelle = ID
-            
+
     def MAJListeCtrl(self):
         self.ClearAll()
         self.Remplissage()

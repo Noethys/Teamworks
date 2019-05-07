@@ -508,6 +508,7 @@ class Panel(wx.Panel):
         # Suppression
         DB = GestionDB.DB()
         DB.ReqDEL("coords_candidats", "IDcoord", varIDcoord)
+        DB.Close()
 
         # M‡J du listCtrl Coords de la fiche individuelle
         self.ctrl_coords.Remplissage()
