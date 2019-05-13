@@ -592,7 +592,7 @@ class ListCtrl_donnees(wx.ListCtrl, CheckListCtrlMixin):
         self.Remplissage()
 
     def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
+        self.ToggleItem(evt.Index)
 
 
     # this is called by the base class when an item is checked/unchecked

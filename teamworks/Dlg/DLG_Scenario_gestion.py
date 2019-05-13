@@ -19,7 +19,6 @@ from Utils import UTILS_Adaptations
 import six
 
 
-DICT_PERSONNES = {}
 
 class Panel(wx.Panel):
     def __init__(self, parent, ID=-1, IDpersonne=None):
@@ -258,7 +257,7 @@ class TreeListCtrl(HTL.HyperTreeList):
         self.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.OnContextMenu)   
     
     def InitTreeCtrl(self):
-        self.GetDictPersonnes()
+        self.dict_personnes = self.GetDictPersonnes()
         self.dictScenarios = self.GetDictScenarios()
         
         # Création des colonnes
@@ -292,7 +291,7 @@ class TreeListCtrl(HTL.HyperTreeList):
             listeIDPersonnes = list(self.dictScenarios.keys())
             listeNomsPersonnes = []
             for IDpersonne in listeIDPersonnes :
-                IDpersonne, nom, prenom, civilite = DICT_PERSONNES[IDpersonne]
+                IDpersonne, nom, prenom, civilite = self.dict_personnes[IDpersonne]
                 listeNomsPersonnes.append( (u"%s %s" % (nom, prenom), civilite, IDpersonne) )
             listeNomsPersonnes.sort()
             
@@ -377,15 +376,15 @@ class TreeListCtrl(HTL.HyperTreeList):
         return dictScenarios
 
     def GetDictPersonnes(self):
-        global DICT_PERSONNES
         DB = GestionDB.DB()
         req = "SELECT IDpersonne, nom, prenom, civilite FROM personnes;"
         DB.ExecuterReq(req)
         listeDonnees = DB.ResultatReq()
         DB.Close()
-        DICT_PERSONNES = {}
+        dict_personnes = {}
         for valeurs in listeDonnees :
-            DICT_PERSONNES[valeurs[0]] = valeurs
+            dict_personnes[valeurs[0]] = valeurs
+        return dict_personnes
 
     def OnActivated(self,event):
         item = self.GetSelection()

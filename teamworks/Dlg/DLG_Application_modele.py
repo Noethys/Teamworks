@@ -704,12 +704,14 @@ class Panel(wx.Panel):
         dlg.Destroy()
         
         # Duplication du modèle
-        saisieModele = DLG_Saisie_modele.Frm_SaisieModele(self, IDmodele=IDmodele)
-        saisieModele.Show()
+        dlg = DLG_Saisie_modele.Dialog(self, IDmodele=IDmodele)
+        dlg.IDmodele = 0
+        dlg.text_nom.SetValue(_(u"Copie de %s") % nomModele)
+        dlg.ShowModal()
+        dlg.Destroy()
+
         
-        saisieModele.IDmodele = 0
-        saisieModele.text_nom.SetValue(_(u"Copie de %s") % nomModele)
-        
+
         
         
         
@@ -761,7 +763,7 @@ class listCtrl_Personnes(wx.ListCtrl, CheckListCtrlMixin):
             return 1
 
     def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
+        self.ToggleItem(evt.Index)
 
     # this is called by the base class when an item is checked/unchecked
     def OnCheckItem(self, index, flag):
@@ -856,7 +858,7 @@ class listCtrl_Modeles(wx.ListCtrl, CheckListCtrlMixin):
             return 1
 
     def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
+        self.ToggleItem(evt.Index)
         
     def OnItemSelected(self, event):
         self.GetGrandParent().GetParent().boutonsEnabled(True, True, True)

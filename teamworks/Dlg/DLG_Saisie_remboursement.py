@@ -568,7 +568,7 @@ class ListCtrl_deplacements(wx.ListCtrl, CheckListCtrlMixin):
         self.MajLabelRattachement()
         
     def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
+        self.ToggleItem(evt.Index)
 
     def OnCheckItem(self, index, flag):
         """ Ne fait rien si c'est le remplissage qui coche la case ! """

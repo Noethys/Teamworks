@@ -210,7 +210,7 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.Remplissage(select, action)
         
     def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
+        self.ToggleItem(evt.Index)
 
     def ListeItemsCoches(self):
         """ Récupère la liste des IDdeplacements cochés """

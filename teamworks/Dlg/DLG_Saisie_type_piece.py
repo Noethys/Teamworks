@@ -318,10 +318,10 @@ class Dialog(wx.Dialog):
         req = "SELECT * FROM types_pieces WHERE IDtype_piece = %d" % self.IDtype_piece
         DB.ExecuterReq(req)
         donnees = DB.ResultatReq()
-        DB.Close()
         if len(donnees) > 0 : 
             donnees = donnees[0]
         else:
+            DB.Close()
             return
         
         # Placement des données dans les contrôles
@@ -353,6 +353,7 @@ class Dialog(wx.Dialog):
         req = "SELECT * FROM diplomes_pieces WHERE IDtype_piece = %d" % self.IDtype_piece
         DB.ExecuterReq(req)
         donnees = DB.ResultatReq()
+        DB.Close()
 
         for item in donnees:
             listeDiplomes.append(item[1])

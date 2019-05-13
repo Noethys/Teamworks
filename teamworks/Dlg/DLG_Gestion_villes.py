@@ -367,12 +367,12 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
         event.Skip()
 
     def OnItemSelected(self, event):
-        self.currentItem = event.m_itemIndex
+        self.currentItem = event.Index
         #print ('OnItemSelected: "%s", "%s", "%s"' %(self.currentItem, self.GetItemText(self.currentItem), self.getColumnText(self.currentItem, 1)))
         event.Skip()
         
     def OnItemActivated(self, event):
-        self.currentItem = event.m_itemIndex
+        self.currentItem = event.Index
         #print ("OnItemActivated: %s\nTopItem: %s\n" % (self.GetItemText(self.currentItem), self.GetTopItem()))
         event.Skip()
         
@@ -381,7 +381,7 @@ class VirtualList(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.ColumnSor
         return item.GetText()
 
     def OnItemDeselected(self, evt):
-        print(("OnItemDeselected: %s" % evt.m_itemIndex))
+        print(("OnItemDeselected: %s" % evt.Index))
 
 
     #---------------------------------------------------

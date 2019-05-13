@@ -74,7 +74,7 @@ class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
 
     def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
+        self.ToggleItem(evt.Index)
 
     def OnCheckItem(self, index, flag):
         ID = self.GetItemData(index)
