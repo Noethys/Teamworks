@@ -8,7 +8,9 @@
 # Licence:         Licence GNU GPL
 #------------------------------------------------------------------------
 
+
 import Chemins
+from Utils import UTILS_Adaptations
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
@@ -16,12 +18,44 @@ from Ctrl import CTRL_Bandeau
 from Utils import UTILS_Parametres
 import datetime
 import GestionDB
-import FonctionsPerso
 from Utils import UTILS_Icalendar
 import wx.lib.agw.hyperlink as Hyperlink
 
-from ObjectListView import FastObjectListView, ColumnDefn, Filter
 
+from Utils import UTILS_Interface
+from Ctrl.CTRL_ObjectListView import FastObjectListView, ColumnDefn, Filter, CTRL_Outils
+
+
+
+
+def RechercherZone(ville="", cp=""):
+    """ Rechercher zone scolaire """
+##    url = "http://www.education.gouv.fr/pid25058/le-calendrier-scolaire.html?annee=108&zone=116&search_input=%s+%%28%s%%29" % (ville, str(cp))
+##    url = url.replace(' ','%20')
+##    f = urllib2.urlopen(url, timeout=5)
+##    page = f.read()
+##    print url
+##    # Recherche dans la page
+##    chaine = "appartient &agrave; la Zone "
+##    position = page.index(chaine)
+##    zone = page[position + len(chaine)][0]
+##    return zone
+    
+##    # Zones par département
+##    A = [14, 50, 61, 3, 15, 43, 63, 7, 26, 38, 73, 74, 1, 42, 69, 11, 30, 34, 48, 66, 54, 55, 57, 88, 44, 49, 53, 72, 85, 22, 29, 35, 56, 9, 12, 31, 32, 46, 65, 81, 82]
+##    B = [4, 5, 13, 84, 2, 60, 80, 25, 39, 70, 90, 21, 71, 89, 59, 62, 19, 23, 87, 06, 83, 18, 28, 36, 37, 41, 45, 16, 17, 79, 86, 8, 10, 51, 52, 27, 76, 66, 67]
+##    C = [24, 33, 40, 47, 64, 77, 93, 94, 75, 78, 91, 92, 95]
+
+    # NOUVELLES Zones par département (à partir de 2015)
+    A = [25, 39, 70, 90, 24, 33, 40, 47, 64, 21, 58, 71, 89, 3, 15, 43, 63, 7, 26, 38, 73, 74, 19, 23, 87, 1, 42, 69, 16, 17, 79, 86]
+    B = [4, 5, 13, 84, 2, 60, 80, 14, 50, 61, 59, 62, 54, 55, 57, 88, 44, 49, 53, 72, 85, 6, 83, 18, 28, 36, 37, 41, 45, 8, 10, 51, 52, 22, 29, 35, 56, 27, 76, 67, 68]
+    C = [77, 93, 94, 75, 11, 30, 34, 48, 66, 9, 12, 31, 32, 46, 65, 81, 82, 78, 91, 92, 95]
+
+    numDep = int(cp[:2])
+    if numDep in A : return "A"
+    if numDep in B : return "B"
+    if numDep in C : return "C"
+    return None
 
 
 class Track(object):
@@ -45,7 +79,7 @@ class ListView(FastObjectListView):
         
         self.dictVacances = {}
         for IDperiode, nom, annee, date_debut, date_fin in listeDonnees :
-            self.dictVacances[(annee, nom)] = (date_debut, date_fin)
+            self.dictVacances[(int(annee), nom)] = (date_debut, date_fin)
         
         # Init
         FastObjectListView.__init__(self, *args, **kwds)
@@ -73,7 +107,7 @@ class ListView(FastObjectListView):
             
     def InitObjectListView(self):            
         # Couleur en alternance des lignes
-        self.oddRowsBackColor = "#F0FBED" 
+        self.oddRowsBackColor = UTILS_Interface.GetValeur("couleur_tres_claire", wx.Colour(240, 251, 237))
         self.evenRowsBackColor = wx.Colour(255, 255, 255)
         self.useExpansionColumn = True
         
@@ -124,11 +158,11 @@ class ListView(FastObjectListView):
         anneeActuelle = datetime.date.today().year
         nbre = 0
         for track in self.donnees :
-            if ((str(track.annee), track.nom) in self.dictVacances) == False and track.annee >= anneeActuelle :
+            if ((track.annee, track.nom) in self.dictVacances) == False and track.annee >= anneeActuelle :
                 self.Check(track)
                 self.RefreshObject(track)
                 nbre += 1
-            
+        
         # Texte de label
         if nbre == 0 : texte = _(u"Teamworks n'a aucune suggestion d'importation...")
         elif nbre == 1 : texte = _(u"Teamworks vous suggère d'importer 1 période de vacances...")
@@ -138,12 +172,15 @@ class ListView(FastObjectListView):
     def GetTracksCoches(self):
         return self.GetCheckedObjects()
     
-    def DefileDernier(self):
-        """ Defile jusqu'au dernier item de la liste """
-        if len(self.GetObjects()) > 0 :
-            dernierTrack = self.GetObjects()[-1]
-            index = self.GetIndexOf(dernierTrack)
-            self.EnsureCellVisible(index, 0)
+##    def GetInfosCoches(self):
+##        listeDonnees = []
+##        for track in self.GetTracksCoches() :
+##            dictTemp = track.GetDict()
+##            for code, valeur in self.dictOrganisme.iteritems() :
+##                dictTemp[code] = valeur
+##            listeDonnees.append(dictTemp)
+##        return listeDonnees
+
     
     def SetLabelPeriodes(self, texte=""):
         self.GetParent().SetLabelPeriodes(texte)
@@ -171,7 +208,11 @@ class Hyperlien(Hyperlink.HyperLinkCtrl):
             self.parent.ctrl_periodes.CocheRien()
         if self.URL == "suggestions" :
             self.parent.ctrl_periodes.CocheSuggestions()
-
+        if self.URL == "zone" :
+            self.parent.ImportationZone()
+        self.UpdateLink()
+        
+        
 
 class Dialog(wx.Dialog):
     def __init__(self, parent):
@@ -181,13 +222,15 @@ class Dialog(wx.Dialog):
         intro = _(u"Vous pouvez ici importer des périodes de vacances depuis le site internet de l'Education Nationale. Sélectionnez votre zone géographique et cochez les périodes à importer.")
         titre = _(u"Importation de périodes de vacances")
         self.SetTitle(titre)
-        self.ctrl_bandeau = CTRL_Bandeau.Bandeau(self, titre=titre, texte=intro, hauteurHtml=30, nomImage=Chemins.GetStaticPath("Images/32x32/telecharger.png"))
+        self.ctrl_bandeau = CTRL_Bandeau.Bandeau(self, titre=titre, texte=intro, hauteurHtml=30, nomImage="Images/32x32/Telecharger.png")
         
         # Zone
         self.box_zone_staticbox = wx.StaticBox(self, -1, _(u"1. Sélectionnez votre zone"))
         self.label_zone = wx.StaticText(self, -1, _(u"Zone géographique :"))
-        self.ctrl_zone = wx.Choice(self, -1, choices=[_(u"Zone A"), _(u"Zone B"), _(u"Zone C")])
-        
+        self.ctrl_zone = wx.Choice(self, -1, choices=[u"Zone A", u"Zone B", u"Zone C"])
+        self.hyper_zone = Hyperlien(self, label=_(u"Rechercher la zone de l'organisateur sur internet"), infobulle=_(u"Cliquez ici pour rechercher la zone de l'organisateur sur internet"), URL="zone")
+        self.hyper_zone.Show(False)
+
         # Périodes
         self.box_periodes_staticbox = wx.StaticBox(self, -1, _(u"2. Cochez les périodes à importer"))
         self.label_periodes = wx.StaticText(self, -1, _(u"Sélectionnez une zone..."))
@@ -201,9 +244,9 @@ class Dialog(wx.Dialog):
         self.label_separation_2 = wx.StaticText(self, -1, u" | ")
         self.hyper_suggestions = Hyperlien(self, label=_(u"Sélectionner les suggestions"), infobulle=_(u"Cliquez ici pour sélectionner uniquement les suggestions"), URL="suggestions")
 
-        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage=Chemins.GetStaticPath("Images/32x32/Aide.png"))
-        self.bouton_ok = wx.BitmapButton(self, -1, wx.Bitmap(Chemins.GetStaticPath("Images/BoutonsImages/Importer.png"), wx.BITMAP_TYPE_ANY))
-        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage=Chemins.GetStaticPath("Images/32x32/Annuler.png"))
+        self.bouton_aide = CTRL_Bouton_image.CTRL(self, texte=_(u"Aide"), cheminImage="Images/32x32/Aide.png")
+        self.bouton_ok = CTRL_Bouton_image.CTRL(self, texte=_(u"Importer"), cheminImage="Images/32x32/Fleche_bas.png")
+        self.bouton_annuler = CTRL_Bouton_image.CTRL(self, texte=_(u"Annuler"), cheminImage="Images/32x32/Annuler.png")
 
         self.__set_properties()
         self.__do_layout()
@@ -235,6 +278,8 @@ class Dialog(wx.Dialog):
         grid_sizer_zone = wx.FlexGridSizer(rows=2, cols=2, vgap=5, hgap=5)
         grid_sizer_zone.Add(self.label_zone, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_zone.Add(self.ctrl_zone, 0, wx.EXPAND, 0)
+        grid_sizer_zone.Add( (5, 5), 0, wx.EXPAND, 0)
+        grid_sizer_zone.Add(self.hyper_zone, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_zone.AddGrowableCol(1)
         box_zone.Add(grid_sizer_zone, 1, wx.ALL|wx.EXPAND, 10)
         
@@ -275,13 +320,13 @@ class Dialog(wx.Dialog):
         self.Layout()
         self.CenterOnScreen()
 
-    def OnChoixZone(self, event): 
+    def OnChoixZone(self, event=None):
         zone = self.GetZone() 
         self.ctrl_periodes.MAJ(zone)
 
     def OnBoutonAide(self, event): 
         from Utils import UTILS_Aide
-        UTILS_Aide.Aide("Lespriodesdevacances")
+        UTILS_Aide.Aide("Vacances")
 
     def OnBoutonOk(self, event): 
         tracks = self.ctrl_periodes.GetTracksCoches() 
@@ -314,6 +359,7 @@ class Dialog(wx.Dialog):
         if zone == "A" : self.ctrl_zone.SetSelection(0)
         if zone == "B" : self.ctrl_zone.SetSelection(1)
         if zone == "C" : self.ctrl_zone.SetSelection(2)
+        self.OnChoixZone()
     
     def GetZone(self):
         if self.ctrl_zone.GetSelection() == 0 : return "A"
@@ -326,7 +372,33 @@ class Dialog(wx.Dialog):
     
     def SetLabelPeriodes(self, texte=u""):
         self.label_periodes.SetLabel(texte)
+    
+    def ImportationZone(self):
+        """ Récupération de la zone sur internet """
+        # Récupération de la ville de l'organisateur
+        DB = GestionDB.DB()
+        req = """SELECT cp, ville
+        FROM organisateur
+        WHERE IDorganisateur=1;"""
+        DB.ExecuterReq(req)
+        cp, ville = DB.ResultatReq()[0]
+        DB.Close()
         
+        # Recherche sur internet
+        try :
+            zone = RechercherZone(ville, cp)
+        except :
+            zone = None
+        if zone == None :
+            dlg = wx.MessageDialog(self, _(u"Désolé, Teamworks n'a pas réussi à trouver la zone scolaire de l'organisateur sur internet !"), _(u"Erreur"), wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return
+        
+        self.SetZone(zone) 
+        dlg = wx.MessageDialog(self, _(u"La ville de l'organisateur (%s) est située dans la zone %s.") % (ville, zone), _(u"Zone scolaire"), wx.OK | wx.ICON_INFORMATION)
+        dlg.ShowModal()
+        dlg.Destroy()
 
 
 
@@ -337,5 +409,3 @@ if __name__ == "__main__":
     app.SetTopWindow(dialog_1)
     dialog_1.ShowModal()
     app.MainLoop()
-    
-    
