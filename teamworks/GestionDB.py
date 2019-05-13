@@ -973,7 +973,7 @@ def GetConnexionReseau(nomFichier=""):
             suffixe = nomFichier.split("_")[-1]
         else :
             suffixe = ""
-        connexion = mysql.connector.connect(host=host, user=user, passwd=passwd, port=int(port), use_unicode=True, ssl_ca=ssl_ca, pool_name="mypool2%s" % suffixe, pool_size=3)
+        connexion = mysql.connector.connect(host=host, user=user, passwd=passwd, port=int(port), use_unicode=True, ssl_ca=ssl_ca)#, pool_name="mypool2%s" % suffixe, pool_size=3)
 
     return connexion, nomFichier
 
