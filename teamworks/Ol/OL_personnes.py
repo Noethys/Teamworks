@@ -211,10 +211,58 @@ class ListView(FastObjectListView):
         self.itemSelected = False
         
     def InitModel(self):
-        self.Importation_situations()
-        self.Importation_coordonnees()
-        self.Importation_qualifications() 
-        self.Importation_types_diplomes() 
+        DB = GestionDB.DB()
+
+        # Import situations
+        req = """SELECT IDsituation, situation
+        FROM Situations; """
+        DB.ExecuterReq(req)
+        listeSituations = DB.ResultatReq()
+        global DICT_SITUATIONS
+        DICT_SITUATIONS = {}
+        for situation in listeSituations :
+            DICT_SITUATIONS[situation[0]] = situation[1]
+
+        # Import coordonnées
+        req = """SELECT IDcoord, IDpersonne, categorie, texte, intitule
+        FROM Coordonnees; """
+        DB.ExecuterReq(req)
+        listeCoordonnees = DB.ResultatReq()
+        global DICT_COORDONNEES
+        DICT_COORDONNEES = {}
+        for IDcoord, IDpersonne, categorie, texte, intitule in listeCoordonnees :
+            donnees = (IDcoord, IDpersonne, categorie, texte, intitule)
+            if IDpersonne in DICT_COORDONNEES :
+                DICT_COORDONNEES[IDpersonne].append(donnees)
+            else :
+                DICT_COORDONNEES[IDpersonne] = [(donnees),]
+
+        # Import des qualifications
+        req = """SELECT IDdiplome, IDpersonne, IDtype_diplome
+        FROM diplomes; """
+        DB.ExecuterReq(req)
+        listeDonnees = DB.ResultatReq()
+        global DICT_QUALIFICATIONS
+        DICT_QUALIFICATIONS = {}
+        for IDdiplome, IDpersonne, IDtype_diplome in listeDonnees :
+            if IDpersonne in DICT_QUALIFICATIONS :
+                DICT_QUALIFICATIONS[IDpersonne].append(IDtype_diplome)
+            else:
+                DICT_QUALIFICATIONS[IDpersonne] = [IDtype_diplome,]
+
+        # Import des types de diplômes
+        req = """SELECT IDtype_diplome, nom_diplome
+        FROM types_diplomes; """
+        DB.ExecuterReq(req)
+        listeDonnees = DB.ResultatReq()
+        global DICT_TYPES_DIPLOMES
+        DICT_TYPES_DIPLOMES = {}
+        for IDtype_diplome, nom_diplome in listeDonnees :
+            DICT_TYPES_DIPLOMES[IDtype_diplome] = nom_diplome
+
+        DB.Close()
+
+        # Import des tracks
         self.donnees = self.GetTracks()
 
     def GetTracks(self):
@@ -247,69 +295,6 @@ class ListView(FastObjectListView):
         for pays in listePays :
             DICT_PAYS[pays[0]] = (pays[1], pays[2])
 
-    def Importation_situations(self):
-        # Récupération des données
-        DB = GestionDB.DB()        
-        req = """SELECT IDsituation, situation
-        FROM Situations; """
-        DB.ExecuterReq(req)
-        listeSituations = DB.ResultatReq()
-        DB.Close()
-        # Transforme liste en dict
-        global DICT_SITUATIONS
-        DICT_SITUATIONS = {}
-        for situation in listeSituations :
-            DICT_SITUATIONS[situation[0]] = situation[1]
-
-    def Importation_coordonnees(self):
-        # Récupération des données
-        DB = GestionDB.DB()        
-        req = """SELECT IDcoord, IDpersonne, categorie, texte, intitule
-        FROM Coordonnees; """
-        DB.ExecuterReq(req)
-        listeCoordonnees = DB.ResultatReq()
-        DB.Close()
-        # Transforme liste en dict
-        global DICT_COORDONNEES
-        DICT_COORDONNEES = {}
-        for IDcoord, IDpersonne, categorie, texte, intitule in listeCoordonnees :
-            donnees = (IDcoord, IDpersonne, categorie, texte, intitule)
-            if IDpersonne in DICT_COORDONNEES :
-                DICT_COORDONNEES[IDpersonne].append(donnees)
-            else :
-                DICT_COORDONNEES[IDpersonne] = [(donnees),]
-                                    
-    def Importation_qualifications(self):
-        # Récupération des données
-        DB = GestionDB.DB()        
-        req = """SELECT IDdiplome, IDpersonne, IDtype_diplome
-        FROM diplomes; """
-        DB.ExecuterReq(req)
-        listeDonnees = DB.ResultatReq()
-        DB.Close()
-        # Transforme liste en dict
-        global DICT_QUALIFICATIONS
-        DICT_QUALIFICATIONS = {}
-        for IDdiplome, IDpersonne, IDtype_diplome in listeDonnees :
-            if IDpersonne in DICT_QUALIFICATIONS :
-                DICT_QUALIFICATIONS[IDpersonne].append(IDtype_diplome)
-            else:
-                DICT_QUALIFICATIONS[IDpersonne] = [IDtype_diplome,]
-
-    def Importation_types_diplomes(self):
-        # Récupération des données
-        DB = GestionDB.DB()        
-        req = """SELECT IDtype_diplome, nom_diplome
-        FROM types_diplomes; """
-        DB.ExecuterReq(req)
-        listeDonnees = DB.ResultatReq()
-        DB.Close()
-        # Transforme liste en dict
-        global DICT_TYPES_DIPLOMES
-        DICT_TYPES_DIPLOMES = {}
-        for IDtype_diplome, nom_diplome in listeDonnees :
-            DICT_TYPES_DIPLOMES[IDtype_diplome] = nom_diplome
-        
     def InitObjectListView(self):
         # Images
         imgHomme = self.AddNamedImages("homme", wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Homme.png"), wx.BITMAP_TYPE_PNG))
