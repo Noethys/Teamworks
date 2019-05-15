@@ -12,3 +12,4 @@ XlsxWriter
 icalendar
 numpy
 opencv-python
+mailjet-rest
