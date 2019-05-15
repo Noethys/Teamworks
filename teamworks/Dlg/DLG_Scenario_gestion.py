@@ -291,8 +291,9 @@ class TreeListCtrl(HTL.HyperTreeList):
             listeIDPersonnes = list(self.dictScenarios.keys())
             listeNomsPersonnes = []
             for IDpersonne in listeIDPersonnes :
-                IDpersonne, nom, prenom, civilite = self.dict_personnes[IDpersonne]
-                listeNomsPersonnes.append( (u"%s %s" % (nom, prenom), civilite, IDpersonne) )
+                if IDpersonne in self.dict_personnes:
+                    IDpersonne, nom, prenom, civilite = self.dict_personnes[IDpersonne]
+                    listeNomsPersonnes.append((u"%s %s" % (nom, prenom), civilite, IDpersonne))
             listeNomsPersonnes.sort()
             
             for nomPersonne, civilite, IDpersonne in listeNomsPersonnes :

@@ -491,7 +491,7 @@ class Dialog(wx.Dialog):
             messagerie.Connecter()
         except Exception as err:
             dlg_progress.Destroy()
-            err = str(err).decode("iso-8859-15")
+            err = str(err)
             intro = _(u"La connexion au serveur de messagerie est impossible :")
             conclusion = _(u"Vérifiez votre connexion internet ou les paramètres de votre adresse d'expédition.")
             dlgErreur = DLG_Messagebox.Dialog(self, titre=_(u"Erreur"), introduction=intro, detail=err, conclusion=conclusion, icone=wx.ICON_ERROR, boutons=[_(u"Ok"),])
