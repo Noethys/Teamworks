@@ -596,118 +596,6 @@ class Mailjet(Base_messagerie):
         except Exception as err:
             raise
 
-    # def Envoyer_archive(self, message=None, afficher_confirmation_envoi=False):
-    #     self.Envoyer_lot(messages=[message,], afficher_confirmation_envoi=afficher_confirmation_envoi)
-    #
-    # def Envoyer_lot_archive(self, messages=[], dlg_progress=None, afficher_confirmation_envoi=True):
-    #     """ Envoi des messages par lot """
-    #     data = {"Messages": []}
-    #     for message in messages:
-    #
-    #         # Préparation du message
-    #         dict_message = {
-    #             "From": {"Email": self.email_exp, "Name": self.nom_exp},
-    #             "To": [{"Email": destinataire} for destinataire in message.destinataires],
-    #             "Subject": message.sujet,
-    #             "TextPart": message.texte_plain,
-    #             "HTMLPart": message.texte_html,
-    #             "Attachments": [],
-    #             "InlinedAttachments": [],
-    #         }
-    #
-    #         # Intégration des images incluses
-    #         index = 0
-    #         for fichier in message.images:
-    #             ctype, encoding = mimetypes.guess_type(fichier)
-    #             with open(fichier, "rb") as file:
-    #                 Base64Content = base64.b64encode(file.read())
-    #             nom_fichier = os.path.basename(fichier)
-    #
-    #             dict_fichier = {
-    #                 "ContentType": ctype,
-    #                 "Filename": nom_fichier,
-    #                 "ContentID": "image%d" % index,
-    #                 "Base64Content": Base64Content,
-    #             }
-    #             dict_message["InlinedAttachments"].append(dict_fichier)
-    #             index += 1
-    #
-    #         # Intégration des pièces jointes
-    #         for fichier in message.fichiers:
-    #             ctype, encoding = mimetypes.guess_type(fichier)
-    #             with open(fichier, "rb") as file:
-    #                 Base64Content = base64.b64encode(file.read())
-    #             nom_fichier = os.path.basename(fichier)
-    #
-    #             dict_fichier = {
-    #                 "ContentType": ctype,
-    #                 "Filename": nom_fichier,
-    #                 "Base64Content": Base64Content,
-    #             }
-    #             dict_message["Attachments"].append(dict_fichier)
-    #
-    #         # Mémorisation du message
-    #         data["Messages"].append(dict_message)
-    #
-    #     if wx.GetKeyState(wx.WXK_CONTROL) == True:
-    #         from Utils import UTILS_Json
-    #         UTILS_Json.Ecrire(nom_fichier=UTILS_Fichiers.GetRepTemp(fichier="appel_mailjet.txt"), data=data)
-    #         return False
-    #
-    #     # Envoi de la requête à Mailjet
-    #     resultats = self.connection.send.create(data=data)
-    #     # print resultats.status_code
-    #     # print resultats.json()
-    #
-    #     # Analyse des résultats
-    #     liste_succes = []
-    #     listeAnomalies = []
-    #     index = 0
-    #     for message in messages:
-    #         resultat_message = resultats.json()["Messages"][index][u'Status']
-    #         if resultat_message == u'success':
-    #             liste_succes.append(message)
-    #         else :
-    #             listeAnomalies.append((message, resultat_message))
-    #         index += 1
-    #
-    #     # Fin de la gauge
-    #     if dlg_progress != None:
-    #         dlg_progress.Update(index, _(u"Fin de l'envoi."))
-    #         dlg_progress.Destroy()
-    #
-    #     # Si tous les Emails envoyés avec succès
-    #     if len(listeAnomalies) == 0 and afficher_confirmation_envoi == True:
-    #         if len(liste_succes) == 1:
-    #             message = _(u"L'Email a été envoyé avec succès !")
-    #         else:
-    #             message = _(u"Les %d Emails ont été envoyés avec succès !") % len(liste_succes)
-    #         dlg = wx.MessageDialog(None, message, _(u"Fin de l'envoi"), wx.OK | wx.ICON_INFORMATION)
-    #         dlg.ShowModal()
-    #         dlg.Destroy()
-    #
-    #     # Si Anomalies
-    #     if len(listeAnomalies) > 0 and len(messages) > 1:
-    #         if len(liste_succes) > 0:
-    #             intro = _(u"%d Email(s) ont été envoyés avec succès mais les %d envois suivants ont échoué :") % (
-    #             len(liste_succes), len(listeAnomalies))
-    #         else:
-    #             intro = _(u"Tous les envois ont lamentablement échoué :")
-    #         lignes = []
-    #         for message, erreur in listeAnomalies:
-    #             adresse = message.GetLabelDestinataires()
-    #             try:
-    #                 lignes.append(u"- %s : %s" % (adresse.decode("iso-8859-15"), erreur))
-    #             except:
-    #                 lignes.append(u"- %s : %s" % (adresse, erreur))
-    #         dlg = DLG_Messagebox.Dialog(None, titre=_(u"Compte-rendu de l'envoi"), introduction=intro,
-    #                                     detail="\n".join(lignes), icone=wx.ICON_INFORMATION, boutons=[_(u"Ok"), ])
-    #         dlg.ShowModal()
-    #         dlg.Destroy()
-    #
-    #     return liste_succes
-
-
     def Envoyer(self, message=None):
         # Préparation du message
         dict_message = {
@@ -732,7 +620,7 @@ class Mailjet(Base_messagerie):
                 "ContentType": ctype,
                 "Filename": nom_fichier,
                 "ContentID": "image%d" % index,
-                "Base64Content": Base64Content,
+                "Base64Content": Base64Content.decode("utf-8"),
             }
             dict_message["InlinedAttachments"].append(dict_fichier)
             index += 1
@@ -747,17 +635,22 @@ class Mailjet(Base_messagerie):
             dict_fichier = {
                 "ContentType": ctype,
                 "Filename": nom_fichier,
-                "Base64Content": Base64Content,
+                "Base64Content": Base64Content.decode("utf-8"),
             }
             dict_message["Attachments"].append(dict_fichier)
 
         # Envoi de la requête à Mailjet
         resultats = self.connection.send.create(data={"Messages": [dict_message,]})
-        # print resultats.status_code
-        # print resultats.json()
 
         # Analyse du résultat
-        resultat = resultats.json()["Messages"][0][u'Status']
+        try:
+            resultat = resultats.json()["Messages"][0][u'Status']
+        except Exception as err:
+            print(err)
+            print(resultats.status_code)
+            print(resultats.json())
+            raise Exception(err)
+
         if resultat != u'success':
             raise Exception(resultat)
 
@@ -794,7 +687,7 @@ class Mailjet(Base_messagerie):
                     self.Envoyer(message)
                     listeSucces.append(message)
                 except Exception as err:
-                    err = str(err).decode("iso-8859-15")
+                    err = str(err)
                     listeAnomalies.append((message, err))
                     print(("Erreur dans l'envoi d'un mail : %s...", err))
                     traceback.print_exc(file=sys.stdout)

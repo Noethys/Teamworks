@@ -221,7 +221,7 @@ def Sauvegarde(listeFichiersLocaux=[], listeFichiersReseau=[], nom="", repertoir
         except Exception as err:
             dlgprogress.Destroy()
             print((err,))
-            err = str(err).decode("iso-8859-15")
+            err = str(err)
             dlgErreur = wx.MessageDialog(None, _(u"Une erreur a été détectée dans l'envoi par Email !\n\nErreur : %s") % err, _(u"Erreur"), wx.OK | wx.ICON_ERROR)
             dlgErreur.ShowModal() 
             dlgErreur.Destroy()

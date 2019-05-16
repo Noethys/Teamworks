@@ -58,7 +58,7 @@ options = {
             "_imagingtk", "PIL._imagingtk", "ImageTk", "PIL.ImageTk", "FixTk",
             ],
         'includes': [
-            'Gadget', 'numpy.core._methods', 'numpy.lib.format', 'email.mime.image',
+            'Gadget', 'numpy.core._methods', 'numpy.lib.format', 'email.mime.image', 'idna.idnadata',
             ],
         'include_files': [
             TEAMWORKS_PATH + '/static', TEAMWORKS_PATH + '/Versions.txt', TEAMWORKS_PATH + '/Licence.txt', TEAMWORKS_PATH + '/Icone.ico',
