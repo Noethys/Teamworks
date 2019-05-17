@@ -8,8 +8,9 @@
 
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import  wx.lib.scrolledpanel as scrolled
+
 
 class PanelDefilant(scrolled.ScrolledPanel):
     def __init__(self, parent):
@@ -33,7 +34,7 @@ class PanelDefilant(scrolled.ScrolledPanel):
             self.GetParent().label_intro.SetLabel(_(u"Vous pouvez maintenant remplir vos champs personnalisés :"))
         
         # Création des champs dans l'interface
-        grid_sizer = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=10)
+        grid_sizer = wx.FlexGridSizer(rows=len(self.dicoChamps)+1, cols=1, vgap=10, hgap=10)
         
         for ID, valeurs in self.dicoChamps.items() : 
             nom = "champ" + str(ID)
@@ -50,18 +51,18 @@ class PanelDefilant(scrolled.ScrolledPanel):
             # TextCtrl pour réponse
             self.sizer_champs = wx.StaticBox(self, -1, label)
             sizer_champ = wx.StaticBoxSizer(self.sizer_champs, wx.VERTICAL)
-            exec( "self.text_" + nom + " = wx.TextCtrl(self, -1, valeur)" )
-            exec( "self.text_" + nom + ".SetToolTip(wx.ToolTip(infoBulle))")
-            exec( "sizer_champ.Add(self.text_" + nom + ", 0, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 0)")
-            
+            setattr(self, "text_%s" % nom, wx.TextCtrl(self, -1, six.text_type(valeur)))
+            getattr(self, "text_%s" % nom).SetToolTip(wx.ToolTip(infoBulle))
+            sizer_champ.Add(getattr(self, "text_%s" % nom), 0, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 0)
+
             # Exemple :
             if exemple != "" :
                 txtExemple = "Ex. : " + exemple[:60]
-                exec( "self.label_" + nom + "EX = wx.StaticText(self, -1, txtExemple)")
-                exec( "self.label_" + nom + "EX.SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ''))")
-                exec( "self.label_" + nom + "EX.SetForegroundColour((120, 120, 120))")
-                exec( "sizer_champ.Add(self.label_" + nom + "EX, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL, 0)")
-            
+                setattr(self, "label_%sEX" % nom, wx.StaticText(self, -1, txtExemple))
+                getattr(self, "label_%sEX" % nom).SetFont(wx.Font(7, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ''))
+                getattr(self, "label_%sEX" % nom).SetForegroundColour((120, 120, 120))
+                sizer_champ.Add(getattr(self, "label_%sEX" % nom), 0, wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL, 0)
+
             grid_sizer.Add(sizer_champ, 1, wx.RIGHT|wx.EXPAND, 10)
 
         grid_sizer.AddGrowableCol(0)

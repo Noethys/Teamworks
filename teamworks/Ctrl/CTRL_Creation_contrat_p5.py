@@ -8,8 +8,9 @@
 
 from Utils.UTILS_Traduction import _
 import wx
-from Ctrl import CTRL_Bouton_image
+import six
 import  wx.lib.scrolledpanel as scrolled
+
 
 class PanelDefilant(scrolled.ScrolledPanel):
     def __init__(self, parent):
@@ -50,7 +51,7 @@ class PanelDefilant(scrolled.ScrolledPanel):
             # TextCtrl pour réponse
             self.sizer_champs = wx.StaticBox(self, -1, label)
             sizer_champ = wx.StaticBoxSizer(self.sizer_champs, wx.VERTICAL)
-            setattr(self, "text_%s" % nom, wx.TextCtrl(self, -1, valeur))
+            setattr(self, "text_%s" % nom, wx.TextCtrl(self, -1, six.text_type(valeur)))
             getattr(self, "text_%s" % nom).SetToolTip(wx.ToolTip(infoBulle))
             sizer_champ.Add(getattr(self, "text_%s" % nom), 0, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 0)
 

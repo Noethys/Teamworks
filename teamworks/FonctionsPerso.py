@@ -1005,7 +1005,7 @@ def ListeImprimantes():
 def EnleveAccents(chaineUnicode):
     """ Enlève les accents d'une chaine unicode """
     import unicodedata
-    if type(chaineUnicode) == str : 
+    if six.PY2 and type(chaineUnicode) == str :
         chaineUnicode = chaineUnicode.decode("iso-8859-15")
     resultat = unicodedata.normalize('NFKD', chaineUnicode).encode('ascii','ignore')
     return resultat
