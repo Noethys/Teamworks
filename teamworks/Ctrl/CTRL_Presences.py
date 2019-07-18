@@ -65,7 +65,10 @@ class PanelCalendrier(CTRL_Calendrier_tw.Panel):
          
     def OnPaint(self, event):
         dc= wx.PaintDC(self)
-        dc= wx.BufferedDC(dc)
+        try:
+            dc= wx.BufferedDC(dc)
+        except:
+            return
         if 'phoenix' in wx.PlatformInfo:
             largeurDC, hauteurDC= self.GetSize()
         else:

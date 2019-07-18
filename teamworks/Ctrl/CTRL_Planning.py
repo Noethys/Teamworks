@@ -326,6 +326,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         self.maxWidth =0
         self.maxHeight  = 0
         self.SetScrollRate(20,20)
+        self.id_max = 1
 
         self.selectBarre = None
         self.selectLigne = None
@@ -426,8 +427,11 @@ class WidgetPlanning(wx.ScrolledWindow):
     def OnPaint(self, event):
         # Create a buffered paint DC.  It will create the real
         # wx.PaintDC and then blit the bitmap to it when dc is
-        # deleted.  
-        dc = wx.BufferedPaintDC(self)
+        # deleted.
+        try:
+            dc = wx.BufferedPaintDC(self)
+        except:
+            return
         # use PrepateDC to set position correctly
         self.PrepareDC(dc)
         # we need to clear the dc BEFORE calling PrepareDC
@@ -450,9 +454,9 @@ class WidgetPlanning(wx.ScrolledWindow):
     def DoDrawing(self, dc):
         """ Creation du dessin dans le PseudoDC """
         dc.RemoveAll()
+        self.id_max = 1
         if 'phoenix' not in wx.PlatformInfo:
             dc.BeginDrawing()
-
         if 'phoenix' in wx.PlatformInfo:
             tailleDC = self.GetSize()[0]-20,  self.GetSize()[1]
         else:
@@ -481,16 +485,19 @@ class WidgetPlanning(wx.ScrolledWindow):
         if 'phoenix' not in wx.PlatformInfo:
             dc.EndDrawing()
 
- 
+    def CreateID(self):
+        self.id_max += 1
+        return int(self.id_max)
+
     def DrawBarre(self, dc, IDpresence, heureDebut, heureFin, IDcategorie, intitule, posG, posD, posYhaut, posYbas, IDobjet=None, mode="screen"):
         """ Dessine une barre """
         y = posYhaut
         h = hauteurBarre
         if mode =="screen":
             if IDobjet == None :
-                IDobjet = wx.Window.NewControlId()
+                IDobjet = self.CreateID()
             dc.SetId(IDobjet)
-        
+
         # Paramètres du dessin
         couleurFondBarre = self.FormateCouleur(self.dictCategories[IDcategorie][3])
         dc.SetBrush(wx.Brush(couleurFondBarre))
@@ -660,7 +667,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         for key, valeurs in self.dictGroupes.items() :
             self.dictInfosGroupes[key] = {}
             if mode == "screen" :
-                IDobjet = wx.Window.NewControlId()
+                IDobjet = self.CreateID()
                 dc.SetId(IDobjet)
         
             # Détermine la couleur de fond du groupe
@@ -690,7 +697,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         
         for key, valeurs in self.dictLignes.items() :
             if mode == "screen" :
-                IDobjet = wx.Window.NewControlId()
+                IDobjet = self.CreateID()
                 dc.SetId(IDobjet)
         
             dc.SetBrush(wx.Brush((230, 230, 230)))
@@ -788,7 +795,7 @@ class WidgetPlanning(wx.ScrolledWindow):
             
             if mode =="screen":
                 if IDobjet == None : 
-                    IDobjet = wx.Window.NewControlId()
+                    IDobjet = self.CreateID()
                 else:
                     dc.ClearId(IDobjet)
                 dc.SetId(IDobjet)
@@ -838,7 +845,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         
         if mode =="screen":
             if IDobjet == None : 
-                IDobjet = wx.Window.NewControlId()
+                IDobjet = self.CreateID()
             else:
                 dc.ClearId(IDobjet)
             dc.SetId(IDobjet)
@@ -891,7 +898,7 @@ class WidgetPlanning(wx.ScrolledWindow):
         
         if mode =="screen":
             if IDobjet == None : 
-                IDobjet = wx.Window.NewControlId()
+                IDobjet = self.CreateID()
             else:
                 dc.ClearId(IDobjet)
             dc.SetId(IDobjet)
@@ -2101,7 +2108,8 @@ class BarreOptions(wx.Panel):
         self.GetParent().DCplanning.Impression()
 
     def Menu_Mail_planning_affiche(self, event):
-        liste_presents = self.GetParent().listePresents
+        panelPresences = self.GetGrandParent().GetParent()
+        liste_individus = panelPresences.panelPersonnes.listCtrlPersonnes.GetListePersonnes()
 
         # Recherche emails
         DB = GestionDB.DB()
@@ -2119,7 +2127,7 @@ class BarreOptions(wx.Panel):
         # Attribue les emails aux individus
         liste_anomalies = []
         listeDonnees = []
-        for IDpersonne in liste_presents:
+        for IDpersonne in liste_individus:
             if IDpersonne in dict_emails :
                 listeDonnees.append({"adresse": dict_emails[IDpersonne], "pieces": [], "champs": {} })
             else:
