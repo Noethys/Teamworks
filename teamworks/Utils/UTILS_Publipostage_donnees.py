@@ -13,7 +13,7 @@ import six
 import GestionDB
 import FonctionsPerso
 import datetime
-
+from Utils import UTILS_Dates
 
 
 NOMS_EDITION = {
@@ -376,7 +376,7 @@ def Importation_personne(IDpersonne=None):
     
     # Date de naissance
     dictDonnees["DATENAISS"] = ""
-    if date_naiss != "" : dictDonnees["DATENAISS"] = FonctionsPerso.DateEngFr(date_naiss)
+    if date_naiss != "" : dictDonnees["DATENAISS"] = UTILS_Dates.DateEngFr(date_naiss)
     
     # Age
     dictDonnees["AGE"] = ""

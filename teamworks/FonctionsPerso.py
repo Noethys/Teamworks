@@ -951,9 +951,17 @@ def RecupIDfichier():
 
 def VideRepertoireTemp():
     """ Supprimer tous les fichiers du répertoire TEMP """
-    listeFichiers = os.listdir(UTILS_Fichiers.GetRepTemp())
-    for nomFichier in listeFichiers :
-        os.remove(UTILS_Fichiers.GetRepTemp(nomFichier))
+    for rep in ("Temp/", UTILS_Fichiers.GetRepTemp()) :
+        if os.path.isdir(rep) :
+            for nomFichier in os.listdir(rep) :
+                nomComplet = os.path.join(rep, nomFichier)
+                try :
+                    if os.path.isdir(nomComplet) :
+                        shutil.rmtree(nomComplet)
+                    else :
+                        os.remove(nomComplet)
+                except Exception as err :
+                    print(err)
 
 def VideRepertoireUpdates(forcer=False):
     """ Supprimer les fichiers temporaires du répertoire Updates """

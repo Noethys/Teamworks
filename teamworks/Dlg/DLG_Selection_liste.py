@@ -191,11 +191,12 @@ class ListCtrl(wx.ListCtrl, CheckListCtrlMixin):
                 index = self.InsertStringItem(six.MAXSIZE, str(ID))
             x = 1
             for valeur in valeurs[1:] :
-                if 'phoenix' in wx.PlatformInfo:
-                    self.SetItem(index, x, valeur)
-                else:
-                    self.SetStringItem(index, x, valeur)
-                x += 1
+                if x <= len(self.liste_labelsColonnes)-1:
+                    if 'phoenix' in wx.PlatformInfo:
+                        self.SetItem(index, x, valeur)
+                    else:
+                        self.SetStringItem(index, x, valeur)
+                    x += 1
 
             self.SetItemData(index, ID)
                 

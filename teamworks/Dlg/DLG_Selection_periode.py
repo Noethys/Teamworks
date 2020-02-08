@@ -141,8 +141,8 @@ class SelectionPeriode(wx.Dialog):
     def On_maj_mois(self, event):
         """ Quand un item est sélectionné dans le combobox mois """
         index = self.ctrl_mois.GetSelection()
-        if index != -1 :
-            mois = index+1
+        if index > 0 :
+            mois = index
             # Si pas d'année saisie, sélectionne l'année en cours
             indexAnnee = self.ctrl_annee.GetSelection()
             if indexAnnee < 2 :
