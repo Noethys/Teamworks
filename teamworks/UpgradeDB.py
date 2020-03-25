@@ -33,7 +33,7 @@ class DB(GestionDB.DB):
         if versionFichier < versionFiltre:
             try:
                 from Utils import UTILS_Procedures
-                UTILS_Procedures.A2000(nomFichier=self.nomFichierCourt)
+                UTILS_Procedures.A2000(nomFichier=self.nomFichier)
             except Exception as err:
                 return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
 
@@ -47,7 +47,7 @@ class DB(GestionDB.DB):
                 if self.IsTableExists("questionnaire_choix") == False: self.CreationTable("questionnaire_choix", Tables.DB_DATA)
                 if self.IsTableExists("questionnaire_reponses") == False: self.CreationTable("questionnaire_reponses", Tables.DB_DATA)
                 from Utils import UTILS_Procedures
-                UTILS_Procedures.D1051(nomFichier=self.nomFichierCourt)
+                UTILS_Procedures.D1051(nomFichier=self.nomFichier)
             except Exception as err:
                 return " filtre de conversion %s | " % ".".join([str(x) for x in versionFiltre]) + str(err)
 

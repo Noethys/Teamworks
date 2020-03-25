@@ -10,8 +10,10 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-import FonctionsPerso
-import GestionDB
+if 'phoenix' in wx.PlatformInfo:
+    from wx.adv import DatePickerCtrl, DP_DROPDOWN, EVT_DATE_CHANGED
+else :
+    from wx import DatePickerCtrl, DP_DROPDOWN, EVT_DATE_CHANGED
 import datetime
 
 
@@ -40,20 +42,20 @@ class MyDialog(wx.Dialog):
         
         # Période : Début et Fin
         self.label_date_debut = wx.StaticText(self, -1, u"Du")
-        self.ctrl_date_debut = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_debut = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.label_date_fin = wx.StaticText(self, -1, "au")
-        self.ctrl_date_fin = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_fin = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.ctrl_date_debut.Enable(False)
         self.ctrl_date_fin.Enable(False)
         
         # Période : A partir
         self.label_date_aPartir = wx.StaticText(self, -1, _(u"A partir du"))
-        self.ctrl_date_aPartir = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_aPartir = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.ctrl_date_aPartir.Enable(False)
         
         # Période : Jusq'au
         self.label_date_jusque = wx.StaticText(self, -1, _(u"Jusqu'au"))
-        self.ctrl_date_jusque = wx.DatePickerCtrl(self, -1, style=wx.DP_DROPDOWN)
+        self.ctrl_date_jusque = DatePickerCtrl(self, -1, style=DP_DROPDOWN)
         self.ctrl_date_jusque.Enable(False)
         
         # Période : Tout

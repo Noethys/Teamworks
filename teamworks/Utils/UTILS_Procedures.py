@@ -155,7 +155,7 @@ def A2000(nomFichier):
     DB = GestionDB.DB(nomFichier=nomFichier)
     
     # Récupération du nom du fichier
-    nomFichier = DB.nomFichierCourt
+    nomFichier = DB.nomFichier
     
     # Récupération de l'IDfichier
     req = """SELECT codeIDfichier
