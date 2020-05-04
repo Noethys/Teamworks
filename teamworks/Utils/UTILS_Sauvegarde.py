@@ -266,9 +266,9 @@ def Restauration(parent=None, fichier="", listeFichiersLocaux=[], listeFichiersR
 
         # Vérifie qu'on les remplace bien
         listeExistantsTemp = []
-        for fichier in listeFichiersLocaux :
-            if os.path.isfile(UTILS_Fichiers.GetRepData(fichier)) == True :
-                listeExistantsTemp.append(fichier)
+        for fichier_temp in listeFichiersLocaux :
+            if os.path.isfile(UTILS_Fichiers.GetRepData(fichier_temp)) == True :
+                listeExistantsTemp.append(fichier_temp)
                 
         if len(listeExistantsTemp) > 0 :
             if len(listeExistantsTemp) == 1 :
@@ -286,19 +286,19 @@ def Restauration(parent=None, fichier="", listeFichiersLocaux=[], listeFichiersR
         dlgprogress = wx.ProgressDialog(_(u"Merci de patienter"), _(u"Lancement de la restauration..."), maximum=nbreEtapes, parent=parent, style= wx.PD_SMOOTH | wx.PD_AUTO_HIDE | wx.PD_APP_MODAL)
         numEtape = 1
 
-        for fichier in listeFichiersLocaux :
-            dlgprogress.Update(numEtape, _(u"Restauration du fichier %s...") % fichier);numEtape += 1
+        for fichier_temp in listeFichiersLocaux :
+            dlgprogress.Update(numEtape, _(u"Restauration du fichier %s...") % fichier_temp);numEtape += 1
             try :
-                fichierZip.extract(fichier, UTILS_Fichiers.GetRepData())
+                fichierZip.extract(fichier_temp, UTILS_Fichiers.GetRepData())
             except Exception as err:
                 dlgprogress.Destroy()
                 print(err)
-                dlg = wx.MessageDialog(None, _(u"La restauration du fichier '%s' a rencontré l'erreur suivante : \n%s") % (fichier, err), "Erreur", wx.OK| wx.ICON_ERROR)  
+                dlg = wx.MessageDialog(None, _(u"La restauration du fichier '%s' a rencontré l'erreur suivante : \n%s") % (fichier_temp, err), "Erreur", wx.OK| wx.ICON_ERROR)
                 dlg.ShowModal()
                 dlg.Destroy()
                 return False
             
-            listeFichiersRestaures.append(fichier[:-4])
+            listeFichiersRestaures.append(fichier_temp[:-4])
 
     # Restauration des fichiers réseau MySQL ---------------------------------------------------------------------------
     if len(listeFichiersReseau) > 0 :
@@ -316,10 +316,10 @@ def Restauration(parent=None, fichier="", listeFichiersLocaux=[], listeFichiersR
 
         # Vérifie qu'on les remplace bien
         listeExistantsTemp = []
-        for fichier in listeFichiersReseau :
-            fichier = fichier[:-4]
-            if fichier in listeFichiersExistants :
-                listeExistantsTemp.append(fichier)
+        for fichier_temp in listeFichiersReseau :
+            fichier_temp = fichier_temp[:-4]
+            if fichier_temp in listeFichiersExistants :
+                listeExistantsTemp.append(fichier_temp)
                 
         if len(listeExistantsTemp) > 0 :
             if len(listeExistantsTemp) == 1 :
@@ -347,12 +347,12 @@ def Restauration(parent=None, fichier="", listeFichiersLocaux=[], listeFichiersR
         dlgprogress = wx.ProgressDialog(_(u"Merci de patienter"), _(u"Lancement de la restauration..."), maximum=nbreEtapes, parent=parent, style= wx.PD_SMOOTH | wx.PD_AUTO_HIDE | wx.PD_APP_MODAL)
         numEtape = 1
 
-        for fichier in listeFichiersReseau :
-            fichier = fichier[:-4]
+        for fichier_temp in listeFichiersReseau :
+            fichier_temp = fichier_temp[:-4]
             
             # Création de la base si elle n'existe pas
-            if fichier not in listeFichiersExistants :
-                nomFichier = u"%s;%s;%s;%s[RESEAU]%s" % (dictConnexion["port"], dictConnexion["host"], dictConnexion["user"], dictConnexion["password"], fichier)
+            if fichier_temp not in listeFichiersExistants :
+                nomFichier = u"%s;%s;%s;%s[RESEAU]%s" % (dictConnexion["port"], dictConnexion["host"], dictConnexion["user"], dictConnexion["password"], fichier_temp)
                 DB = GestionDB.DB(suffixe=None, nomFichier=nomFichier, modeCreation=True)
                 DB.Close()
 
@@ -361,13 +361,13 @@ def Restauration(parent=None, fichier="", listeFichiersLocaux=[], listeFichiersR
             # f = open(fichierRestore, "wb")
             # f.write(buffer)
             # f.close()
-            fichierZip.extract(u"%s.sql" % fichier, repTemp)
-            fichierRestore = u"%s/%s.sql" % (repTemp, fichier)
+            fichierZip.extract(u"%s.sql" % fichier_temp, repTemp)
+            fichierRestore = u"%s/%s.sql" % (repTemp, fichier_temp)
 
             # Importation du fichier SQL dans MySQL
-            dlgprogress.Update(numEtape, _(u"Restauration du fichier %s...") % fichier);numEtape += 1
+            dlgprogress.Update(numEtape, _(u"Restauration du fichier %s...") % fichier_temp);numEtape += 1
 
-            args = u""""%sbin/mysql" --defaults-extra-file="%s" %s < "%s" """ % (repMySQL, nomFichierLoginTemp, fichier, fichierRestore)
+            args = u""""%sbin/mysql" --defaults-extra-file="%s" %s < "%s" """ % (repMySQL, nomFichierLoginTemp, fichier_temp, fichierRestore)
             print(("Chemin mysql =", args))
             proc = subprocess.Popen(args.encode("iso-8859-15"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
             out, temp = proc.communicate()
@@ -381,7 +381,7 @@ def Restauration(parent=None, fichier="", listeFichiersLocaux=[], listeFichiersR
                 dlgErreur.Destroy()
                 return False
             
-            listeFichiersRestaures.append(fichier)
+            listeFichiersRestaures.append(fichier_temp)
             
         # Supprime le répertoire temp
         shutil.rmtree(repTemp)
