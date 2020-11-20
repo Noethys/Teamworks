@@ -1268,7 +1268,7 @@ class Dialog(wx.Dialog):
         FonctionsPerso.LanceFichierExterne(nomDoc)
         
     def ConvertCouleur(self, couleur):
-        r, g, b = couleur
+        r, g, b = couleur[0], couleur[1], couleur[2]
         return r/255.0, g/255.0, b/255.0
         
     def ExportExcel(self):
