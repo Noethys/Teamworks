@@ -1,3 +1,7 @@
+Version 2.1.2.0 :
+
+- Correction d'un bug sur l'impression des statistiques
+
 Version 2.1.1.9 :
 
 - Correction d'un bug sur la restauration de sauvegardes incluant des documents
