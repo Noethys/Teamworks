@@ -426,7 +426,7 @@ class ListView(FastObjectListView):
         
         # Item Envoyer un Mail
         if self.adresseMail != "" :
-            item = wx.MenuItem(menuPop, 80, _(u"Envoyer un Email depuis l'éditeur d'Emails de Noethys"))
+            item = wx.MenuItem(menuPop, 80, _(u"Envoyer un Email depuis l'éditeur d'Emails intégré"))
             bmp = wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Mail.png"), wx.BITMAP_TYPE_PNG)
             item.SetBitmap(bmp)
             menuPop.AppendItem(item)
@@ -532,7 +532,7 @@ class ListView(FastObjectListView):
     def Menu_Mail(self, event):
         adresse = self.adresseMail
 
-        # Depuis l'éditeur d'Emails de Noethys
+        # Depuis l'éditeur d'Emails intégré
         if event.GetId() == 80:
             from Dlg import DLG_Mailer
             dlg = DLG_Mailer.Dialog(self)
