@@ -1,3 +1,7 @@
+Version 2.1.2.1 :
+
+- Ajout de la commande Procédures
+
 Version 2.1.2.0 :
 
 - Correction d'un bug sur l'impression des statistiques
