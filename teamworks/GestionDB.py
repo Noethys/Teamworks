@@ -206,6 +206,7 @@ class DB:
 
     def CreationTables(self, dicoDB={}, fenetreParente=None):
         for table in dicoDB:
+            print("creation de la table", table)
             # Affichage dans la StatusBar
             if fenetreParente != None :
                 fenetreParente.SetStatusText(_(u"Création de la table de données %s...") % table)
@@ -230,7 +231,10 @@ class DB:
                 # ------------------------------
                 req = req + "%s %s, " % (nomChamp, typeChamp)
             req = req[:-2] + ")"
-            self.cursor.execute(req)
+            try:
+                self.cursor.execute(req)
+            except Exception as err:
+                print("Erreur dans creation table: ", err)
 
     def CreationTable(self, nomTable="", dicoDB={}):
         req = "CREATE TABLE %s (" % nomTable

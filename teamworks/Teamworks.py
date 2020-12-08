@@ -387,7 +387,8 @@ class MyFrame(wx.Frame):
                     {"code": "ouvrir_rep_donnees", "label": _(u"Ouvrir le répertoire des données"), "infobulle": _(u"Ouvrir le répertoire des données"), "image": "Images/16x16/Dossier.png", "action": self.On_outils_ouvrir_rep_donnees},
                     {"code": "ouvrir_rep_modeles", "label": _(u"Ouvrir le répertoire des modèles de documents"), "infobulle": _(u"Ouvrir le répertoire des modèles de documents"), "image": "Images/16x16/Dossier.png", "action": self.On_outils_ouvrir_rep_modeles},
                     {"code": "ouvrir_rep_documents", "label": _(u"Ouvrir le répertoire des documents édités"), "infobulle": _(u"Ouvrir le répertoire des documents édités"), "image": "Images/16x16/Dossier.png", "action": self.On_outils_ouvrir_rep_editions},
-                    ]},
+                    "-",
+                    {"code": "procedures", "label": _(u"Procédures"), "infobulle": _(u"Procédures"), "image": "Images/16x16/Outils.png", "action": self.On_outils_procedures}, ]},
                 "-",
                 {"code": "updater", "label": _(u"Rechercher une mise à jour du logiciel"), "infobulle": _(u"Rechercher une mise à jour du logiciel"), "image": "Images/16x16/Updater.png", "action": self.On_outils_updater},
             ],
@@ -1476,6 +1477,15 @@ class MyFrame(wx.Frame):
     def On_outils_ouvrir_rep_editions(self, event):
         """ Ouvrir le répertoire des éditions de documents """
         UTILS_Fichiers.OuvrirRepertoire(UTILS_Fichiers.GetRepEditions())
+
+    def On_outils_procedures(self, event):
+        """ Commande spéciale """
+        from Utils import UTILS_Procedures
+        dlg = wx.TextEntryDialog(self, _(u"Entrez le code de procédure qui vous a été communiqué :"), _(u"Procédure"), "")
+        if dlg.ShowModal() == wx.ID_OK:
+            code = dlg.GetValue()
+            UTILS_Procedures.Procedure(code)
+        dlg.Destroy()
 
     def On_aide_aide(self, event):
         from Utils import UTILS_Aide
