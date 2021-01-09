@@ -133,13 +133,16 @@ def Sauvegarde(listeFichiersLocaux=[], listeFichiersReseau=[], nom="", repertoir
 
             args = u""""%sbin/mysqldump" --defaults-extra-file="%s" --single-transaction --opt --databases %s > "%s" """ % (repMySQL, nomFichierLoginTemp, nomFichier, fichierSave)
             print(("Chemin mysqldump =", args))
-            proc = subprocess.Popen(args.encode('utf8'), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
+            if six.PY2:
+                args = args.encode('utf8')
+            proc = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
             out, temp = proc.communicate()
             
-            if out != "" :
+            if out not in ("", b""):
                 print((out,))
                 try :
-                    out = str(out).decode("iso-8859-15")
+                    if six.PY2:
+                        out = str(out).decode("iso-8859-15")
                 except :
                     pass
                 dlgprogress.Destroy()
@@ -155,7 +158,8 @@ def Sauvegarde(listeFichiersLocaux=[], listeFichiersReseau=[], nom="", repertoir
                 dlgprogress.Destroy()
                 print(("insertion sql dans zip : ", err,))
                 try :
-                    err = str(err).decode("iso-8859-15")
+                    if six.PY2:
+                        err = str(err).decode("iso-8859-15")
                 except :
                     pass
                 dlgErreur = wx.MessageDialog(None, _(u"Une erreur est survenue dans la sauvegarde !\n\nErreur : %s") % err, _(u"Erreur"), wx.OK | wx.ICON_ERROR)

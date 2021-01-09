@@ -20,13 +20,6 @@ from Utils import UTILS_Adaptations
 import GestionDB
 
 
-ID_AJOUTER = wx.Window.NewControlId()
-ID_ROTATION_GAUCHE = wx.Window.NewControlId()
-ID_ROTATION_DROITE = wx.Window.NewControlId()
-ID_MODIFIER_LABEL = wx.Window.NewControlId()
-ID_SUPPRIMER = wx.Window.NewControlId()
-ID_VISUALISER = wx.Window.NewControlId()
-
 
 DICT_TYPES = {
     "pdf" : "Images/128x128/pdf.png",
@@ -97,10 +90,11 @@ class Track(object):
 
     def GetImage(self):
         # Si c'est une image :
-        if self.type in ("jpg", "jpeg", "bmp", "png", "gif", None) :
+        if self.type in ("jpg", "jpeg", "bmp", "png", "gif", "PNG", "JPG", "JPEG", None) :
             io = six.BytesIO(self.buffer)
-            img = wx.ImageFromStream(io, wx.BITMAP_TYPE_JPEG)
-            img = wxtopil(img)
+            # img = wx.ImageFromStream(io, wx.BITMAP_TYPE_JPEG)
+            # img = wxtopil(img)
+            img = Image.open(io).convert("RGBA")
             self.isImage = True
             return img
         # Si c'est un document :
@@ -120,7 +114,11 @@ class Track(object):
             titre = u""
         else:
             titre = u"'%s'" % self.label
-        texte = _(u"%s %s\n%s\n\nDouble-cliquez pour visualiser ce document") % (typeDoc, self.type.upper(), titre)
+        if self.type != None :
+            typeTemp = self.type.upper()
+        else :
+            typeTemp = u""
+        texte = _(u"%s %s\n%s\n\nDouble-cliquez pour visualiser ce document") % (typeDoc, typeTemp, titre)
         return texte
 
 
@@ -245,7 +243,7 @@ Tous les fichiers (*.*)|*.*"
             extension = os.path.splitext(fichier)[1].replace(".", "")
             nomFichierCourt = os.path.basename(fichier)
             
-            if extension in ("jpeg", "jpg", "png", "bmp", "gif"):
+            if extension in ("jpeg", "jpg", "png", "bmp", "gif", "PNG", "JPG", "JPEG"):
                 # Si c'est une image :
                 imgPIL, poidsImg = ChargeImage(fichier)
                 blob = self.GetBufferImage(imgPIL)
@@ -276,10 +274,10 @@ Tous les fichiers (*.*)|*.*"
         largeur, hauteur = imgPIL.size
         if max(largeur, hauteur) > tailleMaxi :
             if largeur > hauteur :
-                hauteur = hauteur * tailleMaxi / largeur
+                hauteur = hauteur * tailleMaxi // largeur
                 largeur = tailleMaxi
             else:
-                largeur = largeur * tailleMaxi / hauteur
+                largeur = largeur * tailleMaxi // hauteur
                 hauteur = tailleMaxi
             imgPIL = imgPIL.resize((largeur, hauteur), Image.ANTIALIAS) #.Rescale(width=largeur, height=hauteur, quality=qualite) 
         
@@ -345,6 +343,13 @@ Tous les fichiers (*.*)|*.*"
         
     def ContextMenu(self):
         menu = UTILS_Adaptations.Menu()
+
+        ID_AJOUTER = wx.Window.NewControlId()
+        ID_ROTATION_GAUCHE = wx.Window.NewControlId()
+        ID_ROTATION_DROITE = wx.Window.NewControlId()
+        ID_MODIFIER_LABEL = wx.Window.NewControlId()
+        ID_SUPPRIMER = wx.Window.NewControlId()
+        ID_VISUALISER = wx.Window.NewControlId()
 
         item = wx.MenuItem(menu, ID_AJOUTER, _(u"Ajouter des documents"))
         item.SetBitmap(wx.Bitmap(Chemins.GetStaticPath("Images/16x16/Ajouter.png"), wx.BITMAP_TYPE_PNG))

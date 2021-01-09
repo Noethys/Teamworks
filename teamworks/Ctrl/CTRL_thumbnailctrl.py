@@ -166,7 +166,7 @@ def GetMondrianBitmap():
 
 def GetMondrianImage():
     stream = six.BytesIO(GetMondrianData())
-    return wx.ImageFromStream(stream)
+    return wx.Image(stream)
 
 
 def getDataSH():
@@ -1391,7 +1391,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         selectedfname = []
         selecteditemid = []
         
-        for ii in xrange(len(self._selectedarray)):
+        for ii in range(len(self._selectedarray)):
             selectedfname.append(self.GetSelectedItem(ii).GetFileName())
             selecteditemid.append(self.GetSelectedItem(ii).GetId())
             
@@ -1399,8 +1399,8 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         
         if len(selected) > 0:
             self._selectedarray = []            
-            for ii in xrange(len(self._items)):
-                for jj in xrange(len(selected)):
+            for ii in range(len(self._items)):
+                for jj in range(len(selected)):
                     if self._items[ii].GetFileName() == selectedfname[jj] and \
                        self._items[ii].GetId() == selecteditemid[jj]:
                   
@@ -1469,7 +1469,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         """
         
         capHeight = 0
-        for ii in range(begRow, begRow + count):
+        for ii in range(int(begRow), int(begRow + count)):
             if ii < len(self._tCaptionHeight):
                 capHeight = capHeight + self._tCaptionHeight[ii]
 
@@ -1867,7 +1867,10 @@ class ScrolledThumbnail(wx.ScrolledWindow):
             rect.x = rect.x + col*(self._tWidth + self._tBorder)
             rect.y = rect.y + (self._rows - 1)*(self._tHeight + self._tBorder) + \
                      self.GetCaptionHeight(0, self._rows - 1)
-            dc.DrawRectangleRect(rect)
+            if 'phoenix' in wx.PlatformInfo:
+                dc.DrawRectangle(rect)
+            else:
+                dc.DrawRectangleRect(rect)
 
 
     def OnResize(self, event):
@@ -1916,7 +1919,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
                     endindex = self._selected
                 self._selectedarray = []
 
-                for ii in xrange(begindex, endindex+1):
+                for ii in range(begindex, endindex+1):
                     self._selectedarray.append(ii)
 
                 update = True
@@ -2013,7 +2016,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         if self._dragging and event.Dragging() and len(self._selectedarray) > 0:
 
             files = wx.FileDataObject()
-            for ii in xrange(len(self._selectedarray)):
+            for ii in range(len(self._selectedarray)):
                 files.AddFile(opj(self.GetSelectedItem(ii).GetFullFileName()))
                 
             source = wx.DropSource(self)
@@ -2087,7 +2090,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         :param `event`: a L{ThumbnailEvent} event to be processed.
         """
         
-        for ii in xrange(len(self._items)):
+        for ii in range(len(self._items)):
             if self._items[ii].GetFileName() == event.GetString():
 
                 self._items[ii].SetFilename(self._items[ii].GetFileName())
@@ -2143,7 +2146,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
         count = 0
         selected = []
         
-        for ii in xrange(len(self._items)):
+        for ii in range(len(self._items)):
             if self.IsSelected(ii):
                 selected.append(self._items[ii])
 
@@ -2196,7 +2199,7 @@ class ScrolledThumbnail(wx.ScrolledWindow):
             
             wx.BeginBusyCursor()
             
-            for ii in xrange(len(self._items)):
+            for ii in range(len(self._items)):
                 if self.IsSelected(ii):
                     thumb = self._items[ii]
                     files = self._items[ii].GetFullFileName()
