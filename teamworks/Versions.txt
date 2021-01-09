@@ -1,6 +1,12 @@
+Version 2.1.2.2 :
+
+- Adaptations pour wxPython phoenix et python 3
+- Correction de divers bugs
+
 Version 2.1.2.1 :
 
 - Ajout de la commande Procédures
+- Correction de la sauvegarde réseau
 
 Version 2.1.2.0 :
 
