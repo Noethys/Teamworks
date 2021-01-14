@@ -611,22 +611,22 @@ class CTRL_Options(wx.Panel) :
 
     def SetDonnees(self, dictDonnees={}):
         """ Importation des données dans les contrôles """
-        if dictDonnees["option_demander"] == "1" : 
+        if dictDonnees["option_demander"] in (1, "1"):
             self.check_demander.SetValue(True)
         else :
             self.check_demander.SetValue(False)
         
-        if dictDonnees["option_afficher_interface"] == "1" : 
+        if dictDonnees["option_afficher_interface"] in (1, "1"):
             self.check_interface.SetValue(True)
 
-        if dictDonnees["option_confirmation"] == "1" : 
+        if dictDonnees["option_confirmation"] in (1, "1"):
             self.check_confirmation.SetValue(True)
 
         option_suppression = dictDonnees["option_suppression"]
         if option_suppression != None :
             index = 0
             for valeur, label in self.listeAnciennete :
-                if str(valeur) == option_suppression :
+                if str(valeur) == str(option_suppression):
                     self.ctrl_suppression.SetSelection(index)
                     self.check_suppression.SetValue(True)
                 index += 1

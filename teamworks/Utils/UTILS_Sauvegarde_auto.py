@@ -57,7 +57,7 @@ class Sauvegarde_auto():
                 valide = self.VerificationConditions(dictSauvegarde) 
 
             # Demande de confirmation
-            if valide == True and dictSauvegarde["option_demander"] == "1" :
+            if valide == True and dictSauvegarde["option_demander"] in (1, "1"):
                 image = wx.Bitmap(Chemins.GetStaticPath("Images/48x48/Sauvegarder.png"), wx.BITMAP_TYPE_ANY)
                 message1 = _(u"Souhaitez-vous lancer la procédure de sauvegarde '%s' ?") % dictSauvegarde["nom"]
                 dlg = dialogs.MultiMessageDialog(self.parent, message1, caption=_(u"Sauvegarde automatique"), msg2=None, style = wx.NO | wx.CANCEL | wx.YES | wx.YES_DEFAULT, icon=image, btnLabels={wx.ID_YES : _(u"Oui"), wx.ID_NO : _(u"Non"), wx.ID_CANCEL : _(u"Annuler")})
@@ -72,7 +72,7 @@ class Sauvegarde_auto():
                     return wx.ID_CANCEL
 
             # Afficher interface
-            if valide == True and dictSauvegarde["option_afficher_interface"] == "1" :
+            if valide == True and dictSauvegarde["option_afficher_interface"] in (1, "1"):
                 from Dlg import DLG_Sauvegarde
                 dlg = DLG_Sauvegarde.Dialog(self.parent, dictDonnees=dictSauvegarde)
                 dlg.ShowModal() 
@@ -80,10 +80,10 @@ class Sauvegarde_auto():
                 dlg.Destroy()
             
             # Sauvegarde
-            if valide == True and dictSauvegarde["option_afficher_interface"] != "1" :
+            if valide == True and dictSauvegarde["option_afficher_interface"] not in (1, "1"):
                 resultat = self.Sauvegarde(dictSauvegarde)
                 
-                if resultat == True and dictSauvegarde["option_confirmation"] == "1" :
+                if resultat == True and dictSauvegarde["option_confirmation"] in (1, "1"):
                     dlg = wx.MessageDialog(self.parent, _(u"La procédure de sauvegarde '%s' s'est terminée avec succès.") % dictSauvegarde["nom"], _(u"Sauvegarde"), wx.OK | wx.ICON_INFORMATION)
                     dlg.ShowModal()
                     dlg.Destroy()
@@ -107,7 +107,7 @@ class Sauvegarde_auto():
                 listeFichiersPresents = glob.glob(repertoire + "/*")
                 for fichier in listeFichiersPresents :
                     nomFichier = os.path.basename(fichier)
-                    if (fichier.endswith(".nod") or fichier.endswith(".noc")) and nomFichier.startswith(prefixe) :
+                    if (fichier.endswith(".twd") or fichier.endswith(".twc")) and nomFichier.startswith(prefixe) :
                         dateCreationFichier = datetime.date.fromtimestamp(os.path.getctime(fichier))
                         nbreJoursFichier = (datetime.date.today() - dateCreationFichier).days
                         if nbreJoursFichier >= nbreJours :
