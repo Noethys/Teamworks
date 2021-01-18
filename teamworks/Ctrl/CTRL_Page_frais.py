@@ -697,7 +697,14 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
             # Formatage montant
             montant = u"%.2f ¤" % montant
             # Formatage liste IDdeplacement
-            listeID = listeIDdeplacement.split("-")
+            listeID = []
+            if "-" in listeIDdeplacement:
+                listeID = listeIDdeplacement.split("-")
+            else:
+                try:
+                    listeID = [int(listeIDdeplacement),]
+                except:
+                    pass
             if listeID[0] == "" :
                 texteListeID = _(u"Aucun déplacement rattaché")
             else :
