@@ -1,3 +1,12 @@
+Version 2.1.2.4 :
+
+- Modification de la liste des derniers fichiers ouverts
+- Corrections sur les options de sauvegarde auto
+
+Version 2.1.2.3 :
+
+- Correction de divers bugs
+
 Version 2.1.2.2 :
 
 - Adaptations pour wxPython phoenix et python 3
