@@ -740,7 +740,7 @@ class MyFrame(wx.Frame):
 
         # MAJ de la liste des derniers fichiers ouverts :
         listeFichiers = self.userConfig["derniersFichiers"]
-        nbreFichiersMax = 3  # Valeur à changer en fonction des souhaits
+        nbreFichiersMax = 5  # Valeur à changer en fonction des souhaits
 
         # Si le nom est déjà dans la liste, on le supprime :
         if nomFichier in listeFichiers: listeFichiers.remove(nomFichier)
