@@ -1,3 +1,7 @@
+Version 2.1.2.5 :
+
+- Correction sur l'affichage des remboursements de frais
+
 Version 2.1.2.4 :
 
 - Modification de la liste des derniers fichiers ouverts
