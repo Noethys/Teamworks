@@ -698,20 +698,18 @@ class ListCtrl_remboursements(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listm
             montant = u"%.2f ¤" % montant
             # Formatage liste IDdeplacement
             listeID = []
-            if "-" in listeIDdeplacement:
-                listeID = listeIDdeplacement.split("-")
-            else:
+            if isinstance(listeIDdeplacement, int):
                 try:
                     listeID = [int(listeIDdeplacement),]
                 except:
                     pass
-            if listeID[0] == "" :
+            if type(listeIDdeplacement) == str or type(listeIDdeplacement) == six.text_type:
+                if "-" in listeIDdeplacement:
+                    listeID = listeIDdeplacement.split("-")
+            if not listeID or listeID[0] == "" :
                 texteListeID = _(u"Aucun déplacement rattaché")
             else :
-                texteListeID = u"N° "
-                for ID in listeID :
-                    texteListeID += ID + ", "
-                texteListeID = texteListeID[:-2]
+                texteListeID = u"N° " + ", ".join([str(x) for x in listeID])
             self.donnees[IDremboursement] = ("", IDremboursement, date, montant, texteListeID)
             index += 1
             
