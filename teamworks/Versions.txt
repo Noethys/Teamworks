@@ -1,3 +1,7 @@
+Version 2.1.2.6 :
+
+- Correction les questions de type numérique
+
 Version 2.1.2.5 :
 
 - Correction sur l'affichage des remboursements de frais
