@@ -120,6 +120,7 @@ class CTRL_ligne_texte(wx.TextCtrl):
     
     def SetValeur(self, valeur=None):
         if valeur == None : valeur = u""
+        if type(valeur) == int: valeur = str(valeur)
         self.SetValue(valeur)
     
     def SetValeurStr(self, valeur=None):
