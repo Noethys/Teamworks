@@ -1,6 +1,10 @@
+Version 2.1.2.7 :
+
+- Correction de la restauration des fichiers réseau
+
 Version 2.1.2.6 :
 
-- Correction les questions de type numérique
+- Correction des questions de type numérique
 
 Version 2.1.2.5 :
 
