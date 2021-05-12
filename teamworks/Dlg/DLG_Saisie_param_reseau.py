@@ -11,7 +11,7 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-
+import GestionDB
 
 
 class Dialog(wx.Dialog):
@@ -144,12 +144,16 @@ class Dialog(wx.Dialog):
     
 def TestConnexion(dictValeurs={}):
     """ Test de connexion au réseau MySQL """
-    import MySQLdb
-    try :
-        connexion = MySQLdb.connect(host=dictValeurs["hote"],user=dictValeurs["utilisateur"], passwd=dictValeurs["mdp"], port=dictValeurs["port"], use_unicode=True) 
-        cursor = connexion.cursor()
-    except Exception as err :
+    hote = dictValeurs["hote"]
+    utilisateur = dictValeurs["utilisateur"]
+    motdepasse = dictValeurs["mdp"]
+    port = dictValeurs["port"]
+
+    DB = GestionDB.DB(nomFichier=u"%s;%s;%s;%s[RESEAU]" % (port, hote, utilisateur, motdepasse))
+    if DB.echec == 1 :
+        DB.Close()
         return False
+    DB.Close()
     return True
 
 

@@ -163,8 +163,8 @@ class CTRL_Donnees(CT.CustomTreeCtrl):
         """ Trouver les fichiers MySQL présents dans le ZIP """
         listeReseau = []
         for fichier in self.listeFichiers :
-            if fichier[-9:] == "_data.sql" : 
-                nomFichier = fichier[:-9]
+            if fichier[-10:] == "_tdata.sql" :
+                nomFichier = fichier[:-10]
                 listeReseau.append(nomFichier)
         listeReseau.sort()
         return listeReseau

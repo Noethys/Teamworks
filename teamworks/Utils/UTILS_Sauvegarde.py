@@ -373,18 +373,21 @@ def Restauration(parent=None, fichier="", listeFichiersLocaux=[], listeFichiersR
 
             args = u""""%sbin/mysql" --defaults-extra-file="%s" %s < "%s" """ % (repMySQL, nomFichierLoginTemp, fichier_temp, fichierRestore)
             print(("Chemin mysql =", args))
-            proc = subprocess.Popen(args.encode("iso-8859-15"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
+            if six.PY2:
+                args = args.encode("iso-8859-15")
+            proc = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
             out, temp = proc.communicate()
 
-            if out != "" :
+            if out not in ("", b"") :
                 print(("subprocess de restauration mysql :", out))
-                out = str(out).decode("iso-8859-15")
+                if six.PY2:
+                    out = str(out).decode("iso-8859-15")
                 dlgprogress.Destroy()
                 dlgErreur = wx.MessageDialog(None, _(u"Une erreur a été détectée dans la procédure de restauration !\n\nErreur : %s") % out, _(u"Erreur"), wx.OK | wx.ICON_ERROR)
-                dlgErreur.ShowModal() 
+                dlgErreur.ShowModal()
                 dlgErreur.Destroy()
                 return False
-            
+
             listeFichiersRestaures.append(fichier_temp)
             
         # Supprime le répertoire temp
@@ -451,12 +454,12 @@ def GetRepertoireMySQL(dictValeurs={}):
     """
     # Récupération du chemin de MySQL à partir de la base de données
 ##    import MySQLdb
-##    connexion = MySQLdb.connect(host=dictValeurs["hote"],user=dictValeurs["utilisateur"], passwd=dictValeurs["mdp"], port=dictValeurs["port"], use_unicode=True) 
+##    connexion = MySQLdb.connect(host=dictValeurs["hote"],user=dictValeurs["utilisateur"], passwd=dictValeurs["mdp"], port=dictValeurs["port"], use_unicode=True)
 ##    connexion.set_character_set('utf8')
 ##    cursor = connexion.cursor()
 ##    cursor.execute("SELECT @@basedir;")
 ##    donnees = cursor.fetchall()
-##    if len(donnees) == 0 : 
+##    if len(donnees) == 0 :
 ##        return None
 ##    return donnees[0][0]
 
