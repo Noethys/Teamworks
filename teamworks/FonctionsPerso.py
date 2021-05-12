@@ -854,7 +854,8 @@ def Parametres(mode="get", categorie="", nom="", valeur=None):
             if type_parametre == tuple : valeurTmp = eval(valeurTmp)
             if type_parametre == list : valeurTmp = eval(valeurTmp)
             if type_parametre == dict : valeurTmp = eval(valeurTmp)
-            if type_parametre == bool : valeurTmp = eval(valeurTmp)
+            if type_parametre == bool : valeurTmp = True if valeurTmp in ("True", True, 1, "1") else False
+
         else:
             # On modifie la valeur du paramètre
             IDparametre = listeDonnees[0][0]
