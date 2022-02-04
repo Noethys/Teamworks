@@ -20,7 +20,7 @@ from Ctrl import CTRL_Bandeau
 import six
 
 
-LISTE_SUFFIXES = ("data", "photos", "documents")
+LISTE_SUFFIXES = ("tdata", "tphotos", "tdocuments")
 
 
 class Panel(wx.Panel):

@@ -16,7 +16,7 @@ import wx
 from Ctrl import CTRL_Bouton_image
 import GestionDB
 
-LISTE_SUFFIXES = ("data", "photos", "documents")
+LISTE_SUFFIXES = ("tdata", "tphotos", "tdocuments")
 
 
 class Dialog(wx.Dialog):
