@@ -372,7 +372,7 @@ class Dialog(wx.Dialog):
             self.ctrl_nom.SetLabel(nom)
             # Description
             if description == None : description = ""
-            self.ctrl_description.SetLabel(description)
+            self.ctrl_description.SetLabel(str(description))
             # Personne
             self.SetPersonne(IDpersonne)
             # Période
