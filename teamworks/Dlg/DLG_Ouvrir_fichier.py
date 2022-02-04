@@ -11,9 +11,8 @@ import Chemins
 from Utils.UTILS_Traduction import _
 import wx
 from Ctrl import CTRL_Bouton_image
-import FonctionsPerso
+import GestionDB
 import six
-
 from Ctrl import CTRL_Liste_fichiers
 
 
@@ -276,6 +275,8 @@ class MyDialog(wx.Dialog):
             hote = dictCodes["hote"]
             utilisateur = dictCodes["utilisateur"]
             motdepasse = dictCodes["motdepasse"]
+            if motdepasse not in (None, "") and motdepasse.startswith("#64#") == False :
+                motdepasse = GestionDB.EncodeMdpReseau(motdepasse)
             fichier = dictItem["titre"]
             nomFichier = _(u"%s;%s;%s;%s[RESEAU]%s") % (port, hote, utilisateur, motdepasse, fichier)
         
