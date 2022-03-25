@@ -642,20 +642,22 @@ class WidgetPlanning(wx.ScrolledWindow):
         newListe = []
         for item in listePresences :
             # Création de la liste initiale
-            date = StrEnDatetimeDate(item[2])
-            heureDebut = StrEnDatetime(item[3])
-            heureFin = StrEnDatetime(item[4])
-            posG = HeuresEnCoords(heureDebut)   
-            posD = HeuresEnCoords(heureFin)
-            posH = self.dictLignes[(item[1], date)][1]
-            posB = posH + hauteurBarre
-            valeur = [item[0], item[1], date, heureDebut, heureFin, item[5], item[6], posG, posD, posH, posB]
-            newListe.append(valeur)
+            try:
+                date = StrEnDatetimeDate(item[2])
+                heureDebut = StrEnDatetime(item[3])
+                heureFin = StrEnDatetime(item[4])
+                posG = HeuresEnCoords(heureDebut)
+                posD = HeuresEnCoords(heureFin)
+                posH = self.dictLignes[(item[1], date)][1]
+                posB = posH + hauteurBarre
+                valeur = [item[0], item[1], date, heureDebut, heureFin, item[5], item[6], posG, posD, posH, posB]
+                newListe.append(valeur)
 
-            # Ajuste les graduations en fonction des horaires donnés
-            if heureDebut < heureMin : heureMin = datetime.time(heureDebut.hour, 00)
-            if heureFin > heureMax : heureMax = heureFin
-        
+                # Ajuste les graduations en fonction des horaires donnés
+                if heureDebut < heureMin : heureMin = datetime.time(heureDebut.hour, 00)
+                if heureFin > heureMax : heureMax = heureFin
+            except:
+                pass
         return newListe
     
     def DrawGroupes(self, dc, tailleDC, mode="screen"):
