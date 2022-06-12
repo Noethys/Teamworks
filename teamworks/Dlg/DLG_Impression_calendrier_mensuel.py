@@ -259,7 +259,7 @@ class Impression():
         styleTableauLegende = []
         
         # Création des lignes vides du tableau des légendes
-        nbreLignesLegendes = 5
+        nbreLignesLegendes = 12
         nbreColonnesLegendes = 4
         largeurColonneLegende = 178.75
         
