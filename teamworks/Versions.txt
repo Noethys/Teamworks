@@ -1,6 +1,10 @@
+Version 2.1.3.0 :
+
+- Correction de la légende dans les éditions annuelles et mensuelles
+
 Version 2.1.2.9 :
 
-- Correction des horaires incomplètes dans la planning
+- Correction des horaires incomplets dans le planning
 
 Version 2.1.2.8 :
 
