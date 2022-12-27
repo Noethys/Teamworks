@@ -726,6 +726,7 @@ class Grid_donnees(gridlib.Grid):
                 if motcle in dict_valeurs :
                     valeur = dict_valeurs[motcle]
                     if type(valeur) == int: valeur = str(valeur)
+                    if type(valeur) == float: valeur = str(valeur)
                     self.SetCellValue(indexLigne, indexColonne, valeur)
                 indexLigne += 1
 
